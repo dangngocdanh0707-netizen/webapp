@@ -27,7 +27,7 @@ export function getMockData() {
       { rowNumber: 6, date: yesterdayStr, habit: "Tập thể dục 30 phút", status: true },
       { rowNumber: 7, date: yesterdayStr, habit: "Học 5 từ mới tiếng Anh", status: false }
     ],
-    memory: [
+    link: [
       { rowNumber: 2, title: "Tài liệu học API Sheets", category: "Programming", content: "https://developers.google.com/sheets/api" },
       { rowNumber: 3, title: "Danh ngôn yêu thích", category: "Quotes", content: "The journey of a thousand miles begins with a single step. - Lao Tzu" }
     ],

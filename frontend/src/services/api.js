@@ -12,6 +12,7 @@ const KEY_CLIENT_ID = "GOOGLE_CLIENT_ID";
 let tokenClient = null;
 let gapiInitialized = false;
 let sheetIdMap = {}; // Cache tên sheet -> sheetId để xóa dòng
+let resolvedTabsCache = {}; // Cache ánh xạ tên tab tự động phân giải
 
 // Lấy thông tin cấu hình credentials từ localStorage
 export function getCredentials() {
@@ -27,6 +28,7 @@ export function saveCredentials(spreadsheetId, apiKey, clientId) {
   localStorage.setItem(KEY_SPREADSHEET_ID, spreadsheetId.trim());
   localStorage.setItem(KEY_API_KEY, apiKey.trim());
   localStorage.setItem(KEY_CLIENT_ID, clientId.trim());
+  resolvedTabsCache = {}; // Reset cache khi đổi credentials
 }
 
 // Xóa cấu hình credentials
@@ -132,6 +134,7 @@ export function signOutFromGoogle() {
     gapi.client.setToken(null);
   }
   sessionStorage.removeItem("GOOGLE_ACCESS_TOKEN");
+  resolvedTabsCache = {}; // Xóa cache ánh xạ tab
   alert("Đã ngắt kết nối Google Sheets thành công!");
   window.location.reload();
 }
@@ -148,12 +151,154 @@ async function getSheetId(sheetName, spreadsheetId) {
   return sheetIdMap[sheetName];
 }
 
-// Tự động kiểm tra và khởi tạo các Tab dữ liệu thiếu trên Google Sheet để tăng trải nghiệm plug-and-play
+// Tự động phân giải tất cả tên tab dựa trên khớp tên hoặc phân tích dòng tiêu đề (Headers)
+async function resolveAllTabs(spreadsheetId) {
+  if (Object.keys(resolvedTabsCache).length > 0) {
+    return resolvedTabsCache;
+  }
+
+  try {
+    console.log("[api.js] Đang tự động phân tích cấu trúc các Sheet tab...");
+    const response = await gapi.client.sheets.spreadsheets.get({ spreadsheetId });
+    const sheets = response.result.sheets || [];
+    const existingTitles = sheets.map(s => s.properties.title);
+    
+    const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task'];
+    const mappings = {};
+    
+    // Bước 1: Khớp trực tiếp không phân biệt chữ hoa thường (Case-insensitive)
+    targetTabs.forEach(target => {
+      const match = existingTitles.find(t => t.toLowerCase() === target.toLowerCase());
+      if (match) {
+        mappings[target] = match;
+      }
+    });
+    
+    // Bước 2: Với các tab chưa khớp trực tiếp, tải dòng đầu (Header) của các sheet còn lại để phân tích cột
+    const missingTargets = targetTabs.filter(t => !mappings[t]);
+    
+    if (missingTargets.length > 0 && existingTitles.length > 0) {
+      const ranges = existingTitles.map(title => `${title}!A1:J1`);
+      const headersResponse = await gapi.client.sheets.spreadsheets.values.batchGet({
+        spreadsheetId,
+        ranges
+      });
+      
+      const valueRanges = headersResponse.result.valueRanges || [];
+      const sheetHeaders = {};
+      
+      existingTitles.forEach((title, idx) => {
+        const vr = valueRanges[idx];
+        const row = (vr && vr.values && vr.values[0]) ? vr.values[0] : [];
+        sheetHeaders[title] = row.map(h => h.toString().toLowerCase().trim());
+      });
+      
+      const unmappedSheets = existingTitles.filter(title => !Object.values(mappings).includes(title));
+      
+      missingTargets.forEach(target => {
+        let bestMatch = null;
+        
+        for (const title of unmappedSheets) {
+          const headers = sheetHeaders[title] || [];
+          
+          if (target === 'cost') {
+            const hasDate = headers.includes('date') || headers.includes('ngày') || headers.some(h => h.includes('date') || h.includes('ngày'));
+            const hasAmount = headers.includes('amount') || headers.includes('số tiền') || headers.includes('tiền') || headers.some(h => h.includes('amount') || h.includes('tiền'));
+            const hasCategory = headers.includes('category') || headers.includes('danh mục') || headers.some(h => h.includes('category') || h.includes('danh mục'));
+            
+            if (hasAmount && (hasDate || hasCategory)) {
+              bestMatch = title;
+              break;
+            }
+          } else if (target === 'vocabulary') {
+            const hasContent = headers.includes('content') || headers.includes('word') || headers.includes('từ') || headers.includes('từ vựng');
+            const hasMeaning = headers.includes('meaning') || headers.includes('nghĩa') || headers.includes('định nghĩa');
+            if (hasContent && hasMeaning) {
+              bestMatch = title;
+              break;
+            }
+          } else if (target === 'habit_tracker') {
+            const hasHabit = headers.includes('habit') || headers.includes('thói quen') || headers.some(h => h.includes('habit'));
+            if (hasHabit) {
+              bestMatch = title;
+              break;
+            }
+          } else if (target === 'task') {
+            const hasTask = headers.includes('task') || headers.includes('công việc') || headers.includes('việc') || headers.some(h => h.includes('task'));
+            if (hasTask) {
+              bestMatch = title;
+              break;
+            }
+          } else if (target === 'goal') {
+            const hasGoal = headers.includes('goal') || headers.includes('mục tiêu') || headers.some(h => h.includes('goal'));
+            if (hasGoal) {
+              bestMatch = title;
+              break;
+            }
+          } else if (target === 'link') {
+            const hasTitle = headers.includes('title') || headers.includes('tiêu đề') || headers.some(h => h.includes('title') || h.includes('tiêu đề'));
+            const hasContent = headers.includes('content') || headers.includes('nội dung') || headers.includes('url') || headers.includes('link') || headers.some(h => h.includes('content') || h.includes('url') || h.includes('link'));
+            const nameMatch = title.toLowerCase().includes('link') || title.toLowerCase().includes('memory') || title.toLowerCase().includes('ghi nhớ') || title.toLowerCase().includes('url');
+            if (nameMatch || (hasTitle && hasContent)) {
+              bestMatch = title;
+              break;
+            }
+          } else if (target === 'prompt') {
+            const hasTitle = headers.includes('title') || headers.includes('tiêu đề') || headers.some(h => h.includes('title') || h.includes('tiêu đề'));
+            const hasContent = headers.includes('content') || headers.includes('nội dung') || headers.includes('prompt') || headers.some(h => h.includes('content') || h.includes('prompt'));
+            const nameMatch = title.toLowerCase().includes('prompt') || title.toLowerCase().includes('yêu cầu') || title.toLowerCase().includes('ai');
+            if (nameMatch || (hasTitle && hasContent)) {
+              bestMatch = title;
+              break;
+            }
+          }
+        }
+        
+        if (bestMatch) {
+          mappings[target] = bestMatch;
+          const index = unmappedSheets.indexOf(bestMatch);
+          if (index > -1) {
+            unmappedSheets.splice(index, 1);
+          }
+        }
+      });
+    }
+    
+    // Bước 3: Đặt mặc định nếu vẫn không tìm thấy
+    targetTabs.forEach(target => {
+      if (!mappings[target]) {
+        mappings[target] = target;
+      }
+    });
+    
+    resolvedTabsCache = mappings;
+    console.log("[api.js] Tự động khớp các Sheet tab thành công:", resolvedTabsCache);
+    return resolvedTabsCache;
+  } catch (err) {
+    console.error("[api.js] Lỗi tự động khớp các Sheet tab:", err);
+    return {
+      cost: 'cost',
+      vocabulary: 'vocabulary',
+      habit_tracker: 'habit_tracker',
+      link: 'link',
+      prompt: 'prompt',
+      goal: 'goal',
+      task: 'task'
+    };
+  }
+}
+
+// Tự động kiểm tra và khởi tạo các Tab dữ liệu thiếu trên Google Sheet
 async function ensureSheetTabsExist(spreadsheetId) {
+  const mappings = await resolveAllTabs(spreadsheetId);
   const response = await gapi.client.sheets.spreadsheets.get({ spreadsheetId });
   const existingTitles = response.result.sheets.map(s => s.properties.title);
-  const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'memory', 'prompt', 'goal', 'task'];
-  const missingTabs = targetTabs.filter(t => !existingTitles.includes(t));
+  const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task'];
+  
+  const missingTabs = targetTabs.filter(target => {
+    const mappedName = mappings[target];
+    return !existingTitles.some(et => et.toLowerCase() === mappedName.toLowerCase());
+  });
 
   if (missingTabs.length > 0) {
     console.log("[api.js] Đang tự động tạo các sheet tab bị thiếu:", missingTabs);
@@ -172,7 +317,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: 'cost!A1:D1', values: [['Date', 'Category', 'Amount', 'Note']] },
       { range: 'vocabulary!A1:I1', values: [['Content', 'Category', 'Topic', 'Level', 'Meaning', 'Status', 'Next Review', 'Interval', 'Ease Factor']] },
       { range: 'habit_tracker!A1:C1', values: [['Date', 'Habit', 'Status']] },
-      { range: 'memory!A1:C1', values: [['Title', 'Category', 'Content']] },
+      { range: 'link!A1:C1', values: [['Title', 'Category', 'Content']] },
       { range: 'prompt!A1:C1', values: [['Title', 'Content', 'Category']] },
       { range: 'goal!A1:E1', values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
       { range: 'task!A1:C1', values: [['Date', 'Task', 'Status']] }
@@ -187,6 +332,10 @@ async function ensureSheetTabsExist(spreadsheetId) {
         }
       });
     }
+    
+    // Xóa cache và khớp lại để lấy tên tab mới tạo
+    resolvedTabsCache = {};
+    await resolveAllTabs(spreadsheetId);
   }
 }
 
@@ -215,6 +364,23 @@ export function callServer(methodName, args) {
     // CHẾ ĐỘ ONLINE: Đọc/Ghi trực tiếp Google Sheets API v4
     try {
       const spreadsheetId = creds.spreadsheetId;
+      
+      // Phân giải tên các tab thực tế bằng bộ máy tự động phát hiện cột (Thông minh & Hiệu suất cao)
+      const mappings = await resolveAllTabs(spreadsheetId);
+      const costTab = mappings['cost'];
+      const vocabTab = mappings['vocabulary'];
+      const habitTab = mappings['habit_tracker'];
+      const linkTab = mappings['link'];
+      const promptTab = mappings['prompt'];
+      const goalTab = mappings['goal'];
+      const taskTab = mappings['task'];
+
+      // Hàm chuyển đổi chuỗi tiền tệ phức tạp (Ví dụ: "₫40,000" hay "40.000đ") thành số thực cực kỳ mạnh mẽ
+      const parseAmount = (val) => {
+        if (val === undefined || val === null) return 0;
+        const cleaned = val.toString().replace(/[^\d-]/g, '');
+        return Number(cleaned) || 0;
+      };
 
       // 1. Nghiệp vụ LẤY TOÀN BỘ DỮ LIỆU (Read all tabs)
       if (methodName === "getAllDashboardData") {
@@ -222,13 +388,13 @@ export function callServer(methodName, args) {
         const response = await gapi.client.sheets.spreadsheets.values.batchGet({
           spreadsheetId,
           ranges: [
-            'cost!A2:D',
-            'vocabulary!A2:I',
-            'habit_tracker!A2:C',
-            'memory!A2:C',
-            'prompt!A2:C',
-            'goal!A2:E',
-            'task!A2:C'
+            `${costTab}!A2:D`,
+            `${vocabTab}!A2:I`,
+            `${habitTab}!A2:C`,
+            `${linkTab}!A2:C`,
+            `${promptTab}!A2:C`,
+            `${goalTab}!A2:E`,
+            `${taskTab}!A2:C`
           ]
         });
         const valueRanges = response.result.valueRanges;
@@ -239,7 +405,7 @@ export function callServer(methodName, args) {
             rowNumber: idx + 2,
             date: row[0] || "",
             category: row[1] || "",
-            amount: Number(row[2]) || 0,
+            amount: parseAmount(row[2]),
             note: row[3] || ""
           })).filter(item => item.date || item.category || item.note),
 
@@ -263,11 +429,11 @@ export function callServer(methodName, args) {
             status: row[2] === "TRUE" || row[2] === true || row[2] === "true"
           })).filter(item => item.habit),
 
-          memory: getRows(valueRanges[3]).map((row, idx) => ({
+          link: getRows(valueRanges[3]).map((row, idx) => ({
             rowNumber: idx + 2,
             title: row[0] || "",
-            category: row[1] || "",
-            content: row[2] || ""
+            content: row[1] || "",
+            category: row[2] || ""
           })).filter(item => item.title),
 
           prompt: getRows(valueRanges[4]).map((row, idx) => ({
@@ -282,8 +448,8 @@ export function callServer(methodName, args) {
             goal_name: row[0] || "",
             start_date: row[1] || "",
             end_date: row[2] || "",
-            current_value: Number(row[3]) || 0,
-            target_value: Number(row[4]) || 0
+            current_value: parseAmount(row[3]),
+            target_value: parseAmount(row[4])
           })).filter(item => item.goal_name),
 
           task: getRows(valueRanges[6]).map((row, idx) => ({
@@ -301,7 +467,7 @@ export function callServer(methodName, args) {
         const [date, category, amount, note] = args;
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: 'cost!A:D',
+          range: `${costTab}!A:D`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[date, category, Number(amount) || 0, note]] }
         });
@@ -312,7 +478,7 @@ export function callServer(methodName, args) {
         const [rowNumber, date, category, amount, note] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `cost!A${rowNumber}:D${rowNumber}`,
+          range: `${costTab}!A${rowNumber}:D${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[date, category, Number(amount) || 0, note]] }
         });
@@ -321,7 +487,7 @@ export function callServer(methodName, args) {
       }
       if (methodName === "deleteCostRow") {
         const [rowNumber] = args;
-        const sheetId = await getSheetId('cost', spreadsheetId);
+        const sheetId = await getSheetId(costTab, spreadsheetId);
         await gapi.client.sheets.spreadsheets.batchUpdate({
           spreadsheetId,
           resource: {
@@ -346,7 +512,7 @@ export function callServer(methodName, args) {
         const [content] = args;
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: 'vocabulary!A:I',
+          range: `${vocabTab}!A:I`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[content, "", "", "", "", "New", "", 0, 2.5]] }
         });
@@ -357,7 +523,7 @@ export function callServer(methodName, args) {
         const [rowNumber, content, category, topic, level, meaning] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `vocabulary!A${rowNumber}:E${rowNumber}`,
+          range: `${vocabTab}!A${rowNumber}:E${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[content, category, topic, level, meaning]] }
         });
@@ -366,7 +532,7 @@ export function callServer(methodName, args) {
       }
       if (methodName === "deleteVocabRow") {
         const [rowNumber] = args;
-        const sheetId = await getSheetId('vocabulary', spreadsheetId);
+        const sheetId = await getSheetId(vocabTab, spreadsheetId);
         await gapi.client.sheets.spreadsheets.batchUpdate({
           spreadsheetId,
           resource: {
@@ -389,7 +555,7 @@ export function callServer(methodName, args) {
         const [rowNumber, currentStatus, action] = args;
         const res = await gapi.client.sheets.spreadsheets.values.get({
           spreadsheetId,
-          range: `vocabulary!A${rowNumber}:I${rowNumber}`
+          range: `${vocabTab}!A${rowNumber}:I${rowNumber}`
         });
         const row = res.result.values ? res.result.values[0] : [];
         let status = row[5] || "New";
@@ -428,7 +594,7 @@ export function callServer(methodName, args) {
 
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `vocabulary!F${rowNumber}:I${rowNumber}`,
+          range: `${vocabTab}!F${rowNumber}:I${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[finalStatus, nrStr, interval, easeFactor]] }
         });
@@ -441,7 +607,7 @@ export function callServer(methodName, args) {
         const [rowNumber, isChecked] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `habit_tracker!C${rowNumber}`,
+          range: `${habitTab}!C${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
         });
@@ -449,32 +615,32 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // 5. Nghiệp vụ GHI NHỚ (Memories)
-      if (methodName === "insertMemoryRow") {
+      // 5. Nghiệp vụ LIÊN KẾT (Links)
+      if (methodName === "insertLinkRow") {
         const [title, category, content] = args;
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: 'memory!A:C',
+          range: `${linkTab}!A:C`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[title, category, content]] }
+          resource: { values: [[title, content, category]] }
         });
         resolve("Thành công");
         return;
       }
-      if (methodName === "updateMemoryRow") {
+      if (methodName === "updateLinkRow") {
         const [rowNumber, title, category, content] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `memory!A${rowNumber}:C${rowNumber}`,
+          range: `${linkTab}!A${rowNumber}:C${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[title, category, content]] }
+          resource: { values: [[title, content, category]] }
         });
         resolve("Thành công");
         return;
       }
-      if (methodName === "deleteMemoryRow") {
+      if (methodName === "deleteLinkRow") {
         const [rowNumber] = args;
-        const sheetId = await getSheetId('memory', spreadsheetId);
+        const sheetId = await getSheetId(linkTab, spreadsheetId);
         await gapi.client.sheets.spreadsheets.batchUpdate({
           spreadsheetId,
           resource: {
@@ -499,7 +665,7 @@ export function callServer(methodName, args) {
         const [title, content, category] = args;
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: 'prompt!A:C',
+          range: `${promptTab}!A:C`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[title, content, category]] }
         });
@@ -510,7 +676,7 @@ export function callServer(methodName, args) {
         const [rowNumber, title, content, category] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `prompt!A${rowNumber}:C${rowNumber}`,
+          range: `${promptTab}!A${rowNumber}:C${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[title, content, category]] }
         });
@@ -519,7 +685,7 @@ export function callServer(methodName, args) {
       }
       if (methodName === "deletePromptRow") {
         const [rowNumber] = args;
-        const sheetId = await getSheetId('prompt', spreadsheetId);
+        const sheetId = await getSheetId(promptTab, spreadsheetId);
         await gapi.client.sheets.spreadsheets.batchUpdate({
           spreadsheetId,
           resource: {
@@ -544,7 +710,7 @@ export function callServer(methodName, args) {
         const [goal_name, start_date, end_date, current_value, target_value] = args;
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: 'goal!A:E',
+          range: `${goalTab}!A:E`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[goal_name, start_date, end_date, Number(current_value) || 0, Number(target_value) || 0]] }
         });
@@ -555,7 +721,7 @@ export function callServer(methodName, args) {
         const [rowNumber, goal_name, start_date, end_date, current_value, target_value] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `goal!A${rowNumber}:E${rowNumber}`,
+          range: `${goalTab}!A${rowNumber}:E${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[goal_name, start_date, end_date, Number(current_value) || 0, Number(target_value) || 0]] }
         });
@@ -564,7 +730,7 @@ export function callServer(methodName, args) {
       }
       if (methodName === "deleteGoalRow") {
         const [rowNumber] = args;
-        const sheetId = await getSheetId('goal', spreadsheetId);
+        const sheetId = await getSheetId(goalTab, spreadsheetId);
         await gapi.client.sheets.spreadsheets.batchUpdate({
           spreadsheetId,
           resource: {
@@ -589,7 +755,7 @@ export function callServer(methodName, args) {
         const [date, taskDesc, status] = args;
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: 'task!A:C',
+          range: `${taskTab}!A:C`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[date, taskDesc, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
         });
@@ -600,7 +766,7 @@ export function callServer(methodName, args) {
         const [rowNumber, date, taskDesc, status] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `task!A${rowNumber}:C${rowNumber}`,
+          range: `${taskTab}!A${rowNumber}:C${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[date, taskDesc, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
         });
@@ -609,7 +775,7 @@ export function callServer(methodName, args) {
       }
       if (methodName === "deleteTaskRow") {
         const [rowNumber] = args;
-        const sheetId = await getSheetId('task', spreadsheetId);
+        const sheetId = await getSheetId(taskTab, spreadsheetId);
         await gapi.client.sheets.spreadsheets.batchUpdate({
           spreadsheetId,
           resource: {
@@ -632,7 +798,7 @@ export function callServer(methodName, args) {
         const [rowNumber, isChecked] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `task!C${rowNumber}`,
+          range: `${taskTab}!C${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
         });
@@ -661,7 +827,7 @@ const STORES = {
   cost: "DB_COST_DATA",
   vocabulary: "DB_VOCAB_DATA",
   habit_tracker: "DB_HABITS_DATA",
-  memory: "DB_MEMORIES_DATA",
+  link: "DB_LINKS_DATA",
   prompt: "DB_PROMPTS_DATA",
   goal: "DB_GOALS_DATA",
   task: "DB_TASKS_DATA"
@@ -819,32 +985,32 @@ function handleLocalTransaction(method, args) {
     return "Thành công";
   }
   
-  // 4. Nghiệp vụ GHI NHỚ (Memories)
-  if (method === "insertMemoryRow") {
+  // 4. Nghiệp vụ LIÊN KẾT (Links)
+  if (method === "insertLinkRow") {
     const [title, category, content] = args;
-    const data = getLocalData("memory");
+    const data = getLocalData("link");
     const nextRow = data.length > 0 ? Math.max(...data.map(item => item.rowNumber)) + 1 : 2;
     data.push({ rowNumber: nextRow, title, category, content });
-    saveLocalData("memory", data);
+    saveLocalData("link", data);
     return "Thành công";
   }
   
-  if (method === "updateMemoryRow") {
+  if (method === "updateLinkRow") {
     const [rowNumber, title, category, content] = args;
-    const data = getLocalData("memory");
+    const data = getLocalData("link");
     const idx = data.findIndex(item => item.rowNumber == rowNumber);
     if (idx !== -1) {
       data[idx] = { rowNumber, title, category, content };
-      saveLocalData("memory", data);
+      saveLocalData("link", data);
     }
     return "Thành công";
   }
   
-  if (method === "deleteMemoryRow") {
+  if (method === "deleteLinkRow") {
     const [rowNumber] = args;
-    let data = getLocalData("memory");
+    let data = getLocalData("link");
     data = data.filter(item => item.rowNumber != rowNumber);
-    saveLocalData("memory", data);
+    saveLocalData("link", data);
     return "Thành công";
   }
   

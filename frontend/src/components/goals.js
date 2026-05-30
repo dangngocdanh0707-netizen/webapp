@@ -27,8 +27,8 @@ export function buildGoalTable() {
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="goal-row-${id}" class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-slate-800 goal-view-${id}">${item.goal_name || '-'}</td>
-        <td class="p-4 font-mono text-xs text-slate-500 font-bold goal-view-${id}">${formatDateView(item.start_date)}</td>
-        <td class="p-4 font-mono text-xs text-slate-500 font-bold goal-view-${id}">${formatDateView(item.end_date)}</td>
+        <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${formatDateView(item.start_date)}</td>
+        <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${formatDateView(item.end_date)}</td>
         <td class="p-4 font-semibold text-slate-700 goal-view-${id}">${cur.toLocaleString()} / <span class="text-blue-600">${tar.toLocaleString()}</span></td>
         <td class="p-4 goal-view-${id}">
           <div class="flex items-center gap-3">

@@ -7,13 +7,23 @@ let onSyncNeeded = null;
 export function initCostModule(data, onSync) {
   allCostData = data || [];
   onSyncNeeded = onSync;
-  
+
+  // Set default date input to today's date
+  const dateInput = document.getElementById('ins-cost-date');
+  if (dateInput) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    dateInput.value = `${yyyy}-${mm}-${dd}`;
+  }
+
   // RENDER GRAPHICS
   renderCostGraphics();
-  
+
   // RENDER TABLE
   buildTable("All");
-  
+
   // POPULATE CATEGORIES IN FILTER DROPDOWN
   populateCostCategories();
 }
@@ -47,7 +57,7 @@ function renderCostGraphics() {
   let sortedCostArray = Object.entries(categories).sort((a, b) => b[1] - a[1]);
   let barLabels = sortedCostArray.map(item => item[0]);
   let barData = sortedCostArray.map(item => item[1]);
-  
+
   renderExpenseBar(barLabels, barData, (clickedLabel) => {
     const filterSelect = document.getElementById('categoryFilter');
     if (filterSelect) {
@@ -60,7 +70,7 @@ function renderCostGraphics() {
 function populateCostCategories() {
   const filterSelect = document.getElementById('categoryFilter');
   if (!filterSelect) return;
-  
+
   const costCategories = new Set(["Must have", "Wasted", "Nice to have"]);
   filterSelect.innerHTML = '<option value="All">All Categories</option>';
   costCategories.forEach(cat => {
@@ -72,21 +82,19 @@ export function buildTable(filterValue) {
   const tbody = document.querySelector('#table-cost tbody');
   if (!tbody) return;
   tbody.innerHTML = "";
-  
+
   let displayCostData = [...allCostData];
   displayCostData.sort((a, b) => {
-    let dateA = a.date ? a.date.toString().trim() : '';
-    let dateB = b.date ? b.date.toString().trim() : '';
-    return dateB.localeCompare(dateA); 
+    return parseDateToTimestamp(b.date) - parseDateToTimestamp(a.date);
   });
-  
+
   displayCostData.forEach(item => {
     let cat = item.category || "Uncategorized";
     if (filterValue !== "All" && cat !== filterValue) return;
-    
+
     let amount = parseFloat(item.amount.toString().replace(/[^\d]/g, '') || 0);
     let id = item.rowNumber;
-    
+
     let badgeStyle = "bg-slate-100 text-slate-650 border-slate-200";
     if (cat === "Must have") {
       badgeStyle = "bg-blue-50 text-blue-600 border-blue-100 font-bold";
@@ -98,7 +106,7 @@ export function buildTable(filterValue) {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-mono text-xs font-bold text-slate-700 view-mode-${id}">${formatDateView(item.date)}</td>
+        <td class="p-4 pl-6 font-semibold text-xs text-slate-500 view-mode-${id}">${formatDateView(item.date)}</td>
         <td class="p-4 view-mode-${id}"><span class="px-2.5 py-1 rounded-md text-xs border ${badgeStyle}">${cat}</span></td>
         <td class="p-4 text-right font-bold text-slate-900 view-mode-${id}">${amount.toLocaleString('vi-VN')}đ</td>
         <td class="p-4 pl-8 text-slate-700 font-medium view-mode-${id}">${item.note || '-'}</td>
@@ -127,16 +135,44 @@ export function buildTable(filterValue) {
       </tr>
     `);
   });
-  
+
   if (tbody.children.length === 0) {
     tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 italic">No entries match the active filters.</td></tr>`;
   }
 }
 
+function parseDateToTimestamp(dateStr) {
+  if (!dateStr) return 0;
+  let str = dateStr.toString().trim();
+
+  if (str.includes('/')) {
+    let parts = str.split('/');
+    if (parts.length === 3) {
+      let y = parseInt(parts[2], 10);
+      let m = parseInt(parts[1], 10) - 1;
+      let d = parseInt(parts[0], 10);
+      return new Date(y, m, d).getTime();
+    }
+  }
+
+  if (str.includes('-')) {
+    let parts = str.split('-');
+    if (parts.length === 3) {
+      let y = parseInt(parts[0], 10);
+      let m = parseInt(parts[1], 10) - 1;
+      let d = parseInt(parts[2], 10);
+      return new Date(y, m, d).getTime();
+    }
+  }
+
+  let ts = Date.parse(str);
+  return isNaN(ts) ? 0 : ts;
+}
+
 function formatDateView(dateStr) {
   if (!dateStr) return '-';
   let cleanStr = dateStr.toString().trim();
-  if (cleanStr.includes('/')) return cleanStr; 
+  if (cleanStr.includes('/')) return cleanStr;
   let parts = cleanStr.split('-');
   if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
   return cleanStr;
@@ -144,37 +180,37 @@ function formatDateView(dateStr) {
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
-window.enterEditMode = function(id) {
+window.enterEditMode = function (id) {
   document.querySelectorAll(`.view-mode-${id}`).forEach(el => el.classList.add('hidden'));
   document.querySelectorAll(`.edit-mode-${id}`).forEach(el => el.classList.remove('hidden'));
 };
 
-window.cancelEditMode = function(id) {
+window.cancelEditMode = function (id) {
   document.querySelectorAll(`.view-mode-${id}`).forEach(el => el.classList.remove('hidden'));
   document.querySelectorAll(`.edit-mode-${id}`).forEach(el => el.classList.add('hidden'));
 };
 
-window.filterTableByDropdown = function() {
+window.filterTableByDropdown = function () {
   const filterSelect = document.getElementById('categoryFilter');
   if (filterSelect) {
     buildTable(filterSelect.value);
   }
 };
 
-window.addCostRow = function() {
+window.addCostRow = function () {
   let date = document.getElementById('ins-cost-date').value;
   let cat = document.getElementById('ins-cost-cat').value;
   let amount = document.getElementById('ins-cost-amount').value;
   let note = document.getElementById('ins-cost-note').value;
-  
+
   if (!date || !amount) {
     alert("Date and Amount fields are mandatory!");
     return;
   }
-  
+
   const loading = document.getElementById('loading');
   if (loading) loading.style.display = 'flex';
-  
+
   callServer("insertCostRow", [date, cat, amount, note])
     .then(res => {
       if (res === "Thành công") {
@@ -192,15 +228,15 @@ window.addCostRow = function() {
     });
 };
 
-window.saveRow = function(id) {
+window.saveRow = function (id) {
   let date = document.getElementById(`edit-date-${id}`).value;
   let cat = document.getElementById(`edit-cat-${id}`).value;
   let amount = document.getElementById(`edit-amount-${id}`).value;
   let note = document.getElementById(`edit-note-${id}`).value;
-  
+
   const loading = document.getElementById('loading');
   if (loading) loading.style.display = 'flex';
-  
+
   callServer("updateCostRow", [id, date, cat, amount, note])
     .then(res => {
       if (res === "Thành công") {
@@ -216,11 +252,11 @@ window.saveRow = function(id) {
     });
 };
 
-window.deleteRow = function(id) {
+window.deleteRow = function (id) {
   if (confirm("Wipe this record from sheet database?")) {
     const loading = document.getElementById('loading');
     if (loading) loading.style.display = 'flex';
-    
+
     callServer("deleteCostRow", [id])
       .then(res => {
         if (res === "Thành công") {

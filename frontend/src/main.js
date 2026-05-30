@@ -8,17 +8,17 @@ import {
   isGoogleConnected, 
   initLocalDatabase, 
   getLocalDashboard 
-} from './services/api.js';
+} from './services/api.js?v=1.1.2';
 
 import { initSortableSidebar, initResizeSidebar } from './components/sidebar.js';
-import { initCostModule } from './components/cost.js';
+import { initCostModule } from './components/cost.js?v=1.1.2';
 import { initVocabModule } from './components/vocabulary.js';
 import { initSrsModule } from './components/srs.js';
-import { initMemoriesModule } from './components/memories.js';
+import { initLinksModule } from './components/links.js?v=1.1.2';
 import { initPromptsModule } from './components/prompts.js';
-import { initGoalsModule } from './components/goals.js';
-import { initTasksModule } from './components/tasks.js';
-import { initHabitsModule } from './components/habits.js';
+import { initGoalsModule } from './components/goals.js?v=1.1.2';
+import { initTasksModule } from './components/tasks.js?v=1.1.2';
+import { initHabitsModule } from './components/habits.js?v=1.1.2';
 
 let serverSyncTimeout = null;
 
@@ -165,7 +165,7 @@ function renderDashboard(data) {
     initCostModule(data.cost, loadDataFromServer);
     initVocabModule(data.vocabulary, loadDataFromServer);
     initSrsModule(data.vocabulary, loadDataFromServer);
-    initMemoriesModule(data.memory, loadDataFromServer);
+    initLinksModule(data.link, loadDataFromServer);
     initPromptsModule(data.prompt, loadDataFromServer);
     initGoalsModule(data.goal, loadDataFromServer);
     initTasksModule(data.task, loadDataFromServer);
