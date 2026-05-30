@@ -1,0 +1,374 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #f4f6fa;
+  --bg-secondary: #ffffff;
+  --card-bg: rgba(255, 255, 255, 0.75);
+  --card-border: rgba(230, 235, 245, 0.85);
+  --card-border-hover: rgba(37, 99, 235, 0.25);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --accent-blue: #2563eb;
+  --accent-indigo: #2563eb;
+  --accent-purple: #9333ea;
+}
+
+body {
+  background-color: var(--bg-primary);
+  font-family: 'Outfit', sans-serif;
+  margin: 0;
+  color: var(--text-primary);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Ambient glows - extremely soft on light background */
+.ambient-glow-1 {
+  position: fixed;
+  top: -10%;
+  right: -5%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+  filter: blur(80px);
+}
+
+.ambient-glow-2 {
+  position: fixed;
+  bottom: -10%;
+  left: -5%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+  filter: blur(80px);
+}
+
+/* Custom thin scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+/* Premium glass card styles */
+.glass-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.01);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: var(--card-border-hover);
+  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+  transform: translateY(-2px);
+}
+
+/* Custom scrollbar for sidebar navigation list */
+#sidebar-nav-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+/* Giao diện Sidebar cao cấp mới - Hỗ trợ resize width linh hoạt */
+.sidebar {
+  width: 260px;
+  min-width: 78px;
+  max-width: 450px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  color: var(--text-primary);
+  z-index: 50;
+  transition: background 0.3s;
+}
+
+/* Thanh kéo để chỉnh kích thước menu */
+.resizer {
+  width: 6px;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: col-resize;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.resizer:hover,
+.resizer.resizing {
+  background: rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+}
+
+.main-content {
+  margin-left: 260px;
+  padding: 40px;
+  min-height: 100vh;
+  position: relative;
+  z-index: 2;
+  transition: padding 0.1s ease;
+}
+
+/* Nút điều hướng phong cách tinh tế */
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  color: #64748b;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: grab;
+  font-weight: 500;
+  position: relative;
+  margin: 4px 16px;
+  border-radius: 14px;
+  gap: 14px;
+  user-select: none;
+  border: 1px solid transparent;
+}
+
+.nav-link:active {
+  cursor: grabbing;
+}
+
+.nav-link i {
+  transition: all 0.3s ease;
+  color: #94a3b8;
+  font-size: 16px;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.01);
+}
+
+.nav-link:hover i {
+  color: var(--accent-indigo);
+  transform: scale(1.1);
+}
+
+/* Trạng thái Active */
+.nav-link.active {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+  color: var(--accent-indigo);
+  font-weight: 600;
+  border-color: rgba(37, 99, 235, 0.18);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+.nav-link.active i {
+  color: var(--accent-indigo);
+  filter: drop-shadow(0 0 3px rgba(37, 99, 235, 0.4));
+}
+
+.nav-link.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 25%;
+  height: 50%;
+  width: 4px;
+  background: var(--accent-indigo);
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 0 8px var(--accent-indigo);
+}
+
+.sortable-ghost {
+  opacity: 0.2;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.sortable-chosen {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.tab-content {
+  display: none;
+  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Khi sidebar thu gọn quá hẹp thì tự ẩn text đi để tránh vỡ chữ */
+.sidebar.collapsed span,
+.sidebar.collapsed .nav-brand-text {
+  display: none;
+}
+
+.sidebar.collapsed .nav-link {
+  margin: 8px auto;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  gap: 0;
+}
+
+.sidebar.collapsed .nav-link.active::before {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 78px !important;
+  }
+
+  .sidebar span,
+  .sidebar .nav-brand-text {
+    display: none;
+  }
+
+  .main-content {
+    margin-left: 78px !important;
+    padding: 20px;
+  }
+
+  .nav-link {
+    margin: 8px auto;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+  }
+
+  .nav-link.active::before {
+    display: none;
+  }
+
+  .resizer {
+    display: none;
+  }
+}
+
+/* Inputs styled premium for Light Mode */
+.edit-input,
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.9);
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.01);
+}
+
+select.form-input option {
+  background-color: #ffffff;
+  color: var(--text-primary);
+}
+
+.edit-input:focus,
+.form-input:focus {
+  border-color: var(--accent-indigo);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+  background-color: #ffffff;
+}
+
+/* Habits Checkbox: Premium Anki Task Style */
+.habit-checkbox {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+}
+
+.habit-checkbox:hover {
+  border-color: rgba(16, 185, 129, 0.6);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+}
+
+.habit-checkbox:checked {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #10b981;
+  transform: scale(1.08);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+.habit-checkbox:checked::after {
+  content: "\f00c";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  color: white;
+  font-size: 11px;
+  position: absolute;
+}
+
+.habit-checkbox:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Table headers styled beautifully */
+table th {
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Custom Anki card details (Light Mode Hologram) */
+.practice-deck-card {
+  background: radial-gradient(100% 100% at 50% 0%, rgba(37, 99, 235, 0.02) 0%, rgba(37, 99, 235, 0) 100%), #ffffff;
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-radius: 28px;
+}
+
+/* Ẩn phần cấu hình API khi Sidebar thu gọn */
+.sidebar.collapsed .sidebar-collapsed-hide {
+  display: none;
+}
