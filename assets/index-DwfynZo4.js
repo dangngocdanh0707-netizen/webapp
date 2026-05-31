@@ -3,7 +3,7 @@
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500 view-mode-${o}">${P(a.date)}</td>
         <td class="p-4 view-mode-${o}"><span class="px-2.5 py-1 rounded-md text-xs border ${l}">${s}</span></td>
         <td class="p-4 text-right font-bold text-slate-900 view-mode-${o}">${i.toLocaleString("vi-VN")}đ</td>
-        <td class="p-4 pl-8 font-semibold text-xs text-slate-500 view-mode-${o}">${w(a.note)||"-"}</td>
+        <td class="p-4 pl-6 font-semibold text-xs text-slate-500 view-mode-${o}">${w(a.note)||"-"}</td>
         
         <td class="p-4 pl-6 hidden edit-mode-${o}"><input type="date" id="edit-date-${o}" class="edit-input" value="${et(a.date)}"></td>
         <td class="p-4 hidden edit-mode-${o}">
@@ -14,7 +14,7 @@
           </select>
         </td>
         <td class="p-4 hidden edit-mode-${o}"><input type="number" id="edit-amount-${o}" class="edit-input text-right font-bold" value="${i}"></td>
-        <td class="p-4 pl-8 hidden edit-mode-${o}"><input type="text" id="edit-note-${o}" class="edit-input" value="${w(a.note)}"></td>
+        <td class="p-4 pl-6 hidden edit-mode-${o}"><input type="text" id="edit-note-${o}" class="edit-input" value="${w(a.note)}"></td>
         
         <td class="p-4 text-center">
           <div class="view-mode-${o} flex justify-center gap-2">
