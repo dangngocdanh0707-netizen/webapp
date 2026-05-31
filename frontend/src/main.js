@@ -60,6 +60,22 @@ async function initApp() {
   initLocalDatabase();
   initSortableSidebar();
   initResizeSidebar();
+
+  // Lắng nghe phím tắt 'H' để quay về Home (trừ lúc nhập liệu)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'h' || e.key === 'H') {
+      const activeEl = document.activeElement;
+      if (activeEl) {
+        const tagName = activeEl.tagName.toLowerCase();
+        if (tagName === 'input' || tagName === 'textarea' || tagName === 'select' || activeEl.isContentEditable) {
+          return; // Đang nhập liệu thì gõ chữ 'H' bình thường
+        }
+      }
+      if (typeof window.switchTab === 'function') {
+        window.switchTab('home-tab');
+      }
+    }
+  });
   
   // Khởi tạo các SDK Google API/GIS
   const initialized = await initGoogleAuth();
