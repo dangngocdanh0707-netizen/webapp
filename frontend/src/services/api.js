@@ -36,14 +36,14 @@ export function clearCredentials() {
   localStorage.removeItem(KEY_SPREADSHEET_ID);
   localStorage.removeItem(KEY_API_KEY);
   localStorage.removeItem(KEY_CLIENT_ID);
-  sessionStorage.removeItem("GOOGLE_ACCESS_TOKEN");
+  localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
 }
 
 // Kiểm tra xem đã kết nối thành công và có token hợp lệ chưa
 export function isGoogleConnected() {
   const creds = getCredentials();
   const hasCreds = creds.spreadsheetId && creds.clientId && creds.apiKey;
-  const hasToken = sessionStorage.getItem("GOOGLE_ACCESS_TOKEN") !== null;
+  const hasToken = localStorage.getItem("GOOGLE_ACCESS_TOKEN") !== null;
   return !!(hasCreds && hasToken);
 }
 
@@ -69,8 +69,8 @@ export function initGoogleAuth() {
             gapiInitialized = true;
             console.log("[api.js] Google API Client (GAPI) đã khởi tạo.");
 
-            // Phục hồi token từ sessionStorage nếu có
-            const cachedToken = sessionStorage.getItem("GOOGLE_ACCESS_TOKEN");
+            // Phục hồi token từ localStorage nếu có
+            const cachedToken = localStorage.getItem("GOOGLE_ACCESS_TOKEN");
             if (cachedToken) {
               gapi.client.setToken(JSON.parse(cachedToken));
             }
@@ -86,7 +86,7 @@ export function initGoogleAuth() {
                   return;
                 }
                 console.log("[api.js] Nhận token thành công:", tokenResponse);
-                sessionStorage.setItem("GOOGLE_ACCESS_TOKEN", JSON.stringify(tokenResponse));
+                localStorage.setItem("GOOGLE_ACCESS_TOKEN", JSON.stringify(tokenResponse));
                 gapi.client.setToken(tokenResponse);
                 
                 // Tải lại trang để đồng bộ mới dữ liệu qua Google Sheets
@@ -133,7 +133,7 @@ export function signOutFromGoogle() {
     }
     gapi.client.setToken(null);
   }
-  sessionStorage.removeItem("GOOGLE_ACCESS_TOKEN");
+  localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
   resolvedTabsCache = {}; // Xóa cache ánh xạ tab
   alert("Đã ngắt kết nối Google Sheets thành công!");
   window.location.reload();
@@ -344,7 +344,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
 export function callServer(methodName, args) {
   return new Promise(async (resolve, reject) => {
     const creds = getCredentials();
-    const hasToken = sessionStorage.getItem("GOOGLE_ACCESS_TOKEN") !== null;
+    const hasToken = localStorage.getItem("GOOGLE_ACCESS_TOKEN") !== null;
 
     // CHẾ ĐỘ OFFLINE FALLBACK: Không cấu hình credentials hoặc không đăng nhập
     if (!creds.spreadsheetId || !hasToken || !gapiInitialized) {
@@ -811,7 +811,7 @@ export function callServer(methodName, args) {
       console.error(`[Google Sheets API Error] Thất bại tại ${methodName}:`, err);
       // Nếu lỗi do hết hạn token, báo người dùng
       if (err.status === 401) {
-        sessionStorage.removeItem("GOOGLE_ACCESS_TOKEN");
+        localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
         reject(new Error("Mã xác thực Google đã hết hạn hoặc không hợp lệ. Vui lòng kết nối lại trong thanh Sidebar."));
       } else {
         reject(err);

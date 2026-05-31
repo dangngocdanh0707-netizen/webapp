@@ -8,7 +8,7 @@ import {
   isGoogleConnected, 
   initLocalDatabase, 
   getLocalDashboard 
-} from './services/api.js?v=1.1.3';
+} from './services/api.js?v=1.1.4';
 
 import { initSortableSidebar, initResizeSidebar } from './components/sidebar.js?v=1.1.4';
 import { initCostModule } from './components/cost.js?v=1.1.3';
