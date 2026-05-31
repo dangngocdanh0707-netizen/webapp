@@ -109,11 +109,7 @@ export function buildTable(filterValue) {
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500 view-mode-${id}">${formatDateView(item.date)}</td>
         <td class="p-4 view-mode-${id}"><span class="px-2.5 py-1 rounded-md text-xs border ${badgeStyle}">${cat}</span></td>
         <td class="p-4 text-right font-bold text-slate-900 view-mode-${id}">${amount.toLocaleString('vi-VN')}đ</td>
-        <td class="p-4 pl-8 view-mode-${id}">
-          <span class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50/70 border border-slate-200/60 shadow-3xs inline-block max-w-[280px] truncate" title="${escapeHTML(item.note)}">
-            ${escapeHTML(item.note) || '<span class="text-slate-350 italic font-normal">None</span>'}
-          </span>
-        </td>
+        <td class="p-4 pl-8 font-semibold text-xs text-slate-500 view-mode-${id}">${escapeHTML(item.note) || '-'}</td>
         
         <td class="p-4 pl-6 hidden edit-mode-${id}"><input type="date" id="edit-date-${id}" class="edit-input" value="${formatDateInput(item.date)}"></td>
         <td class="p-4 hidden edit-mode-${id}">
