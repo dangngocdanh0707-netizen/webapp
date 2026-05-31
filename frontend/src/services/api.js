@@ -88,7 +88,7 @@ export function initGoogleAuth() {
                 console.log("[api.js] Nhận token thành công:", tokenResponse);
                 localStorage.setItem("GOOGLE_ACCESS_TOKEN", JSON.stringify(tokenResponse));
                 gapi.client.setToken(tokenResponse);
-                
+
                 // Tải lại trang để đồng bộ mới dữ liệu qua Google Sheets
                 window.location.reload();
               }
@@ -162,10 +162,10 @@ async function resolveAllTabs(spreadsheetId) {
     const response = await gapi.client.sheets.spreadsheets.get({ spreadsheetId });
     const sheets = response.result.sheets || [];
     const existingTitles = sheets.map(s => s.properties.title);
-    
+
     const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task'];
     const mappings = {};
-    
+
     // Bước 1: Khớp trực tiếp không phân biệt chữ hoa thường (Case-insensitive)
     targetTabs.forEach(target => {
       const match = existingTitles.find(t => t.toLowerCase() === target.toLowerCase());
@@ -173,39 +173,39 @@ async function resolveAllTabs(spreadsheetId) {
         mappings[target] = match;
       }
     });
-    
+
     // Bước 2: Với các tab chưa khớp trực tiếp, tải dòng đầu (Header) của các sheet còn lại để phân tích cột
     const missingTargets = targetTabs.filter(t => !mappings[t]);
-    
+
     if (missingTargets.length > 0 && existingTitles.length > 0) {
       const ranges = existingTitles.map(title => `${title}!A1:J1`);
       const headersResponse = await gapi.client.sheets.spreadsheets.values.batchGet({
         spreadsheetId,
         ranges
       });
-      
+
       const valueRanges = headersResponse.result.valueRanges || [];
       const sheetHeaders = {};
-      
+
       existingTitles.forEach((title, idx) => {
         const vr = valueRanges[idx];
         const row = (vr && vr.values && vr.values[0]) ? vr.values[0] : [];
         sheetHeaders[title] = row.map(h => h.toString().toLowerCase().trim());
       });
-      
+
       const unmappedSheets = existingTitles.filter(title => !Object.values(mappings).includes(title));
-      
+
       missingTargets.forEach(target => {
         let bestMatch = null;
-        
+
         for (const title of unmappedSheets) {
           const headers = sheetHeaders[title] || [];
-          
+
           if (target === 'cost') {
             const hasDate = headers.includes('date') || headers.includes('ngày') || headers.some(h => h.includes('date') || h.includes('ngày'));
             const hasAmount = headers.includes('amount') || headers.includes('số tiền') || headers.includes('tiền') || headers.some(h => h.includes('amount') || h.includes('tiền'));
             const hasCategory = headers.includes('category') || headers.includes('danh mục') || headers.some(h => h.includes('category') || h.includes('danh mục'));
-            
+
             if (hasAmount && (hasDate || hasCategory)) {
               bestMatch = title;
               break;
@@ -253,7 +253,7 @@ async function resolveAllTabs(spreadsheetId) {
             }
           }
         }
-        
+
         if (bestMatch) {
           mappings[target] = bestMatch;
           const index = unmappedSheets.indexOf(bestMatch);
@@ -263,14 +263,14 @@ async function resolveAllTabs(spreadsheetId) {
         }
       });
     }
-    
+
     // Bước 3: Đặt mặc định nếu vẫn không tìm thấy
     targetTabs.forEach(target => {
       if (!mappings[target]) {
         mappings[target] = target;
       }
     });
-    
+
     resolvedTabsCache = mappings;
     console.log("[api.js] Tự động khớp các Sheet tab thành công:", resolvedTabsCache);
     return resolvedTabsCache;
@@ -294,7 +294,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
   const response = await gapi.client.sheets.spreadsheets.get({ spreadsheetId });
   const existingTitles = response.result.sheets.map(s => s.properties.title);
   const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task'];
-  
+
   const missingTabs = targetTabs.filter(target => {
     const mappedName = mappings[target];
     return !existingTitles.some(et => et.toLowerCase() === mappedName.toLowerCase());
@@ -332,7 +332,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
         }
       });
     }
-    
+
     // Xóa cache và khớp lại để lấy tên tab mới tạo
     resolvedTabsCache = {};
     await resolveAllTabs(spreadsheetId);
@@ -364,7 +364,7 @@ export function callServer(methodName, args) {
     // CHẾ ĐỘ ONLINE: Đọc/Ghi trực tiếp Google Sheets API v4
     try {
       const spreadsheetId = creds.spreadsheetId;
-      
+
       // Phân giải tên các tab thực tế bằng bộ máy tự động phát hiện cột (Thông minh & Hiệu suất cao)
       const mappings = await resolveAllTabs(spreadsheetId);
       const costTab = mappings['cost'];
@@ -865,11 +865,11 @@ export function getLocalDashboard() {
 // Xử lý các nghiệp vụ Ghi/Đọc Cục bộ (Local Database CRUD transactions)
 function handleLocalTransaction(method, args) {
   initLocalDatabase();
-  
+
   if (method === "getAllDashboardData") {
     return getLocalDashboard();
   }
-  
+
   // 1. Nghiệp vụ CHI TIÊU (Expenses CRUD)
   if (method === "insertCostRow") {
     const [date, category, amount, note] = args;
@@ -879,7 +879,7 @@ function handleLocalTransaction(method, args) {
     saveLocalData("cost", data);
     return "Thành công";
   }
-  
+
   if (method === "updateCostRow") {
     const [rowNumber, date, category, amount, note] = args;
     const data = getLocalData("cost");
@@ -890,7 +890,7 @@ function handleLocalTransaction(method, args) {
     }
     return "Thành công";
   }
-  
+
   if (method === "deleteCostRow") {
     const [rowNumber] = args;
     let data = getLocalData("cost");
@@ -898,7 +898,7 @@ function handleLocalTransaction(method, args) {
     saveLocalData("cost", data);
     return "Thành công";
   }
-  
+
   // 2. Nghiệp vụ TỪ VỰNG (Vocabulary & Anki SRS)
   if (method === "insertVocabRow") {
     const [content] = args;
@@ -908,7 +908,7 @@ function handleLocalTransaction(method, args) {
     saveLocalData("vocabulary", data);
     return "Thành công";
   }
-  
+
   if (method === "updateVocabRow") {
     const [rowNumber, content, category, topic, level, meaning] = args;
     const data = getLocalData("vocabulary");
@@ -919,7 +919,7 @@ function handleLocalTransaction(method, args) {
     }
     return "Thành công";
   }
-  
+
   if (method === "deleteVocabRow") {
     const [rowNumber] = args;
     let data = getLocalData("vocabulary");
@@ -927,7 +927,7 @@ function handleLocalTransaction(method, args) {
     saveLocalData("vocabulary", data);
     return "Thành công";
   }
-  
+
   if (method === "logVocabReviewAction") {
     const [rowNumber, currentStatus, action] = args;
     const data = getLocalData("vocabulary");
@@ -972,7 +972,7 @@ function handleLocalTransaction(method, args) {
     }
     return "Thành công";
   }
-  
+
   // 3. Nghiệp vụ THÓI QUEN (Habits)
   if (method === "updateHabitStatusRow") {
     const [rowNumber, isChecked] = args;
@@ -984,7 +984,7 @@ function handleLocalTransaction(method, args) {
     }
     return "Thành công";
   }
-  
+
   // 4. Nghiệp vụ LIÊN KẾT (Links)
   if (method === "insertLinkRow") {
     const [title, category, content] = args;
@@ -994,7 +994,7 @@ function handleLocalTransaction(method, args) {
     saveLocalData("link", data);
     return "Thành công";
   }
-  
+
   if (method === "updateLinkRow") {
     const [rowNumber, title, category, content] = args;
     const data = getLocalData("link");
@@ -1005,7 +1005,7 @@ function handleLocalTransaction(method, args) {
     }
     return "Thành công";
   }
-  
+
   if (method === "deleteLinkRow") {
     const [rowNumber] = args;
     let data = getLocalData("link");
@@ -1013,7 +1013,7 @@ function handleLocalTransaction(method, args) {
     saveLocalData("link", data);
     return "Thành công";
   }
-  
+
   // 5. Nghiệp vụ PROMPT AI (Prompts)
   if (method === "insertPromptRow") {
     const [title, content, category] = args;
@@ -1023,7 +1023,7 @@ function handleLocalTransaction(method, args) {
     saveLocalData("prompt", data);
     return "Thành công";
   }
-  
+
   if (method === "updatePromptRow") {
     const [rowNumber, title, content, category] = args;
     const data = getLocalData("prompt");
@@ -1034,7 +1034,7 @@ function handleLocalTransaction(method, args) {
     }
     return "Thành công";
   }
-  
+
   if (method === "deletePromptRow") {
     const [rowNumber] = args;
     let data = getLocalData("prompt");
@@ -1042,7 +1042,7 @@ function handleLocalTransaction(method, args) {
     saveLocalData("prompt", data);
     return "Thành công";
   }
-  
+
   // 6. Nghiệp vụ MỤC TIÊU (Goals obj)
   if (method === "insertGoalRow") {
     const [goal_name, start_date, end_date, current_value, target_value] = args;
@@ -1052,7 +1052,7 @@ function handleLocalTransaction(method, args) {
     saveLocalData("goal", data);
     return "Thành công";
   }
-  
+
   if (method === "updateGoalRow") {
     const [rowNumber, goal_name, start_date, end_date, current_value, target_value] = args;
     const data = getLocalData("goal");
@@ -1063,7 +1063,7 @@ function handleLocalTransaction(method, args) {
     }
     return "Thành công";
   }
-  
+
   if (method === "deleteGoalRow") {
     const [rowNumber] = args;
     let data = getLocalData("goal");
@@ -1071,7 +1071,7 @@ function handleLocalTransaction(method, args) {
     saveLocalData("goal", data);
     return "Thành công";
   }
-  
+
   // 7. Nghiệp vụ VIỆC CẦN LÀM (Tasks checklist)
   if (method === "insertTaskRow") {
     const [date, taskDesc, status] = args;
@@ -1081,7 +1081,7 @@ function handleLocalTransaction(method, args) {
     saveLocalData("task", data);
     return "Thành công";
   }
-  
+
   if (method === "updateTaskRow") {
     const [rowNumber, date, taskDesc, status] = args;
     const data = getLocalData("task");
@@ -1092,7 +1092,7 @@ function handleLocalTransaction(method, args) {
     }
     return "Thành công";
   }
-  
+
   if (method === "deleteTaskRow") {
     const [rowNumber] = args;
     let data = getLocalData("task");
@@ -1100,7 +1100,7 @@ function handleLocalTransaction(method, args) {
     saveLocalData("task", data);
     return "Thành công";
   }
-  
+
   if (method === "updateTaskStatusRow") {
     const [rowNumber, isChecked] = args;
     const data = getLocalData("task");
@@ -1111,7 +1111,7 @@ function handleLocalTransaction(method, args) {
     }
     return "Thành công";
   }
-  
+
   throw new Error(`[Offline Store] Unknown transaction method name: ${method}`);
 }
 
@@ -1136,7 +1136,7 @@ export function escapeHTML(str) {
 export function formatDateView(dateStr) {
   if (!dateStr) return '-';
   let str = dateStr.toString().trim();
-  
+
   // Xử lý định dạng yyyy-MM-dd hoặc tương tự có dấu gạch ngang -
   if (str.includes('-')) {
     let parts = str.split('-');
@@ -1150,7 +1150,7 @@ export function formatDateView(dateStr) {
       }
     }
   }
-  
+
   // Xử lý định dạng có dấu gạch chéo / (Ví dụ: dd/MM/yyyy hoặc MM/dd/yyyy hoặc yyyy/MM/dd)
   if (str.includes('/')) {
     let parts = str.split('/');
@@ -1174,7 +1174,7 @@ export function formatDateView(dateStr) {
       }
     }
   }
-  
+
   // Fallback bằng cách parse đối tượng Date mặc định của Javascript
   const ts = Date.parse(str);
   if (!isNaN(ts)) {
@@ -1184,7 +1184,7 @@ export function formatDateView(dateStr) {
     const year = d.getFullYear();
     return `${day}/${month}/${year}`;
   }
-  
+
   return str;
 }
 
@@ -1192,7 +1192,7 @@ export function formatDateView(dateStr) {
 export function formatDateInput(dateStr) {
   if (!dateStr) return '';
   let str = dateStr.toString().trim();
-  
+
   if (str.includes('/')) {
     let parts = str.split('/');
     if (parts.length === 3) {
@@ -1203,7 +1203,7 @@ export function formatDateInput(dateStr) {
         let d = parts[0].padStart(2, '0');
         let m = parts[1].padStart(2, '0');
         let y = parts[2];
-        
+
         if (p1 > 12) {
           // MM/dd/yyyy (US) -> d và m hoán đổi
           d = parts[1].padStart(2, '0');
@@ -1216,7 +1216,7 @@ export function formatDateInput(dateStr) {
       }
     }
   }
-  
+
   if (str.includes('-')) {
     let parts = str.split('-');
     if (parts.length === 3) {
@@ -1228,13 +1228,13 @@ export function formatDateInput(dateStr) {
       return `${y}-${m}-${d}`;
     }
   }
-  
+
   const ts = Date.parse(str);
   if (!isNaN(ts)) {
     const d = new Date(ts);
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   }
-  
+
   return '';
 }
 
@@ -1244,7 +1244,7 @@ export function formatDateInput(dateStr) {
 export function formatDateDb(dateStr) {
   if (!dateStr) return '';
   let str = dateStr.toString().trim();
-  
+
   if (str.includes('-')) {
     let parts = str.split('-');
     if (parts.length === 3) {
@@ -1259,7 +1259,7 @@ export function formatDateDb(dateStr) {
       return `${y}-${m}-${d}`;
     }
   }
-  
+
   if (str.includes('/')) {
     let parts = str.split('/');
     if (parts.length === 3) {
@@ -1270,7 +1270,7 @@ export function formatDateDb(dateStr) {
         let d = parts[0].padStart(2, '0');
         let m = parts[1].padStart(2, '0');
         let y = parts[2];
-        
+
         if (p1 > 12) {
           // MM/dd/yyyy (US) -> d và m hoán đổi
           d = parts[1].padStart(2, '0');
@@ -1283,13 +1283,13 @@ export function formatDateDb(dateStr) {
       }
     }
   }
-  
+
   const ts = Date.parse(str);
   if (!isNaN(ts)) {
     const d = new Date(ts);
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   }
-  
+
   return str;
 }
 

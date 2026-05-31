@@ -7,6 +7,9 @@ export function initTasksModule(data, onSync) {
   allTaskData = data || [];
   onSyncNeeded = onSync;
 
+  const totalTasksEl = document.getElementById('total-tasks');
+  if (totalTasksEl) totalTasksEl.innerText = allTaskData.length;
+
   // Set default date input to today's date
   const dateInput = document.getElementById('ins-task-date');
   if (dateInput) {
@@ -50,7 +53,7 @@ export function buildTaskTable() {
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="task-row-${id}" class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500 task-view-${id}">${formatDateView(dateStr)}</td>
-        <td class="p-4 font-semibold text-slate-800 task-view-${id} ${isDone ? 'line-through text-slate-400 font-medium' : ''}">${escapeHTML(taskText)}</td>
+        <td class="p-4 font-semibold text-slate-800 task-view-${id} ${isDone ? 'text-slate-400 font-medium' : ''}">${escapeHTML(taskText)}</td>
         <td class="p-4 text-center">
           <label class="inline-flex items-center justify-center gap-3 cursor-pointer select-none">
             <input type="checkbox" id="task-chk-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="toggleTaskStatusDirectly(${id}, this)">
