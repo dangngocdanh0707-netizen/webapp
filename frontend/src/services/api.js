@@ -1125,3 +1125,170 @@ export function escapeHTML(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+// ==========================================
+// HỆ THỐNG XỬ LÝ DATE CHUẨN HÓA TOÀN CẦU (Google Sheets Date & UI Sync)
+// Đảm bảo lưu đúng định dạng Date chuẩn trên Google Sheet để dùng các tính năng lọc/định dạng của Google Sheet,
+// đồng thời hiển thị đúng định dạng dd/MM/yyyy và chỉnh sửa bằng thẻ <input type="date"> chuẩn.
+// ==========================================
+
+// 1. Hiển thị ngày dạng dd/MM/yyyy trên giao diện web (bất kể dữ liệu gốc từ Google Sheets là gì)
+export function formatDateView(dateStr) {
+  if (!dateStr) return '-';
+  let str = dateStr.toString().trim();
+  
+  // Xử lý định dạng yyyy-MM-dd hoặc tương tự có dấu gạch ngang -
+  if (str.includes('-')) {
+    let parts = str.split('-');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        // yyyy-MM-dd -> dd/MM/yyyy
+        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+      } else if (parts[2].length === 4) {
+        // dd-MM-yyyy -> dd/MM/yyyy
+        return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+      }
+    }
+  }
+  
+  // Xử lý định dạng có dấu gạch chéo / (Ví dụ: dd/MM/yyyy hoặc MM/dd/yyyy hoặc yyyy/MM/dd)
+  if (str.includes('/')) {
+    let parts = str.split('/');
+    if (parts.length === 3) {
+      if (parts[2].length === 4) {
+        // Có thể là dd/MM/yyyy hoặc MM/dd/yyyy
+        let p0 = parseInt(parts[0], 10);
+        let p1 = parseInt(parts[1], 10);
+        if (p0 > 12) {
+          // p0 > 12 chắc chắn là ngày -> dd/MM/yyyy
+          return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+        } else if (p1 > 12) {
+          // p1 > 12 chắc chắn là ngày (định dạng US: MM/dd/yyyy) -> chuyển sang dd/MM/yyyy
+          return `${parts[1].padStart(2, '0')}/${parts[0].padStart(2, '0')}/${parts[2]}`;
+        }
+        // Trường hợp còn lại (cả 2 đều <= 12), mặc định xem là dd/MM/yyyy
+        return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+      } else if (parts[0].length === 4) {
+        // yyyy/MM/dd -> dd/MM/yyyy
+        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+      }
+    }
+  }
+  
+  // Fallback bằng cách parse đối tượng Date mặc định của Javascript
+  const ts = Date.parse(str);
+  if (!isNaN(ts)) {
+    const d = new Date(ts);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+  
+  return str;
+}
+
+// 2. Chuyển đổi định dạng ngày lưu trữ sang dạng yyyy-MM-dd để gán vào ô nhập liệu <input type="date">
+export function formatDateInput(dateStr) {
+  if (!dateStr) return '';
+  let str = dateStr.toString().trim();
+  
+  if (str.includes('/')) {
+    let parts = str.split('/');
+    if (parts.length === 3) {
+      if (parts[2].length === 4) {
+        // dd/MM/yyyy hoặc MM/dd/yyyy -> yyyy-MM-dd
+        let p0 = parseInt(parts[0], 10);
+        let p1 = parseInt(parts[1], 10);
+        let d = parts[0].padStart(2, '0');
+        let m = parts[1].padStart(2, '0');
+        let y = parts[2];
+        
+        if (p1 > 12) {
+          // MM/dd/yyyy (US) -> d và m hoán đổi
+          d = parts[1].padStart(2, '0');
+          m = parts[0].padStart(2, '0');
+        }
+        return `${y}-${m}-${d}`;
+      } else if (parts[0].length === 4) {
+        // yyyy/MM/dd -> yyyy-MM-dd
+        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+      }
+    }
+  }
+  
+  if (str.includes('-')) {
+    let parts = str.split('-');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) return str; // Đã là yyyy-MM-dd
+      // dd-MM-yyyy -> yyyy-MM-dd
+      let d = parts[0].padStart(2, '0');
+      let m = parts[1].padStart(2, '0');
+      let y = parts[2];
+      return `${y}-${m}-${d}`;
+    }
+  }
+  
+  const ts = Date.parse(str);
+  if (!isNaN(ts)) {
+    const d = new Date(ts);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  
+  return '';
+}
+
+// 3. Chuẩn hóa ngày trước khi ghi xuống Google Sheets thành dạng yyyy-MM-dd.
+// Định dạng ISO yyyy-MM-dd kết hợp với option USER_ENTERED sẽ được Google Sheet tự động nhận diện
+// thành kiểu dữ liệu Date thực thụ bất kể Locale của trang tính (US, UK, VN v.v.).
+export function formatDateDb(dateStr) {
+  if (!dateStr) return '';
+  let str = dateStr.toString().trim();
+  
+  if (str.includes('-')) {
+    let parts = str.split('-');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        // Đã là yyyy-MM-dd chuẩn, gửi thẳng đi để Google Sheets nhận diện Date
+        return str;
+      }
+      // dd-MM-yyyy -> yyyy-MM-dd
+      let d = parts[0].padStart(2, '0');
+      let m = parts[1].padStart(2, '0');
+      let y = parts[2];
+      return `${y}-${m}-${d}`;
+    }
+  }
+  
+  if (str.includes('/')) {
+    let parts = str.split('/');
+    if (parts.length === 3) {
+      if (parts[2].length === 4) {
+        // dd/MM/yyyy hoặc MM/dd/yyyy -> yyyy-MM-dd
+        let p0 = parseInt(parts[0], 10);
+        let p1 = parseInt(parts[1], 10);
+        let d = parts[0].padStart(2, '0');
+        let m = parts[1].padStart(2, '0');
+        let y = parts[2];
+        
+        if (p1 > 12) {
+          // MM/dd/yyyy (US) -> d và m hoán đổi
+          d = parts[1].padStart(2, '0');
+          m = parts[0].padStart(2, '0');
+        }
+        return `${y}-${m}-${d}`;
+      } else if (parts[0].length === 4) {
+        // yyyy/MM/dd -> yyyy-MM-dd
+        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+      }
+    }
+  }
+  
+  const ts = Date.parse(str);
+  if (!isNaN(ts)) {
+    const d = new Date(ts);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  
+  return str;
+}

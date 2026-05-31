@@ -1,4 +1,4 @@
-import { callServer, escapeHTML } from '../services/api.js';
+import { callServer, escapeHTML, formatDateView, formatDateInput, formatDateDb } from '../services/api.js';
 
 let allTaskData = [];
 let onSyncNeeded = null;
@@ -98,59 +98,6 @@ function parseDateToTimestamp(dateStr) {
   return isNaN(ts) ? 0 : ts;
 }
 
-function formatDateView(dateStr) {
-  if (!dateStr) return '-';
-  let cleanStr = dateStr.toString().trim();
-  if (cleanStr.includes('/')) return cleanStr;
-  let parts = cleanStr.split('-');
-  if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
-  return cleanStr;
-}
-
-function formatDateInput(dateStr) {
-  if (!dateStr) return '';
-  let str = dateStr.toString().trim();
-  if (str.includes('/')) {
-    let parts = str.split('/');
-    if (parts.length === 3) {
-      let d = parts[0].padStart(2, '0');
-      let m = parts[1].padStart(2, '0');
-      let y = parts[2];
-      return `${y}-${m}-${d}`;
-    }
-  }
-  if (str.includes('-')) {
-    let parts = str.split('-');
-    if (parts.length === 3) {
-      if (parts[0].length === 4) return str;
-      let d = parts[0].padStart(2, '0');
-      let m = parts[1].padStart(2, '0');
-      let y = parts[2];
-      return `${y}-${m}-${d}`;
-    }
-  }
-  const ts = Date.parse(str);
-  if (!isNaN(ts)) {
-    const d = new Date(ts);
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  }
-  return '';
-}
-
-function formatDateDb(dateStr) {
-  if (!dateStr) return '';
-  let str = dateStr.toString().trim();
-  if (str.includes('-')) {
-    let parts = str.split('-');
-    if (parts.length === 3) {
-      if (parts[0].length === 4) {
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
-      }
-      return `${parts[0]}/${parts[1]}/${parts[2]}`;
-    }
-  }
-  return str;
-}
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 

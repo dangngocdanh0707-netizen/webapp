@@ -1,4 +1,4 @@
-import { callServer } from '../services/api.js';
+import { callServer, formatDateView } from '../services/api.js';
 import { renderHabitLine, updateHabitChartData } from './charts.js';
 
 let allHabitData = [];
@@ -157,14 +157,6 @@ function parseDateToTimestamp(dateStr) {
   return isNaN(ts) ? 0 : ts;
 }
 
-function formatDateView(dateStr) {
-  if (!dateStr) return '-';
-  let cleanStr = dateStr.toString().trim();
-  if (cleanStr.includes('/')) return cleanStr;
-  let parts = cleanStr.split('-');
-  if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
-  return cleanStr;
-}
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 

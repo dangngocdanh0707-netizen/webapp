@@ -1,4 +1,4 @@
-import { callServer, escapeHTML } from '../services/api.js';
+import { callServer, escapeHTML, formatDateView, formatDateInput, formatDateDb } from '../services/api.js';
 import { renderExpensePie, renderExpenseBar } from './charts.js';
 
 let allCostData = [];
@@ -109,7 +109,11 @@ export function buildTable(filterValue) {
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500 view-mode-${id}">${formatDateView(item.date)}</td>
         <td class="p-4 view-mode-${id}"><span class="px-2.5 py-1 rounded-md text-xs border ${badgeStyle}">${cat}</span></td>
         <td class="p-4 text-right font-bold text-slate-900 view-mode-${id}">${amount.toLocaleString('vi-VN')}đ</td>
-        <td class="p-4 pl-8 text-slate-700 font-medium view-mode-${id}">${escapeHTML(item.note) || '-'}</td>
+        <td class="p-4 pl-8 view-mode-${id}">
+          <span class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50/70 border border-slate-200/60 shadow-3xs inline-block max-w-[280px] truncate" title="${escapeHTML(item.note)}">
+            ${escapeHTML(item.note) || '<span class="text-slate-350 italic font-normal">None</span>'}
+          </span>
+        </td>
         
         <td class="p-4 pl-6 hidden edit-mode-${id}"><input type="date" id="edit-date-${id}" class="edit-input" value="${formatDateInput(item.date)}"></td>
         <td class="p-4 hidden edit-mode-${id}">
@@ -169,59 +173,6 @@ function parseDateToTimestamp(dateStr) {
   return isNaN(ts) ? 0 : ts;
 }
 
-function formatDateView(dateStr) {
-  if (!dateStr) return '-';
-  let cleanStr = dateStr.toString().trim();
-  if (cleanStr.includes('/')) return cleanStr;
-  let parts = cleanStr.split('-');
-  if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
-  return cleanStr;
-}
-
-function formatDateInput(dateStr) {
-  if (!dateStr) return '';
-  let str = dateStr.toString().trim();
-  if (str.includes('/')) {
-    let parts = str.split('/');
-    if (parts.length === 3) {
-      let d = parts[0].padStart(2, '0');
-      let m = parts[1].padStart(2, '0');
-      let y = parts[2];
-      return `${y}-${m}-${d}`;
-    }
-  }
-  if (str.includes('-')) {
-    let parts = str.split('-');
-    if (parts.length === 3) {
-      if (parts[0].length === 4) return str;
-      let d = parts[0].padStart(2, '0');
-      let m = parts[1].padStart(2, '0');
-      let y = parts[2];
-      return `${y}-${m}-${d}`;
-    }
-  }
-  const ts = Date.parse(str);
-  if (!isNaN(ts)) {
-    const d = new Date(ts);
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  }
-  return '';
-}
-
-function formatDateDb(dateStr) {
-  if (!dateStr) return '';
-  let str = dateStr.toString().trim();
-  if (str.includes('-')) {
-    let parts = str.split('-');
-    if (parts.length === 3) {
-      if (parts[0].length === 4) {
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
-      }
-      return `${parts[0]}/${parts[1]}/${parts[2]}`;
-    }
-  }
-  return str;
-}
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
