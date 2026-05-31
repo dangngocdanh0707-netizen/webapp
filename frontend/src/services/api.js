@@ -477,6 +477,7 @@ export function callServer(methodName, args) {
           spreadsheetId,
           range: `${costTab}!A:D`,
           valueInputOption: 'USER_ENTERED',
+          insertDataOption: 'OVERWRITE',
           resource: { values: [[date, category, Number(amount) || 0, note]] }
         });
         resolve("Thành công");
@@ -522,6 +523,7 @@ export function callServer(methodName, args) {
           spreadsheetId,
           range: `${vocabTab}!A:I`,
           valueInputOption: 'USER_ENTERED',
+          insertDataOption: 'OVERWRITE',
           resource: { values: [[content, "", "", "", "", "New", "", 0, 2.5]] }
         });
         resolve("Thành công");
@@ -630,6 +632,7 @@ export function callServer(methodName, args) {
           spreadsheetId,
           range: `${linkTab}!A:C`,
           valueInputOption: 'USER_ENTERED',
+          insertDataOption: 'OVERWRITE',
           resource: { values: [[title, content, category]] }
         });
         resolve("Thành công");
@@ -675,6 +678,7 @@ export function callServer(methodName, args) {
           spreadsheetId,
           range: `${promptTab}!A:C`,
           valueInputOption: 'USER_ENTERED',
+          insertDataOption: 'OVERWRITE',
           resource: { values: [[title, content, category]] }
         });
         resolve("Thành công");
@@ -720,6 +724,7 @@ export function callServer(methodName, args) {
           spreadsheetId,
           range: `${goalTab}!A:E`,
           valueInputOption: 'USER_ENTERED',
+          insertDataOption: 'OVERWRITE',
           resource: { values: [[goal_name, start_date, end_date, Number(current_value) || 0, Number(target_value) || 0]] }
         });
         resolve("Thành công");
@@ -765,6 +770,7 @@ export function callServer(methodName, args) {
           spreadsheetId,
           range: `${taskTab}!A:C`,
           valueInputOption: 'USER_ENTERED',
+          insertDataOption: 'OVERWRITE',
           resource: { values: [[date, taskDesc, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
         });
         resolve("Thành công");
