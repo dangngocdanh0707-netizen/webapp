@@ -1,5 +1,7 @@
 import { callServer, escapeHTML, formatDateView, formatDateInput, formatDateDb, parseDateToTimestamp } from '../services/api.js';
 import { renderExpensePie, renderExpenseBar } from './charts.js';
+import { showToast } from '../services/toast.js';
+
 
 let allCostData = [];
 let onSyncNeeded = null;
@@ -169,7 +171,7 @@ window.addCostRow = function () {
   let note = document.getElementById('ins-cost-note').value;
 
   if (!date || !amount) {
-    alert("Date and Amount fields are mandatory!");
+    showToast("Vui lòng điền đầy đủ Ngày và Số tiền chi tiêu!", "warning");
     return;
   }
 
@@ -181,14 +183,15 @@ window.addCostRow = function () {
       if (res === "Thành công") {
         document.getElementById('ins-cost-amount').value = "";
         document.getElementById('ins-cost-note').value = "";
+        showToast("Đã thêm khoản chi tiêu mới thành công!", "success");
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        alert(res);
+        showToast("Lỗi đồng bộ: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      alert(`API Error: ${err.message}`);
+      showToast("Lỗi kết nối: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
@@ -206,34 +209,36 @@ window.saveRow = function (id) {
   callServer("updateCostRow", [id, date, cat, amount, note])
     .then(res => {
       if (res === "Thành công") {
+        showToast("Đã cập nhật khoản chi tiêu thành công!", "success");
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        alert(res);
+        showToast("Lỗi cập nhật: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      alert(`API Error: ${err.message}`);
+      showToast("Lỗi kết nối: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
 
 window.deleteRow = function (id) {
-  if (confirm("Wipe this record from sheet database?")) {
+  if (confirm("Bạn có chắc chắn muốn xóa khoản chi tiêu này khỏi cơ sở dữ liệu?")) {
     const loading = document.getElementById('loading');
     if (loading) loading.style.display = 'flex';
 
     callServer("deleteCostRow", [id])
       .then(res => {
         if (res === "Thành công") {
+          showToast("Đã xóa khoản chi tiêu thành công!", "success");
           if (onSyncNeeded) onSyncNeeded();
         } else {
-          alert(res);
+          showToast("Lỗi xóa: " + res, "error");
           if (loading) loading.style.display = 'none';
         }
       })
       .catch(err => {
-        alert(`API Error: ${err.message}`);
+        showToast("Lỗi kết nối: " + err.message, "error");
         if (loading) loading.style.display = 'none';
       });
   }

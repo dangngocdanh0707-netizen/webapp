@@ -1,5 +1,7 @@
 import { callServer, formatDateView, parseDateToTimestamp } from '../services/api.js';
 import { renderHabitLine, updateHabitChartData } from './charts.js';
+import { showToast } from '../services/toast.js';
+
 
 let allHabitData = [];
 let onSyncNeeded = null;
@@ -170,15 +172,16 @@ window.toggleHabitStatusDirectly = function (rowNumber, checkboxEl) {
 
         labelEl.innerText = isChecked ? "Completed" : "Pending";
         labelEl.className = isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
+        showToast(isChecked ? "Tuyệt vời! Bạn đã hoàn thành một thói quen!" : "Đã đặt thói quen thành Chưa hoàn thành", "success");
         recalculateHabitChartOnly();
       } else {
-        alert("Sync Error: " + res);
+        showToast("Lỗi đồng bộ thói quen: " + res, "error");
         checkboxEl.checked = !isChecked;
       }
     })
     .catch(err => {
       checkboxEl.disabled = false;
       checkboxEl.checked = !isChecked;
-      alert("Sync Error: " + err.message);
+      showToast("Lỗi đồng bộ thói quen: " + err.message, "error");
     });
 };

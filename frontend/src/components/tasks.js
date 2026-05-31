@@ -1,4 +1,5 @@
 import { callServer, escapeHTML, formatDateView, formatDateInput, formatDateDb, parseDateToTimestamp } from '../services/api.js';
+import { showToast } from '../services/toast.js';
 
 let allTaskData = [];
 let onSyncNeeded = null;
@@ -111,16 +112,17 @@ window.toggleTaskStatusDirectly = function (rowNumber, checkboxEl) {
 
         labelEl.innerText = isChecked ? "Completed" : "Pending";
         labelEl.className = isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
+        showToast(isChecked ? "Đã đánh dấu hoàn thành công việc!" : "Đã đặt công việc thành Chưa hoàn thành", "success");
         buildTaskTable();
       } else {
-        alert("Sync Error: " + res);
+        showToast("Lỗi đồng bộ: " + res, "error");
         checkboxEl.checked = !isChecked;
       }
     })
     .catch(err => {
       checkboxEl.disabled = false;
       checkboxEl.checked = !isChecked;
-      alert("Sync Error: " + err.message);
+      showToast("Lỗi đồng bộ: " + err.message, "error");
     });
 };
 
@@ -130,7 +132,7 @@ window.addTaskRow = function () {
   let desc = document.getElementById('ins-task-desc').value.trim();
 
   if (!date || !desc) {
-    alert("Date and Task Description required!");
+    showToast("Vui lòng điền cả Ngày và Mô tả công việc!", "warning");
     return;
   }
 
@@ -141,14 +143,15 @@ window.addTaskRow = function () {
     .then(res => {
       if (res === "Thành công") {
         document.getElementById('ins-task-desc').value = "";
+        showToast("Đã thêm công việc mới thành công!", "success");
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        alert(res);
+        showToast("Lỗi đồng bộ: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      alert(`API Error: ${err.message}`);
+      showToast("Lỗi kết nối: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
@@ -161,7 +164,7 @@ window.saveTask = function (id) {
   let statusVal = chk ? chk.checked : false;
 
   if (!date || !desc) {
-    alert("Date and Task Description required!");
+    showToast("Vui lòng điền cả Ngày và Mô tả công việc!", "warning");
     return;
   }
 
@@ -171,34 +174,36 @@ window.saveTask = function (id) {
   callServer("updateTaskRow", [id, date, desc, statusVal])
     .then(res => {
       if (res === "Thành công") {
+        showToast("Đã cập nhật công việc thành công!", "success");
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        alert(res);
+        showToast("Lỗi cập nhật: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      alert(`API Error: ${err.message}`);
+      showToast("Lỗi kết nối: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
 
 window.deleteTask = function (id) {
-  if (confirm("Wipe this task from database?")) {
+  if (confirm("Bạn có chắc chắn muốn xóa công việc này khỏi cơ sở dữ liệu?")) {
     const loading = document.getElementById('loading');
     if (loading) loading.style.display = 'flex';
 
     callServer("deleteTaskRow", [id])
       .then(res => {
         if (res === "Thành công") {
+          showToast("Đã xóa công việc thành công!", "success");
           if (onSyncNeeded) onSyncNeeded();
         } else {
-          alert(res);
+          showToast("Lỗi xóa: " + res, "error");
           if (loading) loading.style.display = 'none';
         }
       })
       .catch(err => {
-        alert(`API Error: ${err.message}`);
+        showToast("Lỗi kết nối: " + err.message, "error");
         if (loading) loading.style.display = 'none';
       });
   }

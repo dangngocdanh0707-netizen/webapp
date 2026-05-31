@@ -372,3 +372,13 @@ table th {
 .sidebar.collapsed .sidebar-collapsed-hide {
   display: none;
 }
+
+/* Toast Notifications Container Styling */
+.toast-item {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+}
+.toast-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.01) !important;
+}
+

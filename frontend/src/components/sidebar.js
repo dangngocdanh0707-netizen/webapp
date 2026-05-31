@@ -1,10 +1,7 @@
+import Sortable from 'sortablejs';
+
 export function initSortableSidebar() {
   try {
-    const Sortable = window.Sortable;
-    if (!Sortable) {
-      console.warn("[sidebar.js] SortableJS is not defined on window scope yet.");
-      return;
-    }
     const el = document.getElementById('sidebar-nav-list');
     if (el) {
       Sortable.create(el, {

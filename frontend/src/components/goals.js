@@ -1,4 +1,5 @@
 import { callServer, escapeHTML, formatDateView, formatDateInput, formatDateDb } from '../services/api.js';
+import { showToast } from '../services/toast.js';
 
 let allGoalData = [];
 let onSyncNeeded = null;
@@ -86,7 +87,7 @@ window.addGoalRow = function() {
   let target = document.getElementById('ins-goal-target').value;
   
   if (!name || !target) {
-    alert("Objective Name and Target Value required!");
+    showToast("Vui lòng nhập Tên mục tiêu và Chỉ tiêu cần đạt!", "warning");
     return;
   }
   
@@ -100,14 +101,15 @@ window.addGoalRow = function() {
         document.getElementById('ins-goal-end').value = "";
         document.getElementById('ins-goal-current').value = "0";
         document.getElementById('ins-goal-target').value = "";
+        showToast("Đã thiết lập mục tiêu mới thành công!", "success");
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        alert(res);
+        showToast("Lỗi đồng bộ: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      alert(`API Error: ${err.message}`);
+      showToast("Lỗi kết nối: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
@@ -127,34 +129,36 @@ window.saveGoal = function(id) {
   callServer("updateGoalRow", [id, name, start, end, current, target])
     .then(res => {
       if (res === "Thành công") {
+        showToast("Đã cập nhật mục tiêu thành công!", "success");
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        alert(res);
+        showToast("Lỗi cập nhật: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      alert(`API Error: ${err.message}`);
+      showToast("Lỗi kết nối: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
 
 window.deleteGoal = function(id) {
-  if (confirm("Terminate this core objective?")) {
+  if (confirm("Bạn có chắc chắn muốn xóa mục tiêu này khỏi cơ sở dữ liệu?")) {
     const loading = document.getElementById('loading');
     if (loading) loading.style.display = 'flex';
     
     callServer("deleteGoalRow", [id])
       .then(res => {
         if (res === "Thành công") {
+          showToast("Đã xóa mục tiêu thành công!", "success");
           if (onSyncNeeded) onSyncNeeded();
         } else {
-          alert(res);
+          showToast("Lỗi xóa: " + res, "error");
           if (loading) loading.style.display = 'none';
         }
       })
       .catch(err => {
-        alert(`API Error: ${err.message}`);
+        showToast("Lỗi kết nối: " + err.message, "error");
         if (loading) loading.style.display = 'none';
       });
   }

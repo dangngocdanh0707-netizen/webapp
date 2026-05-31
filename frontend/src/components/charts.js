@@ -1,8 +1,8 @@
-const Chart = window.Chart;
-const ChartDataLabels = window.ChartDataLabels;
+import Chart from 'chart.js/auto';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { formatDateView } from '../services/api.js';
 
-// Đăng ký bổ sung plugin vẽ nhãn dữ liệu (Các thành phần vẽ biểu đồ mặc định đã được đăng ký sẵn trong UMD bundle)
+// Đăng ký bổ sung plugin vẽ nhãn dữ liệu
 Chart.register(ChartDataLabels);
 
 export let pieChartInstance = null;

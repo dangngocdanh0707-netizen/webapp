@@ -1,4 +1,5 @@
 import { callServer, escapeHTML } from '../services/api.js';
+import { showToast } from '../services/toast.js';
 
 let allLinkData = [];
 let onSyncNeeded = null;
@@ -85,7 +86,7 @@ window.addLinkRow = function() {
   let cat = document.getElementById('ins-link-cat').value.trim();
   let content = document.getElementById('ins-link-content').value.trim();
   if (!title || !content) {
-    alert("Please input both Title and Content!");
+    showToast("Vui lòng điền cả Tiêu đề và Nội dung liên kết!", "warning");
     return;
   }
   
@@ -94,18 +95,19 @@ window.addLinkRow = function() {
   
   callServer("insertLinkRow", [title, cat, content])
     .then(res => {
-      if (res === "Thành cóng" || res === "Thành công") {
+      if (res === "Thành công") {
         document.getElementById('ins-link-title').value = "";
         document.getElementById('ins-link-cat').value = "";
         document.getElementById('ins-link-content').value = "";
+        showToast("Đã thêm liên kết mới thành công!", "success");
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        alert(res);
+        showToast("Lỗi đồng bộ: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      alert(`API Error: ${err.message}`);
+      showToast("Lỗi kết nối: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
@@ -120,35 +122,37 @@ window.saveLink = function(id) {
   
   callServer("updateLinkRow", [id, title, cat, content])
     .then(res => {
-      if (res === "Thành cóng" || res === "Thành công") {
+      if (res === "Thành công") {
+        showToast("Đã cập nhật liên kết thành công!", "success");
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        alert(res);
+        showToast("Lỗi cập nhật: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      alert(`API Error: ${err.message}`);
+      showToast("Lỗi kết nối: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
 
 window.deleteLink = function(id) {
-  if (confirm("Delete this link record?")) {
+  if (confirm("Bạn có chắc chắn muốn xóa liên kết này khỏi cơ sở dữ liệu?")) {
     const loading = document.getElementById('loading');
     if (loading) loading.style.display = 'flex';
     
     callServer("deleteLinkRow", [id])
       .then(res => {
-        if (res === "Thành cóng" || res === "Thành công") {
+        if (res === "Thành công") {
+          showToast("Đã xóa liên kết thành công!", "success");
           if (onSyncNeeded) onSyncNeeded();
         } else {
-          alert(res);
+          showToast("Lỗi xóa: " + res, "error");
           if (loading) loading.style.display = 'none';
         }
       })
       .catch(err => {
-        alert(`API Error: ${err.message}`);
+        showToast("Lỗi kết nối: " + err.message, "error");
         if (loading) loading.style.display = 'none';
       });
   }

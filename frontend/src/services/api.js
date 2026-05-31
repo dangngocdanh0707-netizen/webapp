@@ -2,6 +2,7 @@
 // Lớp cơ sở dữ liệu kết nối an toàn trực tiếp với Google Sheets API v4 & hỗ trợ Offline Storage dự phòng
 
 import { getMockData } from '../components/mock-data.js';
+import { showToast } from './toast.js';
 
 // Cấu hình phím lưu trữ trong localStorage
 const KEY_SPREADSHEET_ID = "GOOGLE_SPREADSHEET_ID";
@@ -89,7 +90,7 @@ export function initGoogleAuth() {
               callback: (tokenResponse) => {
                 if (tokenResponse.error !== undefined) {
                   console.error("[api.js] Lỗi xác thực OAuth:", tokenResponse);
-                  alert("Lỗi kết nối Google: " + tokenResponse.error);
+                  showToast("Lỗi kết nối Google: " + tokenResponse.error, "error");
                   return;
                 }
                 console.log("[api.js] Nhận token thành công:", tokenResponse);
@@ -118,7 +119,7 @@ export function initGoogleAuth() {
 // Thực hiện đăng nhập Google OAuth
 export function signInWithGoogle() {
   if (!tokenClient) {
-    alert("Vui lòng cấu hình đầy đủ API Key, Client ID và Spreadsheet ID trước!");
+    showToast("Vui lòng cấu hình đầy đủ API Key, Client ID và Spreadsheet ID trước!", "warning");
     if (typeof window.openSettingsModal === 'function') {
       window.openSettingsModal();
     }
@@ -142,7 +143,7 @@ export function signOutFromGoogle() {
   }
   localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
   resolvedTabsCache = {}; // Xóa cache ánh xạ tab
-  alert("Đã ngắt kết nối Google Sheets thành công!");
+  localStorage.setItem("TOAST_PENDING", JSON.stringify({ message: "Đã ngắt kết nối Google Sheets thành công!", type: "success" }));
   window.location.reload();
 }
 

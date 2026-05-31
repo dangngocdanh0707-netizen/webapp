@@ -1,4 +1,5 @@
 import { callServer } from '../services/api.js';
+import { showToast } from '../services/toast.js';
 
 let reviewQueue = [];
 let allVocabData = [];
@@ -62,7 +63,7 @@ function speakWord(word) {
 
 window.triggerRandomVocab = function() {
   if (!reviewQueue || reviewQueue.length === 0) {
-    alert("Your review queue is clear! Add more items or come back tomorrow.");
+    showToast("Hộp từ vựng ôn tập của bạn đã trống! Hãy thêm từ mới hoặc quay lại vào ngày mai nhé.", "info");
     return;
   }
   
@@ -167,6 +168,7 @@ window.logPracticeAction = function(action) {
     .then(res => {
       buttons.forEach(btn => btn.disabled = false);
       
+      showToast(`Đã ghi nhận đánh giá: ${action.toUpperCase()}!`, "success");
       reviewQueue = reviewQueue.filter(v => v.rowNumber !== rowNumber);
       
       const cardContent = document.getElementById('practice-card-content');
@@ -190,6 +192,6 @@ window.logPracticeAction = function(action) {
     })
     .catch(err => {
       buttons.forEach(btn => btn.disabled = false);
-      alert("Error updating Spaced Repetition log: " + err.message);
+      showToast("Lỗi đồng bộ ôn tập: " + err.message, "error");
     });
 };

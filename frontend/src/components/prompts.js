@@ -1,4 +1,5 @@
 import { callServer, escapeHTML } from '../services/api.js';
+import { showToast } from '../services/toast.js';
 
 let allPromptData = [];
 let onSyncNeeded = null;
@@ -111,7 +112,7 @@ window.addPromptRow = function() {
   let category = document.getElementById('ins-prompt-cat').value.trim();
   
   if (!title || !content) {
-    alert("Please input both Title and Content!");
+    showToast("Vui lòng điền cả Tiêu đề và Nội dung Prompt!", "warning");
     return;
   }
   
@@ -124,14 +125,15 @@ window.addPromptRow = function() {
         document.getElementById('ins-prompt-title').value = "";
         document.getElementById('ins-prompt-content').value = "";
         document.getElementById('ins-prompt-cat').value = "";
+        showToast("Đã thêm mẫu Prompt mới thành công!", "success");
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        alert(res);
+        showToast("Lỗi đồng bộ: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      alert(`API Error: ${err.message}`);
+      showToast("Lỗi kết nối: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
@@ -147,34 +149,36 @@ window.savePrompt = function(id) {
   callServer("updatePromptRow", [id, title, content, category])
     .then(res => {
       if (res === "Thành công") {
+        showToast("Đã cập nhật mẫu Prompt thành công!", "success");
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        alert(res);
+        showToast("Lỗi cập nhật: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      alert(`API Error: ${err.message}`);
+      showToast("Lỗi kết nối: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
 
 window.deletePrompt = function(id) {
-  if (confirm("Delete this prompt template?")) {
+  if (confirm("Bạn có chắc chắn muốn xóa mẫu Prompt này khỏi cơ sở dữ liệu?")) {
     const loading = document.getElementById('loading');
     if (loading) loading.style.display = 'flex';
     
     callServer("deletePromptRow", [id])
       .then(res => {
         if (res === "Thành công") {
+          showToast("Đã xóa mẫu Prompt thành công!", "success");
           if (onSyncNeeded) onSyncNeeded();
         } else {
-          alert(res);
+          showToast("Lỗi xóa: " + res, "error");
           if (loading) loading.style.display = 'none';
         }
       })
       .catch(err => {
-        alert(`API Error: ${err.message}`);
+        showToast("Lỗi kết nối: " + err.message, "error");
         if (loading) loading.style.display = 'none';
       });
   }

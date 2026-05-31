@@ -11,6 +11,7 @@ import {
   getLocalDashboard 
 } from './services/api.js';
 
+import { showToast } from './services/toast.js';
 import { initSortableSidebar, initResizeSidebar } from './components/sidebar.js';
 import { initCostModule } from './components/cost.js';
 import { initVocabModule } from './components/vocabulary.js';
@@ -44,6 +45,18 @@ window.onerror = function (message, source, lineno, colno, error) {
 
 // Khởi chạy ứng dụng
 async function initApp() {
+  // Hiển thị toast chờ nếu có sau khi tải lại trang
+  const pendingToast = localStorage.getItem("TOAST_PENDING");
+  if (pendingToast) {
+    try {
+      const { message, type } = JSON.parse(pendingToast);
+      showToast(message, type);
+    } catch (e) {
+      console.warn(e);
+    }
+    localStorage.removeItem("TOAST_PENDING");
+  }
+
   initLocalDatabase();
   initSortableSidebar();
   initResizeSidebar();
@@ -251,11 +264,11 @@ window.saveSettingsCredentials = function() {
   const clientId = document.getElementById('settings-client-id').value;
   
   if (!spreadsheetId.trim() || !apiKey.trim() || !clientId.trim()) {
-    alert("Vui lòng điền đầy đủ cả 3 cấu hình!");
+    showToast("Vui lòng điền đầy đủ cả 3 cấu hình!", "warning");
     return;
   }
   
   saveCredentials(spreadsheetId, apiKey, clientId);
-  alert("Đã lưu thông số cấu hình Google thành công! Ứng dụng sẽ tự động tải lại.");
+  localStorage.setItem("TOAST_PENDING", JSON.stringify({ message: "Đã lưu thông số cấu hình Google thành công! Đang tải lại dữ liệu...", type: "success" }));
   window.location.reload();
 };

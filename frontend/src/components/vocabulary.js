@@ -1,4 +1,5 @@
 import { callServer, escapeHTML, formatDateView } from '../services/api.js';
+import { showToast } from '../services/toast.js';
 
 let allVocabData = [];
 let onSyncNeeded = null;
@@ -140,7 +141,7 @@ window.filterVocabTable = function() {
 window.addVocabRow = function() {
   let content = document.getElementById('ins-v-content').value.trim();
   if (!content) {
-    alert("Content entry cannot be blank!");
+    showToast("Nội dung từ vựng không được để trống!", "warning");
     return;
   }
   
@@ -151,14 +152,15 @@ window.addVocabRow = function() {
     .then(res => {
       if (res === "Thành công") {
         document.getElementById('ins-v-content').value = ""; 
+        showToast("Đã thêm từ vựng mới thành công!", "success");
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        alert(res);
+        showToast("Lỗi đồng bộ: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      alert(`API Error: ${err.message}`);
+      showToast("Lỗi kết nối: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
@@ -171,7 +173,7 @@ window.saveVocab = function(id) {
   let meaning = document.getElementById(`v-edit-mean-${id}`).value.trim();
   
   if (!content) {
-    alert("Content entry cannot be blank!");
+    showToast("Nội dung từ vựng không được để trống!", "warning");
     return;
   } 
   
@@ -182,34 +184,36 @@ window.saveVocab = function(id) {
     .then(res => {
       if (res === "Thành công") {
         window.toggleVocabEdit(id, false);
+        showToast("Đã cập nhật từ vựng thành công!", "success");
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        alert("Error: " + res);
+        showToast("Lỗi cập nhật: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      alert(`API Error: ${err.message}`);
+      showToast("Lỗi kết nối: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
 
 window.deleteVocab = function(id) {
-  if (confirm("Purge entry from dictionary matrix?")) {
+  if (confirm("Bạn có chắc chắn muốn xóa từ vựng này khỏi cở sở dữ liệu?")) {
     const loading = document.getElementById('loading');
     if (loading) loading.style.display = 'flex';
     
     callServer("deleteVocabRow", [id])
       .then(res => {
         if (res === "Thành công") {
+          showToast("Đã xóa từ vựng thành công!", "success");
           if (onSyncNeeded) onSyncNeeded();
         } else {
-          alert("Error: " + res);
+          showToast("Lỗi xóa: " + res, "error");
           if (loading) loading.style.display = 'none';
         }
       })
       .catch(err => {
-        alert(`API Error: ${err.message}`);
+        showToast("Lỗi kết nối: " + err.message, "error");
         if (loading) loading.style.display = 'none';
       });
   }
