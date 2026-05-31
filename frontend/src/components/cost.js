@@ -111,7 +111,7 @@ export function buildTable(filterValue) {
         <td class="p-4 text-right font-bold text-slate-900 view-mode-${id}">${amount.toLocaleString('vi-VN')}đ</td>
         <td class="p-4 pl-8 text-slate-700 font-medium view-mode-${id}">${item.note || '-'}</td>
         
-        <td class="p-4 pl-6 hidden edit-mode-${id}"><input type="date" id="edit-date-${id}" class="edit-input" value="${item.date || ''}"></td>
+        <td class="p-4 pl-6 hidden edit-mode-${id}"><input type="date" id="edit-date-${id}" class="edit-input" value="${formatDateInput(item.date)}"></td>
         <td class="p-4 hidden edit-mode-${id}">
           <select id="edit-cat-${id}" class="edit-input font-bold">
             <option value="Must have" ${cat == 'Must have' ? 'selected' : ''}>Must have</option>
@@ -178,6 +178,51 @@ function formatDateView(dateStr) {
   return cleanStr;
 }
 
+function formatDateInput(dateStr) {
+  if (!dateStr) return '';
+  let str = dateStr.toString().trim();
+  if (str.includes('/')) {
+    let parts = str.split('/');
+    if (parts.length === 3) {
+      let d = parts[0].padStart(2, '0');
+      let m = parts[1].padStart(2, '0');
+      let y = parts[2];
+      return `${y}-${m}-${d}`;
+    }
+  }
+  if (str.includes('-')) {
+    let parts = str.split('-');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) return str;
+      let d = parts[0].padStart(2, '0');
+      let m = parts[1].padStart(2, '0');
+      let y = parts[2];
+      return `${y}-${m}-${d}`;
+    }
+  }
+  const ts = Date.parse(str);
+  if (!isNaN(ts)) {
+    const d = new Date(ts);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  return '';
+}
+
+function formatDateDb(dateStr) {
+  if (!dateStr) return '';
+  let str = dateStr.toString().trim();
+  if (str.includes('-')) {
+    let parts = str.split('-');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return `${parts[0]}/${parts[1]}/${parts[2]}`;
+    }
+  }
+  return str;
+}
+
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
 window.enterEditMode = function (id) {
@@ -198,7 +243,8 @@ window.filterTableByDropdown = function () {
 };
 
 window.addCostRow = function () {
-  let date = document.getElementById('ins-cost-date').value;
+  let dateVal = document.getElementById('ins-cost-date').value;
+  let date = formatDateDb(dateVal);
   let cat = document.getElementById('ins-cost-cat').value;
   let amount = document.getElementById('ins-cost-amount').value;
   let note = document.getElementById('ins-cost-note').value;
@@ -229,7 +275,8 @@ window.addCostRow = function () {
 };
 
 window.saveRow = function (id) {
-  let date = document.getElementById(`edit-date-${id}`).value;
+  let dateVal = document.getElementById(`edit-date-${id}`).value;
+  let date = formatDateDb(dateVal);
   let cat = document.getElementById(`edit-cat-${id}`).value;
   let amount = document.getElementById(`edit-amount-${id}`).value;
   let note = document.getElementById(`edit-note-${id}`).value;

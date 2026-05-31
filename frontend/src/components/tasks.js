@@ -48,7 +48,7 @@ export function buildTaskTable() {
           </label>
         </td>
         
-        <td class="p-4 pl-6 hidden task-edit-${id}"><input type="date" id="task-edit-date-${id}" class="edit-input" value="${dateStr}"></td>
+        <td class="p-4 pl-6 hidden task-edit-${id}"><input type="date" id="task-edit-date-${id}" class="edit-input" value="${formatDateInput(dateStr)}"></td>
         <td class="p-4 hidden task-edit-${id}"><input type="text" id="task-edit-desc-${id}" class="edit-input font-bold" value="${taskText}"></td>
         
         <td class="p-4 text-center">
@@ -107,6 +107,51 @@ function formatDateView(dateStr) {
   return cleanStr;
 }
 
+function formatDateInput(dateStr) {
+  if (!dateStr) return '';
+  let str = dateStr.toString().trim();
+  if (str.includes('/')) {
+    let parts = str.split('/');
+    if (parts.length === 3) {
+      let d = parts[0].padStart(2, '0');
+      let m = parts[1].padStart(2, '0');
+      let y = parts[2];
+      return `${y}-${m}-${d}`;
+    }
+  }
+  if (str.includes('-')) {
+    let parts = str.split('-');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) return str;
+      let d = parts[0].padStart(2, '0');
+      let m = parts[1].padStart(2, '0');
+      let y = parts[2];
+      return `${y}-${m}-${d}`;
+    }
+  }
+  const ts = Date.parse(str);
+  if (!isNaN(ts)) {
+    const d = new Date(ts);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  return '';
+}
+
+function formatDateDb(dateStr) {
+  if (!dateStr) return '';
+  let str = dateStr.toString().trim();
+  if (str.includes('-')) {
+    let parts = str.split('-');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return `${parts[0]}/${parts[1]}/${parts[2]}`;
+    }
+  }
+  return str;
+}
+
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
 window.filterTaskTable = function () {
@@ -148,7 +193,8 @@ window.toggleTaskStatusDirectly = function (rowNumber, checkboxEl) {
 };
 
 window.addTaskRow = function () {
-  let date = document.getElementById('ins-task-date').value;
+  let dateVal = document.getElementById('ins-task-date').value;
+  let date = formatDateDb(dateVal);
   let desc = document.getElementById('ins-task-desc').value.trim();
 
   if (!date || !desc) {
@@ -176,7 +222,8 @@ window.addTaskRow = function () {
 };
 
 window.saveTask = function (id) {
-  let date = document.getElementById(`task-edit-date-${id}`).value;
+  let dateVal = document.getElementById(`task-edit-date-${id}`).value;
+  let date = formatDateDb(dateVal);
   let desc = document.getElementById(`task-edit-desc-${id}`).value.trim();
   let chk = document.getElementById(`task-chk-${id}`);
   let statusVal = chk ? chk.checked : false;

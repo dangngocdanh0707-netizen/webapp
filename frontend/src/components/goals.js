@@ -40,8 +40,8 @@ export function buildGoalTable() {
         </td>
         
         <td class="p-4 pl-6 hidden goal-edit-${id}"><input type="text" id="goal-edit-name-${id}" class="edit-input font-bold" value="${item.goal_name || ''}"></td>
-        <td class="p-4 hidden goal-edit-${id}"><input type="date" id="goal-edit-start-${id}" class="edit-input" value="${item.start_date || ''}"></td>
-        <td class="p-4 hidden goal-edit-${id}"><input type="date" id="goal-edit-end-${id}" class="edit-input" value="${item.end_date || ''}"></td>
+        <td class="p-4 hidden goal-edit-${id}"><input type="date" id="goal-edit-start-${id}" class="edit-input" value="${formatDateInput(item.start_date)}"></td>
+        <td class="p-4 hidden goal-edit-${id}"><input type="date" id="goal-edit-end-${id}" class="edit-input" value="${formatDateInput(item.end_date)}"></td>
         <td class="p-4 hidden goal-edit-${id}" colspan="2">
           <div class="flex gap-2">
             <input type="number" id="goal-edit-current-${id}" class="edit-input text-center font-bold" value="${cur}">
@@ -77,6 +77,51 @@ function formatDateView(dateStr) {
   return cleanStr;
 }
 
+function formatDateInput(dateStr) {
+  if (!dateStr) return '';
+  let str = dateStr.toString().trim();
+  if (str.includes('/')) {
+    let parts = str.split('/');
+    if (parts.length === 3) {
+      let d = parts[0].padStart(2, '0');
+      let m = parts[1].padStart(2, '0');
+      let y = parts[2];
+      return `${y}-${m}-${d}`;
+    }
+  }
+  if (str.includes('-')) {
+    let parts = str.split('-');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) return str;
+      let d = parts[0].padStart(2, '0');
+      let m = parts[1].padStart(2, '0');
+      let y = parts[2];
+      return `${y}-${m}-${d}`;
+    }
+  }
+  const ts = Date.parse(str);
+  if (!isNaN(ts)) {
+    const d = new Date(ts);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  return '';
+}
+
+function formatDateDb(dateStr) {
+  if (!dateStr) return '';
+  let str = dateStr.toString().trim();
+  if (str.includes('-')) {
+    let parts = str.split('-');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return `${parts[0]}/${parts[1]}/${parts[2]}`;
+    }
+  }
+  return str;
+}
+
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
 window.toggleGoalEdit = function(id, isEdit) {
@@ -86,8 +131,10 @@ window.toggleGoalEdit = function(id, isEdit) {
 
 window.addGoalRow = function() {
   let name = document.getElementById('ins-goal-name').value.trim();
-  let start = document.getElementById('ins-goal-start').value;
-  let end = document.getElementById('ins-goal-end').value;
+  let startVal = document.getElementById('ins-goal-start').value;
+  let start = formatDateDb(startVal);
+  let endVal = document.getElementById('ins-goal-end').value;
+  let end = formatDateDb(endVal);
   let current = document.getElementById('ins-goal-current').value;
   let target = document.getElementById('ins-goal-target').value;
   
@@ -120,8 +167,10 @@ window.addGoalRow = function() {
 
 window.saveGoal = function(id) {
   let name = document.getElementById(`goal-edit-name-${id}`).value.trim(); 
-  let start = document.getElementById(`goal-edit-start-${id}`).value;
-  let end = document.getElementById(`goal-edit-end-${id}`).value; 
+  let startVal = document.getElementById(`goal-edit-start-${id}`).value;
+  let start = formatDateDb(startVal);
+  let endVal = document.getElementById(`goal-edit-end-${id}`).value; 
+  let end = formatDateDb(endVal);
   let current = document.getElementById(`goal-edit-current-${id}`).value; 
   let target = document.getElementById(`goal-edit-target-${id}`).value;
   
