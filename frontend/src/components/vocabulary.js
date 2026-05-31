@@ -1,4 +1,4 @@
-import { callServer } from '../services/api.js';
+import { callServer, escapeHTML } from '../services/api.js';
 
 let allVocabData = [];
 let onSyncNeeded = null;
@@ -92,19 +92,19 @@ export function buildVocabTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="vocab-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-800 v-view-${id}">${item.content || ''}</td>
-        <td class="p-4 hidden v-view-${id}"><span class="px-2.5 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${cat}</span></td>
-        <td class="p-4 v-view-${id}"><span class="px-2.5 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${topic}</span></td>
-        <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${item.level || '-'}</span></td>
-        <td class="p-4 text-slate-650 v-view-${id}">${item.meaning || ''}</td>
-        <td class="p-4 v-view-${id}"><span class="px-2.5 py-0.5 rounded-md text-xs border ${statusBadgeStyle}">${statusStr}</span></td>
+        <td class="p-4 pl-6 font-semibold text-slate-800 v-view-${id}">${escapeHTML(item.content) || ''}</td>
+        <td class="p-4 hidden v-view-${id}"><span class="px-2.5 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(cat)}</span></td>
+        <td class="p-4 v-view-${id}"><span class="px-2.5 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(topic)}</span></td>
+        <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(item.level) || '-'}</span></td>
+        <td class="p-4 text-slate-650 v-view-${id}">${escapeHTML(item.meaning) || ''}</td>
+        <td class="p-4 v-view-${id}"><span class="px-2.5 py-0.5 rounded-md text-xs border ${statusBadgeStyle}">${escapeHTML(statusStr)}</span></td>
         <td class="p-4 font-mono text-xs text-slate-500 font-bold v-view-${id}">${nextReviewView}</td>
         
-        <td class="p-4 pl-6 hidden v-edit-${id}"><input type="text" id="v-edit-content-${id}" class="edit-input font-bold" value="${item.content || ''}"></td>
-        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-cat-${id}" class="edit-input" value="${cat}"></td>
-        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-topic-${id}" class="edit-input" value="${topic}"></td>
-        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-level-${id}" class="edit-input font-mono" value="${item.level || ''}"></td>
-        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-mean-${id}" class="edit-input" value="${item.meaning || ''}"></td>
+        <td class="p-4 pl-6 hidden v-edit-${id}"><input type="text" id="v-edit-content-${id}" class="edit-input font-bold" value="${escapeHTML(item.content)}"></td>
+        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-cat-${id}" class="edit-input" value="${escapeHTML(cat)}"></td>
+        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-topic-${id}" class="edit-input" value="${escapeHTML(topic)}"></td>
+        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-level-${id}" class="edit-input font-mono" value="${escapeHTML(item.level)}"></td>
+        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-mean-${id}" class="edit-input" value="${escapeHTML(item.meaning)}"></td>
         <td class="p-4 hidden v-edit-${id}" colspan="2"><span class="text-xs italic text-slate-400">Status locked inside reviewer engine</span></td>
         
         <td class="p-4 text-center">

@@ -1,4 +1,4 @@
-import { callServer } from '../services/api.js';
+import { callServer, escapeHTML } from '../services/api.js';
 
 let allLinkData = [];
 let onSyncNeeded = null;
@@ -28,17 +28,17 @@ export function buildLinkTable() {
 
     let id = item.rowNumber;
     let isLink = contentText.startsWith('http');
-    let contentDisplay = isLink ? `<a href="${item.content}" target="_blank" class="text-blue-600 hover:underline font-semibold flex items-center gap-1.5 transition"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> Access Link</a>` : contentText;
+    let contentDisplay = isLink ? `<a href="${escapeHTML(item.content)}" target="_blank" class="text-blue-600 hover:underline font-semibold flex items-center gap-1.5 transition"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> Access Link</a>` : escapeHTML(contentText);
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="link-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-800 link-view-${id}">${titleText || '-'}</td>
-        <td class="p-4 link-view-${id}"><span class="px-2.5 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold">${catText || '-'}</span></td>
+        <td class="p-4 pl-6 font-semibold text-slate-800 link-view-${id}">${escapeHTML(titleText) || '-'}</td>
+        <td class="p-4 link-view-${id}"><span class="px-2.5 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold">${escapeHTML(catText) || '-'}</span></td>
         <td class="p-4 text-slate-650 link-view-${id}">${contentDisplay}</td>
         
-        <td class="p-4 pl-6 hidden link-edit-${id}"><input type="text" id="link-edit-title-${id}" class="edit-input font-bold" value="${titleText}"></td>
-        <td class="p-4 hidden link-edit-${id}"><input type="text" id="link-edit-cat-${id}" class="edit-input font-semibold" value="${catText}"></td>
-        <td class="p-4 hidden link-edit-${id}"><input type="text" id="link-edit-content-${id}" class="edit-input" value="${contentText}"></td>
+        <td class="p-4 pl-6 hidden link-edit-${id}"><input type="text" id="link-edit-title-${id}" class="edit-input font-bold" value="${escapeHTML(titleText)}"></td>
+        <td class="p-4 hidden link-edit-${id}"><input type="text" id="link-edit-cat-${id}" class="edit-input font-semibold" value="${escapeHTML(catText)}"></td>
+        <td class="p-4 hidden link-edit-${id}"><input type="text" id="link-edit-content-${id}" class="edit-input" value="${escapeHTML(contentText)}"></td>
         
         <td class="p-4 text-center">
           <div class="link-view-${id} flex justify-center gap-3">

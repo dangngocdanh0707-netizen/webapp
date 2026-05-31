@@ -1114,3 +1114,14 @@ function handleLocalTransaction(method, args) {
   
   throw new Error(`[Offline Store] Unknown transaction method name: ${method}`);
 }
+
+// Hàm mã hóa bảo mật chống lỗ hổng XSS (Cross-Site Scripting)
+export function escapeHTML(str) {
+  if (str === undefined || str === null) return '';
+  return str.toString()
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}

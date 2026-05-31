@@ -1,4 +1,4 @@
-import { callServer } from '../services/api.js';
+import { callServer, escapeHTML } from '../services/api.js';
 
 let allTaskData = [];
 let onSyncNeeded = null;
@@ -40,7 +40,7 @@ export function buildTaskTable() {
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="task-row-${id}" class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500 task-view-${id}">${formatDateView(dateStr)}</td>
-        <td class="p-4 font-semibold text-slate-800 task-view-${id} ${isDone ? 'line-through text-slate-400 font-medium' : ''}">${taskText}</td>
+        <td class="p-4 font-semibold text-slate-800 task-view-${id} ${isDone ? 'line-through text-slate-400 font-medium' : ''}">${escapeHTML(taskText)}</td>
         <td class="p-4 text-center">
           <label class="inline-flex items-center justify-center gap-3 cursor-pointer select-none">
             <input type="checkbox" id="task-chk-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="toggleTaskStatusDirectly(${id}, this)">
@@ -49,7 +49,7 @@ export function buildTaskTable() {
         </td>
         
         <td class="p-4 pl-6 hidden task-edit-${id}"><input type="date" id="task-edit-date-${id}" class="edit-input" value="${formatDateInput(dateStr)}"></td>
-        <td class="p-4 hidden task-edit-${id}"><input type="text" id="task-edit-desc-${id}" class="edit-input font-bold" value="${taskText}"></td>
+        <td class="p-4 hidden task-edit-${id}"><input type="text" id="task-edit-desc-${id}" class="edit-input font-bold" value="${escapeHTML(taskText)}"></td>
         
         <td class="p-4 text-center">
           <div class="task-view-${id} flex justify-center gap-2">

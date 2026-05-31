@@ -1,4 +1,4 @@
-import { callServer } from '../services/api.js';
+import { callServer, escapeHTML } from '../services/api.js';
 
 let allPromptData = [];
 let onSyncNeeded = null;
@@ -52,17 +52,17 @@ export function buildPromptTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="prompt-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-800 prompt-view-${id}">${titleText || '-'}</td>
-        <td class="p-4 prompt-view-${id}"><span class="px-2.5 py-1 rounded-md text-xs border ${badgeStyle}">${catText || '-'}</span></td>
-        <td class="p-4 text-slate-650 prompt-view-${id}">${contentText}</td>
+        <td class="p-4 pl-6 font-semibold text-slate-800 prompt-view-${id}">${escapeHTML(titleText) || '-'}</td>
+        <td class="p-4 prompt-view-${id}"><span class="px-2.5 py-1 rounded-md text-xs border ${badgeStyle}">${escapeHTML(catText) || '-'}</span></td>
+        <td class="p-4 text-slate-650 prompt-view-${id}">${escapeHTML(contentText)}</td>
         
-        <td class="p-4 pl-6 hidden prompt-edit-${id}"><input type="text" id="prompt-edit-title-${id}" class="edit-input font-bold" value="${titleText}"></td>
-        <td class="p-4 hidden prompt-edit-${id}"><input type="text" id="prompt-edit-cat-${id}" class="edit-input font-semibold" value="${catText}"></td>
-        <td class="p-4 hidden prompt-edit-${id}"><input type="text" id="prompt-edit-content-${id}" class="edit-input" value="${contentText}"></td>
+        <td class="p-4 pl-6 hidden prompt-edit-${id}"><input type="text" id="prompt-edit-title-${id}" class="edit-input font-bold" value="${escapeHTML(titleText)}"></td>
+        <td class="p-4 hidden prompt-edit-${id}"><input type="text" id="prompt-edit-cat-${id}" class="edit-input font-semibold" value="${escapeHTML(catText)}"></td>
+        <td class="p-4 hidden prompt-edit-${id}"><input type="text" id="prompt-edit-content-${id}" class="edit-input" value="${escapeHTML(contentText)}"></td>
         
         <td class="p-4 text-center">
           <div class="prompt-view-${id} flex justify-center gap-3">
-            <button onclick="copyPromptText('${id}', \`${contentText.replace(/`/g, '\\`').replace(/\${/g, '\\${')}\`)" title="Copy Prompt" class="text-slate-400 hover:text-emerald-600 p-1 cursor-pointer transition"><i id="prompt-copy-icon-${id}" class="fa-solid fa-copy"></i></button>
+            <button onclick="copyPromptText(${id})" title="Copy Prompt" class="text-slate-400 hover:text-emerald-600 p-1 cursor-pointer transition"><i id="prompt-copy-icon-${id}" class="fa-solid fa-copy"></i></button>
             <button onclick="togglePromptEdit(${id}, true)" title="Edit" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="deletePrompt(${id})" title="Delete" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
@@ -86,7 +86,11 @@ window.filterPromptTable = function() {
   buildPromptTable();
 };
 
-window.copyPromptText = function(id, text) {
+window.copyPromptText = function(id) {
+  let item = allPromptData.find(p => p.rowNumber == id);
+  if (!item) return;
+  let text = (item.content || '').toString();
+  
   navigator.clipboard.writeText(text).then(() => {
     const icon = document.getElementById(`prompt-copy-icon-${id}`);
     if (icon) {
