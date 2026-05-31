@@ -10,7 +10,7 @@ import {
   getLocalDashboard 
 } from './services/api.js?v=1.1.3';
 
-import { initSortableSidebar, initResizeSidebar } from './components/sidebar.js';
+import { initSortableSidebar, initResizeSidebar } from './components/sidebar.js?v=1.1.4';
 import { initCostModule } from './components/cost.js?v=1.1.3';
 import { initVocabModule } from './components/vocabulary.js';
 import { initSrsModule } from './components/srs.js';
