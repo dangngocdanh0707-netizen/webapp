@@ -790,9 +790,9 @@ export function callServer(methodName, args) {
         
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${taskTab}!A${rowNumber}:C${rowNumber}`,
+          range: `${taskTab}!A${rowNumber}:B${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[date, taskDesc, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
+          resource: { values: [[date, taskDesc]] }
         });
         
         resolve("Thành công");
