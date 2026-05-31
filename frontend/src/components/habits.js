@@ -105,8 +105,8 @@ export function buildHabitTable(filterValue) {
       <tr class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500">${formatDateView(item.date)}</td>
         <td class="p-4 font-medium text-slate-700">${item.habit || '-'}</td>
-        <td class="p-4 text-center">
-          <label class="inline-flex items-center justify-center gap-3 cursor-pointer select-none">
+        <td class="p-4 pl-12">
+          <label class="inline-flex items-center gap-3 cursor-pointer select-none">
             <input type="checkbox" id="habit-chk-${id}" class="habit-checkbox" ${isDone ? 'checked' : ''} onchange="toggleHabitStatusDirectly(${id}, this)">
             <span id="habit-lbl-${id}" class="text-xs font-semibold tracking-wide ${isDone ? 'text-emerald-600' : 'text-slate-400'}">${isDone ? 'Completed' : 'Pending'}</span>
           </label>
