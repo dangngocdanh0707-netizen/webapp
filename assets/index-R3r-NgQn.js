@@ -3,11 +3,7 @@
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500 view-mode-${o}">${P(a.date)}</td>
         <td class="p-4 view-mode-${o}"><span class="px-2.5 py-1 rounded-md text-xs border ${l}">${s}</span></td>
         <td class="p-4 text-right font-bold text-slate-900 view-mode-${o}">${i.toLocaleString("vi-VN")}đ</td>
-        <td class="p-4 pl-8 view-mode-${o}">
-          <span class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50/70 border border-slate-200/60 shadow-3xs inline-block max-w-[280px] truncate" title="${w(a.note)}">
-            ${w(a.note)||'<span class="text-slate-350 italic font-normal">None</span>'}
-          </span>
-        </td>
+        <td class="p-4 pl-8 font-semibold text-xs text-slate-500 view-mode-${o}">${w(a.note)||"-"}</td>
         
         <td class="p-4 pl-6 hidden edit-mode-${o}"><input type="date" id="edit-date-${o}" class="edit-input" value="${et(a.date)}"></td>
         <td class="p-4 hidden edit-mode-${o}">
