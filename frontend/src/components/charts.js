@@ -1,5 +1,6 @@
 const Chart = window.Chart;
 const ChartDataLabels = window.ChartDataLabels;
+import { formatDateView } from '../services/api.js';
 
 // Đăng ký bổ sung plugin vẽ nhãn dữ liệu (Các thành phần vẽ biểu đồ mặc định đã được đăng ký sẵn trong UMD bundle)
 Chart.register(ChartDataLabels);
@@ -161,13 +162,4 @@ export function updateHabitChartData(performanceDataPerDay) {
     habitLineChartInstance.data.datasets[0].data = performanceDataPerDay;
     habitLineChartInstance.update();
   }
-}
-
-function formatDateView(dateStr) {
-  if (!dateStr) return '-';
-  let cleanStr = dateStr.toString().trim();
-  if (cleanStr.includes('/')) return cleanStr;
-  let parts = cleanStr.split('-');
-  if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
-  return cleanStr;
 }

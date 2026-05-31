@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatDateView, formatDateInput, formatDateDb } from '../services/api.js';
+import { callServer, escapeHTML, formatDateView, formatDateInput, formatDateDb, parseDateToTimestamp } from '../services/api.js';
 
 let allTaskData = [];
 let onSyncNeeded = null;
@@ -78,34 +78,6 @@ export function buildTaskTable() {
   if (tbody.children.length === 0) {
     tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-500 italic">No tasks match the active filters.</td></tr>`;
   }
-}
-
-function parseDateToTimestamp(dateStr) {
-  if (!dateStr) return 0;
-  let str = dateStr.toString().trim();
-
-  if (str.includes('/')) {
-    let parts = str.split('/');
-    if (parts.length === 3) {
-      let y = parseInt(parts[2], 10);
-      let m = parseInt(parts[1], 10) - 1;
-      let d = parseInt(parts[0], 10);
-      return new Date(y, m, d).getTime();
-    }
-  }
-
-  if (str.includes('-')) {
-    let parts = str.split('-');
-    if (parts.length === 3) {
-      let y = parseInt(parts[0], 10);
-      let m = parseInt(parts[1], 10) - 1;
-      let d = parseInt(parts[2], 10);
-      return new Date(y, m, d).getTime();
-    }
-  }
-
-  let ts = Date.parse(str);
-  return isNaN(ts) ? 0 : ts;
 }
 
 

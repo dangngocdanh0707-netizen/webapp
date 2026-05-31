@@ -1,4 +1,4 @@
-import { callServer, escapeHTML } from '../services/api.js';
+import { callServer, escapeHTML, formatDateView } from '../services/api.js';
 
 let allVocabData = [];
 let onSyncNeeded = null;
@@ -124,15 +124,6 @@ export function buildVocabTable() {
   if (tbody.children.length === 0) {
     tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-400 italic">No entries match the active filters.</td></tr>`;
   }
-}
-
-function formatDateView(dateStr) {
-  if (!dateStr) return '-';
-  let cleanStr = dateStr.toString().trim();
-  if (cleanStr.includes('/')) return cleanStr; 
-  let parts = cleanStr.split('-');
-  if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
-  return cleanStr;
 }
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----

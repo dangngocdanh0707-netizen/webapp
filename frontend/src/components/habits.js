@@ -1,4 +1,4 @@
-import { callServer, formatDateView } from '../services/api.js';
+import { callServer, formatDateView, parseDateToTimestamp } from '../services/api.js';
 import { renderHabitLine, updateHabitChartData } from './charts.js';
 
 let allHabitData = [];
@@ -141,34 +141,6 @@ function recalculateHabitChartOnly() {
   }
 
   updateHabitChartData(performanceDataPerDay);
-}
-
-function parseDateToTimestamp(dateStr) {
-  if (!dateStr) return 0;
-  let str = dateStr.toString().trim();
-
-  if (str.includes('/')) {
-    let parts = str.split('/');
-    if (parts.length === 3) {
-      let y = parseInt(parts[2], 10);
-      let m = parseInt(parts[1], 10) - 1;
-      let d = parseInt(parts[0], 10);
-      return new Date(y, m, d).getTime();
-    }
-  }
-
-  if (str.includes('-')) {
-    let parts = str.split('-');
-    if (parts.length === 3) {
-      let y = parseInt(parts[0], 10);
-      let m = parseInt(parts[1], 10) - 1;
-      let d = parseInt(parts[2], 10);
-      return new Date(y, m, d).getTime();
-    }
-  }
-
-  let ts = Date.parse(str);
-  return isNaN(ts) ? 0 : ts;
 }
 
 

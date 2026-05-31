@@ -17,9 +17,9 @@ let resolvedTabsCache = {}; // Cache ánh xạ tên tab tự động phân giả
 // Lấy thông tin cấu hình credentials từ localStorage
 export function getCredentials() {
   return {
-    spreadsheetId: localStorage.getItem(KEY_SPREADSHEET_ID) || "1BWQyHBcfjRN4yvB55_eZY1qDTq8EjW55l_NxOLMP0PM",
-    apiKey: localStorage.getItem(KEY_API_KEY) || "AIzaSyBdsvQ1sn4neKoudGApXCsLARwD-KJBZpc",
-    clientId: localStorage.getItem(KEY_CLIENT_ID) || "374500028302-lbj2qr2s47vcq8abha6tqh3iet9tqjsf.apps.googleusercontent.com"
+    spreadsheetId: localStorage.getItem(KEY_SPREADSHEET_ID) || import.meta.env.VITE_SPREADSHEET_ID || "",
+    apiKey: localStorage.getItem(KEY_API_KEY) || import.meta.env.VITE_GOOGLE_API_KEY || import.meta.env.VITE_API_KEY || "",
+    clientId: localStorage.getItem(KEY_CLIENT_ID) || import.meta.env.VITE_OAUTH_CLIENT_ID || import.meta.env.VITE_CLIENT_ID || ""
   };
 }
 
@@ -1291,4 +1291,33 @@ export function formatDateDb(dateStr) {
   }
   
   return str;
+}
+
+// 4. Chuyển đổi định dạng ngày thành Timestamp phục vụ việc sắp xếp danh sách
+export function parseDateToTimestamp(dateStr) {
+  if (!dateStr) return 0;
+  let str = dateStr.toString().trim();
+
+  if (str.includes('/')) {
+    let parts = str.split('/');
+    if (parts.length === 3) {
+      let y = parseInt(parts[2], 10);
+      let m = parseInt(parts[1], 10) - 1;
+      let d = parseInt(parts[0], 10);
+      return new Date(y, m, d).getTime();
+    }
+  }
+
+  if (str.includes('-')) {
+    let parts = str.split('-');
+    if (parts.length === 3) {
+      let y = parseInt(parts[0], 10);
+      let m = parseInt(parts[1], 10) - 1;
+      let d = parseInt(parts[2], 10);
+      return new Date(y, m, d).getTime();
+    }
+  }
+
+  let ts = Date.parse(str);
+  return isNaN(ts) ? 0 : ts;
 }
