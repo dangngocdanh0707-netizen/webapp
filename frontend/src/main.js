@@ -76,6 +76,65 @@ async function initApp() {
       }
     }
   });
+
+  // TỰ ĐỘNG LƯU KHI NHẤN ENTER TRONG CÁC Ô NHẬP LIỆU (Thêm mới & Chỉnh sửa)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const activeEl = document.activeElement;
+      if (!activeEl || activeEl.tagName.toLowerCase() !== 'input') return;
+
+      const id = activeEl.id;
+      if (!id) return;
+
+      // 1. Dành cho các ô THÊM MỚI (Mã bắt đầu bằng 'ins-')
+      if (id.startsWith('ins-')) {
+        if (id.startsWith('ins-cost-') && typeof window.addCostRow === 'function') {
+          e.preventDefault();
+          window.addCostRow();
+        } else if (id.startsWith('ins-v-') && typeof window.addVocabRow === 'function') {
+          e.preventDefault();
+          window.addVocabRow();
+        } else if (id.startsWith('ins-link-') && typeof window.addLinkRow === 'function') {
+          e.preventDefault();
+          window.addLinkRow();
+        } else if (id.startsWith('ins-prompt-') && typeof window.addPromptRow === 'function') {
+          e.preventDefault();
+          window.addPromptRow();
+        } else if (id.startsWith('ins-goal-') && typeof window.addGoalRow === 'function') {
+          e.preventDefault();
+          window.addGoalRow();
+        } else if (id.startsWith('ins-task-') && typeof window.addTaskRow === 'function') {
+          e.preventDefault();
+          window.addTaskRow();
+        }
+      } 
+      // 2. Dành cho các ô CHỈNH SỬA dòng (Mã chứa '-edit-' hoặc 'edit-')
+      else {
+        const rowId = id.split('-').pop(); // Lấy số dòng (rowNumber) ở cuối ID
+        if (!rowId || isNaN(rowId)) return;
+
+        if (id.startsWith('edit-') && typeof window.saveRow === 'function') {
+          e.preventDefault();
+          window.saveRow(rowId);
+        } else if (id.startsWith('v-edit-') && typeof window.saveVocab === 'function') {
+          e.preventDefault();
+          window.saveVocab(rowId);
+        } else if (id.startsWith('link-edit-') && typeof window.saveLink === 'function') {
+          e.preventDefault();
+          window.saveLink(rowId);
+        } else if (id.startsWith('prompt-edit-') && typeof window.savePrompt === 'function') {
+          e.preventDefault();
+          window.savePrompt(rowId);
+        } else if (id.startsWith('goal-edit-') && typeof window.saveGoal === 'function') {
+          e.preventDefault();
+          window.saveGoal(rowId);
+        } else if (id.startsWith('task-edit-') && typeof window.saveTask === 'function') {
+          e.preventDefault();
+          window.saveTask(rowId);
+        }
+      }
+    }
+  });
   
   // Khởi tạo các SDK Google API/GIS
   const initialized = await initGoogleAuth();
