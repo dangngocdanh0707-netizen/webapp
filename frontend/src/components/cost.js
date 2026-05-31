@@ -223,23 +223,21 @@ window.saveRow = function (id) {
 };
 
 window.deleteRow = function (id) {
-  if (confirm("Bạn có chắc chắn muốn xóa khoản chi tiêu này khỏi cơ sở dữ liệu?")) {
-    const loading = document.getElementById('loading');
-    if (loading) loading.style.display = 'flex';
+  const loading = document.getElementById('loading');
+  if (loading) loading.style.display = 'flex';
 
-    callServer("deleteCostRow", [id])
-      .then(res => {
-        if (res === "Thành công") {
-          showToast("Đã xóa khoản chi tiêu thành công!", "success");
-          if (onSyncNeeded) onSyncNeeded();
-        } else {
-          showToast("Lỗi xóa: " + res, "error");
-          if (loading) loading.style.display = 'none';
-        }
-      })
-      .catch(err => {
-        showToast("Lỗi kết nối: " + err.message, "error");
+  callServer("deleteCostRow", [id])
+    .then(res => {
+      if (res === "Thành công") {
+        showToast("Đã xóa khoản chi tiêu thành công!", "success");
+        if (onSyncNeeded) onSyncNeeded();
+      } else {
+        showToast("Lỗi xóa: " + res, "error");
         if (loading) loading.style.display = 'none';
-      });
-  }
+      }
+    })
+    .catch(err => {
+      showToast("Lỗi kết nối: " + err.message, "error");
+      if (loading) loading.style.display = 'none';
+    });
 };

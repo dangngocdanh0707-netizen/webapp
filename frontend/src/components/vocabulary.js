@@ -198,23 +198,21 @@ window.saveVocab = function(id) {
 };
 
 window.deleteVocab = function(id) {
-  if (confirm("Bạn có chắc chắn muốn xóa từ vựng này khỏi cở sở dữ liệu?")) {
-    const loading = document.getElementById('loading');
-    if (loading) loading.style.display = 'flex';
-    
-    callServer("deleteVocabRow", [id])
-      .then(res => {
-        if (res === "Thành công") {
-          showToast("Đã xóa từ vựng thành công!", "success");
-          if (onSyncNeeded) onSyncNeeded();
-        } else {
-          showToast("Lỗi xóa: " + res, "error");
-          if (loading) loading.style.display = 'none';
-        }
-      })
-      .catch(err => {
-        showToast("Lỗi kết nối: " + err.message, "error");
+  const loading = document.getElementById('loading');
+  if (loading) loading.style.display = 'flex';
+  
+  callServer("deleteVocabRow", [id])
+    .then(res => {
+      if (res === "Thành công") {
+        showToast("Đã xóa từ vựng thành công!", "success");
+        if (onSyncNeeded) onSyncNeeded();
+      } else {
+        showToast("Lỗi xóa: " + res, "error");
         if (loading) loading.style.display = 'none';
-      });
-  }
+      }
+    })
+    .catch(err => {
+      showToast("Lỗi kết nối: " + err.message, "error");
+      if (loading) loading.style.display = 'none';
+    });
 };

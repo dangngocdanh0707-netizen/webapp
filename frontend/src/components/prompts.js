@@ -163,23 +163,21 @@ window.savePrompt = function(id) {
 };
 
 window.deletePrompt = function(id) {
-  if (confirm("Bạn có chắc chắn muốn xóa mẫu Prompt này khỏi cơ sở dữ liệu?")) {
-    const loading = document.getElementById('loading');
-    if (loading) loading.style.display = 'flex';
-    
-    callServer("deletePromptRow", [id])
-      .then(res => {
-        if (res === "Thành công") {
-          showToast("Đã xóa mẫu Prompt thành công!", "success");
-          if (onSyncNeeded) onSyncNeeded();
-        } else {
-          showToast("Lỗi xóa: " + res, "error");
-          if (loading) loading.style.display = 'none';
-        }
-      })
-      .catch(err => {
-        showToast("Lỗi kết nối: " + err.message, "error");
+  const loading = document.getElementById('loading');
+  if (loading) loading.style.display = 'flex';
+  
+  callServer("deletePromptRow", [id])
+    .then(res => {
+      if (res === "Thành công") {
+        showToast("Đã xóa mẫu Prompt thành công!", "success");
+        if (onSyncNeeded) onSyncNeeded();
+      } else {
+        showToast("Lỗi xóa: " + res, "error");
         if (loading) loading.style.display = 'none';
-      });
-  }
+      }
+    })
+    .catch(err => {
+      showToast("Lỗi kết nối: " + err.message, "error");
+      if (loading) loading.style.display = 'none';
+    });
 };

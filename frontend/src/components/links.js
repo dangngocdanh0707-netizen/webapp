@@ -137,23 +137,21 @@ window.saveLink = function(id) {
 };
 
 window.deleteLink = function(id) {
-  if (confirm("Bạn có chắc chắn muốn xóa liên kết này khỏi cơ sở dữ liệu?")) {
-    const loading = document.getElementById('loading');
-    if (loading) loading.style.display = 'flex';
-    
-    callServer("deleteLinkRow", [id])
-      .then(res => {
-        if (res === "Thành công") {
-          showToast("Đã xóa liên kết thành công!", "success");
-          if (onSyncNeeded) onSyncNeeded();
-        } else {
-          showToast("Lỗi xóa: " + res, "error");
-          if (loading) loading.style.display = 'none';
-        }
-      })
-      .catch(err => {
-        showToast("Lỗi kết nối: " + err.message, "error");
+  const loading = document.getElementById('loading');
+  if (loading) loading.style.display = 'flex';
+  
+  callServer("deleteLinkRow", [id])
+    .then(res => {
+      if (res === "Thành công") {
+        showToast("Đã xóa liên kết thành công!", "success");
+        if (onSyncNeeded) onSyncNeeded();
+      } else {
+        showToast("Lỗi xóa: " + res, "error");
         if (loading) loading.style.display = 'none';
-      });
-  }
+      }
+    })
+    .catch(err => {
+      showToast("Lỗi kết nối: " + err.message, "error");
+      if (loading) loading.style.display = 'none';
+    });
 };

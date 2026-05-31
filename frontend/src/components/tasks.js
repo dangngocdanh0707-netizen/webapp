@@ -188,23 +188,21 @@ window.saveTask = function (id) {
 };
 
 window.deleteTask = function (id) {
-  if (confirm("Bạn có chắc chắn muốn xóa công việc này khỏi cơ sở dữ liệu?")) {
-    const loading = document.getElementById('loading');
-    if (loading) loading.style.display = 'flex';
+  const loading = document.getElementById('loading');
+  if (loading) loading.style.display = 'flex';
 
-    callServer("deleteTaskRow", [id])
-      .then(res => {
-        if (res === "Thành công") {
-          showToast("Đã xóa công việc thành công!", "success");
-          if (onSyncNeeded) onSyncNeeded();
-        } else {
-          showToast("Lỗi xóa: " + res, "error");
-          if (loading) loading.style.display = 'none';
-        }
-      })
-      .catch(err => {
-        showToast("Lỗi kết nối: " + err.message, "error");
+  callServer("deleteTaskRow", [id])
+    .then(res => {
+      if (res === "Thành công") {
+        showToast("Đã xóa công việc thành công!", "success");
+        if (onSyncNeeded) onSyncNeeded();
+      } else {
+        showToast("Lỗi xóa: " + res, "error");
         if (loading) loading.style.display = 'none';
-      });
-  }
+      }
+    })
+    .catch(err => {
+      showToast("Lỗi kết nối: " + err.message, "error");
+      if (loading) loading.style.display = 'none';
+    });
 };
