@@ -138,8 +138,8 @@
       <tr id="task-row-${l}" class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500 task-view-${l}">${R(r)}</td>
         <td class="p-4 font-semibold text-slate-800 task-view-${l} ${y?"text-slate-400 font-medium":""}">${w(u)}</td>
-        <td class="p-4 text-center">
-          <label class="inline-flex items-center justify-center gap-3 cursor-pointer select-none">
+        <td class="p-4 pl-12 text-left">
+          <label class="inline-flex items-center gap-3 cursor-pointer select-none">
             <input type="checkbox" id="task-chk-${l}" class="habit-checkbox shrink-0" ${y?"checked":""} onchange="toggleTaskStatusDirectly(${l}, this)">
             <span id="task-lbl-${l}" class="text-xs font-semibold tracking-wide ${y?"text-emerald-600":"text-slate-400"}">${y?"Completed":"Pending"}</span>
           </label>
