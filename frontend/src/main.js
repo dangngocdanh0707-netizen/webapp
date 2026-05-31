@@ -63,6 +63,9 @@ async function initApp() {
 
   // Lắng nghe phím tắt 'H' để quay về Home (trừ lúc nhập liệu)
   document.addEventListener('keydown', (e) => {
+    // Không kích hoạt nếu bấm kèm Ctrl, Alt, Meta (Cmd)
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
+
     if (e.key === 'h' || e.key === 'H') {
       const activeEl = document.activeElement;
       if (activeEl) {
@@ -73,6 +76,31 @@ async function initApp() {
       }
       if (typeof window.switchTab === 'function') {
         window.switchTab('home-tab');
+      }
+    }
+  });
+
+  // Lắng nghe phím tắt 'F' để tự động focus vào thanh tìm kiếm của tab hiện tại (nếu có, trừ lúc nhập liệu)
+  document.addEventListener('keydown', (e) => {
+    // Không kích hoạt nếu bấm kèm Ctrl (ví dụ: Ctrl + F của trình duyệt), Alt, Meta
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+    if (e.key === 'f' || e.key === 'F') {
+      const activeEl = document.activeElement;
+      if (activeEl) {
+        const tagName = activeEl.tagName.toLowerCase();
+        if (tagName === 'input' || tagName === 'textarea' || tagName === 'select' || activeEl.isContentEditable) {
+          return; // Đang nhập liệu thì gõ chữ 'F' bình thường
+        }
+      }
+
+      const activeTab = document.querySelector('.tab-content.active');
+      if (activeTab) {
+        const searchInput = activeTab.querySelector('input[id*="Search"]');
+        if (searchInput) {
+          e.preventDefault(); // Ngăn gõ ký tự 'f'/'F' vào ô input ngay khi vừa focus
+          searchInput.focus();
+        }
       }
     }
   });
