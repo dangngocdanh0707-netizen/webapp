@@ -24,18 +24,6 @@ export function buildGoalTable() {
     let cur = parseFloat(item.current_value || 0);
     let tar = parseFloat(item.target_value || 1);
     let pct = Math.min(Math.round((cur / tar) * 100), 100);
-    
-    // Tạo màu sắc trực quan (Pill Badge) theo tiến độ %
-    let badgeClass = "bg-slate-50 text-slate-500 border-slate-200/60";
-    if (pct >= 100) {
-      badgeClass = "bg-emerald-50 text-emerald-600 border-emerald-200/60 font-bold";
-    } else if (pct >= 75) {
-      badgeClass = "bg-blue-50 text-blue-600 border-blue-200/60 font-bold";
-    } else if (pct >= 25) {
-      badgeClass = "bg-amber-50 text-amber-600 border-amber-200/60 font-bold";
-    } else if (pct > 0) {
-      badgeClass = "bg-rose-50 text-rose-500 border-rose-200/60 font-bold";
-    }
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="goal-row-${id}" class="hover:bg-slate-900/5 transition">
@@ -43,9 +31,10 @@ export function buildGoalTable() {
         <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${formatDateView(item.start_date)}</td>
         <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${formatDateView(item.end_date)}</td>
         <td class="p-4 goal-view-${id}">
-          <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 font-sans">
             <span class="text-sm font-bold text-slate-800">${cur.toLocaleString()}</span>
-            <span class="text-[10px] text-slate-400 font-semibold tracking-wide uppercase mt-0.5">Mục tiêu: ${tar.toLocaleString()}</span>
+            <span class="text-slate-300 text-xs font-semibold">/</span>
+            <span class="text-sm font-semibold text-slate-400">${tar.toLocaleString()}</span>
           </div>
         </td>
         <td class="p-4 goal-view-${id}">
@@ -53,7 +42,7 @@ export function buildGoalTable() {
             <div class="w-full bg-slate-100/80 h-2 rounded-full overflow-hidden border border-slate-200/40">
               <div class="bg-gradient-to-r from-blue-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
             </div>
-            <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono border shadow-3xs ${badgeClass}">
+            <span class="text-sm font-bold text-slate-800 font-sans tracking-wide shrink-0">
               ${pct}%
             </span>
           </div>
