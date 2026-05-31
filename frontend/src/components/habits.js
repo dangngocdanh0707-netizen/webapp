@@ -18,9 +18,6 @@ export function initHabitsModule(data, onSync) {
   let todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
 
   let habitDates = [...new Set(allHabitData.map(h => h.date))];
-  if (!habitDates.includes(todayStr)) {
-    habitDates.push(todayStr);
-  }
   
   habitDates.sort((a, b) => {
     return parseDateToTimestamp(a) - parseDateToTimestamp(b);
@@ -36,9 +33,10 @@ export function initHabitsModule(data, onSync) {
       dateSelect.insertAdjacentHTML('beforeend', `<option value="${dateStr}">${formatDateView(dateStr)}</option>`);
     });
 
-    // Default to today
-    dateSelect.value = todayStr;
-    buildHabitTable(todayStr);
+    // Mặc định chọn ngày mới nhất có dữ liệu thực tế từ Google Sheet
+    let defaultSelectVal = sortedHabitDatesForFilter[0] || todayStr;
+    dateSelect.value = defaultSelectVal;
+    buildHabitTable(defaultSelectVal);
   }
 
   if (allHabitData.length === 0) {
