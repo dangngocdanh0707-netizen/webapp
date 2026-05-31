@@ -42,6 +42,11 @@
         class="text-2xl font-black tracking-widest bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent font-sans nav-brand-text uppercase truncate text-center">
         DANH</h2>
     </div>
+    <div id="sync-status-container" class="px-6 py-2 border-b border-slate-100/50 bg-slate-50/50 flex items-center justify-center sidebar-collapsed-hide">
+      <div id="sync-status-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-amber-50 text-amber-600 border border-amber-100/50 shadow-2xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Local Storage (Offline)
+      </div>
+    </div>
     <div id="sidebar-nav-list" class="flex-1 mt-6 px-1 flex flex-col gap-1 overflow-y-auto overflow-x-hidden">
       <div data-tab="home-tab" onclick="switchTab('home-tab', this)" class="nav-link active">
         <i class="fa-solid fa-house text-base"></i> <span>Home</span>

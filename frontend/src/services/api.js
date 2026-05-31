@@ -47,6 +47,13 @@ export function isGoogleConnected() {
   return !!(hasCreds && hasToken);
 }
 
+// Kiểm tra xem đồng bộ Google Sheets có đang hoạt động thực tế hay không (GAPI đã tải xong)
+export function isGoogleSheetsActive() {
+  const creds = getCredentials();
+  const hasToken = localStorage.getItem("GOOGLE_ACCESS_TOKEN") !== null;
+  return !!(creds.spreadsheetId && hasToken && gapiInitialized);
+}
+
 // Khởi tạo các SDK Google API và GIS
 export function initGoogleAuth() {
   return new Promise((resolve) => {
