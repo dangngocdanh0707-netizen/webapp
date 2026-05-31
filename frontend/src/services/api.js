@@ -766,13 +766,35 @@ export function callServer(methodName, args) {
       // 8. Nghiệp vụ VIỆC CẦN LÀM (Tasks)
       if (methodName === "insertTaskRow") {
         const [date, taskDesc, status] = args;
-        await gapi.client.sheets.spreadsheets.values.append({
+        
+        // Tải toàn bộ dữ liệu A2:C hiện tại để tìm dòng thực sự trống (cột B trống)
+        const response = await gapi.client.sheets.spreadsheets.values.get({
           spreadsheetId,
-          range: `${taskTab}!A:C`,
+          range: `${taskTab}!A2:C`
+        });
+        const rows = response.result.values || [];
+        
+        // Tìm dòng đầu tiên mà mô tả công việc (cột B - index 1) bị trống
+        let emptyRowIndex = -1;
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          const taskContent = row[1] || "";
+          if (!taskContent.trim()) {
+            emptyRowIndex = i;
+            break;
+          }
+        }
+        
+        // Dòng thực tế = index + 2 (do bỏ qua dòng tiêu đề A1). Nếu không tìm thấy dòng trống nào, thêm vào cuối.
+        const rowNumber = emptyRowIndex !== -1 ? emptyRowIndex + 2 : rows.length + 2;
+        
+        await gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${taskTab}!A${rowNumber}:C${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          insertDataOption: 'OVERWRITE',
           resource: { values: [[date, taskDesc, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
         });
+        
         resolve("Thành công");
         return;
       }
