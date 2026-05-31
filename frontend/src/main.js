@@ -191,19 +191,6 @@ function renderDashboard(data) {
     if (loading) loading.style.display = 'none';
     if (dashboardContent) dashboardContent.classList.remove('hidden');
 
-    // Cập nhật Sync Status Badge
-    const syncBadge = document.getElementById('sync-status-badge');
-    if (syncBadge) {
-      const active = isGoogleSheetsActive();
-      if (active) {
-        syncBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-emerald-50 text-emerald-600 border border-emerald-100/50 shadow-2xs";
-        syncBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Cloud Synced`;
-      } else {
-        syncBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-amber-50 text-amber-600 border border-amber-100/50 shadow-2xs";
-        syncBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Local Storage (Offline)`;
-      }
-    }
-
     // 1. Phân bổ dữ liệu về các mô-đun con
     initCostModule(data.cost, loadDataFromServer);
     initVocabModule(data.vocabulary, loadDataFromServer);
