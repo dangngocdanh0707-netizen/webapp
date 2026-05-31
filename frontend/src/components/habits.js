@@ -5,10 +5,16 @@ let allHabitData = [];
 let onSyncNeeded = null;
 
 export function initHabitsModule(data, onSync) {
-  allHabitData = data || [];
+  let today = new Date();
+  today.setHours(0,0,0,0);
+  const todayTimestamp = today.getTime();
+
+  allHabitData = (data || []).filter(item => {
+    if (!item.date) return false;
+    return parseDateToTimestamp(item.date) <= todayTimestamp;
+  });
   onSyncNeeded = onSync;
 
-  let today = new Date();
   let todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
 
   let habitDates = [...new Set(allHabitData.map(h => h.date))];
