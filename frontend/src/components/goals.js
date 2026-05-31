@@ -25,18 +25,37 @@ export function buildGoalTable() {
     let tar = parseFloat(item.target_value || 1);
     let pct = Math.min(Math.round((cur / tar) * 100), 100);
     
+    // Tạo màu sắc trực quan (Pill Badge) theo tiến độ %
+    let badgeClass = "bg-slate-50 text-slate-500 border-slate-200/60";
+    if (pct >= 100) {
+      badgeClass = "bg-emerald-50 text-emerald-600 border-emerald-200/60 font-bold";
+    } else if (pct >= 75) {
+      badgeClass = "bg-blue-50 text-blue-600 border-blue-200/60 font-bold";
+    } else if (pct >= 25) {
+      badgeClass = "bg-amber-50 text-amber-600 border-amber-200/60 font-bold";
+    } else if (pct > 0) {
+      badgeClass = "bg-rose-50 text-rose-500 border-rose-200/60 font-bold";
+    }
+
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="goal-row-${id}" class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-slate-800 goal-view-${id}">${escapeHTML(item.goal_name) || '-'}</td>
         <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${formatDateView(item.start_date)}</td>
         <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${formatDateView(item.end_date)}</td>
-        <td class="p-4 font-semibold text-slate-700 goal-view-${id}">${cur.toLocaleString()} / <span class="text-blue-600">${tar.toLocaleString()}</span></td>
         <td class="p-4 goal-view-${id}">
-          <div class="flex items-center gap-3">
-            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200/50">
-              <div class="bg-gradient-to-r from-teal-400 to-emerald-500 h-full rounded-full" style="width: ${pct}%"></div>
+          <div class="flex flex-col">
+            <span class="text-sm font-bold text-slate-800">${cur.toLocaleString()}</span>
+            <span class="text-[10px] text-slate-400 font-semibold tracking-wide uppercase mt-0.5">Mục tiêu: ${tar.toLocaleString()}</span>
+          </div>
+        </td>
+        <td class="p-4 goal-view-${id}">
+          <div class="flex items-center gap-3.5">
+            <div class="w-full bg-slate-100/80 h-2 rounded-full overflow-hidden border border-slate-200/40">
+              <div class="bg-gradient-to-r from-blue-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
             </div>
-            <span class="text-xs font-bold font-mono text-emerald-600">${pct}%</span>
+            <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono border shadow-3xs ${badgeClass}">
+              ${pct}%
+            </span>
           </div>
         </td>
         
