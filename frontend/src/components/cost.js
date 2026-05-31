@@ -106,10 +106,10 @@ export function buildTable(filterValue) {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-xs text-slate-500 view-mode-${id}">${formatDateView(item.date)}</td>
+        <td class="p-4 pl-6 text-sm font-medium text-slate-500 view-mode-${id}">${formatDateView(item.date)}</td>
         <td class="p-4 view-mode-${id}"><span class="px-2.5 py-1 rounded-md text-xs border ${badgeStyle}">${cat}</span></td>
         <td class="p-4 text-right font-bold text-slate-900 view-mode-${id}">${amount.toLocaleString('vi-VN')}đ</td>
-        <td class="p-4 pl-6 font-semibold text-xs text-slate-500 view-mode-${id}">${escapeHTML(item.note) || '-'}</td>
+        <td class="p-4 text-sm font-medium text-slate-700 view-mode-${id}">${escapeHTML(item.note) || '-'}</td>
         
         <td class="p-4 pl-6 hidden edit-mode-${id}"><input type="date" id="edit-date-${id}" class="edit-input" value="${formatDateInput(item.date)}"></td>
         <td class="p-4 hidden edit-mode-${id}">
@@ -120,7 +120,7 @@ export function buildTable(filterValue) {
           </select>
         </td>
         <td class="p-4 hidden edit-mode-${id}"><input type="number" id="edit-amount-${id}" class="edit-input text-right font-bold" value="${amount}"></td>
-        <td class="p-4 pl-6 hidden edit-mode-${id}"><input type="text" id="edit-note-${id}" class="edit-input" value="${escapeHTML(item.note)}"></td>
+        <td class="p-4 hidden edit-mode-${id}"><input type="text" id="edit-note-${id}" class="edit-input" value="${escapeHTML(item.note)}"></td>
         
         <td class="p-4 text-center">
           <div class="view-mode-${id} flex justify-center gap-2">
