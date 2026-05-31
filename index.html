@@ -9,28 +9,20 @@
   <script>
     // Bộ bắt lỗi sớm toàn cục
     window.addEventListener('error', function (e) {
-      console.error("Early Error Caught:", e);
-      alert("Phát hiện lỗi tải trang: " + e.message + String.fromCharCode(10) + "Dòng: " + e.lineno + String.fromCharCode(10) + "File: " + e.filename);
+      console.error("Early Error Caught:", e.message, "at", e.filename, "line", e.lineno);
     });
     window.addEventListener('unhandledrejection', function (e) {
-      console.error("Early Promise Rejection:", e);
-      alert("Phát hiện lỗi Promise: " + e.reason);
+      console.error("Early Promise Rejection:", e.reason);
     });
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap">
   
-  <!-- Trình biên dịch Tailwind CSS động trực tiếp trên Trình duyệt đã được gỡ bỏ để tối ưu hiệu suất (sử dụng Tailwind build tĩnh từ PostCSS/Vite) -->
-  
-  <!-- Thư viện đồ họa và kéo thả chính thức (Global UMD CDN) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/browser/Sortable.min.js"></script>
-  
+  <!-- Thư viện SDK Google Sheets & Auth -->
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script type="module" crossorigin src="/webapp_project/assets/index-DMTbY4i7.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-BBufIPS-.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-BzQu10iR.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-B4ul4tlj.css">
 </head>
 
 <body>
