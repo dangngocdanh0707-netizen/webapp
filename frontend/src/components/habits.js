@@ -8,17 +8,17 @@ export function initHabitsModule(data, onSync) {
   allHabitData = data || [];
   onSyncNeeded = onSync;
 
-  if (allHabitData.length === 0) {
-    const perfEl = document.getElementById('avg-habit-performance');
-    if (perfEl) perfEl.innerText = "0%";
-    return;
-  }
+  let today = new Date();
+  let todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
 
-  let habitDates = [...new Set(allHabitData.map(h => h.date))].sort((a, b) => {
+  let habitDates = [...new Set(allHabitData.map(h => h.date))];
+  if (!habitDates.includes(todayStr)) {
+    habitDates.push(todayStr);
+  }
+  
+  habitDates.sort((a, b) => {
     return parseDateToTimestamp(a) - parseDateToTimestamp(b);
   });
-  let performanceDataPerDay = [];
-  let totalPerformanceSum = 0;
 
   const dateSelect = document.getElementById('habitDateFilter');
   if (dateSelect) {
@@ -31,13 +31,23 @@ export function initHabitsModule(data, onSync) {
     });
 
     // Default to today
-    let today = new Date();
-    let todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
     dateSelect.value = todayStr;
     buildHabitTable(todayStr);
   }
 
-  habitDates.forEach(dateStr => {
+  if (allHabitData.length === 0) {
+    const perfEl = document.getElementById('avg-habit-performance');
+    if (perfEl) perfEl.innerText = "0%";
+    return;
+  }
+
+  let performanceDataPerDay = [];
+  let totalPerformanceSum = 0;
+  
+  let activeDates = habitDates.filter(d => allHabitData.some(h => h.date === d));
+  activeDates.sort((a, b) => parseDateToTimestamp(a) - parseDateToTimestamp(b));
+
+  activeDates.forEach(dateStr => {
     let dayTasks = allHabitData.filter(h => h.date === dateStr);
     let completedTasks = dayTasks.filter(h => h.status === true || h.status === "TRUE" || h.status === "√" || h.status === "checked");
     let percent = dayTasks.length > 0 ? Math.round((completedTasks.length / dayTasks.length) * 100) : 0;
@@ -47,11 +57,11 @@ export function initHabitsModule(data, onSync) {
 
   const perfEl = document.getElementById('avg-habit-performance');
   if (perfEl) {
-    perfEl.innerText = (habitDates.length > 0 ? Math.round(totalPerformanceSum / habitDates.length) : 0) + "%";
+    perfEl.innerText = (activeDates.length > 0 ? Math.round(totalPerformanceSum / activeDates.length) : 0) + "%";
   }
 
   // Draw Habits Line Chart
-  renderHabitLine(habitDates, performanceDataPerDay, (clickedDate) => {
+  renderHabitLine(activeDates, performanceDataPerDay, (clickedDate) => {
     if (dateSelect) {
       dateSelect.value = clickedDate;
       buildHabitTable(clickedDate);
