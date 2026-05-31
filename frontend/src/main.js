@@ -8,17 +8,17 @@ import {
   isGoogleConnected, 
   initLocalDatabase, 
   getLocalDashboard 
-} from './services/api.js?v=1.1.4';
+} from './services/api.js';
 
-import { initSortableSidebar, initResizeSidebar } from './components/sidebar.js?v=1.1.4';
-import { initCostModule } from './components/cost.js?v=1.1.3';
+import { initSortableSidebar, initResizeSidebar } from './components/sidebar.js';
+import { initCostModule } from './components/cost.js';
 import { initVocabModule } from './components/vocabulary.js';
 import { initSrsModule } from './components/srs.js';
-import { initLinksModule } from './components/links.js?v=1.1.3';
+import { initLinksModule } from './components/links.js';
 import { initPromptsModule } from './components/prompts.js';
-import { initGoalsModule } from './components/goals.js?v=1.1.3';
-import { initTasksModule } from './components/tasks.js?v=1.1.3';
-import { initHabitsModule } from './components/habits.js?v=1.1.3';
+import { initGoalsModule } from './components/goals.js';
+import { initTasksModule } from './components/tasks.js';
+import { initHabitsModule } from './components/habits.js';
 
 let serverSyncTimeout = null;
 
