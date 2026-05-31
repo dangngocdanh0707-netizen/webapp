@@ -1245,48 +1245,41 @@ export function formatDateInput(dateStr) {
   return '';
 }
 
-// 3. Chuẩn hóa ngày trước khi ghi xuống Google Sheets thành dạng yyyy-MM-dd.
-// Định dạng ISO yyyy-MM-dd kết hợp với option USER_ENTERED sẽ được Google Sheet tự động nhận diện
-// thành kiểu dữ liệu Date thực thụ bất kể Locale của trang tính (US, UK, VN v.v.).
+// 3. Chuẩn hóa ngày trước khi ghi xuống Google Sheets thành dạng dd/MM/yyyy
 export function formatDateDb(dateStr) {
   if (!dateStr) return '';
   let str = dateStr.toString().trim();
 
+  // yyyy-MM-dd -> dd/MM/yyyy
   if (str.includes('-')) {
     let parts = str.split('-');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        // Đã là yyyy-MM-dd chuẩn, gửi thẳng đi để Google Sheets nhận diện Date
-        return str;
+        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+      } else if (parts[2].length === 4) {
+        return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
       }
-      // dd-MM-yyyy -> yyyy-MM-dd
-      let d = parts[0].padStart(2, '0');
-      let m = parts[1].padStart(2, '0');
-      let y = parts[2];
-      return `${y}-${m}-${d}`;
     }
   }
 
+  // yyyy/MM/dd -> dd/MM/yyyy
   if (str.includes('/')) {
     let parts = str.split('/');
     if (parts.length === 3) {
-      if (parts[2].length === 4) {
-        // dd/MM/yyyy hoặc MM/dd/yyyy -> yyyy-MM-dd
+      if (parts[0].length === 4) {
+        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+      } else if (parts[2].length === 4) {
         let p0 = parseInt(parts[0], 10);
         let p1 = parseInt(parts[1], 10);
         let d = parts[0].padStart(2, '0');
         let m = parts[1].padStart(2, '0');
         let y = parts[2];
-
         if (p1 > 12) {
-          // MM/dd/yyyy (US) -> d và m hoán đổi
+          // US format: MM/dd/yyyy -> swap d & m
           d = parts[1].padStart(2, '0');
           m = parts[0].padStart(2, '0');
         }
-        return `${y}-${m}-${d}`;
-      } else if (parts[0].length === 4) {
-        // yyyy/MM/dd -> yyyy-MM-dd
-        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+        return `${d}/${m}/${y}`;
       }
     }
   }
@@ -1294,7 +1287,10 @@ export function formatDateDb(dateStr) {
   const ts = Date.parse(str);
   if (!isNaN(ts)) {
     const d = new Date(ts);
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
   }
 
   return str;
