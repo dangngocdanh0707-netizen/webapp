@@ -76,6 +76,10 @@ webapp_project/ (personal_webapp/)
 8. **🔑 Bảo mật thông số định danh tối đa (.env & Git Safe)**:
    * Không còn tình trạng hardcode API Key hay Client ID trong code để tránh nguy cơ lộ mã nguồn trên các nền tảng công khai. Mọi thông số được cấu hình qua tệp tin `.env` cá nhân hoặc trực tiếp trên giao diện của Settings Modal.
 
+9. **📝 Ghi dữ liệu thông minh bảo toàn định dạng Checkbox (Smart Table-Filling & Formatting Protection)**:
+   * Riêng đối với trang việc cần làm (Tasks), mình đã thiết kế thuật toán tự động quét tìm dòng trống thực tế đầu tiên (dòng chưa có mô tả nhiệm vụ ở cột B) và ghi đè giá trị Ngày & Nội dung bằng lệnh `update` (chỉ tác động lên cột A và B).
+   * Giải pháp này loại bỏ hoàn toàn việc Google Sheets tự chèn thêm hàng vật lý mới gây xê dịch khung viền, đồng thời bảo vệ nguyên vẹn định dạng Checkbox sẵn có ở cột C mà không bị ghi đè thành dạng chữ `FALSE` thô kệch.
+
 ---
 
 ## 🛠️ Hướng dẫn thiết lập & Vận hành thực tế (3 Bước)
