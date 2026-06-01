@@ -158,10 +158,21 @@ window.triggerRandomVocab = function() {
     const inputEl = document.getElementById('practice-typing-input');
     if (inputEl) {
       inputEl.value = "";
-      inputEl.placeholder = "Nghe âm thanh và nhập toàn bộ từ...";
+      inputEl.placeholder = "";
       inputEl.onkeydown = function(e) {
         if (e.key === "Enter") {
           e.preventDefault();
+          checkTypingAnswer();
+        }
+      };
+      inputEl.oninput = function() {
+        const userAns = inputEl.value;
+        const targetAns = currentPracticeWord.content || "";
+        const clean = (str) => str.toLowerCase()
+          .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"")
+          .replace(/\s+/g, " ")
+          .trim();
+        if (clean(userAns) === clean(targetAns)) {
           checkTypingAnswer();
         }
       };
@@ -283,6 +294,23 @@ window.selectScrambleTile = function(tileId) {
   tile.selected = true;
   scrambleUserOrder.push(tileId);
   updateScrambleUI();
+
+  if (currentPracticeWord) {
+    const targetText = currentPracticeWord.content || "";
+    const clean = (str) => str.toLowerCase()
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"")
+      .replace(/\s+/g, " ")
+      .trim();
+    
+    const userSentence = scrambleUserOrder.map(id => {
+      const t = scrambleTiles.find(x => x.id === id);
+      return t ? t.word : "";
+    }).join(" ");
+    
+    if (clean(userSentence) === clean(targetText)) {
+      checkScrambleAnswer();
+    }
+  }
 };
 
 window.deselectScrambleTile = function(tileId) {
