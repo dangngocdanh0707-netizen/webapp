@@ -427,8 +427,8 @@ export function callServer(methodName, args) {
             meaning: row[4] || "",
             status: row[5] || "New",
             next_review: cleanDateValue(row[6]),
-            ease_factor: Number(row[7]) || 2.5,
-            interval: Number(row[8]) || 0
+            ease_factor: Number(row[8]) || 2.5,
+            interval: Number(row[7]) || 0
           })).filter(item => item.content),
 
           habit_tracker: getRows(valueRanges[2]).map((row, idx) => ({
@@ -570,8 +570,8 @@ export function callServer(methodName, args) {
         });
         const row = res.result.values ? res.result.values[0] : [];
         let status = row[5] || "New";
-        let easeFactor = Number(row[7]) || 2.5;
-        let interval = Number(row[8]) || 0;
+        let easeFactor = Number(row[8]) || 2.5;
+        let interval = Number(row[7]) || 0;
         let daysToAdd = 0;
 
         if (status === "New" || interval === 0) {
@@ -608,7 +608,7 @@ export function callServer(methodName, args) {
           spreadsheetId,
           range: `${vocabTab}!F${rowNumber}:I${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[finalStatus, formatDateDb(nrStr), easeFactor, interval]] }
+          resource: { values: [[finalStatus, formatDateDb(nrStr), interval, easeFactor]] }
         });
         resolve("Thành công");
         return;
