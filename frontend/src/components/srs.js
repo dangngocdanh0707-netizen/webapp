@@ -6,6 +6,21 @@ let allVocabData = [];
 let currentPracticeWord = null;
 let onSyncNeeded = null;
 
+let scrambleTiles = [];
+let scrambleUserOrder = [];
+
+function isSingleWord(item) {
+  const cat = (item.category || "").toString().trim().toUpperCase();
+  if (["PHRASE", "SENTENCE", "CỤM", "CÂU", "CỤM TỪ"].includes(cat)) {
+    return false;
+  }
+  if (["VOCABULARY", "TỪ", "TỪ VỰNG", "WORD"].includes(cat)) {
+    return true;
+  }
+  const content = (item.content || "").trim();
+  return !content.includes(" ");
+}
+
 export function initSrsModule(vocabData, onSync) {
   allVocabData = vocabData || [];
   onSyncNeeded = onSync;
@@ -126,8 +141,9 @@ window.triggerRandomVocab = function() {
   if (badgeStatus) badgeStatus.innerText = curStatus.toUpperCase();
   if (meaningDisplay) meaningDisplay.innerText = currentPracticeWord.meaning || 'No translation attached.';
   
-  // Show only Typing container (unified full-dictation mode)
-  document.getElementById('practice-mode-typing').classList.remove('hidden');
+  // Hide all mode containers first
+  document.getElementById('practice-mode-typing').classList.add('hidden');
+  document.getElementById('practice-mode-scramble').classList.add('hidden');
   
   const feedbackEl = document.getElementById('practice-interactive-feedback');
   if (feedbackEl) feedbackEl.classList.add('hidden');
@@ -137,24 +153,46 @@ window.triggerRandomVocab = function() {
   const srsButtons = document.querySelectorAll('#practice-action-metrics button');
   srsButtons.forEach(btn => btn.classList.remove('ring-4', 'ring-blue-500', 'border-blue-500', 'bg-blue-50'));
 
-  const inputEl = document.getElementById('practice-typing-input');
-  if (inputEl) {
-    inputEl.value = "";
-    inputEl.placeholder = "Nghe âm thanh và nhập toàn bộ từ/câu...";
-    inputEl.onkeydown = function(e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        checkTypingAnswer();
-      }
-    };
-    setTimeout(() => inputEl.focus(), 100);
+  if (isSingleWord(currentPracticeWord)) {
+    document.getElementById('practice-mode-typing').classList.remove('hidden');
+    const inputEl = document.getElementById('practice-typing-input');
+    if (inputEl) {
+      inputEl.value = "";
+      inputEl.placeholder = "Nghe âm thanh và nhập toàn bộ từ...";
+      inputEl.onkeydown = function(e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          checkTypingAnswer();
+        }
+      };
+      setTimeout(() => inputEl.focus(), 100);
+    }
+  } else {
+    document.getElementById('practice-mode-scramble').classList.remove('hidden');
+    const rawWords = wordContent
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
+      .split(/\s+/)
+      .filter(w => w.trim() !== "");
+      
+    let shuffled = [...rawWords].sort(() => Math.random() - 0.5);
+    if (shuffled.length > 1 && shuffled.join(" ") === rawWords.join(" ")) {
+      shuffled = [...rawWords].sort(() => Math.random() - 0.5);
+    }
+    
+    scrambleTiles = shuffled.map((word, idx) => ({
+      id: `tile-${idx}`,
+      word: word,
+      selected: false
+    }));
+    scrambleUserOrder = [];
+    updateScrambleUI();
   }
   
   // Display meaning as the prompt, fallback to standard hint if meaning is empty
   if (currentPracticeWord.meaning && currentPracticeWord.meaning.trim() !== "") {
     if (wordDisplay) wordDisplay.innerText = currentPracticeWord.meaning;
   } else {
-    if (wordDisplay) wordDisplay.innerText = "Listen & Write...";
+    if (wordDisplay) wordDisplay.innerText = isSingleWord(currentPracticeWord) ? "Listen & Write..." : "Listen & Arrange...";
   }
   
   // Auto play TTS triggers automatically on card loading
@@ -197,6 +235,95 @@ window.triggerRandomVocab = function() {
   if (btnTrigger) btnTrigger.classList.add('hidden');
   if (btnReveal) btnReveal.classList.remove('hidden');
   if (actionMetrics) actionMetrics.classList.add('hidden');
+};
+
+function updateScrambleUI() {
+  const outputContainer = document.getElementById('practice-scramble-output');
+  const poolContainer = document.getElementById('practice-scramble-pool');
+  if (!outputContainer || !poolContainer) return;
+
+  if (scrambleUserOrder.length === 0) {
+    outputContainer.innerHTML = `<span class="text-xs text-slate-400 font-medium italic">Click the word cards below to assemble your answer</span>`;
+  } else {
+    outputContainer.innerHTML = scrambleUserOrder.map(tileId => {
+      const tile = scrambleTiles.find(t => t.id === tileId);
+      if (!tile) return "";
+      return `
+        <button onclick="deselectScrambleTile('${tile.id}')"
+          class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-sm shadow-2xs hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 transition duration-200 cursor-pointer flex items-center justify-center transform hover:scale-105 active:scale-95">
+          ${tile.word}
+        </button>
+      `;
+    }).join("");
+  }
+
+  poolContainer.innerHTML = scrambleTiles.map(tile => {
+    if (tile.selected) {
+      return `
+        <button disabled
+          class="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-100 text-transparent font-semibold text-sm cursor-default select-none opacity-0">
+          ${tile.word}
+        </button>
+      `;
+    } else {
+      return `
+        <button onclick="selectScrambleTile('${tile.id}')"
+          class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-blue-400 text-slate-700 font-semibold text-sm shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer flex items-center justify-center transform hover:scale-105 active:scale-95">
+          ${tile.word}
+        </button>
+      `;
+    }
+  }).join("");
+}
+
+window.selectScrambleTile = function(tileId) {
+  const tile = scrambleTiles.find(t => t.id === tileId);
+  if (!tile || tile.selected) return;
+
+  tile.selected = true;
+  scrambleUserOrder.push(tileId);
+  updateScrambleUI();
+};
+
+window.deselectScrambleTile = function(tileId) {
+  const tile = scrambleTiles.find(t => t.id === tileId);
+  if (!tile || !tile.selected) return;
+
+  tile.selected = false;
+  scrambleUserOrder = scrambleUserOrder.filter(id => id !== tileId);
+  updateScrambleUI();
+};
+
+window.resetScramble = function() {
+  scrambleTiles.forEach(tile => {
+    tile.selected = false;
+  });
+  scrambleUserOrder = [];
+  updateScrambleUI();
+  
+  const feedbackEl = document.getElementById('practice-interactive-feedback');
+  if (feedbackEl) feedbackEl.classList.add('hidden');
+};
+
+window.checkScrambleAnswer = function() {
+  if (!currentPracticeWord) return;
+  const targetText = currentPracticeWord.content || "";
+  
+  const clean = (str) => str.toLowerCase()
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"")
+    .replace(/\s+/g, " ")
+    .trim();
+  
+  const userSentence = scrambleUserOrder.map(tileId => {
+    const tile = scrambleTiles.find(t => t.id === tileId);
+    return tile ? tile.word : "";
+  }).join(" ");
+  
+  const isCorrect = clean(userSentence) === clean(targetText);
+  showInteractiveFeedback(isCorrect, isCorrect ? "🎉 Chính xác tuyệt đối!" : `❌ Chưa đúng! Đáp án đúng là: "${targetText}"`);
+  
+  revealPracticeMeaning();
+  highlightSrsButton(isCorrect);
 };
 
 window.checkTypingAnswer = function() {
@@ -280,3 +407,34 @@ window.logPracticeAction = function(action) {
       showToast("Lỗi đồng bộ ôn tập: " + err.message, "error");
     });
 };
+
+document.addEventListener('keydown', function(e) {
+  const practiceTab = document.getElementById('practice-tab');
+  if (!practiceTab || !practiceTab.classList.contains('active')) return;
+
+  const activeEl = document.activeElement;
+  if (activeEl && activeEl.tagName === 'INPUT' && activeEl.id !== 'practice-typing-input') {
+    return;
+  }
+  if (activeEl && (activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT')) {
+    return;
+  }
+
+  if (e.key === "Enter") {
+    const scrambleMode = document.getElementById('practice-mode-scramble');
+    const actionMetrics = document.getElementById('practice-action-metrics');
+    
+    if (scrambleMode && !scrambleMode.classList.contains('hidden') && actionMetrics && actionMetrics.classList.contains('hidden')) {
+      e.preventDefault();
+      checkScrambleAnswer();
+      return;
+    }
+    
+    const btnReveal = document.getElementById('btn-practice-reveal');
+    if (btnReveal && !btnReveal.classList.contains('hidden')) {
+      e.preventDefault();
+      revealPracticeMeaning();
+      return;
+    }
+  }
+});
