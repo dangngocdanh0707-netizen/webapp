@@ -525,7 +525,7 @@ export function callServer(methodName, args) {
           range: `${vocabTab}!A:I`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[content, "", "", "", "", "New", "", 2.5, 0]] }
+          resource: { values: [[content, "", "", "", "", "New", "", 0, 2.5]] }
         });
         resolve("Thành công");
         return;
