@@ -80,6 +80,10 @@ webapp_project/ (personal_webapp/)
    * Riêng đối với trang việc cần làm (Tasks), mình đã thiết kế thuật toán tự động quét tìm dòng trống thực tế đầu tiên (dòng chưa có mô tả nhiệm vụ ở cột B) và ghi đè giá trị Ngày & Nội dung bằng lệnh `update` (chỉ tác động lên cột A và B).
    * Giải pháp này loại bỏ hoàn toàn việc Google Sheets tự chèn thêm hàng vật lý mới gây xê dịch khung viền, đồng thời bảo vệ nguyên vẹn định dạng Checkbox sẵn có ở cột C mà không bị ghi đè thành dạng chữ `FALSE` thô kệch.
 
+10. **📅 Hệ thống định dạng ngày tháng kép thông minh (US Locale Compatibility & UI Sync)**:
+    * Giải quyết triệt để lỗi đảo ngược ngày khi giao dịch với Google Sheets có ngôn ngữ khu vực là Mỹ (US Locale) vốn mong muốn định dạng `Tháng/Ngày/Năm (MM/dd/yyyy)` cho dữ liệu thô.
+    * Tự động đồng bộ hóa: Lưu trữ dưới dạng `MM/dd/yyyy` trơn tru trên Google Sheets để Sheets tự động nhận diện chuẩn xác ngày thực tế, nhưng hiển thị chuẩn định dạng `Ngày/Tháng/Năm (dd/MM/yyyy)` quen thuộc 100% trên giao diện HTML và các ô chọn ngày, hoàn toàn không cần sử dụng các ký tự ép kiểu đặc biệt như `'`, `""`, hay `=`.
+
 ---
 
 ## 🛠️ Hướng dẫn thiết lập & Vận hành thực tế (3 Bước)
