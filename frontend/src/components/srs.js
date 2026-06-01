@@ -334,42 +334,22 @@ function updateScrambleUI() {
   if (!outputContainer || !poolContainer) return;
 
   if (scrambleUserOrder.length === 0) {
-    outputContainer.innerHTML = `<span class="text-xs text-slate-400 font-medium italic">Click the word cards below to assemble your answer</span>`;
+    outputContainer.innerHTML = "";
   } else {
-    outputContainer.innerHTML = scrambleUserOrder.map((tileId, index) => {
+    outputContainer.innerHTML = scrambleUserOrder.map(tileId => {
       const tile = scrambleTiles.find(t => t.id === tileId);
       if (!tile) return "";
       
-      const isFirst = index === 0;
-      const isLast = index === scrambleUserOrder.length - 1;
-      
       return `
-        <div draggable="true"
+        <button draggable="true"
           ondragstart="onScrambleDragStart(event, '${tile.id}')"
           ondragover="onScrambleDragOver(event)"
           ondrop="onScrambleDrop(event, '${tile.id}')"
           ondragend="onScrambleDragEnd(event)"
-          class="inline-flex items-center gap-1 bg-white border border-slate-200 text-slate-700 font-semibold text-sm rounded-xl pl-1 pr-1 py-1 shadow-2xs hover:border-blue-400 transition-all duration-200 transform active:scale-95 cursor-grab">
-          
-          <button onclick="shiftScrambleTile('${tile.id}', -1); event.stopPropagation();" 
-            ${isFirst ? 'disabled class="w-5 h-5 rounded-md text-slate-200 flex items-center justify-center text-xs cursor-not-allowed"' : 'class="w-5 h-5 rounded-md hover:bg-slate-100 text-slate-400 hover:text-blue-500 flex items-center justify-center text-xs transition cursor-pointer"'}
-            title="Move left">
-            <i class="fa-solid fa-chevron-left text-[9px]"></i>
-          </button>
-          
-          <span onclick="deselectScrambleTile('${tile.id}'); event.stopPropagation();" 
-            class="px-2 py-0.5 cursor-pointer hover:text-rose-600 transition select-none" 
-            title="Click to remove">
-            ${tile.word}
-          </span>
-          
-          <button onclick="shiftScrambleTile('${tile.id}', 1); event.stopPropagation();" 
-            ${isLast ? 'disabled class="w-5 h-5 rounded-md text-slate-200 flex items-center justify-center text-xs cursor-not-allowed"' : 'class="w-5 h-5 rounded-md hover:bg-slate-100 text-slate-400 hover:text-blue-500 flex items-center justify-center text-xs transition cursor-pointer"'}
-            title="Move right">
-            <i class="fa-solid fa-chevron-right text-[9px]"></i>
-          </button>
-          
-        </div>
+          onclick="deselectScrambleTile('${tile.id}')"
+          class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-sm shadow-2xs hover:border-blue-400 transition-all duration-200 transform hover:scale-105 active:scale-95 cursor-grab">
+          ${tile.word}
+        </button>
       `;
     }).join("");
   }
