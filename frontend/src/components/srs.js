@@ -5,10 +5,6 @@ let reviewQueue = [];
 let allVocabData = [];
 let currentPracticeWord = null;
 let onSyncNeeded = null;
-
-// Speech Recognition State
-let speechRecognitionObj = null;
-let isRecording = false;
 let scrambleUser = [];
 
 export function initSrsModule(vocabData, onSync) {
@@ -95,102 +91,6 @@ function getClozeData(sentence) {
   };
 }
 
-// Helper: Web Speech Recognition Initializer
-function initSpeechRecognition() {
-  if (speechRecognitionObj) return;
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    console.warn("Trình duyệt không hỗ trợ Web Speech API.");
-    return;
-  }
-  
-  speechRecognitionObj = new SpeechRecognition();
-  speechRecognitionObj.continuous = false;
-  speechRecognitionObj.lang = 'en-US';
-  speechRecognitionObj.interimResults = false;
-  speechRecognitionObj.maxAlternatives = 1;
-
-  speechRecognitionObj.onstart = () => {
-    isRecording = true;
-    updateMicUI(true, "Listening... Speak now!");
-  };
-
-  speechRecognitionObj.onend = () => {
-    isRecording = false;
-    updateMicUI(false, "Tap to start speaking");
-  };
-
-  speechRecognitionObj.onerror = (e) => {
-    isRecording = false;
-    updateMicUI(false, "Error: " + e.error);
-    console.error(e);
-  };
-
-  speechRecognitionObj.onresult = (event) => {
-    const resultText = event.results[0][0].transcript;
-    gradeSpeech(resultText);
-  };
-}
-
-function updateMicUI(recording, statusText) {
-  const micBtn = document.getElementById('btn-practice-mic');
-  const micStatus = document.getElementById('practice-mic-status');
-  const pulseRing = document.querySelector('.mic-pulse-ring');
-  
-  if (micStatus) micStatus.innerText = statusText;
-  
-  if (recording) {
-    if (micBtn) micBtn.classList.replace('bg-blue-600', 'bg-rose-600');
-    if (pulseRing) {
-      pulseRing.classList.remove('opacity-0');
-      pulseRing.classList.add('opacity-100');
-    }
-  } else {
-    if (micBtn) micBtn.classList.replace('bg-rose-600', 'bg-blue-600');
-    if (pulseRing) {
-      pulseRing.classList.remove('opacity-100');
-      pulseRing.classList.add('opacity-0');
-    }
-  }
-}
-
-function gradeSpeech(spokenText) {
-  if (!currentPracticeWord) return;
-  const targetText = currentPracticeWord.content || "";
-  
-  const clean = (str) => str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").trim();
-  const targetWords = clean(targetText).split(/\s+/).filter(w => w.trim() !== "");
-  const spokenWords = clean(spokenText).split(/\s+/).filter(w => w.trim() !== "");
-  
-  let matchedCount = 0;
-  const feedbackWords = targetWords.map(word => {
-    const idx = spokenWords.indexOf(word);
-    if (idx !== -1) {
-      spokenWords.splice(idx, 1);
-      matchedCount++;
-      return `<span class="text-emerald-600 font-bold mx-1">${word}</span>`;
-    } else {
-      return `<span class="text-rose-500 font-bold line-through mx-1">${word}</span>`;
-    }
-  });
-
-  const percent = targetWords.length > 0 ? Math.round((matchedCount / targetWords.length) * 100) : 100;
-  
-  const feedbackEl = document.getElementById('practice-speech-feedback');
-  if (feedbackEl) {
-    feedbackEl.innerHTML = `
-      <div class="mb-2 text-slate-500 text-xs">You said: <span class="italic text-slate-700">"${spokenText}"</span></div>
-      <div class="mb-2 text-sm">Grading: ${feedbackWords.join(" ")}</div>
-      <div class="text-base font-extrabold text-blue-600">Pronunciation Score: ${percent}%</div>
-    `;
-    feedbackEl.classList.remove('hidden');
-  }
-
-  revealPracticeMeaning();
-  showInteractiveFeedback(percent >= 80, percent >= 80 ? `🎉 Great job! Pronunciation score: ${percent}%` : `Keep practicing! Pronunciation score: ${percent}%`);
-  highlightSrsButton(percent);
-}
-
 function showInteractiveFeedback(isCorrect, message) {
   const fbEl = document.getElementById('practice-interactive-feedback');
   if (!fbEl) return;
@@ -211,6 +111,12 @@ function highlightSrsButton(scoreOrSuccess) {
 }
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
+
+window.playPracticeTTS = function() {
+  if (currentPracticeWord && currentPracticeWord.content) {
+    speakWord(currentPracticeWord.content);
+  }
+};
 
 window.triggerRandomVocab = function() {
   if (!reviewQueue || reviewQueue.length === 0) {
@@ -239,7 +145,6 @@ window.triggerRandomVocab = function() {
   const badgeTopic = document.getElementById('practice-badge-topic');
   const badgeLevel = document.getElementById('practice-badge-level');
   const badgeStatus = document.getElementById('practice-badge-status');
-  const badgeCategory = document.getElementById('practice-badge-category');
   const meaningDisplay = document.getElementById('practice-meaning-display');
   
   if (badgeTopic) badgeTopic.innerText = currentPracticeWord.topic ? currentPracticeWord.topic.toString().trim().toUpperCase() : 'GENERAL';
@@ -251,23 +156,15 @@ window.triggerRandomVocab = function() {
   
   // Dynamic setup based on Category
   let category = currentPracticeWord.category ? currentPracticeWord.category.toString().trim().toUpperCase() : 'VOCABULARY';
-  if (badgeCategory) badgeCategory.innerText = category;
   
   // Hide all mode containers first
   document.getElementById('practice-mode-typing').classList.add('hidden');
   document.getElementById('practice-mode-scramble').classList.add('hidden');
-  document.getElementById('practice-mode-speech').classList.add('hidden');
   
   const feedbackEl = document.getElementById('practice-interactive-feedback');
   if (feedbackEl) feedbackEl.classList.add('hidden');
-  const speechFeedbackEl = document.getElementById('practice-speech-feedback');
-  if (speechFeedbackEl) speechFeedbackEl.classList.add('hidden');
   showInteractiveFeedback(null, "");
   
-  // Reset micro record state
-  isRecording = false;
-  updateMicUI(false, "Tap to start speaking");
-
   // Reset highlight buttons
   const srsButtons = document.querySelectorAll('#practice-action-metrics button');
   srsButtons.forEach(btn => btn.classList.remove('ring-4', 'ring-blue-500', 'border-blue-500', 'bg-blue-50'));
@@ -301,9 +198,8 @@ window.triggerRandomVocab = function() {
       setTimeout(() => inputEl.focus(), 100);
     }
   } else if (category === 'SENTENCE') {
-    // Sentence structure mode (Scramble and Mic shadowing)
+    // Sentence structure mode (Scramble)
     document.getElementById('practice-mode-scramble').classList.remove('hidden');
-    document.getElementById('practice-mode-speech').classList.remove('hidden');
     
     if (wordDisplay) wordDisplay.innerText = currentPracticeWord.meaning || wordContent;
     
@@ -322,31 +218,10 @@ window.triggerRandomVocab = function() {
         </button>
       `).join("");
     }
-    
-    // Setup microphone speech action
-    const btnMic = document.getElementById('btn-practice-mic');
-    if (btnMic) {
-      btnMic.onclick = function() {
-        if (!speechRecognitionObj) {
-          initSpeechRecognition();
-        }
-        if (!speechRecognitionObj) {
-          showToast("Web Speech API không được hỗ trợ trên trình duyệt này.", "warning");
-          return;
-        }
-        if (isRecording) {
-          speechRecognitionObj.stop();
-        } else {
-          speechRecognitionObj.start();
-        }
-      };
-    }
   }
   
-  // TTS triggers for single words/phrases
-  if (category !== 'SENTENCE') {
-    speakWord(wordContent);
-  }
+  // TTS triggers automatically on card loading
+  speakWord(wordContent);
   
   // Calculate Dynamic Anki Days
   let currentInterval = Number(currentPracticeWord.interval) || 0;
