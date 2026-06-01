@@ -1311,9 +1311,9 @@ export function formatDateDb(dateStr) {
     let parts = str.split('-');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `="${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}"`;
+        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
       } else if (parts[2].length === 4) {
-        return `="${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}"`;
+        return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
       }
     }
   }
@@ -1323,7 +1323,7 @@ export function formatDateDb(dateStr) {
     let parts = str.split('/');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `="${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}"`;
+        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
       } else if (parts[2].length === 4) {
         let p0 = parseInt(parts[0], 10);
         let p1 = parseInt(parts[1], 10);
@@ -1335,7 +1335,7 @@ export function formatDateDb(dateStr) {
           d = parts[1].padStart(2, '0');
           m = parts[0].padStart(2, '0');
         }
-        return `="${d}/${m}/${y}"`;
+        return `${d}/${m}/${y}`;
       }
     }
   }
@@ -1346,10 +1346,10 @@ export function formatDateDb(dateStr) {
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
-    return `="${day}/${month}/${year}"`;
+    return `${day}/${month}/${year}`;
   }
 
-  return `="${str}"`;
+  return str;
 }
 
 // 4. Chuyển đổi định dạng ngày thành Timestamp phục vụ việc sắp xếp danh sách
