@@ -1,4 +1,4 @@
-import { callServer } from '../services/api.js';
+import { callServer, parseDateToTimestamp } from '../services/api.js';
 import { showToast } from '../services/toast.js';
 
 let reviewQueue = [];
@@ -11,13 +11,17 @@ export function initSrsModule(vocabData, onSync) {
   onSyncNeeded = onSync;
   
   let today = new Date();
-  let todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+  today.setHours(0, 0, 0, 0);
+  let todayTs = today.getTime();
   
   // Calculate review queue based on Anki algorithm
   reviewQueue = allVocabData.filter(v => {
     let nr = v.next_review ? v.next_review.toString().trim() : "";
     let status = v.status ? v.status.toString().trim() : "New";
-    return status === "New" || nr === "" || nr <= todayStr;
+    if (status === "New" || nr === "") return true;
+    
+    let nrTs = parseDateToTimestamp(nr);
+    return nrTs <= todayTs;
   });
   
   let countLearning = allVocabData.filter(v => (v.status || '').toString().trim() === "Learning").length;
