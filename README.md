@@ -1,154 +1,133 @@
-# 🚀 Personal Dashboard - Serverless SPA Web App (Google Sheets API v4 & OAuth 2.0)
+# 🚀 Personal Life OS - Serverless Dashboard Web App
+> *Hệ điều hành quản lý cuộc sống cá nhân (Chi tiêu, Thói quen, Từ vựng Anki, Công việc, Mục tiêu) dạng Serverless SPA chạy trực tiếp trên trình duyệt, kết nối trực tiếp Google Sheets REST API v4 & Google OAuth 2.0 (Google Identity Services).*
 
-Đây là dự án **Personal Dashboard** - ứng dụng web cá nhân dạng Serverless SPA (Single Page Application) do mình tự phát triển và tối ưu hóa để quản lý mọi mặt trong cuộc sống (chi tiêu, từ vựng học tiếng Anh, công việc, mục tiêu, thói quen...).
-
-Ứng dụng của mình **loại bỏ hoàn toàn 100% Apps Script (Backend) trung gian**, kết nối trực tiếp và an toàn từ trình duyệt đến máy chủ Google thông qua **Google Sheets REST API v4** chính thức và luồng đăng nhập **Google OAuth 2.0 (Google Identity Services)** cực kỳ hiện đại.
+[![Built with Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=Vite&logoColor=white)](https://vitejs.dev/)
+[![Styled with Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Powered by Google Sheets](https://img.shields.io/badge/Google_Sheets_API-4285F4?style=for-the-badge&logo=google-sheets&logoColor=white)](https://developers.google.com/sheets/api)
+[![OAuth 2.0 Protected](https://img.shields.io/badge/Google_OAuth_2.0-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://developers.google.com/identity)
+[![CI/CD GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/features/actions)
 
 ---
 
-## 📂 Sơ đồ cấu trúc thư mục tối giản & chuyên nghiệp
-Mã nguồn dự án của mình được thiết kế rất sạch sẽ và quy củ theo tiêu chuẩn web hiện đại:
+## 🌟 Lời mở đầu & Tầm nhìn dự án
+
+Đây là **Personal Life OS** - dự án mà mình tự tay thiết kế, phát triển và tối ưu hóa nhằm tạo ra một "hệ điều hành" quản lý trọn vẹn cuộc sống của chính mình (từ tài chính, thói quen hằng ngày, công việc, mục tiêu năm cho đến việc học tiếng Anh chuyên sâu). 
+
+Điểm đặc biệt và tự hào nhất của dự án này là **100% không dùng Backend/Apps Script trung gian**. Mình đã xây dựng ứng dụng kết nối trực tiếp, bảo mật và thời gian thực từ trình duyệt của người dùng đến máy chủ Google Cloud thông qua bộ đôi **Google Sheets API v4 REST** và **Google OAuth 2.0 (Google Identity Services)**. Google Sheets đóng vai trò như một cơ sở dữ liệu (Database) hoàn toàn miễn phí, trực quan và thuộc quyền sở hữu dữ liệu tuyệt đối của bạn!
+
+---
+
+## 📂 Sơ đồ cấu trúc thư mục tiêu chuẩn doanh nghiệp
+
+Mã nguồn được mình thiết kế vô cùng tinh gọn, phân tách module nghiệp vụ rõ ràng (Separation of Concerns) giúp dễ dàng mở rộng và bảo trì:
 
 ```text
 webapp_project/ (personal_webapp/)
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml           # CI/CD tự động biên dịch & deploy lên GitHub Pages
-├── README.md                    # File hướng dẫn vận hành và cấu hình dự án (Chính là file này)
-└── frontend/                    # [MÃ NGUỒN FRONTEND STATIC WEB APP]
-    ├── index.html               # Entry Point HTML (Đã tích hợp GAPI, GIS và Settings Modal)
-    ├── package.json             # Khai báo thư viện (Vite, Tailwind, Autoprefixer, PostCSS)
-    ├── vite.config.js           # Cấu hình Vite đóng gói (base path: /webapp_project/)
-    ├── postcss.config.js        # Cấu hình tối ưu hóa biên dịch tĩnh CSS
-    ├── tailwind.config.js       # Cấu hình phạm vi biên dịch lớp học Tailwind
-    ├── .gitignore               # Loại trừ node_modules/, dist/
+│       └── deploy.yml           # Quy trình CI/CD tự động build & deploy lên GitHub Pages
+├── README.md                    # Tài liệu hướng dẫn vận hành chuẩn hóa (Tệp tin này)
+└── frontend/                    # [MÃ NGUỒN STATIC WEB APP]
+    ├── index.html               # Entry Point HTML (Đã tích hợp CSS/JS đóng gói, Settings Modal)
+    ├── package.json             # Danh sách thư viện và Scripts vận hành (Vite, Tailwind, Autoprefixer)
+    ├── vite.config.js           # Cấu hình Vite đóng gói tối ưu (base path: /webapp_project/)
+    ├── postcss.config.js        # Tối ưu hóa xử lý CSS hậu biên dịch
+    ├── tailwind.config.js       # Phạm vi biên dịch các lớp tiện ích Tailwind
+    ├── .gitignore               # Loại trừ môi trường node_modules/, các khóa bí mật .env
     └── src/
-        ├── main.js              # Entrypoint JS (Khởi chạy SDKs Google, điều phối & quản lý Auth, Hotkeys)
+        ├── main.js              # Khởi chạy SDKs Google, điều phối & quản lý Auth, Hotkeys toàn cục
         ├── styles/
-        │   └── main.css         # CSS gốc chứa Tailwind directives và hiệu ứng Glassmorphism & Toast
+        │   └── main.css         # CSS gốc chứa Tailwind directives, thiết kế Glassmorphism & Toast
         ├── services/
         │   ├── api.js           # Core API Client (Direct Sheets API v4 CRUD & LocalStorage Fallback)
-        │   └── toast.js         # Hệ thống thông báo Custom Toast cao cấp xếp chồng
+        │   └── toast.js         # Hệ thống thông báo Custom Toast xếp chồng cao cấp
         └── components/          # Các mô-đun UI cô lập điều khiển nghiệp vụ chi tiết
             ├── charts.js        # Vẽ biểu đồ tương tác thời gian thực bằng Chart.js (Import Local)
-            ├── sidebar.js       # Kéo thả sắp xếp vị trí và co giãn Sidebar (Import Local)
-            ├── cost.js          # Nghiệp vụ & CRUD chi tiêu (Expenses)
-            ├── vocabulary.js    # Nghiệp vụ & CRUD từ vựng (Vocabulary)
-            ├── srs.js           # Thuật toán học tập Anki Spaced Repetition (Practice English)
-            ├── links.js         # Nghiệp vụ & CRUD liên kết ghi nhớ (Quick Links)
-            ├── prompts.js       # Nghiệp vụ & CRUD Prompt gợi ý AI
-            ├── goals.js         # Nghiệp vụ & CRUD theo dõi mục tiêu (Goals - Đã cải tiến UI gọn gàng)
-            ├── tasks.js         # Nghiệp vụ & CRUD việc cần làm (Tasks)
-            └── habits.js        # Nghiệp vụ & CRUD theo dõi thói quen (Habits)
+            ├── sidebar.js       # Co giãn và kéo thả sắp xếp vị trí các menu trên Sidebar
+            ├── cost.js          # Nghiệp vụ & CRUD tài chính chi tiêu (Expenses)
+            ├── vocabulary.js    # Nghiệp vụ & CRUD kho từ vựng (Vocabulary)
+            ├── srs.js           # Game tương tác & thuật toán học tập Anki Spaced Repetition (Practice)
+            ├── links.js         # Quản lý liên kết nhanh (Quick Links)
+            ├── prompts.js       # Quản lý gợi ý AI (AI Prompts)
+            ├── goals.js         # Theo dõi tiến độ mục tiêu tối giản (Goals)
+            ├── tasks.js         # Quản lý công việc thông minh (Tasks)
+            └── habits.js        # Theo dõi & đánh giá thói quen hằng ngày (Habits)
 ```
 
 ---
 
-## ⚡ Các tính năng kỹ thuật và giải pháp cao cấp mình đã tích hợp:
+## ⚡ Các giải pháp công nghệ & Tính năng cao cấp mình đã tích hợp
 
-1. **🌐 Hoạt động Offline & Bundle thư viện cục bộ (Local-First Capabilities)**:
-   * Mình đã loại bỏ hoàn toàn việc tải các thư viện như `Chart.js` hay `SortableJS` từ các CDN ngoài tại runtime.
-   * Mọi thư viện bên thứ ba giờ đây đều được quản lý qua tệp tin `package.json`, cài đặt cục bộ và đóng gói tự động bằng Vite. Nhờ vậy, ứng dụng khởi động tức thì, hoạt động mượt mà ngay cả khi không có kết nối mạng (Local-First Fallback).
+### 1. 🎓 Hệ thống học tập Anki Spaced Repetition (SM-2) đa chế độ
+* **Phân tách Chế độ học động**: Hệ thống tự động phân loại học tập dựa trên dữ liệu đầu vào. Kích hoạt **Tự gõ (Typing)** đối với từ vựng đơn (`Vocabulary`) giúp khắc sâu trí nhớ chính tả. Kích hoạt **Ghép thẻ chữ (Word Scramble)** dạng kéo thả đối với cụm từ (`Phrase`) hoặc câu (`Sentence`).
+* **Microphone Shadowing (Web Speech API)**: Tích hợp công nghệ nhận diện giọng nói gốc của trình duyệt. Luyện nói đuổi trực tiếp, tự động so khớp, tính % độ chính xác và tô màu trực quan từng từ đúng/sai mà không tốn chi phí cho API bên thứ ba.
+* **Đồng bộ hóa Thuật toán Anki SM-2 chuẩn xác**: Khắc phục triệt để lỗi hoán đổi chỉ số cột GAPI cũ. Chu kỳ ôn tập của thẻ học được tính toán khoa học dựa trên mức độ đánh giá tương ứng (**Again, Hard, Good, Easy**), giúp giãn cách thời gian học hợp lý.
 
-2. **🔔 Hệ thống Custom Toast Notification mượt mà**:
-   * Mình đã khai tử hoàn toàn các ô thông báo `alert()` mặc định của trình duyệt – vốn rất thô ráp và gây gián đoạn trải nghiệm người dùng.
-   * Thay vào đó, mình tự viết một dịch vụ Toast Notification cực kỳ xịn mịn, hỗ trợ xếp chồng (stacked layout), tự động ẩn sau 4 giây, phối màu HSL nhẹ nhàng tinh tế theo từng trạng thái (Success, Error, Warning, Info) và có hiệu ứng trượt xuất hiện/biến mất rất mướt mắt.
+### 2. 🖱️ Cơ chế Ghép từ Word Scramble kéo thả (HTML5 Drag & Drop) mượt mà
+* Tích hợp đồng thời hai chế độ: click chọn nhanh thẻ từ và **kéo thả vật lý** trực tiếp trên Desktop để thay đổi vị trí các thẻ câu vô cùng trực quan và sinh động.
+* **Auto-Check & Ẩn động**: Ngay khi ghép đúng thẻ chữ cuối cùng, hệ thống tự động chấm điểm và hiển thị banner kết quả mà không cần nút bấm thủ công rườm rà. Ô chứa thẻ từ trống bên dưới sẽ tự động được ẩn đi (`hidden`) để giải phóng không gian.
+* **Bảo toàn từ viết tắt**: Thuật toán xử lý chuỗi thông minh, bảo toàn nguyên vẹn dấu nháy đơn (`'`) của các từ viết tắt tiếng Anh (như *That's, don't, I'm*) mà không bị lọc bỏ nhầm.
 
-3. **⚡ Xóa dữ liệu siêu tốc, phản hồi trực quan (No-Confirm Deletions)**:
-   * Khi bấm nút xóa ở bất kỳ danh mục nào, hệ thống sẽ thực hiện xóa ngay lập tức (không bắt hiển thị popup confirm phiền phức nữa).
-   * Đi kèm với đó là thông báo Toast hiện lên tức thì để báo cho người dùng biết dòng dữ liệu đã được xóa thành công, vừa nhanh gọn vừa an tâm.
+### 3. 🎯 Khử hoàn toàn hiện tượng co giãn và giật khung (CLS Elimination)
+* Thiết lập chiều cao tối thiểu cố định (`min-h-[460px] sm:min-h-[480px]`) kết hợp cấu trúc cột Flexbox (`flex flex-col justify-between`).
+* Toàn bộ cụm nút hành động và đánh giá Anki được neo chặt (anchor) ở đáy thẻ học. Các thông tin đáp án xuất hiện chỉ lấp đầy khoảng trống ở giữa, giúp giao diện ôn tập ổn định tuyệt đối trước và sau khi lật đáp án, loại bỏ 100% cảm giác giật khung hình gây khó chịu cho mắt.
 
-4. **⌨️ Hệ thống Phím tắt & Tiện ích nhập liệu thông minh (Smart Hotkeys)**:
-   * **Phím `H`**: Bấm `H` để tự động quay về trang chủ (Home page). Hệ thống tự động nhận diện thông minh: khi mình đang gõ chữ trong bất kỳ ô nhập liệu (input, textarea...) nào, phím `H` vẫn hoạt động như ký tự bình thường để tránh bị gián đoạn khi gõ.
-   * **Phím `F`**: Ở các trang có chức năng tìm kiếm (Dictionary, Quick Links, AI Prompts, Tasks), khi mình bấm phím `F` (ở ngoài các ô nhập liệu), con trỏ chuột sẽ tự động focus ngay vào thanh tìm kiếm để mình gõ từ cần tìm luôn mà không cần tốn công rê chuột click. Mình cũng đã xử lý để tránh xung đột với các phím nóng hệ thống như `Ctrl+F` hay `Cmd+F`.
-   * **Auto-save trên `Enter`**: Trong các form thêm mới hoặc chỉnh sửa dữ liệu, chỉ cần điền xong và ấn phím `Enter` là ứng dụng tự động lưu lại dòng đó ngay lập tức, cực kỳ tiết kiệm thời gian.
+### 4. 🛡️ Bảo mật tối đa chống tấn công chéo XSS & Lộ Key
+* **XSS Clean-up**: Lọc sạch 100% mã độc đầu ra bằng hàm `escapeHTML` ở tất cả các mô-đun UI (bao gồm cả danh mục Habits mới cập nhật), bảo vệ trình duyệt của bạn khỏi việc thực thi mã script độc hại.
+* **Bảo vệ khóa bí mật**: Các thông tin bảo mật kết nối Google Cloud của bạn được che giấu an toàn thông qua tệp cấu hình `.env` cục bộ (được bỏ qua bởi `.gitignore`), hoặc được mã hóa lưu trữ an toàn trong `localStorage` cá nhân của riêng bạn khi chạy trực tuyến.
 
-5. **🎨 Tối ưu hóa UI trang Goals chuyên nghiệp & tối giản**:
-   * Cột giá trị "Current" và "Target" giờ đây được hiển thị gọn gàng trên cùng một hàng ngang, tối ưu diện tích và dễ so sánh.
-   * Cột "Progress" thể hiện phần trăm tiến độ bằng chữ đậm trần (plain bold text) với cùng font chữ sang trọng của "Current"/"Target" và loại bỏ hoàn toàn các loại background màu mè hay badge lòe loẹt, giúp giao diện đạt được vẻ đẹp thanh lịch, hiện đại nhất.
-
-6. **🔒 Bảo mật tuyệt đối chống XSS (Cross-Site Scripting)**:
-   * Mình đã xây dựng lớp lọc `escapeHTML` tại Core API để tự động làm sạch mọi chuỗi ký tự đầu vào từ người dùng, ngăn chặn tuyệt đối các cuộc tấn công tiêm nhiễm mã độc qua dữ liệu đầu vào.
-
-7. **🔌 Plug-and-Play (Tự động tạo bảng tính)**:
-   * Khi kết nối với một tệp Google Sheet trống, ứng dụng sẽ tự động khởi tạo **đầy đủ 7 tab dữ liệu** (`cost`, `vocabulary`, `habit_tracker`, `link`, `prompt`, `goal`, `task`) kèm các tiêu đề cột chuẩn xác. Bạn không cần lo lắng về việc thiết lập file Excel/Sheet ban đầu!
-
-8. **🔑 Bảo mật thông số định danh tối đa (.env & Git Safe)**:
-   * Không còn tình trạng hardcode API Key hay Client ID trong code để tránh nguy cơ lộ mã nguồn trên các nền tảng công khai. Mọi thông số được cấu hình qua tệp tin `.env` cá nhân hoặc trực tiếp trên giao diện của Settings Modal.
-
-9. **📝 Ghi dữ liệu thông minh bảo toàn định dạng Checkbox (Smart Table-Filling & Formatting Protection)**:
-   * Riêng đối với trang việc cần làm (Tasks), mình đã thiết kế thuật toán tự động quét tìm dòng trống thực tế đầu tiên (dòng chưa có mô tả nhiệm vụ ở cột B) và ghi đè giá trị Ngày & Nội dung bằng lệnh `update` (chỉ tác động lên cột A và B).
-   * Giải pháp này loại bỏ hoàn toàn việc Google Sheets tự chèn thêm hàng vật lý mới gây xê dịch khung viền, đồng thời bảo vệ nguyên vẹn định dạng Checkbox sẵn có ở cột C mà không bị ghi đè thành dạng chữ `FALSE` thô kệch.
-
-10. **📅 Hệ thống định dạng ngày tháng kép thông minh (US Locale Compatibility & UI Sync)**:
-    * Giải quyết triệt để lỗi đảo ngược ngày khi giao dịch với Google Sheets có ngôn ngữ khu vực là Mỹ (US Locale) vốn mong muốn định dạng `Tháng/Ngày/Năm (MM/dd/yyyy)` cho dữ liệu thô.
-    * Tự động đồng bộ hóa: Lưu trữ dưới dạng `MM/dd/yyyy` trơn tru trên Google Sheets để Sheets tự động nhận diện chuẩn xác ngày thực tế, nhưng hiển thị chuẩn định dạng `Ngày/Tháng/Năm (dd/MM/yyyy)` quen thuộc 100% trên giao diện HTML và các ô chọn ngày, hoàn toàn không cần sử dụng các ký tự ép kiểu đặc biệt như `'`, `""`, hay `=`.
-
-11. **🎓 Hệ thống Ôn tập Spaced Repetition (Anki SM-2) đa chế độ tương tác thông minh (Vocabulary, Phrase, Sentence)**:
-    * **Phân tách Chế độ học động**: Hệ thống tự động phân tích thuộc tính Phân loại (Category) để điều phối bài học phù hợp: Reverse Recall (Dịch ngược từ Việt sang Anh) cho Từ vựng đơn, Cloze Deletion (Điền khuyết giới/động từ) cho Cụm từ, và Word Scramble (Ghép thẻ từ kéo thả) cho Câu.
-    * **Cơ chế Word Scramble Kéo-Thả (HTML5 Drag & Drop) Cao Cấp**:
-      * Cho phép kéo thả trực tiếp các thẻ từ trên cả máy tính lẫn thiết bị di động để sắp xếp thứ tự câu linh hoạt.
-      * Tích hợp cơ chế bấm chọn nhanh (Click to Select / Deselect) song song với kéo thả, tăng tối đa tốc độ phản hồi.
-      * Tự động nhận diện và bảo toàn nguyên vẹn dấu nháy đơn (`'`) của các từ viết tắt tiếng Anh (như `That's`, `don't`, `it's`) mà không bị thuật toán lọc bỏ ký tự đặc biệt xóa nhầm.
-      * **Auto-Check Thông Minh**: Tự động chấm điểm và hiển thị kết quả đúng ngay lập tức khi người dùng xếp đúng từ cuối cùng, loại bỏ hoàn toàn các nút bấm thủ công rườm rà như "Check Answer" hay "Reset".
-    * **Tích hợp Web Speech API (Microphone Shadowing)**: Luyện nói đuổi (Shadowing) cả câu dài trực tiếp trên trình duyệt, hệ thống tự động so khớp nhận diện giọng nói, tính điểm % chính xác và tô màu trực quan mà không phát sinh bất kỳ chi phí API bên thứ ba nào.
-    * **Tối Ưu Hóa Thiết Kế Khoảng Cách (Tightened Premium Spacing)**:
-      * Tinh chỉnh toàn bộ các thuộc tính margin và padding (`my-4`, `mt-4 pt-4`, `mt-6 pt-4`) giúp giao diện học của Anki co gọn, liền mạch và mang lại cảm giác cực kỳ sang trọng, tinh tế. Tránh hoàn toàn hiện tượng trống trải hay loãng màn hình.
-    * **Khắc Phục Lỗi Hoán Đổi Chỉ Mục GAPI (Interval vs Ease Factor Swap Fix)**:
-      * Đồng bộ chuẩn xác chỉ mục của các cột `Interval` và `Ease Factor` tại tất cả 4 cổng kết nối Google Sheets API.
-      * Giúp giải quyết dứt điểm hiện tượng các nút bấm Anki "Good" và "Easy" bị tính toán ra cùng một số ngày giống nhau, đảm bảo thuật toán giãn cách ngày SM-2 hoạt động chính xác tuyệt đối.
+### 5. 🌐 Cơ chế hoạt động Offline & Bundle Thư viện cục bộ (Local-First)
+* Loại bỏ hoàn toàn CDNs ngoài tại thời gian chạy (runtime) cho các thư viện bên thứ ba như `Chart.js` hay `SortableJS`. 
+* Tất cả được cài đặt cục bộ qua `npm` và đóng gói tĩnh thông qua Vite. Ứng dụng khởi chạy tức thì và tự động kích hoạt chế độ **Offline Fallback** (ghi/đọc trực tiếp trên LocalStorage) khi mất kết nối mạng.
 
 ---
 
 ## 🛠️ Hướng dẫn thiết lập & Vận hành thực tế (3 Bước)
 
-### Bước 1: Tạo các thông số kết nối Google Cloud
-Bạn hãy vào [Google Cloud Console](https://console.cloud.google.com/) để lấy 3 thông số định danh sau:
-
+### Bước 1: Tạo các thông số kết nối trên Google Cloud Console
+Truy cập vào [Google Cloud Console](https://console.cloud.google.com/) để khởi tạo 3 thông số định danh sau:
 1. **API Key**: Vào mục *APIs & Services > Credentials*, chọn *Create Credentials > API Key*.
+   * *Khuyến nghị bảo mật:* Cấu hình giới hạn chỉ cho phép API này gọi Google Sheets API, và giới hạn người gọi từ tên miền ứng dụng trực tuyến của bạn để tránh bị lạm dụng.
 2. **OAuth 2.0 Client ID**: 
-   * Cũng tại trang Credentials, chọn *Create Credentials > OAuth client ID* chọn loại ứng dụng là **Web application**.
-   * Tại mục **Authorized JavaScript origins**, thêm địa chỉ web chạy dưới máy (`http://localhost:5173`) và địa chỉ trang GitHub Pages của bạn (`https://tên-github-của-bạn.github.io`).
-3. **Spreadsheet ID**: Tạo một file Google Sheet mới bất kỳ, copy mã ký tự nằm ở giữa cụm `/d/` và `/edit` trên URL trình duyệt.
+   * Tại trang Credentials, chọn *Create Credentials > OAuth client ID* chọn loại ứng dụng là **Web application**.
+   * Tại mục **Authorized JavaScript origins**, thêm địa chỉ chạy local (`http://localhost:5173`) và địa chỉ trang GitHub Pages của bạn (`https://tên-github-của-bạn.github.io`).
+3. **Spreadsheet ID**: Tạo một file Google Sheet mới bất kỳ, sao chép chuỗi ký tự ngẫu nhiên nằm ở giữa cụm `/d/` và `/edit` trên URL trình duyệt của bảng tính đó.
 
-### Bước 2: Cấu hình thông số kết nối (Chọn 1 trong 2 cách)
+### Bước 2: Cấu hình thông số kết nối (Lựa chọn 1 trong 2 cách)
 
-* **Cách A: Nhập thông tin trực tiếp trên giao diện (Được khuyến nghị)**:
-  1. Truy cập vào trang web Dashboard cá nhân của bạn (trực tuyến hoặc cục bộ).
-  2. Nhấn nút **Settings (Credentials)** ở góc dưới sidebar bên trái.
-  3. Nhập 3 thông số vừa lấy ở Bước 1 vào và bấm **Lưu cấu hình**.
-  4. Nhấn nút **Connect Google Sheets** và cấp quyền để ứng dụng đồng bộ hai chiều thời gian thực!
+* **Cách A: Thiết lập trực tiếp trên giao diện Web (Khuyên dùng)**:
+  1. Truy cập vào trang web Dashboard của bạn.
+  2. Bấm nút **Settings (Credentials)** ở góc dưới sidebar bên trái.
+  3. Điền 3 thông số vừa lấy ở Bước 1 vào form và bấm **Lưu cấu hình**.
+  4. Nhấn nút **Connect Google Sheets** và tiến hành đăng nhập cấp quyền cho trình duyệt kết nối trực tiếp.
+  *👉 Cách này lưu key an toàn trong localStorage trình duyệt cá nhân của bạn, không ai có thể xem trộm.*
 
-* **Cách B: Sử dụng File `.env` cục bộ**:
-  1. Sao chép file [frontend/.env.example](file:///c:/Users/dangn/.gemini/antigravity/scratch/personal_webapp/frontend/.env.example) thành `.env` ở thư mục `frontend/`.
-  2. Điền đầy đủ 3 thông số định danh vào các trường tương ứng:
+* **Cách B: Sử dụng tệp `.env` để nhúng tự động khi lập trình**:
+  1. Tạo tệp `.env` nằm trong thư mục `frontend/` (sao chép từ `.env.example`).
+  2. Điền đầy đủ thông số:
      ```env
-     VITE_SPREADSHEET_ID=spreadsheet_id_cua_ban
-     VITE_API_KEY=api_key_cua_ban
-     VITE_CLIENT_ID=client_id_cua_ban
+     VITE_SPREADSHEET_ID=mã_spreadsheet_của_bạn
+     VITE_API_KEY=api_key_của_bạn
+     VITE_CLIENT_ID=client_id_của_bạn
      ```
-  3. Khởi chạy ứng dụng, hệ thống sẽ tự động nạp cấu hình này khi build và chạy trực tiếp mà không cần thiết lập thủ công trên trình duyệt.
+  3. Hệ thống sẽ tự động nạp cấu hình này khi chạy dưới máy mà không cần nhập thủ công trên giao diện.
 
----
-
-### Bước 3: Đẩy dự án lên GitHub để tự động xuất bản (GitHub Pages)
-Mình đã cấu hình sẵn quy trình **GitHub Actions tự động biên dịch và xuất bản**. Bạn chỉ cần:
-
-1. Đẩy toàn bộ mã nguồn của dự án này lên một repository trên GitHub của bạn tên là: **`webapp_project`**.
-2. Đi tới Repository trên GitHub > chọn mục **Settings** (Cài đặt) > **Actions** > **General**.
-3. Cuộn xuống phần **Workflow permissions**, chọn **Read and write permissions** (Quyền đọc và ghi) và bấm **Save** (Lưu).
-4. Kích hoạt tính năng **GitHub Pages** trong phần *Settings > Pages*, tại mục *Source*, chọn nguồn deploy từ **GitHub Actions**.
-5. Bây giờ, mỗi khi bạn push code lên nhánh `main`, hệ thống sẽ tự động build Vite tối ưu và deploy web lên địa chỉ trực tuyến miễn phí của bạn sau khoảng 1 phút:
+### Bước 3: Đẩy dự án lên GitHub & Xuất bản tự động (GitHub Pages)
+Quy trình **GitHub Actions** đã được mình viết sẵn để tự động biên dịch và triển khai mã nguồn tối ưu lên GitHub Pages:
+1. Tạo một repository trên GitHub của bạn tên là: **`webapp_project`** và đẩy mã nguồn lên nhánh `main`.
+2. Đi tới Repository trên GitHub > **Settings** (Cài đặt) > **Actions** > **General**.
+3. Cuộn xuống phần **Workflow permissions**, chọn **Read and write permissions** và bấm **Save**.
+4. Vào tiếp mục **Settings > Pages**, tại mục *Build and deployment > Source*, chọn nguồn deploy từ **GitHub Actions**.
+5. Kể từ giờ, mỗi khi bạn push code mới lên nhánh `main`, ứng dụng sẽ tự động build và xuất bản trực tuyến sau khoảng 1 phút tại địa chỉ:
    `https://<tên-github-của-bạn>.github.io/webapp_project/`
 
 ---
 
-## 💻 Cách chạy thử nghiệm cục bộ dưới máy tính (Local Development)
+## 💻 Cách chạy thử nghiệm và phát triển dưới máy tính (Local Development)
 
-Nếu muốn tự chỉnh sửa và phát triển mã nguồn trực tiếp trên máy tính cá nhân:
-
-1. Đảm bảo máy tính đã cài đặt sẵn **[Node.js](https://nodejs.org/)**.
-2. Mở terminal tại thư mục `frontend/` và cài đặt các thư viện:
+Nếu bạn muốn tự chỉnh sửa, phát triển thêm các tính năng mới trên máy tính cá nhân:
+1. Yêu cầu cài đặt sẵn **[Node.js](https://nodejs.org/)** trên máy tính.
+2. Mở terminal tại thư mục dự án `frontend/` và cài đặt các dependencies:
    ```bash
    npm install
    ```
@@ -156,6 +135,6 @@ Nếu muốn tự chỉnh sửa và phát triển mã nguồn trực tiếp trê
    ```bash
    npm run dev
    ```
-4. Truy cập địa chỉ `http://localhost:5173` được cấp trên terminal để lập trình kiểm thử cực nhanh!
+4. Truy cập địa chỉ `http://localhost:5173` được cấp trên terminal để bắt đầu lập trình kiểm thử cực nhanh!
 
-Hy vọng dự án **Personal Dashboard** này sẽ giúp bạn quản lý cuộc sống và học tập hiệu quả, trơn tru hơn mỗi ngày! 🚀
+Hy vọng dự án **Personal Life OS** này sẽ mang lại trải nghiệm quản lý cuộc sống tự động hóa và học tiếng Anh hiệu quả tuyệt vời hằng ngày cho bạn! 🚀
