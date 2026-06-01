@@ -422,8 +422,60 @@
             </div>
 
             <div id="practice-card-content" class="hidden py-6">
+              <!-- Badges Container -->
+              <div class="flex flex-wrap justify-center gap-2 mb-4">
+                <span id="practice-badge-category" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-100/80">VOCABULARY</span>
+                <span id="practice-badge-topic" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100/80">GENERAL</span>
+                <span id="practice-badge-level" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-sky-50 text-sky-600 border border-sky-100/80">N/A</span>
+                <span id="practice-badge-status" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-100/80">NEW</span>
+              </div>
+
               <h2 id="practice-word-display"
-                class="text-4xl font-extrabold text-slate-900 tracking-tight my-6 font-sans">Word</h2>
+                class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight my-6 font-sans">Word</h2>
+
+              <!-- Interactive Mode Container (Typing / Scramble / Speech) -->
+              <div id="practice-interactive-zone" class="my-6 max-w-md mx-auto">
+                
+                <!-- 1. Typing Mode (For Spelling / Reverse Translation) -->
+                <div id="practice-mode-typing" class="hidden flex flex-col gap-3">
+                  <input type="text" id="practice-typing-input" autocomplete="off" placeholder="Type your answer here..."
+                    class="form-input text-center font-semibold text-lg border-2 border-slate-200 focus:border-blue-500 rounded-xl py-3 px-4 shadow-sm outline-none">
+                  <button id="btn-practice-check-typing" onclick="checkTypingAnswer()"
+                    class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-3 rounded-xl transition shadow-md cursor-pointer flex items-center justify-center gap-1.5"><i class="fa-solid fa-circle-check"></i> Check Answer</button>
+                </div>
+
+                <!-- 2. Word Scramble Mode (For Phrases / Sentences) -->
+                <div id="practice-mode-scramble" class="hidden flex flex-col gap-4">
+                  <!-- Output Area where dragged/clicked words go -->
+                  <div id="practice-scramble-output" class="min-h-[60px] p-3 rounded-xl border-2 border-dashed border-slate-200/80 bg-slate-50/50 flex flex-wrap justify-center gap-2 items-center">
+                    <span class="text-xs text-slate-400 italic">Click the word cards below to assemble your answer</span>
+                  </div>
+                  <!-- Tiles pool area -->
+                  <div id="practice-scramble-pool" class="flex flex-wrap justify-center gap-2 mt-2"></div>
+                  <!-- Action Buttons -->
+                  <div class="flex gap-2 justify-center">
+                    <button onclick="resetScramble()" class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-500 font-semibold text-xs rounded-lg transition cursor-pointer">Reset</button>
+                    <button onclick="checkScrambleAnswer()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-lg transition shadow-sm cursor-pointer">Check</button>
+                  </div>
+                </div>
+
+                <!-- 3. Speech/Microphone Mode (For Shadowing sentences/phrases) -->
+                <div id="practice-mode-speech" class="hidden flex flex-col items-center gap-4">
+                  <button id="btn-practice-mic" class="w-16 h-16 rounded-full bg-blue-600 hover:bg-blue-500 text-white shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer relative">
+                    <i class="fa-solid fa-microphone text-xl"></i>
+                    <!-- Recording pulse rings -->
+                    <span class="mic-pulse-ring animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-450 opacity-0"></span>
+                  </button>
+                  <p id="practice-mic-status" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tap to start speaking</p>
+                  
+                  <!-- Speech result box with visual green/red word color-coding -->
+                  <div id="practice-speech-feedback" class="hidden w-full p-4 rounded-xl border border-slate-150 bg-slate-50/75 text-sm font-semibold text-slate-650 min-h-[50px] text-center"></div>
+                </div>
+
+                <!-- 4. Interactive Feedback & Scoring -->
+                <div id="practice-interactive-feedback" class="hidden mt-4 p-4 rounded-xl text-sm font-bold text-center"></div>
+
+              </div>
 
               <div id="practice-meaning-box"
                 class="mt-8 pt-8 border-t border-dashed border-slate-200 max-w-md mx-auto hidden opacity-0 transition-all duration-300 transform translate-y-2">

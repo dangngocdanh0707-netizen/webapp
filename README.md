@@ -84,6 +84,11 @@ webapp_project/ (personal_webapp/)
     * Giải quyết triệt để lỗi đảo ngược ngày khi giao dịch với Google Sheets có ngôn ngữ khu vực là Mỹ (US Locale) vốn mong muốn định dạng `Tháng/Ngày/Năm (MM/dd/yyyy)` cho dữ liệu thô.
     * Tự động đồng bộ hóa: Lưu trữ dưới dạng `MM/dd/yyyy` trơn tru trên Google Sheets để Sheets tự động nhận diện chuẩn xác ngày thực tế, nhưng hiển thị chuẩn định dạng `Ngày/Tháng/Năm (dd/MM/yyyy)` quen thuộc 100% trên giao diện HTML và các ô chọn ngày, hoàn toàn không cần sử dụng các ký tự ép kiểu đặc biệt như `'`, `""`, hay `=`.
 
+11. **🎓 Hệ thống Ôn tập Spaced Repetition (Anki SM-2) đa chế độ tương tác thông minh (Vocabulary, Phrase, Sentence)**:
+    * **Phân tách Chế độ học động**: Hệ thống tự động phân tích thuộc tính Phân loại (Category) để điều phối bài học phù hợp: Reverse Recall (Dịch ngược từ Việt sang Anh) cho Từ vựng đơn, Cloze Deletion (Điền khuyết giới/động từ) cho Cụm từ, và Word Scramble (Ghép thẻ từ kéo thả) cho Câu.
+    * **Tích hợp Web Speech API (Microphone Shadowing)**: Luyện nói đuổi (Shadowing) cả câu dài trực tiếp trên trình duyệt, hệ thống tự động so khớp nhận diện giọng nói, tính điểm % chính xác và tô màu Xanh (đúng)/Đỏ (sai/thiếu) cho từng từ trực quan mà không phát sinh bất kỳ chi phí API bên thứ ba nào.
+    * **Gợi ý nút bấm Anki tự động**: Sau khi hoàn thành bài học tương tác, hệ thống tự động viền xanh gợi ý nút Anki tối ưu tương ứng với kết quả (ví dụ: phát âm đúng $\ge 90\%$ $\rightarrow$ gợi ý nút Easy/Good). Bạn vẫn giữ toàn quyền click chọn nút (Again/Hard/Good/Easy) để lưu cập nhật chu kỳ lên Google Sheets.
+
 ---
 
 ## 🛠️ Hướng dẫn thiết lập & Vận hành thực tế (3 Bước)
