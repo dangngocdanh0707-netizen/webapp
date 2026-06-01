@@ -248,6 +248,86 @@ window.triggerRandomVocab = function() {
   if (actionMetrics) actionMetrics.classList.add('hidden');
 };
 
+let draggedTileId = null;
+
+window.onScrambleDragStart = function(event, tileId) {
+  draggedTileId = tileId;
+  event.dataTransfer.effectAllowed = 'move';
+  event.target.classList.add('opacity-40');
+};
+
+window.onScrambleDragOver = function(event) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
+};
+
+window.onScrambleDrop = function(event, targetTileId) {
+  event.preventDefault();
+  if (!draggedTileId || draggedTileId === targetTileId) return;
+
+  const dragIndex = scrambleUserOrder.indexOf(draggedTileId);
+  const targetIndex = scrambleUserOrder.indexOf(targetTileId);
+
+  if (dragIndex > -1 && targetIndex > -1) {
+    scrambleUserOrder.splice(dragIndex, 1);
+    scrambleUserOrder.splice(targetIndex, 0, draggedTileId);
+    updateScrambleUI();
+
+    if (currentPracticeWord) {
+      const targetText = currentPracticeWord.content || "";
+      const clean = (str) => str.toLowerCase()
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"")
+        .replace(/\s+/g, " ")
+        .trim();
+      
+      const userSentence = scrambleUserOrder.map(id => {
+        const t = scrambleTiles.find(x => x.id === id);
+        return t ? t.word : "";
+      }).join(" ");
+      
+      if (clean(userSentence) === clean(targetText)) {
+        checkScrambleAnswer();
+      }
+    }
+  }
+};
+
+window.onScrambleDragEnd = function(event) {
+  event.target.classList.remove('opacity-40');
+  draggedTileId = null;
+};
+
+window.shiftScrambleTile = function(tileId, direction) {
+  const index = scrambleUserOrder.indexOf(tileId);
+  if (index === -1) return;
+
+  const newIndex = index + direction;
+  if (newIndex < 0 || newIndex >= scrambleUserOrder.length) return;
+
+  const temp = scrambleUserOrder[index];
+  scrambleUserOrder[index] = scrambleUserOrder[newIndex];
+  scrambleUserOrder[newIndex] = temp;
+
+  updateScrambleUI();
+
+  if (currentPracticeWord) {
+    const targetText = currentPracticeWord.content || "";
+    const clean = (str) => str.toLowerCase()
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"")
+      .replace(/\s+/g, " ")
+      .trim();
+    
+    const userSentence = scrambleUserOrder.map(id => {
+      const t = scrambleTiles.find(x => x.id === id);
+      return t ? t.word : "";
+    }).join(" ");
+    
+    if (clean(userSentence) === clean(targetText)) {
+      checkScrambleAnswer();
+    }
+  }
+};
+
 function updateScrambleUI() {
   const outputContainer = document.getElementById('practice-scramble-output');
   const poolContainer = document.getElementById('practice-scramble-pool');
@@ -256,14 +336,40 @@ function updateScrambleUI() {
   if (scrambleUserOrder.length === 0) {
     outputContainer.innerHTML = `<span class="text-xs text-slate-400 font-medium italic">Click the word cards below to assemble your answer</span>`;
   } else {
-    outputContainer.innerHTML = scrambleUserOrder.map(tileId => {
+    outputContainer.innerHTML = scrambleUserOrder.map((tileId, index) => {
       const tile = scrambleTiles.find(t => t.id === tileId);
       if (!tile) return "";
+      
+      const isFirst = index === 0;
+      const isLast = index === scrambleUserOrder.length - 1;
+      
       return `
-        <button onclick="deselectScrambleTile('${tile.id}')"
-          class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-sm shadow-2xs hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 transition duration-200 cursor-pointer flex items-center justify-center transform hover:scale-105 active:scale-95">
-          ${tile.word}
-        </button>
+        <div draggable="true"
+          ondragstart="onScrambleDragStart(event, '${tile.id}')"
+          ondragover="onScrambleDragOver(event)"
+          ondrop="onScrambleDrop(event, '${tile.id}')"
+          ondragend="onScrambleDragEnd(event)"
+          class="inline-flex items-center gap-1 bg-white border border-slate-200 text-slate-700 font-semibold text-sm rounded-xl pl-1 pr-1 py-1 shadow-2xs hover:border-blue-400 transition-all duration-200 transform active:scale-95 cursor-grab">
+          
+          <button onclick="shiftScrambleTile('${tile.id}', -1); event.stopPropagation();" 
+            ${isFirst ? 'disabled class="w-5 h-5 rounded-md text-slate-200 flex items-center justify-center text-xs cursor-not-allowed"' : 'class="w-5 h-5 rounded-md hover:bg-slate-100 text-slate-400 hover:text-blue-500 flex items-center justify-center text-xs transition cursor-pointer"'}
+            title="Move left">
+            <i class="fa-solid fa-chevron-left text-[9px]"></i>
+          </button>
+          
+          <span onclick="deselectScrambleTile('${tile.id}'); event.stopPropagation();" 
+            class="px-2 py-0.5 cursor-pointer hover:text-rose-600 transition select-none" 
+            title="Click to remove">
+            ${tile.word}
+          </span>
+          
+          <button onclick="shiftScrambleTile('${tile.id}', 1); event.stopPropagation();" 
+            ${isLast ? 'disabled class="w-5 h-5 rounded-md text-slate-200 flex items-center justify-center text-xs cursor-not-allowed"' : 'class="w-5 h-5 rounded-md hover:bg-slate-100 text-slate-400 hover:text-blue-500 flex items-center justify-center text-xs transition cursor-pointer"'}
+            title="Move right">
+            <i class="fa-solid fa-chevron-right text-[9px]"></i>
+          </button>
+          
+        </div>
       `;
     }).join("");
   }
