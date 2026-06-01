@@ -168,7 +168,6 @@ window.logPracticeAction = function(action) {
     .then(res => {
       buttons.forEach(btn => btn.disabled = false);
       
-      showToast(`Đã ghi nhận đánh giá: ${action.toUpperCase()}!`, "success");
       reviewQueue = reviewQueue.filter(v => v.rowNumber !== rowNumber);
       
       const cardContent = document.getElementById('practice-card-content');
