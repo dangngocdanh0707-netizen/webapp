@@ -188,7 +188,7 @@ window.triggerRandomVocab = function() {
   } else {
     document.getElementById('practice-mode-scramble').classList.remove('hidden');
     const rawWords = wordContent
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "")
       .split(/\s+/)
       .filter(w => w.trim() !== "");
       
