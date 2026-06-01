@@ -477,7 +477,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
           range: `${costTab}!A:D`,
-          valueInputOption: 'RAW',
+          valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
           resource: { values: [[date, category, Number(amount) || 0, note]] }
         });
@@ -489,7 +489,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${costTab}!A${rowNumber}:D${rowNumber}`,
-          valueInputOption: 'RAW',
+          valueInputOption: 'USER_ENTERED',
           resource: { values: [[date, category, Number(amount) || 0, note]] }
         });
         resolve("Thành công");
@@ -523,7 +523,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
           range: `${vocabTab}!A:I`,
-          valueInputOption: 'RAW',
+          valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
           resource: { values: [[content, "", "", "", "", "New", "", 0, 2.5]] }
         });
@@ -535,7 +535,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${vocabTab}!A${rowNumber}:E${rowNumber}`,
-          valueInputOption: 'RAW',
+          valueInputOption: 'USER_ENTERED',
           resource: { values: [[content, category, topic, level, meaning]] }
         });
         resolve("Thành công");
@@ -606,7 +606,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${vocabTab}!F${rowNumber}:I${rowNumber}`,
-          valueInputOption: 'RAW',
+          valueInputOption: 'USER_ENTERED',
           resource: { values: [[finalStatus, formatDateDb(nrStr), interval, easeFactor]] }
         });
         resolve("Thành công");
@@ -632,7 +632,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
           range: `${linkTab}!A:C`,
-          valueInputOption: 'RAW',
+          valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
           resource: { values: [[title, content, category]] }
         });
@@ -644,7 +644,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${linkTab}!A${rowNumber}:C${rowNumber}`,
-          valueInputOption: 'RAW',
+          valueInputOption: 'USER_ENTERED',
           resource: { values: [[title, content, category]] }
         });
         resolve("Thành công");
@@ -678,7 +678,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
           range: `${promptTab}!A:C`,
-          valueInputOption: 'RAW',
+          valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
           resource: { values: [[title, content, category]] }
         });
@@ -690,7 +690,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${promptTab}!A${rowNumber}:C${rowNumber}`,
-          valueInputOption: 'RAW',
+          valueInputOption: 'USER_ENTERED',
           resource: { values: [[title, content, category]] }
         });
         resolve("Thành công");
@@ -724,7 +724,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
           range: `${goalTab}!A:E`,
-          valueInputOption: 'RAW',
+          valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
           resource: { values: [[goal_name, start_date, end_date, Number(current_value) || 0, Number(target_value) || 0]] }
         });
@@ -736,7 +736,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${goalTab}!A${rowNumber}:E${rowNumber}`,
-          valueInputOption: 'RAW',
+          valueInputOption: 'USER_ENTERED',
           resource: { values: [[goal_name, start_date, end_date, Number(current_value) || 0, Number(target_value) || 0]] }
         });
         resolve("Thành công");
@@ -792,7 +792,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${taskTab}!A${rowNumber}:B${rowNumber}`,
-          valueInputOption: 'RAW',
+          valueInputOption: 'USER_ENTERED',
           resource: { values: [[date, taskDesc]] }
         });
         
@@ -804,7 +804,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${taskTab}!A${rowNumber}:C${rowNumber}`,
-          valueInputOption: 'RAW',
+          valueInputOption: 'USER_ENTERED',
           resource: { values: [[date, taskDesc, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
         });
         resolve("Thành công");
@@ -1185,6 +1185,7 @@ export function cleanDateValue(val) {
   
   let str = val.toString().trim();
   if (str.startsWith("'")) str = str.substring(1);
+  if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
   return str;
 }
 
@@ -1193,6 +1194,7 @@ export function formatDateView(dateStr) {
   if (!dateStr) return '-';
   let str = dateStr.toString().trim();
   if (str.startsWith("'")) str = str.substring(1);
+  if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
 
   // Xử lý định dạng yyyy-MM-dd hoặc tương tự có dấu gạch ngang -
   if (str.includes('-')) {
@@ -1250,6 +1252,7 @@ export function formatDateInput(dateStr) {
   if (!dateStr) return '';
   let str = dateStr.toString().trim();
   if (str.startsWith("'")) str = str.substring(1);
+  if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
 
   if (str.includes('/')) {
     let parts = str.split('/');
@@ -1301,15 +1304,16 @@ export function formatDateDb(dateStr) {
   if (!dateStr) return '';
   let str = dateStr.toString().trim();
   if (str.startsWith("'")) str = str.substring(1);
+  if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
 
   // yyyy-MM-dd -> dd/MM/yyyy
   if (str.includes('-')) {
     let parts = str.split('-');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+        return `="${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}"`;
       } else if (parts[2].length === 4) {
-        return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+        return `="${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}"`;
       }
     }
   }
@@ -1319,7 +1323,7 @@ export function formatDateDb(dateStr) {
     let parts = str.split('/');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+        return `="${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}"`;
       } else if (parts[2].length === 4) {
         let p0 = parseInt(parts[0], 10);
         let p1 = parseInt(parts[1], 10);
@@ -1331,7 +1335,7 @@ export function formatDateDb(dateStr) {
           d = parts[1].padStart(2, '0');
           m = parts[0].padStart(2, '0');
         }
-        return `${d}/${m}/${y}`;
+        return `="${d}/${m}/${y}"`;
       }
     }
   }
@@ -1342,10 +1346,10 @@ export function formatDateDb(dateStr) {
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
+    return `="${day}/${month}/${year}"`;
   }
 
-  return str;
+  return `="${str}"`;
 }
 
 // 4. Chuyển đổi định dạng ngày thành Timestamp phục vụ việc sắp xếp danh sách
@@ -1353,6 +1357,7 @@ export function parseDateToTimestamp(dateStr) {
   if (!dateStr) return 0;
   let str = dateStr.toString().trim();
   if (str.startsWith("'")) str = str.substring(1);
+  if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
 
   if (str.includes('/')) {
     let parts = str.split('/');
