@@ -1299,31 +1299,31 @@ export function formatDateInput(dateStr) {
   return '';
 }
 
-// 3. Chuẩn hóa ngày trước khi ghi xuống Google Sheets thành dạng dd/MM/yyyy
+// 3. Chuẩn hóa ngày trước khi ghi xuống Google Sheets thành dạng yyyy-MM-dd để Google Sheets tự nhận diện đúng ngày
 export function formatDateDb(dateStr) {
   if (!dateStr) return '';
   let str = dateStr.toString().trim();
   if (str.startsWith("'")) str = str.substring(1);
   if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
 
-  // yyyy-MM-dd -> dd/MM/yyyy
+  // yyyy-MM-dd -> yyyy-MM-dd
   if (str.includes('-')) {
     let parts = str.split('-');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `'${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
       } else if (parts[2].length === 4) {
-        return `'${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
       }
     }
   }
 
-  // yyyy/MM/dd -> dd/MM/yyyy
+  // yyyy/MM/dd -> yyyy-MM-dd
   if (str.includes('/')) {
     let parts = str.split('/');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `'${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
       } else if (parts[2].length === 4) {
         let p0 = parseInt(parts[0], 10);
         let p1 = parseInt(parts[1], 10);
@@ -1335,7 +1335,7 @@ export function formatDateDb(dateStr) {
           d = parts[1].padStart(2, '0');
           m = parts[0].padStart(2, '0');
         }
-        return `'${d}/${m}/${y}`;
+        return `${y}-${m}-${d}`;
       }
     }
   }
@@ -1346,10 +1346,10 @@ export function formatDateDb(dateStr) {
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
-    return `'${day}/${month}/${year}`;
+    return `${year}-${month}-${day}`;
   }
 
-  return `'${str}`;
+  return str;
 }
 
 // 4. Chuyển đổi định dạng ngày thành Timestamp phục vụ việc sắp xếp danh sách
