@@ -5,7 +5,6 @@ let reviewQueue = [];
 let allVocabData = [];
 let currentPracticeWord = null;
 let onSyncNeeded = null;
-let scrambleUser = [];
 
 export function initSrsModule(vocabData, onSync) {
   allVocabData = vocabData || [];
@@ -42,7 +41,7 @@ export function initSrsModule(vocabData, onSync) {
   
   if (reviewQueue.length > 0) {
     if (headlineEl) headlineEl.innerText = `You have ${reviewQueue.length} items due for today!`;
-    if (sublineEl) sublineEl.innerText = "Complete the interactive quiz below to trigger Spaced Repetition.";
+    if (sublineEl) sublineEl.innerText = "Listen to the audio, type the full answer, and trigger Spaced Repetition.";
   } else {
     if (headlineEl) headlineEl.innerText = "🎉 All caught up!";
     if (sublineEl) sublineEl.innerText = "Excellent. You have no pending card reviews scheduled for today.";
@@ -62,33 +61,6 @@ function speakWord(word) {
   } catch (e) {
     console.warn("TTS Synthesis failed:", e);
   }
-}
-
-// Helper: Cloze Deletion Generator
-function getClozeData(sentence) {
-  const words = sentence.trim().split(/\s+/);
-  if (words.length <= 1) {
-    return { display: sentence, answer: sentence.toLowerCase().replace(/[^\w]/g, '') };
-  }
-  
-  // Choose the first word that is at least 3 characters long to hide
-  let hideIdx = 0;
-  for (let i = 0; i < words.length; i++) {
-    const cleanWord = words[i].replace(/[^\w]/g, '');
-    if (cleanWord.length >= 3) {
-      hideIdx = i;
-      break;
-    }
-  }
-  
-  const targetWord = words[hideIdx].replace(/[^\w]/g, '');
-  const displayWords = [...words];
-  displayWords[hideIdx] = "______";
-  
-  return {
-    display: displayWords.join(" "),
-    answer: targetWord.toLowerCase()
-  };
 }
 
 function showInteractiveFeedback(isCorrect, message) {
@@ -154,12 +126,8 @@ window.triggerRandomVocab = function() {
   if (badgeStatus) badgeStatus.innerText = curStatus.toUpperCase();
   if (meaningDisplay) meaningDisplay.innerText = currentPracticeWord.meaning || 'No translation attached.';
   
-  // Dynamic setup based on Category
-  let category = currentPracticeWord.category ? currentPracticeWord.category.toString().trim().toUpperCase() : 'VOCABULARY';
-  
-  // Hide all mode containers first
-  document.getElementById('practice-mode-typing').classList.add('hidden');
-  document.getElementById('practice-mode-scramble').classList.add('hidden');
+  // Show only Typing container (unified full-dictation mode)
+  document.getElementById('practice-mode-typing').classList.remove('hidden');
   
   const feedbackEl = document.getElementById('practice-interactive-feedback');
   if (feedbackEl) feedbackEl.classList.add('hidden');
@@ -169,58 +137,27 @@ window.triggerRandomVocab = function() {
   const srsButtons = document.querySelectorAll('#practice-action-metrics button');
   srsButtons.forEach(btn => btn.classList.remove('ring-4', 'ring-blue-500', 'border-blue-500', 'bg-blue-50'));
 
-  if (category === 'VOCABULARY') {
-    // Spelling mode (show Vietnamese meaning, let user type English content)
-    document.getElementById('practice-mode-typing').classList.remove('hidden');
-    const inputEl = document.getElementById('practice-typing-input');
-    if (inputEl) {
-      inputEl.value = "";
-      inputEl.placeholder = "Dịch nghĩa sang từ Tiếng Anh...";
-      setTimeout(() => inputEl.focus(), 100);
-    }
-    
-    if (currentPracticeWord.meaning && currentPracticeWord.meaning.trim() !== "") {
-      if (wordDisplay) wordDisplay.innerText = currentPracticeWord.meaning;
-    } else {
-      if (wordDisplay) wordDisplay.innerText = wordContent;
-    }
-  } else if (category === 'PHRASE') {
-    // Cloze deletion mode (show sentence/phrase with hidden blank word)
-    document.getElementById('practice-mode-typing').classList.remove('hidden');
-    const cloze = getClozeData(wordContent);
-    currentPracticeWord.clozeAnswer = cloze.answer;
-    
-    if (wordDisplay) wordDisplay.innerText = cloze.display;
-    const inputEl = document.getElementById('practice-typing-input');
-    if (inputEl) {
-      inputEl.value = "";
-      inputEl.placeholder = "Nhập từ còn thiếu...";
-      setTimeout(() => inputEl.focus(), 100);
-    }
-  } else if (category === 'SENTENCE') {
-    // Sentence structure mode (Scramble)
-    document.getElementById('practice-mode-scramble').classList.remove('hidden');
-    
-    if (wordDisplay) wordDisplay.innerText = currentPracticeWord.meaning || wordContent;
-    
-    // Setup Word Scramble tiles
-    const words = wordContent.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").split(/\s+/).filter(w => w.trim() !== "");
-    const shuffled = [...words].sort(() => Math.random() - 0.5);
-    scrambleUser = [];
-    updateScrambleOutput();
-    
-    const poolContainer = document.getElementById('practice-scramble-pool');
-    if (poolContainer) {
-      poolContainer.innerHTML = shuffled.map((word, idx) => `
-        <button id="tile-${idx}" onclick="selectScrambleTile('${word.replace(/'/g, "\\'")}', 'tile-${idx}')" 
-          class="px-3 py-1.5 rounded-xl bg-white border-2 border-slate-200 hover:border-blue-400 font-semibold text-slate-700 shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer text-xs">
-          ${word}
-        </button>
-      `).join("");
-    }
+  const inputEl = document.getElementById('practice-typing-input');
+  if (inputEl) {
+    inputEl.value = "";
+    inputEl.placeholder = "Nghe âm thanh và nhập toàn bộ từ/câu...";
+    inputEl.onkeydown = function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        checkTypingAnswer();
+      }
+    };
+    setTimeout(() => inputEl.focus(), 100);
   }
   
-  // TTS triggers automatically on card loading
+  // Display meaning as the prompt, fallback to standard hint if meaning is empty
+  if (currentPracticeWord.meaning && currentPracticeWord.meaning.trim() !== "") {
+    if (wordDisplay) wordDisplay.innerText = currentPracticeWord.meaning;
+  } else {
+    if (wordDisplay) wordDisplay.innerText = "Listen & Write...";
+  }
+  
+  // Auto play TTS triggers automatically on card loading
   speakWord(wordContent);
   
   // Calculate Dynamic Anki Days
@@ -267,70 +204,21 @@ window.checkTypingAnswer = function() {
   const inputEl = document.getElementById('practice-typing-input');
   if (!inputEl) return;
   
-  const userAns = inputEl.value.trim().toLowerCase().replace(/[^\w]/g, '');
-  let targetAns = "";
+  const userAns = inputEl.value.trim();
+  const targetAns = currentPracticeWord.content || "";
   
-  let category = currentPracticeWord.category ? currentPracticeWord.category.toString().trim().toUpperCase() : 'VOCABULARY';
-  if (category === 'PHRASE') {
-    targetAns = currentPracticeWord.clozeAnswer;
-  } else {
-    targetAns = (currentPracticeWord.content || "").trim().toLowerCase().replace(/[^\w]/g, '');
-  }
+  // Clean punctuation and normalize spacing for robust checking
+  const clean = (str) => str.toLowerCase()
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"")
+    .replace(/\s+/g, " ")
+    .trim();
 
-  const isCorrect = userAns === targetAns;
-  showInteractiveFeedback(isCorrect, isCorrect ? "🎉 Chính xác tuyệt đối!" : `❌ Sai rồi! Đáp án đúng phải là: "${targetAns.toUpperCase()}"`);
+  const isCorrect = clean(userAns) === clean(targetAns);
+  showInteractiveFeedback(isCorrect, isCorrect ? "🎉 Chính xác tuyệt đối!" : `❌ Chưa đúng! Đáp án đúng là: "${targetAns}"`);
   
   revealPracticeMeaning();
   highlightSrsButton(isCorrect);
 };
-
-window.selectScrambleTile = function(word, elementId) {
-  const tileEl = document.getElementById(elementId);
-  if (!tileEl || tileEl.classList.contains('opacity-30')) return;
-  
-  tileEl.classList.add('opacity-30', 'pointer-events-none');
-  scrambleUser.push(word);
-  updateScrambleOutput();
-};
-
-window.resetScramble = function() {
-  scrambleUser = [];
-  updateScrambleOutput();
-  
-  const poolContainer = document.getElementById('practice-scramble-pool');
-  if (poolContainer) {
-    const tiles = poolContainer.querySelectorAll('button');
-    tiles.forEach(tile => tile.classList.remove('opacity-30', 'pointer-events-none'));
-  }
-};
-
-window.checkScrambleAnswer = function() {
-  if (!currentPracticeWord) return;
-  const targetText = currentPracticeWord.content || "";
-  const clean = (str) => str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").trim();
-  
-  const targetSentence = clean(targetText);
-  const userSentence = clean(scrambleUser.join(" "));
-  
-  const isCorrect = userSentence === targetSentence;
-  showInteractiveFeedback(isCorrect, isCorrect ? "🎉 Bạn ghép câu hoàn toàn chính xác!" : `❌ Chưa khớp! Đáp án đúng là: "${targetText}"`);
-  
-  revealPracticeMeaning();
-  highlightSrsButton(isCorrect);
-};
-
-function updateScrambleOutput() {
-  const outputContainer = document.getElementById('practice-scramble-output');
-  if (!outputContainer) return;
-  
-  if (scrambleUser.length === 0) {
-    outputContainer.innerHTML = `<span class="text-xs text-slate-400 italic">Click các thẻ từ bên dưới để ghép câu</span>`;
-  } else {
-    outputContainer.innerHTML = scrambleUser.map(word => `
-      <span class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 shadow-2xs font-semibold text-slate-700 text-sm animate-fade-in">${word}</span>
-    `).join("");
-  }
-}
 
 window.revealPracticeMeaning = function() {
   const meaningBox = document.getElementById('practice-meaning-box');
@@ -347,7 +235,7 @@ window.revealPracticeMeaning = function() {
   if (btnReveal) btnReveal.classList.add('hidden');
   if (actionMetrics) actionMetrics.classList.remove('hidden');
   
-  // Play native TTS pronunciation when revealing sentence
+  // Play native TTS pronunciation when revealing answer
   if (currentPracticeWord) {
     speakWord(currentPracticeWord.content || "");
   }
