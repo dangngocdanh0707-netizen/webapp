@@ -403,7 +403,8 @@ export function callServer(methodName, args) {
             `${promptTab}!A2:C`,
             `${goalTab}!A2:E`,
             `${taskTab}!A2:C`
-          ]
+          ],
+          valueRenderOption: 'UNFORMATTED_VALUE'
         });
         const valueRanges = response.result.valueRanges;
         const getRows = (vr) => (vr && vr.values) ? vr.values : [];
@@ -411,7 +412,7 @@ export function callServer(methodName, args) {
         resolve({
           cost: getRows(valueRanges[0]).map((row, idx) => ({
             rowNumber: idx + 2,
-            date: row[0] || "",
+            date: cleanDateValue(row[0]),
             category: row[1] || "",
             amount: parseAmount(row[2]),
             note: row[3] || ""
@@ -425,14 +426,14 @@ export function callServer(methodName, args) {
             level: row[3] || "",
             meaning: row[4] || "",
             status: row[5] || "New",
-            next_review: row[6] || "",
+            next_review: cleanDateValue(row[6]),
             interval: Number(row[7]) || 0,
             ease_factor: Number(row[8]) || 2.5
           })).filter(item => item.content),
 
           habit_tracker: getRows(valueRanges[2]).map((row, idx) => ({
             rowNumber: idx + 2,
-            date: row[0] || "",
+            date: cleanDateValue(row[0]),
             habit: row[1] || "",
             status: row[2] === "TRUE" || row[2] === true || row[2] === "true"
           })).filter(item => item.habit),
@@ -454,15 +455,15 @@ export function callServer(methodName, args) {
           goal: getRows(valueRanges[5]).map((row, idx) => ({
             rowNumber: idx + 2,
             goal_name: row[0] || "",
-            start_date: row[1] || "",
-            end_date: row[2] || "",
+            start_date: cleanDateValue(row[1]),
+            end_date: cleanDateValue(row[2]),
             current_value: parseAmount(row[3]),
             target_value: parseAmount(row[4])
           })).filter(item => item.goal_name),
 
           task: getRows(valueRanges[6]).map((row, idx) => ({
             rowNumber: idx + 2,
-            date: row[0] || "",
+            date: cleanDateValue(row[0]),
             task: row[1] || "",
             status: row[2] === "TRUE" || row[2] === true || row[2] === "true"
           })).filter(item => item.task)
@@ -1169,6 +1170,25 @@ export function escapeHTML(str) {
 // ==========================================
 
 // 1. Hiển thị ngày dạng dd/MM/yyyy trên giao diện web (bất kể dữ liệu gốc từ Google Sheets là gì)
+export function cleanDateValue(val) {
+  if (val === undefined || val === null) return "";
+  
+  if (typeof val === 'number') {
+    // Convert Google Sheets serial number to Date (base: Dec 30, 1899)
+    const baseDate = new Date(1899, 11, 30);
+    const date = new Date(baseDate.getTime() + val * 24 * 60 * 60 * 1000);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+  
+  let str = val.toString().trim();
+  if (str.startsWith("'")) str = str.substring(1);
+  return str;
+}
+
+// 1. Hiển thị ngày dạng dd/MM/yyyy trên giao diện web (bất kể dữ liệu gốc từ Google Sheets là gì)
 export function formatDateView(dateStr) {
   if (!dateStr) return '-';
   let str = dateStr.toString().trim();
@@ -1276,30 +1296,30 @@ export function formatDateInput(dateStr) {
   return '';
 }
 
-// 3. Chuẩn hóa ngày trước khi ghi xuống Google Sheets thành dạng dd/MM/yyyy
+// 3. Chuẩn hóa ngày trước khi ghi xuống Google Sheets thành dạng yyyy-MM-dd
 export function formatDateDb(dateStr) {
   if (!dateStr) return '';
   let str = dateStr.toString().trim();
   if (str.startsWith("'")) str = str.substring(1);
 
-  // yyyy-MM-dd -> dd/MM/yyyy
+  // yyyy-MM-dd -> yyyy-MM-dd
   if (str.includes('-')) {
     let parts = str.split('-');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `'${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
       } else if (parts[2].length === 4) {
-        return `'${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0]}`;
       }
     }
   }
 
-  // yyyy/MM/dd -> dd/MM/yyyy
+  // yyyy/MM/dd -> yyyy-MM-dd
   if (str.includes('/')) {
     let parts = str.split('/');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `'${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
       } else if (parts[2].length === 4) {
         let p0 = parseInt(parts[0], 10);
         let p1 = parseInt(parts[1], 10);
@@ -1311,7 +1331,7 @@ export function formatDateDb(dateStr) {
           d = parts[1].padStart(2, '0');
           m = parts[0].padStart(2, '0');
         }
-        return `'${d}/${m}/${y}`;
+        return `${y}-${m}-${d}`;
       }
     }
   }
@@ -1322,10 +1342,10 @@ export function formatDateDb(dateStr) {
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
-    return `'${day}/${month}/${year}`;
+    return `${year}-${month}-${day}`;
   }
 
-  return `'${str}`;
+  return str;
 }
 
 // 4. Chuyển đổi định dạng ngày thành Timestamp phục vụ việc sắp xếp danh sách
