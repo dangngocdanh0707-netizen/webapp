@@ -11,6 +11,29 @@ export function initLinksModule(data, onSync) {
   const totalLinksEl = document.getElementById('total-links');
   if (totalLinksEl) totalLinksEl.innerText = allLinkData.length;
   
+  // Categorize and populate select options
+  let linkCategories = new Set();
+  allLinkData.forEach(item => {
+    if (item.category) {
+      let catName = item.category.toString().trim();
+      if (catName !== "") linkCategories.add(catName);
+    }
+  });
+  
+  const linkCatSelect = document.getElementById('linkCategoryFilter');
+  if (linkCatSelect) {
+    const prevSelected = linkCatSelect.value;
+    linkCatSelect.innerHTML = '<option value="All">All Categories</option>';
+    linkCategories.forEach(cat => {
+      linkCatSelect.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`);
+    });
+    if (Array.from(linkCategories).includes(prevSelected)) {
+      linkCatSelect.value = prevSelected;
+    } else {
+      linkCatSelect.value = "All";
+    }
+  }
+  
   buildLinkTable();
 }
 
@@ -19,12 +42,16 @@ export function buildLinkTable() {
   if (!tbody) return;
   tbody.innerHTML = "";
   
+  const catSelect = document.getElementById('linkCategoryFilter');
+  let selectedCat = catSelect ? catSelect.value : "All";
   let keyword = document.getElementById('linkSearchInput') ? document.getElementById('linkSearchInput').value.toLowerCase().trim() : "";
   
   allLinkData.forEach(item => {
     let titleText = (item.title || '').toString();
-    let catText = (item.category || '').toString();
+    let catText = (item.category || '').toString().trim();
     let contentText = (item.content || '').toString();
+    
+    if (selectedCat !== "All" && catText !== selectedCat) return;
     if (keyword !== "" && !titleText.toLowerCase().includes(keyword) && !contentText.toLowerCase().includes(keyword) && !catText.toLowerCase().includes(keyword)) return;
 
     let id = item.rowNumber;
@@ -55,8 +82,10 @@ export function buildLinkTable() {
     `);
   });
   
-  if (tbody.children.length === 0 && keyword !== "") {
-    tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400 italic">No entries found matching "${keyword}"</td></tr>`;
+  if (tbody.children.length === 0) {
+    if (keyword !== "" || selectedCat !== "All") {
+      tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400 italic">No entries found matching the active filters.</td></tr>`;
+    }
   }
 }
 
