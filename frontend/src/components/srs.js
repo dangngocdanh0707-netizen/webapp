@@ -478,6 +478,11 @@ window.revealPracticeMeaning = function() {
     }, 20);
   }
   
+  const wordDisplay = document.getElementById('practice-word-display');
+  if (wordDisplay && currentPracticeWord) {
+    wordDisplay.innerText = currentPracticeWord.content || "";
+  }
+  
   const btnReveal = document.getElementById('btn-practice-reveal');
   const actionMetrics = document.getElementById('practice-action-metrics');
   if (btnReveal) btnReveal.classList.add('hidden');
