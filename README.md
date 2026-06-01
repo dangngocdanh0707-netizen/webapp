@@ -86,8 +86,17 @@ webapp_project/ (personal_webapp/)
 
 11. **🎓 Hệ thống Ôn tập Spaced Repetition (Anki SM-2) đa chế độ tương tác thông minh (Vocabulary, Phrase, Sentence)**:
     * **Phân tách Chế độ học động**: Hệ thống tự động phân tích thuộc tính Phân loại (Category) để điều phối bài học phù hợp: Reverse Recall (Dịch ngược từ Việt sang Anh) cho Từ vựng đơn, Cloze Deletion (Điền khuyết giới/động từ) cho Cụm từ, và Word Scramble (Ghép thẻ từ kéo thả) cho Câu.
-    * **Tích hợp Web Speech API (Microphone Shadowing)**: Luyện nói đuổi (Shadowing) cả câu dài trực tiếp trên trình duyệt, hệ thống tự động so khớp nhận diện giọng nói, tính điểm % chính xác và tô màu Xanh (đúng)/Đỏ (sai/thiếu) cho từng từ trực quan mà không phát sinh bất kỳ chi phí API bên thứ ba nào.
-    * **Gợi ý nút bấm Anki tự động**: Sau khi hoàn thành bài học tương tác, hệ thống tự động viền xanh gợi ý nút Anki tối ưu tương ứng với kết quả (ví dụ: phát âm đúng $\ge 90\%$ $\rightarrow$ gợi ý nút Easy/Good). Bạn vẫn giữ toàn quyền click chọn nút (Again/Hard/Good/Easy) để lưu cập nhật chu kỳ lên Google Sheets.
+    * **Cơ chế Word Scramble Kéo-Thả (HTML5 Drag & Drop) Cao Cấp**:
+      * Cho phép kéo thả trực tiếp các thẻ từ trên cả máy tính lẫn thiết bị di động để sắp xếp thứ tự câu linh hoạt.
+      * Tích hợp cơ chế bấm chọn nhanh (Click to Select / Deselect) song song với kéo thả, tăng tối đa tốc độ phản hồi.
+      * Tự động nhận diện và bảo toàn nguyên vẹn dấu nháy đơn (`'`) của các từ viết tắt tiếng Anh (như `That's`, `don't`, `it's`) mà không bị thuật toán lọc bỏ ký tự đặc biệt xóa nhầm.
+      * **Auto-Check Thông Minh**: Tự động chấm điểm và hiển thị kết quả đúng ngay lập tức khi người dùng xếp đúng từ cuối cùng, loại bỏ hoàn toàn các nút bấm thủ công rườm rà như "Check Answer" hay "Reset".
+    * **Tích hợp Web Speech API (Microphone Shadowing)**: Luyện nói đuổi (Shadowing) cả câu dài trực tiếp trên trình duyệt, hệ thống tự động so khớp nhận diện giọng nói, tính điểm % chính xác và tô màu trực quan mà không phát sinh bất kỳ chi phí API bên thứ ba nào.
+    * **Tối Ưu Hóa Thiết Kế Khoảng Cách (Tightened Premium Spacing)**:
+      * Tinh chỉnh toàn bộ các thuộc tính margin và padding (`my-4`, `mt-4 pt-4`, `mt-6 pt-4`) giúp giao diện học của Anki co gọn, liền mạch và mang lại cảm giác cực kỳ sang trọng, tinh tế. Tránh hoàn toàn hiện tượng trống trải hay loãng màn hình.
+    * **Khắc Phục Lỗi Hoán Đổi Chỉ Mục GAPI (Interval vs Ease Factor Swap Fix)**:
+      * Đồng bộ chuẩn xác chỉ mục của các cột `Interval` và `Ease Factor` tại tất cả 4 cổng kết nối Google Sheets API.
+      * Giúp giải quyết dứt điểm hiện tượng các nút bấm Anki "Good" và "Easy" bị tính toán ra cùng một số ngày giống nhau, đảm bảo thuật toán giãn cách ngày SM-2 hoạt động chính xác tuyệt đối.
 
 ---
 
