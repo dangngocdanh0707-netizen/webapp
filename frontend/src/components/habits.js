@@ -1,4 +1,4 @@
-import { callServer, formatDateView, parseDateToTimestamp } from '../services/api.js';
+import { callServer, escapeHTML, formatDateView, parseDateToTimestamp } from '../services/api.js';
 import { renderHabitLine, updateHabitChartData } from './charts.js';
 import { showToast } from '../services/toast.js';
 
@@ -105,8 +105,8 @@ export function buildHabitTable(filterValue) {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-xs text-slate-500">${formatDateView(item.date)}</td>
-        <td class="p-4 font-medium text-slate-700">${item.habit || '-'}</td>
+        <td class="p-4 pl-6 font-semibold text-xs text-slate-500">${escapeHTML(formatDateView(item.date))}</td>
+        <td class="p-4 font-medium text-slate-700">${escapeHTML(item.habit) || '-'}</td>
         <td class="p-4 pl-12">
           <label class="inline-flex items-center gap-3 cursor-pointer select-none">
             <input type="checkbox" id="habit-chk-${id}" class="habit-checkbox" ${isDone ? 'checked' : ''} onchange="toggleHabitStatusDirectly(${id}, this)">
