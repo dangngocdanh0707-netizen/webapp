@@ -81,6 +81,13 @@ function speakWord(word) {
 function showInteractiveFeedback(isCorrect, message) {
   const fbEl = document.getElementById('practice-interactive-feedback');
   if (!fbEl) return;
+  
+  if (isCorrect === null || !message || message.trim() === "") {
+    fbEl.classList.add('hidden');
+    fbEl.innerText = "";
+    return;
+  }
+  
   fbEl.innerText = message;
   fbEl.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-700', 'bg-rose-50', 'text-rose-700', 'bg-blue-50', 'text-blue-700');
   
