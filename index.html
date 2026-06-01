@@ -21,8 +21,8 @@
   <!-- Thư viện SDK Google Sheets & Auth -->
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script type="module" crossorigin src="/webapp_project/assets/index-Dzrq8tg1.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-B7ObgM7P.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-Ba2xLekx.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-BNIWzj_f.css">
 </head>
 
 <body>
@@ -444,21 +444,6 @@
                     class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-3 rounded-xl transition shadow-md cursor-pointer flex items-center justify-center gap-1.5"><i class="fa-solid fa-circle-check"></i> Check Answer</button>
                 </div>
 
-                <!-- 2. Word Scramble Mode (For Phrases / Sentences) -->
-                <div id="practice-mode-scramble" class="hidden flex flex-col gap-4">
-                  <!-- Output Area where dragged/clicked words go -->
-                  <div id="practice-scramble-output" class="min-h-[60px] p-3 rounded-xl border-2 border-dashed border-slate-200/80 bg-slate-50/50 flex flex-wrap justify-center gap-2 items-center">
-                    <span class="text-xs text-slate-400 italic">Click the word cards below to assemble your answer</span>
-                  </div>
-                  <!-- Tiles pool area -->
-                  <div id="practice-scramble-pool" class="flex flex-wrap justify-center gap-2 mt-2"></div>
-                  <!-- Action Buttons -->
-                  <div class="flex gap-2 justify-center">
-                    <button onclick="resetScramble()" class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-500 font-semibold text-xs rounded-lg transition cursor-pointer">Reset</button>
-                    <button onclick="checkScrambleAnswer()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-lg transition shadow-sm cursor-pointer">Check</button>
-                  </div>
-                </div>
-
                 <!-- 4. Interactive Feedback & Scoring -->
                 <div id="practice-interactive-feedback" class="hidden mt-4 p-4 rounded-xl text-sm font-bold text-center"></div>
 
@@ -466,8 +451,6 @@
 
               <div id="practice-meaning-box"
                 class="mt-8 pt-8 border-t border-dashed border-slate-200 max-w-md mx-auto hidden opacity-0 transition-all duration-300 transform translate-y-2">
-                <span class="text-[10px] font-extrabold text-slate-400 block uppercase tracking-widest mb-1">TRANSLATION
-                  & MEANING</span>
                 <p id="practice-meaning-display" class="text-lg font-bold text-slate-700">Ý nghĩa</p>
               </div>
             </div>
