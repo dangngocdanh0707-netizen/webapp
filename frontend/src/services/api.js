@@ -606,7 +606,7 @@ export function callServer(methodName, args) {
           spreadsheetId,
           range: `${vocabTab}!F${rowNumber}:I${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[finalStatus, nrStr, interval, easeFactor]] }
+          resource: { values: [[finalStatus, formatDateDb(nrStr), interval, easeFactor]] }
         });
         resolve("Thành công");
         return;
@@ -1003,7 +1003,7 @@ function handleLocalTransaction(method, args) {
       const newStatus = (interval >= 21) ? "Mastered" : "Learning";
       const finalStatus = interval === 0 ? "New" : newStatus;
 
-      data[idx] = { ...word, status: finalStatus, next_review: nrStr, interval, ease_factor: easeFactor };
+      data[idx] = { ...word, status: finalStatus, next_review: formatDateDb(nrStr), interval, ease_factor: easeFactor };
       saveLocalData("vocabulary", data);
     }
     return "Thành công";
@@ -1172,6 +1172,7 @@ export function escapeHTML(str) {
 export function formatDateView(dateStr) {
   if (!dateStr) return '-';
   let str = dateStr.toString().trim();
+  if (str.startsWith("'")) str = str.substring(1);
 
   // Xử lý định dạng yyyy-MM-dd hoặc tương tự có dấu gạch ngang -
   if (str.includes('-')) {
@@ -1228,6 +1229,7 @@ export function formatDateView(dateStr) {
 export function formatDateInput(dateStr) {
   if (!dateStr) return '';
   let str = dateStr.toString().trim();
+  if (str.startsWith("'")) str = str.substring(1);
 
   if (str.includes('/')) {
     let parts = str.split('/');
@@ -1278,15 +1280,16 @@ export function formatDateInput(dateStr) {
 export function formatDateDb(dateStr) {
   if (!dateStr) return '';
   let str = dateStr.toString().trim();
+  if (str.startsWith("'")) str = str.substring(1);
 
   // yyyy-MM-dd -> dd/MM/yyyy
   if (str.includes('-')) {
     let parts = str.split('-');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+        return `'${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
       } else if (parts[2].length === 4) {
-        return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+        return `'${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
       }
     }
   }
@@ -1296,7 +1299,7 @@ export function formatDateDb(dateStr) {
     let parts = str.split('/');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+        return `'${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
       } else if (parts[2].length === 4) {
         let p0 = parseInt(parts[0], 10);
         let p1 = parseInt(parts[1], 10);
@@ -1308,7 +1311,7 @@ export function formatDateDb(dateStr) {
           d = parts[1].padStart(2, '0');
           m = parts[0].padStart(2, '0');
         }
-        return `${d}/${m}/${y}`;
+        return `'${d}/${m}/${y}`;
       }
     }
   }
@@ -1319,16 +1322,17 @@ export function formatDateDb(dateStr) {
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
+    return `'${day}/${month}/${year}`;
   }
 
-  return str;
+  return `'${str}`;
 }
 
 // 4. Chuyển đổi định dạng ngày thành Timestamp phục vụ việc sắp xếp danh sách
 export function parseDateToTimestamp(dateStr) {
   if (!dateStr) return 0;
   let str = dateStr.toString().trim();
+  if (str.startsWith("'")) str = str.substring(1);
 
   if (str.includes('/')) {
     let parts = str.split('/');
