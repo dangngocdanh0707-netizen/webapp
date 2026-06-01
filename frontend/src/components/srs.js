@@ -187,6 +187,8 @@ window.triggerRandomVocab = function() {
     }
   } else {
     document.getElementById('practice-mode-scramble').classList.remove('hidden');
+    const poolContainer = document.getElementById('practice-scramble-pool');
+    if (poolContainer) poolContainer.classList.remove('hidden');
     const rawWords = wordContent
       .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "")
       .split(/\s+/)
@@ -477,6 +479,9 @@ window.revealPracticeMeaning = function() {
       meaningBox.classList.add('opacity-100', 'translate-y-0');
     }, 20);
   }
+  
+  const poolContainer = document.getElementById('practice-scramble-pool');
+  if (poolContainer) poolContainer.classList.add('hidden');
   
   const wordDisplay = document.getElementById('practice-word-display');
   if (wordDisplay && currentPracticeWord) {
