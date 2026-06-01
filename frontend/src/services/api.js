@@ -1174,12 +1174,13 @@ export function cleanDateValue(val) {
   if (val === undefined || val === null) return "";
   
   if (typeof val === 'number') {
-    // Convert Google Sheets serial number to Date (base: Dec 30, 1899)
-    const baseDate = new Date(1899, 11, 30);
-    const date = new Date(baseDate.getTime() + val * 24 * 60 * 60 * 1000);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
+    // Convert Google Sheets serial number to Date (base: Dec 30, 1899 in UTC)
+    // Using UTC avoids historical timezone offset changes and local timezone shifts
+    const baseDate = Date.UTC(1899, 11, 30);
+    const date = new Date(baseDate + val * 24 * 60 * 60 * 1000);
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const year = date.getUTCFullYear();
     return `${day}/${month}/${year}`;
   }
   
