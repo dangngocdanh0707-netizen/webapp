@@ -207,24 +207,7 @@ function showInteractiveFeedback(isCorrect, message) {
 }
 
 function highlightSrsButton(scoreOrSuccess) {
-  const buttons = document.querySelectorAll('#practice-action-metrics button');
-  buttons.forEach(btn => btn.classList.remove('ring-4', 'ring-blue-500', 'border-blue-500', 'bg-blue-50'));
-  
-  let targetBtn = null;
-  if (typeof scoreOrSuccess === 'number') {
-    if (scoreOrSuccess >= 90) targetBtn = document.querySelector('button[onclick="logPracticeAction(\'easy\')"]');
-    else if (scoreOrSuccess >= 70) targetBtn = document.querySelector('button[onclick="logPracticeAction(\'good\')"]');
-    else if (scoreOrSuccess >= 40) targetBtn = document.querySelector('button[onclick="logPracticeAction(\'hard\')"]');
-    else targetBtn = document.querySelector('button[onclick="logPracticeAction(\'again\')"]');
-  } else {
-    targetBtn = scoreOrSuccess 
-      ? document.querySelector('button[onclick="logPracticeAction(\'good\')"]')
-      : document.querySelector('button[onclick="logPracticeAction(\'again\')"]');
-  }
-  
-  if (targetBtn) {
-    targetBtn.classList.add('ring-4', 'ring-blue-500', 'border-blue-500', 'bg-blue-50');
-  }
+  // No highlight rings, user prefers a clean layout
 }
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
