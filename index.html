@@ -21,8 +21,8 @@
   <!-- Thư viện SDK Google Sheets & Auth -->
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script type="module" crossorigin src="/webapp_project/assets/index-B8IxmVMO.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-BS-PjEos.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-CiXp6iN7.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-DL78fbP8.css">
 </head>
 
 <body>
@@ -423,7 +423,7 @@
             </div>
 
             <div id="practice-card-content" class="hidden py-6">
-              <div class="flex items-center justify-center gap-3 my-6">
+              <div class="flex items-center justify-center gap-3 my-4">
                 <h2 id="practice-word-display"
                   class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-sans">Word</h2>
                 <button id="btn-practice-audio" onclick="playPracticeTTS()"
@@ -434,7 +434,7 @@
               </div>
 
               <!-- Interactive Mode Container (Typing / Scramble) -->
-              <div id="practice-interactive-zone" class="my-6 max-w-md mx-auto">
+              <div id="practice-interactive-zone" class="my-4 max-w-md mx-auto">
                 
                 <!-- 1. Typing Mode (For Spelling / Reverse Translation) -->
                 <div id="practice-mode-typing" class="hidden flex flex-col gap-3">
@@ -451,17 +451,17 @@
                 </div>
 
                 <!-- 4. Interactive Feedback & Scoring -->
-                <div id="practice-interactive-feedback" class="hidden mt-4 p-4 rounded-xl text-sm font-bold text-center"></div>
+                <div id="practice-interactive-feedback" class="hidden mt-3 p-3 rounded-xl text-sm font-bold text-center"></div>
 
               </div>
 
               <div id="practice-meaning-box"
-                class="mt-8 pt-8 border-t border-dashed border-slate-200 max-w-md mx-auto hidden opacity-0 transition-all duration-300 transform translate-y-2">
+                class="mt-4 pt-4 border-t border-dashed border-slate-200 max-w-md mx-auto hidden opacity-0 transition-all duration-300 transform translate-y-2">
                 <p id="practice-meaning-display" class="text-lg font-bold text-slate-700">Ý nghĩa</p>
               </div>
             </div>
 
-            <div class="mt-10 flex flex-col justify-center items-center gap-4 border-t border-slate-100 pt-8">
+            <div class="mt-6 flex flex-col justify-center items-center gap-4 border-t border-slate-100 pt-4">
               <button id="btn-practice-trigger" onclick="triggerRandomVocab()"
                 class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition shadow-lg cursor-pointer flex items-center justify-center gap-2"><i
                   class="fa-solid fa-shuffle"></i> Get Review Card</button>
