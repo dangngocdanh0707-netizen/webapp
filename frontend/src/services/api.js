@@ -477,7 +477,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
           range: `${costTab}!A:D`,
-          valueInputOption: 'USER_ENTERED',
+          valueInputOption: 'RAW',
           insertDataOption: 'OVERWRITE',
           resource: { values: [[date, category, Number(amount) || 0, note]] }
         });
@@ -489,7 +489,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${costTab}!A${rowNumber}:D${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
+          valueInputOption: 'RAW',
           resource: { values: [[date, category, Number(amount) || 0, note]] }
         });
         resolve("Thành công");
@@ -523,7 +523,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
           range: `${vocabTab}!A:I`,
-          valueInputOption: 'USER_ENTERED',
+          valueInputOption: 'RAW',
           insertDataOption: 'OVERWRITE',
           resource: { values: [[content, "", "", "", "", "New", "", 0, 2.5]] }
         });
@@ -535,7 +535,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${vocabTab}!A${rowNumber}:E${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
+          valueInputOption: 'RAW',
           resource: { values: [[content, category, topic, level, meaning]] }
         });
         resolve("Thành công");
@@ -606,7 +606,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${vocabTab}!F${rowNumber}:I${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
+          valueInputOption: 'RAW',
           resource: { values: [[finalStatus, formatDateDb(nrStr), interval, easeFactor]] }
         });
         resolve("Thành công");
@@ -632,7 +632,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
           range: `${linkTab}!A:C`,
-          valueInputOption: 'USER_ENTERED',
+          valueInputOption: 'RAW',
           insertDataOption: 'OVERWRITE',
           resource: { values: [[title, content, category]] }
         });
@@ -644,7 +644,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${linkTab}!A${rowNumber}:C${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
+          valueInputOption: 'RAW',
           resource: { values: [[title, content, category]] }
         });
         resolve("Thành công");
@@ -678,7 +678,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
           range: `${promptTab}!A:C`,
-          valueInputOption: 'USER_ENTERED',
+          valueInputOption: 'RAW',
           insertDataOption: 'OVERWRITE',
           resource: { values: [[title, content, category]] }
         });
@@ -690,7 +690,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${promptTab}!A${rowNumber}:C${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
+          valueInputOption: 'RAW',
           resource: { values: [[title, content, category]] }
         });
         resolve("Thành công");
@@ -724,7 +724,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
           range: `${goalTab}!A:E`,
-          valueInputOption: 'USER_ENTERED',
+          valueInputOption: 'RAW',
           insertDataOption: 'OVERWRITE',
           resource: { values: [[goal_name, start_date, end_date, Number(current_value) || 0, Number(target_value) || 0]] }
         });
@@ -736,7 +736,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${goalTab}!A${rowNumber}:E${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
+          valueInputOption: 'RAW',
           resource: { values: [[goal_name, start_date, end_date, Number(current_value) || 0, Number(target_value) || 0]] }
         });
         resolve("Thành công");
@@ -792,7 +792,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${taskTab}!A${rowNumber}:B${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
+          valueInputOption: 'RAW',
           resource: { values: [[date, taskDesc]] }
         });
         
@@ -804,7 +804,7 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${taskTab}!A${rowNumber}:C${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
+          valueInputOption: 'RAW',
           resource: { values: [[date, taskDesc, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
         });
         resolve("Thành công");
@@ -1296,30 +1296,30 @@ export function formatDateInput(dateStr) {
   return '';
 }
 
-// 3. Chuẩn hóa ngày trước khi ghi xuống Google Sheets thành dạng yyyy-MM-dd
+// 3. Chuẩn hóa ngày trước khi ghi xuống Google Sheets thành dạng dd/MM/yyyy
 export function formatDateDb(dateStr) {
   if (!dateStr) return '';
   let str = dateStr.toString().trim();
   if (str.startsWith("'")) str = str.substring(1);
 
-  // yyyy-MM-dd -> yyyy-MM-dd
+  // yyyy-MM-dd -> dd/MM/yyyy
   if (str.includes('-')) {
     let parts = str.split('-');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
       } else if (parts[2].length === 4) {
-        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0]}`;
+        return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
       }
     }
   }
 
-  // yyyy/MM/dd -> yyyy-MM-dd
+  // yyyy/MM/dd -> dd/MM/yyyy
   if (str.includes('/')) {
     let parts = str.split('/');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
       } else if (parts[2].length === 4) {
         let p0 = parseInt(parts[0], 10);
         let p1 = parseInt(parts[1], 10);
@@ -1331,7 +1331,7 @@ export function formatDateDb(dateStr) {
           d = parts[1].padStart(2, '0');
           m = parts[0].padStart(2, '0');
         }
-        return `${y}-${m}-${d}`;
+        return `${d}/${m}/${y}`;
       }
     }
   }
@@ -1342,7 +1342,7 @@ export function formatDateDb(dateStr) {
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
-    return `${year}-${month}-${day}`;
+    return `${day}/${month}/${year}`;
   }
 
   return str;
