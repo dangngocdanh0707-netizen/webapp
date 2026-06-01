@@ -1187,6 +1187,47 @@ export function cleanDateValue(val) {
   let str = val.toString().trim();
   if (str.startsWith("'")) str = str.substring(1);
   if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
+
+  // Nếu là dạng yyyy-MM-dd hoặc dd-MM-yyyy -> dd/MM/yyyy
+  if (str.includes('-')) {
+    let parts = str.split('-');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+      } else if (parts[2].length === 4) {
+        return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+      }
+    }
+  }
+
+  // Nếu là dạng MM/dd/yyyy hoặc dd/MM/yyyy -> chuẩn hóa về dd/MM/yyyy
+  if (str.includes('/')) {
+    let parts = str.split('/');
+    if (parts.length === 3) {
+      if (parts[2].length === 4) {
+        let p0 = parseInt(parts[0], 10);
+        let p1 = parseInt(parts[1], 10);
+        let d = parts[0].padStart(2, '0');
+        let m = parts[1].padStart(2, '0');
+        let y = parts[2];
+        if (p0 > 12) {
+          // p0 > 12 chắc chắn là ngày -> dd/MM/yyyy
+          return `${d}/${m}/${y}`;
+        } else if (p1 > 12) {
+          // p1 > 12 chắc chắn là ngày (định dạng US: MM/dd/yyyy) -> chuyển sang dd/MM/yyyy
+          return `${m}/${d}/${y}`;
+        }
+        // Trường hợp còn lại (cả 2 đều <= 12):
+        // Vì ta lưu trữ dưới dạng MM/dd/yyyy khi ghi xuống Google Sheets, 
+        // chuỗi này từ DB đại diện cho MM/dd/yyyy nên ta hoán đổi thành dd/MM/yyyy.
+        return `${m}/${d}/${y}`;
+      } else if (parts[0].length === 4) {
+        // yyyy/MM/dd -> dd/MM/yyyy
+        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+      }
+    }
+  }
+
   return str;
 }
 
@@ -1300,31 +1341,31 @@ export function formatDateInput(dateStr) {
   return '';
 }
 
-// 3. Chuẩn hóa ngày trước khi ghi xuống Google Sheets thành dạng dd/MM/yyyy để hiển thị đồng nhất
+// 3. Chuẩn hóa ngày trước khi ghi xuống Google Sheets thành dạng MM/dd/yyyy để Google Sheets tự động nhận diện chính xác
 export function formatDateDb(dateStr) {
   if (!dateStr) return '';
   let str = dateStr.toString().trim();
   if (str.startsWith("'")) str = str.substring(1);
   if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
 
-  // yyyy-MM-dd hoặc dd-MM-yyyy -> dd/MM/yyyy
+  // yyyy-MM-dd hoặc dd-MM-yyyy -> MM/dd/yyyy
   if (str.includes('-')) {
     let parts = str.split('-');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+        return `${parts[1].padStart(2, '0')}/${parts[2].padStart(2, '0')}/${parts[0]}`;
       } else if (parts[2].length === 4) {
-        return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+        return `${parts[1].padStart(2, '0')}/${parts[0].padStart(2, '0')}/${parts[2]}`;
       }
     }
   }
 
-  // yyyy/MM/dd hoặc dd/MM/yyyy -> dd/MM/yyyy
+  // yyyy/MM/dd hoặc dd/MM/yyyy -> MM/dd/yyyy
   if (str.includes('/')) {
     let parts = str.split('/');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+        return `${parts[1].padStart(2, '0')}/${parts[2].padStart(2, '0')}/${parts[0]}`;
       } else if (parts[2].length === 4) {
         let p0 = parseInt(parts[0], 10);
         let p1 = parseInt(parts[1], 10);
@@ -1332,11 +1373,11 @@ export function formatDateDb(dateStr) {
         let m = parts[1].padStart(2, '0');
         let y = parts[2];
         if (p1 > 12) {
-          // US format: MM/dd/yyyy -> swap d & m
-          d = parts[1].padStart(2, '0');
-          m = parts[0].padStart(2, '0');
+          // Đã là US format: MM/dd/yyyy -> giữ nguyên
+          return `${d}/${m}/${y}`;
         }
-        return `${d}/${m}/${y}`;
+        // Còn lại là dd/MM/yyyy -> đổi thành MM/dd/yyyy
+        return `${m}/${d}/${y}`;
       }
     }
   }
@@ -1347,7 +1388,7 @@ export function formatDateDb(dateStr) {
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
+    return `${month}/${day}/${year}`;
   }
 
   return str;
