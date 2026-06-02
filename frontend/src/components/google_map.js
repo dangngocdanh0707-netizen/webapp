@@ -4,26 +4,98 @@ import { showToast } from '../services/toast.js';
 let allMapData = [];
 let onSyncNeeded = null;
 
-// Curated high-resolution real photos from Unsplash for every place in Da Nang
+// Curated high-resolution real photos from Unsplash for every place in Da Nang (multiple images per place)
 const REAL_PHOTOS = {
-  "XLIII Specialty Coffee": "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=600&q=80",
-  "Trinh Cafe": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80",
-  "Nối Coffee": "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=600&q=80",
-  "The Hideout Cafe": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80",
-  "Craft Cafe": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80",
-  "The Local Beans Cafe": "https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=600&q=80",
-  "H Coffee": "https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=600&q=80",
-  "Golem Coffee": "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=600&q=80",
-  "Nam House": "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=600&q=80",
-  "Brewman Coffee Concept": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80",
-  "HAIAN Beach Hotel & Spa": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80",
-  "TMS Hotel Da Nang Beach": "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=600&q=80",
-  "Sala Danang Beach Hotel": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
-  "Novotel Danang Premier Han River": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80",
-  "InterContinental Danang Sun Peninsula Resort": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80",
-  "Furama Resort Da Nang": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80",
-  "Furama Resort Danang": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80",
-  "Pullman Danang Beach Resort": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80"
+  "XLIII Specialty Coffee": [
+    "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Trinh Cafe": [
+    "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Nối Coffee": [
+    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80"
+  ],
+  "The Hideout Cafe": [
+    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Craft Cafe": [
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=800&q=80"
+  ],
+  "The Local Beans Cafe": [
+    "https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80"
+  ],
+  "H Coffee": [
+    "https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Golem Coffee": [
+    "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Nam House": [
+    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Brewman Coffee Concept": [
+    "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80"
+  ],
+  "HAIAN Beach Hotel & Spa": [
+    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
+  ],
+  "TMS Hotel Da Nang Beach": [
+    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Sala Danang Beach Hotel": [
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Novotel Danang Premier Han River": [
+    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80"
+  ],
+  "InterContinental Danang Sun Peninsula Resort": [
+    "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Furama Resort Da Nang": [
+    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Furama Resort Danang": [
+    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Pullman Danang Beach Resort": [
+    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
+  ]
 };
 
 export function initMapModule(data, onSync) {
@@ -57,6 +129,23 @@ export function initMapModule(data, onSync) {
 
   // 2. Build the initial thám hiểm grid
   buildMapGrid();
+
+  // 3. Set up global gallery keyboard controller
+  if (!window.mapGalleryKeyHandlerBound) {
+    document.addEventListener('keydown', (e) => {
+      const galleryModal = document.getElementById('map-gallery-modal');
+      if (galleryModal && !galleryModal.classList.contains('hidden')) {
+        if (e.key === 'ArrowLeft') {
+          window.changeGalleryImage(-1);
+        } else if (e.key === 'ArrowRight') {
+          window.changeGalleryImage(1);
+        } else if (e.key === 'Escape') {
+          window.closePhotoGallery();
+        }
+      }
+    });
+    window.mapGalleryKeyHandlerBound = true;
+  }
 }
 
 export function buildMapGrid() {
@@ -124,13 +213,20 @@ export function buildMapGrid() {
 
     // Stable real photo URL or dynamic category fallback using high-quality Unsplash photography
     let photoUrl = REAL_PHOTOS[placeName.trim()];
-    if (!photoUrl) {
+    let coverUrl = "";
+    if (Array.isArray(photoUrl)) {
+      coverUrl = photoUrl[0];
+    } else {
+      coverUrl = photoUrl;
+    }
+
+    if (!coverUrl) {
       if (category.toLowerCase().includes("cafe")) {
-        photoUrl = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80";
+        coverUrl = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80";
       } else if (category.toLowerCase().includes("hotel") || category.toLowerCase().includes("resort")) {
-        photoUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80";
+        coverUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80";
       } else {
-        photoUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80";
+        coverUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80";
       }
     }
 
@@ -143,8 +239,8 @@ export function buildMapGrid() {
           
           <!-- FRONT FACE: PHOTOGRAPHY & ADVENTURE TITLE -->
           <div class="explorer-card-front flex flex-col">
-            <div class="relative w-full h-48 overflow-hidden shrink-0 group">
-              <img src="${photoUrl}" alt="${escapeHTML(placeName)}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+            <div onclick="openPhotoGallery('${escapeHTML(placeName)}', event)" class="relative w-full h-48 overflow-hidden shrink-0 group cursor-zoom-in" title="Click to view photo gallery 📸">
+              <img src="${coverUrl}" alt="${escapeHTML(placeName)}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
               <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent"></div>
               
               <!-- Badges on Photo -->
@@ -321,3 +417,109 @@ window.suggestRandomPlace = function() {
     }
   }, 300);
 };
+
+// ---- INTERACTIVE PHOTO GALLERY MODAL CAROUSEL ----
+let currentGalleryImages = [];
+let currentGalleryIndex = 0;
+
+window.openPhotoGallery = function(placeName, event) {
+  if (event) event.stopPropagation();
+
+  let images = REAL_PHOTOS[placeName];
+  if (!images || images.length === 0) {
+    // Fallback if not mapped
+    images = [
+      "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80"
+    ];
+  }
+
+  currentGalleryImages = images;
+  currentGalleryIndex = 0;
+
+  // Insert modal container dynamically if not exist
+  let modal = document.getElementById('map-gallery-modal');
+  if (!modal) {
+    document.body.insertAdjacentHTML('beforeend', `
+      <div id="map-gallery-modal" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950/85 backdrop-blur-md transition-all duration-300 hidden">
+        <div class="relative w-full max-w-4xl mx-4 p-4 flex flex-col items-center">
+          
+          <!-- Close button -->
+          <button onclick="closePhotoGallery()" class="absolute -top-12 right-4 text-white/80 hover:text-white transition cursor-pointer text-3xl">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          
+          <!-- Large Image Container -->
+          <div class="relative w-full h-[60vh] sm:h-[70vh] rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-slate-900 flex items-center justify-center">
+            <img id="gallery-active-img" src="" class="w-full h-full object-cover transition-all duration-300">
+            
+            <!-- Left Arrow -->
+            <button onclick="changeGalleryImage(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition cursor-pointer">
+              <i class="fa-solid fa-chevron-left text-lg"></i>
+            </button>
+            
+            <!-- Right Arrow -->
+            <button onclick="changeGalleryImage(1)" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition cursor-pointer">
+              <i class="fa-solid fa-chevron-right text-lg"></i>
+            </button>
+          </div>
+          
+          <!-- Place Title & Indicators -->
+          <div class="mt-5 text-center text-white">
+            <h4 id="gallery-place-title" class="text-xl font-extrabold tracking-wide uppercase font-sans">Place Name</h4>
+            
+            <!-- Thumbnails/Dots indicators -->
+            <div id="gallery-indicators" class="flex gap-2 justify-center mt-3"></div>
+          </div>
+          
+        </div>
+      </div>
+    `);
+    modal = document.getElementById('map-gallery-modal');
+  }
+
+  document.getElementById('gallery-place-title').innerText = placeName;
+  modal.classList.remove('hidden');
+  updateGalleryUI();
+};
+
+window.closePhotoGallery = function() {
+  const modal = document.getElementById('map-gallery-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+};
+
+window.changeGalleryImage = function(direction) {
+  currentGalleryIndex = (currentGalleryIndex + direction + currentGalleryImages.length) % currentGalleryImages.length;
+  updateGalleryUI();
+};
+
+window.setGalleryIndex = function(index) {
+  currentGalleryIndex = index;
+  updateGalleryUI();
+};
+
+function updateGalleryUI() {
+  const imgEl = document.getElementById('gallery-active-img');
+  if (imgEl) {
+    imgEl.style.opacity = 0;
+    setTimeout(() => {
+      imgEl.src = currentGalleryImages[currentGalleryIndex];
+      imgEl.style.opacity = 1;
+    }, 150);
+  }
+
+  // Update indicators
+  const indicatorsContainer = document.getElementById('gallery-indicators');
+  if (indicatorsContainer) {
+    indicatorsContainer.innerHTML = "";
+    currentGalleryImages.forEach((img, idx) => {
+      const isActive = idx === currentGalleryIndex;
+      indicatorsContainer.insertAdjacentHTML('beforeend', `
+        <button onclick="setGalleryIndex(${idx})" class="w-3 h-3 rounded-full transition-all duration-300 cursor-pointer ${isActive ? 'bg-emerald-500 scale-125 shadow-[0_0_10px_#10b981]' : 'bg-white/40 hover:bg-white/60'}"></button>
+      `);
+    });
+  }
+}
