@@ -23,6 +23,7 @@ export function initMapModule(data, onSync) {
   let cities = new Set();
 
   allMapData.forEach(item => {
+    if (!item) return;
     if (item.category) categories.add(String(item.category).trim());
     if (item.city) cities.add(String(item.city).trim());
   });
@@ -53,8 +54,9 @@ export function buildMapGrid() {
   gridContainer.innerHTML = "";
 
   // 1. Calculate Stats & Gamified Rank
-  const totalCount = allMapData.length;
-  const exploredCount = allMapData.filter(item => item.check === true).length;
+  const validMapData = allMapData.filter(item => item && item.place);
+  const totalCount = validMapData.length;
+  const exploredCount = validMapData.filter(item => item.check === true).length;
   const explorationRate = totalCount > 0 ? Math.round((exploredCount / totalCount) * 100) : 0;
 
   // Update Stats UI elements
@@ -86,133 +88,148 @@ export function buildMapGrid() {
 
   // 3. Render Cards
   allMapData.forEach(item => {
-    const id = item.rowNumber;
-    const placeName = String(item.place || "").trim();
-    const city = String(item.city || "").trim();
-    const category = String(item.category || "").trim();
-    const address = String(item.address || "").trim();
+    if (!item || !item.place) return;
     
-    // Safe numeric casting for rating
-    let rating = 0;
-    if (item.rating !== undefined && item.rating !== null) {
-      const parsedRating = parseFloat(item.rating);
-      if (!isNaN(parsedRating)) {
-        rating = parsedRating;
+    try {
+      const id = item.rowNumber;
+      const placeName = String(item.place || "").trim();
+      const city = String(item.city || "").trim();
+      const category = String(item.category || "").trim();
+      const address = String(item.address || "").trim();
+      
+      // Safe numeric casting for rating
+      let rating = 0;
+      if (item.rating !== undefined && item.rating !== null) {
+        const parsedRating = parseFloat(item.rating);
+        if (!isNaN(parsedRating)) {
+          rating = parsedRating;
+        }
       }
-    }
 
-    // Safe numeric casting for total reviews
-    let totalReviews = 0;
-    if (item.total_reviews !== undefined && item.total_reviews !== null) {
-      const cleanReviews = String(item.total_reviews).replace(/[^\d]/g, '');
-      const parsedReviews = parseInt(cleanReviews, 10);
-      if (!isNaN(parsedReviews)) {
-        totalReviews = parsedReviews;
+      // Safe numeric casting for total reviews
+      let totalReviews = 0;
+      if (item.total_reviews !== undefined && item.total_reviews !== null) {
+        const cleanReviews = String(item.total_reviews).replace(/[^\d]/g, '');
+        const parsedReviews = parseInt(cleanReviews, 10);
+        if (!isNaN(parsedReviews)) {
+          totalReviews = parsedReviews;
+        }
       }
-    }
 
-    const link = String(item.link || "").trim() || "#";
-    const isExplored = item.check === true;
+      const link = String(item.link || "").trim() || "#";
+      const isExplored = item.check === true;
 
-    // Apply Filter constraints
-    if (cityVal !== "All" && city !== cityVal) return;
-    if (catVal !== "All" && category !== catVal) return;
-    if (checkVal === "Explored" && !isExplored) return;
-    if (checkVal === "Unexplored" && isExplored) return;
+      // Apply Filter constraints
+      if (cityVal !== "All" && city !== cityVal) return;
+      if (catVal !== "All" && category !== catVal) return;
+      if (checkVal === "Explored" && !isExplored) return;
+      if (checkVal === "Unexplored" && isExplored) return;
 
-    if (searchVal !== "") {
-      const match = placeName.toLowerCase().includes(searchVal) || 
-                    category.toLowerCase().includes(searchVal) || 
-                    address.toLowerCase().includes(searchVal) ||
-                    city.toLowerCase().includes(searchVal);
-      if (!match) return;
-    }
-
-    // Layered image loader: 1. Sheet custom URL | 2. Hand-curated Place Photo dictionary | 3. Category Fallback
-    let coverUrl = item.image ? String(item.image).trim() : "";
-    if (!coverUrl) {
-      coverUrl = MAP_PLACE_PHOTOS[placeName.trim()];
-    }
-    const catLower = category.toLowerCase();
-    if (!coverUrl) {
-      if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
-        coverUrl = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80"; // Vintage garden cafe
-      } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("khách sạn")) {
-        coverUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; // Luxury resort room/pool
-      } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
-        coverUrl = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"; // Premium restaurant space
-      } else {
-        coverUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"; // General beach/travel
+      if (searchVal !== "") {
+        const match = placeName.toLowerCase().includes(searchVal) || 
+                      category.toLowerCase().includes(searchVal) || 
+                      address.toLowerCase().includes(searchVal) ||
+                      city.toLowerCase().includes(searchVal);
+        if (!match) return;
       }
-    }
 
-    // Determine dynamic category with appropriate emoji
-    let displayCategory = "📍 Địa điểm";
-    if (category) {
-      let categoryEmoji = "📍";
-      if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
-        categoryEmoji = "☕";
-      } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("homestay") || catLower.includes("khách sạn")) {
-        categoryEmoji = "🏨";
-      } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
-        categoryEmoji = "🍴";
+      // Layered image loader: 1. Sheet custom URL | 2. Hand-curated Place Photo dictionary | 3. Category Fallback
+      let coverUrl = item.image ? String(item.image).trim() : "";
+      if (!coverUrl) {
+        coverUrl = MAP_PLACE_PHOTOS[placeName.trim()];
       }
-      displayCategory = `${categoryEmoji} ${category.trim()}`;
-    }
+      const catLower = category.toLowerCase();
+      if (!coverUrl) {
+        if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
+          coverUrl = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80"; // Vintage garden cafe
+        } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("khách sạn")) {
+          coverUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; // Luxury resort room/pool
+        } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
+          coverUrl = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"; // Premium restaurant space
+        } else {
+          coverUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"; // General beach/travel
+        }
+      }
 
-    gridContainer.insertAdjacentHTML('beforeend', `
-      <div id="map-card-container-${id}" class="glass-card flex flex-col overflow-hidden transition duration-300 hover:-translate-y-1.5 hover:shadow-lg">
-        
-        <!-- CARD TOP: COVER PHOTO & OVERLAYS -->
-        <div class="relative w-full h-48 overflow-hidden shrink-0 group">
-          <img src="${coverUrl}" alt="${escapeHTML(placeName)}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent"></div>
+      // Determine dynamic category with appropriate emoji
+      let displayCategory = "📍 Địa điểm";
+      if (category) {
+        let categoryEmoji = "📍";
+        if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
+          categoryEmoji = "☕";
+        } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("homestay") || catLower.includes("khách sạn")) {
+          categoryEmoji = "🏨";
+        } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
+          categoryEmoji = "🍴";
+        }
+        displayCategory = `${categoryEmoji} ${category.trim()}`;
+      }
+
+      gridContainer.insertAdjacentHTML('beforeend', `
+        <div id="map-card-container-${id}" class="glass-card flex flex-col overflow-hidden transition duration-300 hover:-translate-y-1.5 hover:shadow-lg">
           
-          <!-- Badges on Photo -->
-          <span class="absolute top-4 left-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-white/90 backdrop-blur-xs text-slate-800 shadow-sm border border-white/20">
-            ${escapeHTML(displayCategory)}
-          </span>
-          
-          <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-amber-500 text-white shadow-sm flex items-center gap-1">
-            <i class="fa-solid fa-star text-[9px]"></i> ${rating.toFixed(1)}
-          </span>
+          <!-- CARD TOP: COVER PHOTO & OVERLAYS -->
+          <div class="relative w-full h-48 overflow-hidden shrink-0 group">
+            <img src="${coverUrl}" alt="${escapeHTML(placeName)}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent"></div>
+            
+            <!-- Badges on Photo -->
+            <span class="absolute top-4 left-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-white/90 backdrop-blur-xs text-slate-800 shadow-sm border border-white/20">
+              ${escapeHTML(displayCategory)}
+            </span>
+            
+            <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-amber-500 text-white shadow-sm flex items-center gap-1">
+              <i class="fa-solid fa-star text-[9px]"></i> ${rating.toFixed(1)}
+            </span>
 
-          <!-- Explored stamp if checked -->
-          ${isExplored ? `<div class="explored-stamp">🏆 Explored</div>` : ''}
+            <!-- Explored stamp if checked -->
+            ${isExplored ? `<div class="explored-stamp">🏆 Explored</div>` : ''}
 
-          <!-- Bottom Title on Image overlay -->
-          <div class="absolute bottom-4 left-4 right-4 text-left">
-            <h3 class="text-white text-base font-black tracking-tight line-clamp-1">${escapeHTML(placeName)}</h3>
-            <p class="text-white/70 text-[10px] font-semibold flex items-center gap-1 mt-0.5"><i class="fa-solid fa-location-dot"></i> ${escapeHTML(city)}</p>
-          </div>
-        </div>
-
-        <!-- CARD BOTTOM: INFO & ACTIONS -->
-        <div class="p-5 flex-1 flex flex-col justify-between text-left">
-          <div>
-            <p class="text-xs text-slate-500 font-semibold line-clamp-2 mb-3 bg-slate-50/50 p-2.5 rounded-xl border border-slate-100/50">
-              ${escapeHTML(address)}
-            </p>
-            <div class="flex items-center justify-between text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-4">
-              <span>Reviews count</span>
-              <span class="text-slate-650 font-black">${totalReviews.toLocaleString()} reviews</span>
+            <!-- Bottom Title on Image overlay -->
+            <div class="absolute bottom-4 left-4 right-4 text-left">
+              <h3 class="text-white text-base font-black tracking-tight line-clamp-1">${escapeHTML(placeName)}</h3>
+              <p class="text-white/70 text-[10px] font-semibold flex items-center gap-1 mt-0.5"><i class="fa-solid fa-location-dot"></i> ${escapeHTML(city)}</p>
             </div>
           </div>
 
-          <!-- Action buttons -->
-          <div class="flex items-center gap-2">
-            <a href="${escapeHTML(link)}" target="_blank" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 rounded-xl transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer no-underline text-center">
-              <i class="fa-solid fa-map-location-dot text-sm"></i> <span>Xem bản đồ 🗺️</span>
-            </a>
-            
-            <label class="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:border-emerald-200 hover:bg-emerald-50/30 flex items-center justify-center gap-2 cursor-pointer transition select-none">
-              <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
-              <span class="text-xs font-bold text-slate-500 map-chk-lbl-${id}">${isExplored ? 'Chinh phục 🎉' : 'Check-in'}</span>
-            </label>
+          <!-- CARD BOTTOM: INFO & ACTIONS -->
+          <div class="p-5 flex-1 flex flex-col justify-between text-left">
+            <div>
+              <p class="text-xs text-slate-500 font-semibold line-clamp-2 mb-3 bg-slate-50/50 p-2.5 rounded-xl border border-slate-100/50">
+                ${escapeHTML(address)}
+              </p>
+              <div class="flex items-center justify-between text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-4">
+                <span>Reviews count</span>
+                <span class="text-slate-650 font-black">${totalReviews.toLocaleString()} reviews</span>
+              </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="flex items-center gap-2">
+              <a href="${escapeHTML(link)}" target="_blank" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 rounded-xl transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer no-underline text-center">
+                <i class="fa-solid fa-map-location-dot text-sm"></i> <span>Xem bản đồ 🗺️</span>
+              </a>
+              
+              <label class="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:border-emerald-200 hover:bg-emerald-50/30 flex items-center justify-center gap-2 cursor-pointer transition select-none">
+                <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
+                <span class="text-xs font-bold text-slate-500 map-chk-lbl-${id}">${isExplored ? 'Chinh phục 🎉' : 'Check-in'}</span>
+              </label>
+            </div>
           </div>
         </div>
-      </div>
-    `);
+      `);
+    } catch (cardError) {
+      console.error("Card Render Error for item:", item, cardError);
+      gridContainer.insertAdjacentHTML('beforeend', `
+        <div class="glass-card p-5 border border-rose-200 bg-rose-50/20 text-rose-800 text-xs flex flex-col justify-between h-48 animate-in fade-in duration-250">
+          <div>
+            <p class="font-bold flex items-center gap-1.5 text-rose-750"><i class="fa-solid fa-triangle-exclamation"></i> Lỗi dựng địa điểm #${item.rowNumber || '?'}</p>
+            <p class="font-mono mt-2 text-[10px] bg-white/80 p-2.5 rounded-lg border border-rose-100 max-h-24 overflow-y-auto">${cardError.message}</p>
+          </div>
+          <p class="text-[10px] text-slate-500 font-semibold truncate">Địa điểm: ${escapeHTML(item.place || 'Trống')}</p>
+        </div>
+      `);
+    }
   });
 
   if (gridContainer.children.length === 0) {
