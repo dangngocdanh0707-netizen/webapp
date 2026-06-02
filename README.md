@@ -52,7 +52,8 @@ webapp_project/ (personal_webapp/)
             ├── goals.js         # Theo dõi tiến độ mục tiêu tối giản (Goals)
             ├── tasks.js         # Quản lý công việc thông minh (Tasks)
             ├── habits.js        # Theo dõi & đánh giá thói quen hằng ngày (Habits)
-            └── google_maps.js   # Game tương tác thám hiểm thành phố & Bản đồ vệ tinh (Google Maps)
+            ├── collections.js   # Quản lý bộ sưu tập & danh mục tài sản 3 cột tinh giản (Collections)
+            └── google_maps.js   # Bản đồ tương tác & Quản lý danh sách địa điểm thám hiểm (Google Maps)
 ```
 
 ---
@@ -80,6 +81,17 @@ webapp_project/ (personal_webapp/)
 ### 5. 🌐 Cơ chế hoạt động Offline & Bundle Thư viện cục bộ (Local-First)
 * Loại bỏ hoàn toàn CDNs ngoài tại thời gian chạy (runtime) cho các thư viện bên thứ ba như `Chart.js` hay `SortableJS`. 
 * Tất cả được cài đặt cục bộ qua `npm` và đóng gói tĩnh thông qua Vite. Ứng dụng khởi chạy tức thì và tự động kích hoạt chế độ **Offline Fallback** (ghi/đọc trực tiếp trên LocalStorage) khi mất kết nối mạng.
+
+### 6. 🗺️ Bản đồ tương tác Google Maps Explorer Split-View Tinh Giản
+* **Giao diện Split-View Cân đối 5:7**: Thiết kế hiện đại giúp cột danh sách địa điểm bên trái gọn gàng, dành trọn không gian cho bản đồ tương tác ở cột bên phải với chiều cao mở rộng **`480px`** cực kỳ sắc nét.
+* **Tối giản hóa và Tải cực nhanh**: Loại bỏ hoàn toàn các thành phần hình ảnh mẫu rườm rà giúp tối ưu hóa không gian hiển thị và nâng cao tốc độ phản hồi.
+* **Đồng bộ hóa 5 Cột Tinh giản**: Dữ liệu chạy hoàn toàn trên 5 cột Sheet gọn nhẹ: `place`, `city`, `category`, `address`, `check` (với Check-in lưu vào cột E).
+* **Nút Explore Google Search thông minh**: Nút "Explore 🔍" tự sinh liên kết Google Search tìm kiếm thông tin địa điểm theo Tên quán + Thành phố, tạo nên tính đồng bộ cao cấp.
+
+### 7. 💎 Quản lý Tài sản Collections (Asset Portfolio) Tối Giản 3 Cột
+* **Ledger 3 Cột Hiện đại**: Thay thế hoàn toàn card hình ảnh cồng kềnh bằng bảng kê tài sản 3 cột tinh gọn: `Asset Item` (Tên), `Category` (Phân loại), `Valuation` (Định giá VNĐ).
+* **Form & Bộ lọc Tối giản**: Tinh giản tối đa form thêm mới tài sản chỉ còn 3 trường nhập liệu và bộ lọc lọc theo Category tự động sinh.
+* **Icon & Explore Liên kết Thông minh**: Tự sinh các badge phân loại gradient màu sắc bắt mắt, tự sinh các Icon biểu trưng sống động theo từ khóa của Category (🚗 Xe, ⌚ Đồng hồ, 🏠 Nhà đất, 💎 Khác) và nút Explore tìm kiếm thông tin nhanh chóng trên Google Search.
 
 ---
 
