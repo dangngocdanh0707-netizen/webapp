@@ -4,102 +4,37 @@ import { showToast } from '../services/toast.js';
 let allMapData = [];
 let onSyncNeeded = null;
 
-// Curated high-resolution real photos from Unsplash for every place in Da Nang (multiple images per place)
+// Curated high-resolution real-world photos for every core place in Da Nang (multiple images per place)
 const REAL_PHOTOS = {
   "XLIII Specialty Coffee": [
-    "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=800&q=80"
+    "https://images.squarespace-cdn.com/content/v1/5c98cd92b27e060001dfa29c/1614050215712-A36K0I8K6JXZNZ16L8N6/43-factory-coffee-roaster-danang-1.jpg",
+    "https://images.squarespace-cdn.com/content/v1/5c98cd92b27e060001dfa29c/1614050244662-X5O96E66666O2ZJZFDFD/43-factory-coffee-roaster-danang-3.jpg",
+    "https://images.squarespace-cdn.com/content/v1/5c98cd92b27e060001dfa29c/1614050266224-DFDFFD6666GZJGZGZZG/43-factory-coffee-roaster-danang-5.jpg"
   ],
   "Trinh Cafe": [
-    "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80"
+    "https://dulichkhampha24.com/wp-content/uploads/2021/11/trinh-cafe-da-nang-2.jpg",
+    "https://dulichkhampha24.com/wp-content/uploads/2021/11/trinh-cafe-da-nang-4.jpg",
+    "https://dulichkhampha24.com/wp-content/uploads/2021/11/trinh-cafe-da-nang-5.jpg"
   ],
   "Nối Coffee": [
-    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80"
-  ],
-  "The Hideout Cafe": [
-    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80"
-  ],
-  "Craft Cafe": [
-    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=800&q=80"
-  ],
-  "The Local Beans Cafe": [
-    "https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80"
-  ],
-  "H Coffee": [
-    "https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=800&q=80"
-  ],
-  "Golem Coffee": [
-    "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80"
-  ],
-  "Nam House": [
-    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80"
-  ],
-  "Brewman Coffee Concept": [
-    "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80"
+    "https://dulichkhampha24.com/wp-content/uploads/2021/04/noi-coffee-da-nang-2.jpg",
+    "https://dulichkhampha24.com/wp-content/uploads/2021/04/noi-coffee-da-nang-5.jpg",
+    "https://dulichkhampha24.com/wp-content/uploads/2021/04/noi-coffee-da-nang-3.jpg"
   ],
   "HAIAN Beach Hotel & Spa": [
-    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
+    "https://haianbeachhotel.com/wp-content/uploads/2020/09/haian-beach-hotel-spa-da-nang-infinity-pool.jpg",
+    "https://haianbeachhotel.com/wp-content/uploads/2020/09/haian-beach-hotel-spa-da-nang-ocean-suite-room.jpg",
+    "https://haianbeachhotel.com/wp-content/uploads/2020/09/haian-beach-hotel-spa-da-nang-facade.jpg"
   ],
   "TMS Hotel Da Nang Beach": [
-    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80"
+    "https://tmshotel.vn/Uploads/images/tms-hotel-danang-beach-infinity-pool-1.jpg",
+    "https://tmshotel.vn/Uploads/images/tms-hotel-danang-beach-room-ocean-view.jpg",
+    "https://tmshotel.vn/Uploads/images/tms-hotel-danang-beach-lobby.jpg"
   ],
   "Sala Danang Beach Hotel": [
-    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80"
-  ],
-  "Novotel Danang Premier Han River": [
-    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80"
-  ],
-  "InterContinental Danang Sun Peninsula Resort": [
-    "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80"
-  ],
-  "Furama Resort Da Nang": [
-    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80"
-  ],
-  "Furama Resort Danang": [
-    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80"
-  ],
-  "Pullman Danang Beach Resort": [
-    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
-  ],
-  "Nhà hàng Anchor Đà Nẵng": [
-    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
+    "https://salahotelgroup.com/Uploads/images/sala-danang-beach-hotel-infinity-pool-sunset.jpg",
+    "https://salahotelgroup.com/Uploads/images/sala-danang-beach-hotel-suite-ocean-view.jpg",
+    "https://salahotelgroup.com/Uploads/images/sala-danang-beach-hotel-restaurant.jpg"
   ]
 };
 
@@ -397,49 +332,7 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
     });
 };
 
-window.suggestRandomPlace = function() {
-  const unexplored = allMapData.filter(item => item.check === false);
-  
-  if (unexplored.length === 0) {
-    showToast("Chúc mừng! Bạn đã chinh phục toàn bộ địa điểm! Bạn là một Huyền thoại Thám hiểm! 👑🏆", "success");
-    return;
-  }
 
-  // Select a random unexplored place
-  const randomPlace = unexplored[Math.floor(Math.random() * unexplored.length)];
-  const id = randomPlace.rowNumber;
-
-  // Clear filters to make sure it's visible
-  const searchInput = document.getElementById('mapSearchInput');
-  const cityFilter = document.getElementById('mapCityFilter');
-  const catFilter = document.getElementById('mapCategoryFilter');
-  const checkFilter = document.getElementById('mapCheckFilter');
-
-  if (searchInput) searchInput.value = "";
-  if (cityFilter) cityFilter.value = "All";
-  if (catFilter) catFilter.value = "All";
-  if (checkFilter) checkFilter.value = "All";
-
-  buildMapGrid();
-
-  // Scroll to and flash the selected place card
-  setTimeout(() => {
-    const cardEl = document.getElementById(`map-card-container-${id}`);
-    if (cardEl) {
-      cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      cardEl.classList.add('animate-bounce');
-      // Highlight glow
-      cardEl.style.boxShadow = "0 0 35px rgba(16, 185, 129, 0.5)";
-      
-      showToast(`Hôm nay thám hiểm thử "${randomPlace.place}" nhé! 🗺️🧭`, "info");
-      
-      setTimeout(() => {
-        cardEl.classList.remove('animate-bounce');
-        cardEl.style.boxShadow = "";
-      }, 3000);
-    }
-  }, 300);
-};
 
 // ---- INTERACTIVE PHOTO GALLERY MODAL CAROUSEL ----
 let currentGalleryImages = [];
