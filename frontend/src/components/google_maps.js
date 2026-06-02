@@ -7,34 +7,34 @@ let onSyncNeeded = null;
 // Curated high-resolution real-world photos for every core place in Da Nang (multiple images per place)
 const REAL_PHOTOS = {
   "XLIII Specialty Coffee": [
-    "https://images.squarespace-cdn.com/content/v1/5c98cd92b27e060001dfa29c/1614050215712-A36K0I8K6JXZNZ16L8N6/43-factory-coffee-roaster-danang-1.jpg",
-    "https://images.squarespace-cdn.com/content/v1/5c98cd92b27e060001dfa29c/1614050244662-X5O96E66666O2ZJZFDFD/43-factory-coffee-roaster-danang-3.jpg",
-    "https://images.squarespace-cdn.com/content/v1/5c98cd92b27e060001dfa29c/1614050266224-DFDFFD6666GZJGZGZZG/43-factory-coffee-roaster-danang-5.jpg"
+    "src/assets/images/xliii_1.jpg",
+    "src/assets/images/xliii_2.jpg",
+    "src/assets/images/xliii_3.jpg"
   ],
   "Trinh Cafe": [
-    "https://dulichkhampha24.com/wp-content/uploads/2021/11/trinh-cafe-da-nang-2.jpg",
-    "https://dulichkhampha24.com/wp-content/uploads/2021/11/trinh-cafe-da-nang-4.jpg",
-    "https://dulichkhampha24.com/wp-content/uploads/2021/11/trinh-cafe-da-nang-5.jpg"
+    "src/assets/images/trinh_1.jpg",
+    "src/assets/images/trinh_2.jpg",
+    "src/assets/images/trinh_3.jpg"
   ],
   "Nối Coffee": [
-    "https://dulichkhampha24.com/wp-content/uploads/2021/04/noi-coffee-da-nang-2.jpg",
-    "https://dulichkhampha24.com/wp-content/uploads/2021/04/noi-coffee-da-nang-5.jpg",
-    "https://dulichkhampha24.com/wp-content/uploads/2021/04/noi-coffee-da-nang-3.jpg"
+    "src/assets/images/noi_1.jpg",
+    "src/assets/images/noi_2.jpg",
+    "src/assets/images/noi_3.jpg"
   ],
   "HAIAN Beach Hotel & Spa": [
-    "https://haianbeachhotel.com/wp-content/uploads/2020/09/haian-beach-hotel-spa-da-nang-infinity-pool.jpg",
-    "https://haianbeachhotel.com/wp-content/uploads/2020/09/haian-beach-hotel-spa-da-nang-ocean-suite-room.jpg",
-    "https://haianbeachhotel.com/wp-content/uploads/2020/09/haian-beach-hotel-spa-da-nang-facade.jpg"
+    "src/assets/images/haian_1.jpg",
+    "src/assets/images/haian_2.jpg",
+    "src/assets/images/haian_3.jpg"
   ],
   "TMS Hotel Da Nang Beach": [
-    "https://tmshotel.vn/Uploads/images/tms-hotel-danang-beach-infinity-pool-1.jpg",
-    "https://tmshotel.vn/Uploads/images/tms-hotel-danang-beach-room-ocean-view.jpg",
-    "https://tmshotel.vn/Uploads/images/tms-hotel-danang-beach-lobby.jpg"
+    "src/assets/images/tms_1.jpg",
+    "src/assets/images/tms_2.jpg",
+    "src/assets/images/tms_3.jpg"
   ],
   "Sala Danang Beach Hotel": [
-    "https://salahotelgroup.com/Uploads/images/sala-danang-beach-hotel-infinity-pool-sunset.jpg",
-    "https://salahotelgroup.com/Uploads/images/sala-danang-beach-hotel-suite-ocean-view.jpg",
-    "https://salahotelgroup.com/Uploads/images/sala-danang-beach-hotel-restaurant.jpg"
+    "src/assets/images/sala_1.jpg",
+    "src/assets/images/sala_2.jpg",
+    "src/assets/images/sala_3.jpg"
   ]
 };
 
