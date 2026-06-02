@@ -85,18 +85,8 @@ export function buildCollectionsGrid() {
         typeEmoji = "🎨";
       }
 
-      // Dynamic custom color pill badge for Styles
-      let styleClass = "bg-slate-50 text-slate-500 border-slate-200";
-      const styleLower = style.toLowerCase();
-      if (styleLower.includes("luxury") || styleLower.includes("cao cấp") || styleLower.includes("vip")) {
-        styleClass = "bg-amber-50 text-amber-600 border-amber-200/50 font-extrabold";
-      } else if (styleLower.includes("sport") || styleLower.includes("thể thao") || styleLower.includes("suv")) {
-        styleClass = "bg-rose-50 text-rose-600 border-rose-200/50 font-extrabold";
-      } else if (styleLower.includes("sedan") || styleLower.includes("classic") || styleLower.includes("cổ điển")) {
-        styleClass = "bg-blue-50 text-blue-600 border-blue-200/50 font-extrabold";
-      } else if (styleLower.includes("modern") || styleLower.includes("hiện đại")) {
-        styleClass = "bg-emerald-50 text-emerald-600 border-emerald-200/50 font-extrabold";
-      }
+      // Uniform minimalist gray pill badge for all Styles
+      const styleClass = "bg-slate-50 text-slate-500 border-slate-200 font-bold";
 
       const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(brand + ' ' + name)}`;
 
