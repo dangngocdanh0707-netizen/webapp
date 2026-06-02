@@ -176,7 +176,11 @@ async function resolveAllTabs(spreadsheetId) {
 
     // Bước 1: Khớp trực tiếp không phân biệt chữ hoa thường (Case-insensitive)
     targetTabs.forEach(target => {
-      const match = existingTitles.find(t => t.toLowerCase() === target.toLowerCase());
+      let match = existingTitles.find(t => t.toLowerCase() === target.toLowerCase());
+      // Hỗ trợ khớp tên thay thế cho tab chi tiêu (như 'expense', 'expenses', 'chi tiêu')
+      if (!match && target === 'cost') {
+        match = existingTitles.find(t => t.toLowerCase() === 'expense' || t.toLowerCase() === 'expenses' || t.toLowerCase() === 'chi tiêu');
+      }
       if (match) {
         mappings[target] = match;
       }
@@ -281,7 +285,11 @@ async function resolveAllTabs(spreadsheetId) {
     // Bước 3: Đặt mặc định nếu vẫn không tìm thấy
     targetTabs.forEach(target => {
       if (!mappings[target]) {
-        mappings[target] = target;
+        if (target === 'cost') {
+          mappings[target] = 'expense';
+        } else {
+          mappings[target] = target;
+        }
       }
     });
 
@@ -316,9 +324,9 @@ async function ensureSheetTabsExist(spreadsheetId) {
 
   if (missingTabs.length > 0) {
     console.log("[api.js] Đang tự động tạo các sheet tab bị thiếu:", missingTabs);
-    const requests = missingTabs.map(title => ({
+    const requests = missingTabs.map(target => ({
       addSheet: {
-        properties: { title }
+        properties: { title: mappings[target] || target }
       }
     }));
     await gapi.client.sheets.spreadsheets.batchUpdate({
@@ -328,15 +336,18 @@ async function ensureSheetTabsExist(spreadsheetId) {
 
     // Tạo tiêu đề cột cho các tab mới tạo
     const headersData = [
-      { range: 'cost!A1:D1', values: [['Date', 'Category', 'Amount', 'Note']] },
-      { range: 'vocabulary!A1:I1', values: [['Content', 'Category', 'Topic', 'Level', 'Meaning', 'Status', 'Next Review', 'Interval', 'Ease Factor']] },
-      { range: 'habit_tracker!A1:C1', values: [['Date', 'Habit', 'Status']] },
-      { range: 'link!A1:C1', values: [['Title', 'Category', 'Content']] },
-      { range: 'prompt!A1:C1', values: [['Title', 'Content', 'Category']] },
-      { range: 'goal!A1:E1', values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
-      { range: 'task!A1:C1', values: [['Date', 'Task', 'Status']] },
-      { range: 'google_map!A1:H1', values: [['place', 'city', 'category', 'address', 'rating', 'total reviews', 'link', 'check']] }
-    ].filter(h => missingTabs.includes(h.range.split('!')[0]));
+      { range: `${mappings['cost'] || 'expense'}!A1:D1`, values: [['Date', 'Category', 'Amount', 'Note']] },
+      { range: `${mappings['vocabulary'] || 'vocabulary'}!A1:I1`, values: [['Content', 'Category', 'Topic', 'Level', 'Meaning', 'Status', 'Next Review', 'Interval', 'Ease Factor']] },
+      { range: `${mappings['habit_tracker'] || 'habit_tracker'}!A1:C1`, values: [['Date', 'Habit', 'Status']] },
+      { range: `${mappings['link'] || 'link'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
+      { range: `${mappings['prompt'] || 'prompt'}!A1:C1`, values: [['Title', 'Content', 'Category']] },
+      { range: `${mappings['goal'] || 'goal'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
+      { range: `${mappings['task'] || 'task'}!A1:C1`, values: [['Date', 'Task', 'Status']] },
+      { range: `${mappings['google_map'] || 'google_map'}!A1:H1`, values: [['place', 'city', 'category', 'address', 'rating', 'total reviews', 'link', 'check']] }
+    ].filter(h => {
+      const rangeSheetName = h.range.split('!')[0];
+      return missingTabs.some(target => (mappings[target] || target) === rangeSheetName);
+    });
 
     if (headersData.length > 0) {
       await gapi.client.sheets.spreadsheets.values.batchUpdate({
