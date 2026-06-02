@@ -294,7 +294,7 @@ var ql=Object.defineProperty;var Kl=(n,t,e)=>t in n?ql(n,t,{enumerable:!0,config
           <td class="p-4 text-slate-500 font-bold text-xs uppercase tracking-wider">${L(d)}</td>
           <td class="p-4 pr-6 text-center">
             <div class="flex items-center justify-center gap-2">
-              <a href="${p}" target="_blank" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-3xs flex items-center justify-center gap-1 cursor-pointer no-underline">
+              <a href="${p}" target="_blank" class="border border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-500 hover:text-blue-600 font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-3xs flex items-center justify-center gap-1 cursor-pointer no-underline">
                 <i class="fa-solid fa-magnifying-glass text-[9px]"></i> <span>Explore</span>
               </a>
               <button onclick="deleteCollectionItem(${a})" class="border border-rose-200 hover:bg-rose-50 text-rose-600 font-bold text-[10px] px-2 py-1.5 rounded-lg transition cursor-pointer flex items-center justify-center gap-1">
