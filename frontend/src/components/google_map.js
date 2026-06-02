@@ -95,6 +95,11 @@ const REAL_PHOTOS = {
     "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80",
     "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80",
     "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Nhà hàng Anchor Đà Nẵng": [
+    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
   ]
 };
 
@@ -221,13 +226,31 @@ export function buildMapGrid() {
     }
 
     if (!coverUrl) {
-      if (category.toLowerCase().includes("cafe")) {
+      const catLower = category.toLowerCase();
+      if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
         coverUrl = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80";
-      } else if (category.toLowerCase().includes("hotel") || category.toLowerCase().includes("resort")) {
+      } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("khách sạn")) {
         coverUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80";
+      } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
+        coverUrl = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80";
       } else {
         coverUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80";
       }
+    }
+
+    // Determine dynamic category with appropriate emoji
+    let displayCategory = "📍 Địa điểm";
+    if (category) {
+      let categoryEmoji = "📍";
+      const catLower = category.toLowerCase();
+      if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
+        categoryEmoji = "☕";
+      } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("homestay") || catLower.includes("khách sạn")) {
+        categoryEmoji = "🏨";
+      } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
+        categoryEmoji = "🍴";
+      }
+      displayCategory = `${categoryEmoji} ${category.trim()}`;
     }
 
     // Google Maps Embed Interactive URL
@@ -245,7 +268,7 @@ export function buildMapGrid() {
               
               <!-- Badges on Photo -->
               <span class="absolute top-4 left-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-white/90 backdrop-blur-xs text-slate-800 shadow-sm border border-white/20">
-                ${category.toLowerCase().includes("cafe") ? "☕ Cafe" : "🏨 Staycation"}
+                ${escapeHTML(displayCategory)}
               </span>
               
               <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-amber-500 text-white shadow-sm flex items-center gap-1">
