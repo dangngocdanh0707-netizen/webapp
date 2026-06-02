@@ -93,8 +93,8 @@ export function buildMapGrid() {
         categoryEmoji = "🍴";
       }
  
-      // Direct Google Maps URL generation (since link column is removed)
-      const searchUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeName + ' ' + city)}`;
+      // Direct Google Search URL generation (matching Explore in Collections page)
+      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(placeName + ' ' + city)}`;
 
       gridContainer.insertAdjacentHTML('beforeend', `
         <div id="map-card-container-${id}" onclick="focusMapOnLocation('${escapeHTML(placeName)}', '${escapeHTML(city)}')" 
@@ -117,8 +117,8 @@ export function buildMapGrid() {
  
           <div class="flex items-center gap-4 shrink-0">
             <div class="flex items-center gap-2" onclick="event.stopPropagation()">
-              <a href="${searchUrl}" target="_blank" class="border border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-500 hover:text-blue-600 font-bold text-[10px] px-3.5 py-2 rounded-xl transition shadow-3xs flex items-center gap-1.5 no-underline">
-                <i class="fa-solid fa-map-location-dot"></i> <span>Xem bản đồ 🗺️</span>
+              <a href="${searchUrl}" target="_blank" class="border border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-500 hover:text-blue-600 font-bold text-[10px] px-3.5 py-2.5 rounded-xl transition shadow-3xs flex items-center gap-1.5 no-underline">
+                <i class="fa-solid fa-magnifying-glass"></i> <span>Explore 🔍</span>
               </a>
 
               <label class="px-3.5 py-2 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 flex items-center justify-center gap-1.5 cursor-pointer transition select-none shadow-3xs">
