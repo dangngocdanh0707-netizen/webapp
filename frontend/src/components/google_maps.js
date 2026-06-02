@@ -23,8 +23,8 @@ export function initMapModule(data, onSync) {
   let cities = new Set();
 
   allMapData.forEach(item => {
-    if (item.category) categories.add(item.category.trim());
-    if (item.city) cities.add(item.city.trim());
+    if (item.category) categories.add(String(item.category).trim());
+    if (item.city) cities.add(String(item.city).trim());
   });
 
   const citySelect = document.getElementById('mapCityFilter');
@@ -87,13 +87,31 @@ export function buildMapGrid() {
   // 3. Render Cards
   allMapData.forEach(item => {
     const id = item.rowNumber;
-    const placeName = item.place || "";
-    const city = item.city || "";
-    const category = item.category || "";
-    const address = item.address || "";
-    const rating = item.rating || 0;
-    const totalReviews = item.total_reviews || 0;
-    const link = item.link || "#";
+    const placeName = String(item.place || "").trim();
+    const city = String(item.city || "").trim();
+    const category = String(item.category || "").trim();
+    const address = String(item.address || "").trim();
+    
+    // Safe numeric casting for rating
+    let rating = 0;
+    if (item.rating !== undefined && item.rating !== null) {
+      const parsedRating = parseFloat(item.rating);
+      if (!isNaN(parsedRating)) {
+        rating = parsedRating;
+      }
+    }
+
+    // Safe numeric casting for total reviews
+    let totalReviews = 0;
+    if (item.total_reviews !== undefined && item.total_reviews !== null) {
+      const cleanReviews = String(item.total_reviews).replace(/[^\d]/g, '');
+      const parsedReviews = parseInt(cleanReviews, 10);
+      if (!isNaN(parsedReviews)) {
+        totalReviews = parsedReviews;
+      }
+    }
+
+    const link = String(item.link || "").trim() || "#";
     const isExplored = item.check === true;
 
     // Apply Filter constraints
@@ -111,12 +129,12 @@ export function buildMapGrid() {
     }
 
     // Layered image loader: 1. Sheet custom URL | 2. Hand-curated Place Photo dictionary | 3. Category Fallback
-    let coverUrl = item.image ? item.image.trim() : "";
+    let coverUrl = item.image ? String(item.image).trim() : "";
     if (!coverUrl) {
       coverUrl = MAP_PLACE_PHOTOS[placeName.trim()];
     }
+    const catLower = category.toLowerCase();
     if (!coverUrl) {
-      const catLower = category.toLowerCase();
       if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
         coverUrl = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80"; // Vintage garden cafe
       } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("khách sạn")) {
