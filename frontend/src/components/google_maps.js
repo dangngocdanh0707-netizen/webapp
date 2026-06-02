@@ -4,15 +4,68 @@ import { showToast } from '../services/toast.js';
 let allMapData = [];
 let onSyncNeeded = null;
 
-// Hand-curated premium high-resolution authentic cover photos for default Da Nang spots
+// Global visualizer state
+let currentPhotos = [];
+let currentPhotoIdx = 0;
+
+// Hand-curated premium high-resolution authentic cover photo galleries (3 photos per place) for default Da Nang spots
 const MAP_PLACE_PHOTOS = {
-  "XLIII Specialty Coffee": "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=800&q=80",
-  "Trinh Cafe": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
-  "Nối Coffee": "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80",
-  "HAIAN Beach Hotel & Spa": "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=800&q=80",
-  "TMS Hotel Da Nang Beach": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
-  "Sala Danang Beach Hotel": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80"
+  "XLIII Specialty Coffee": [
+    "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80"
+  ],
+  "Trinh Cafe": [
+    "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=600&q=80"
+  ],
+  "Nối Coffee": [
+    "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=600&q=80"
+  ],
+  "HAIAN Beach Hotel & Spa": [
+    "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80"
+  ],
+  "TMS Hotel Da Nang Beach": [
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80"
+  ],
+  "Sala Danang Beach Hotel": [
+    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80"
+  ]
 };
+
+// Premium Unsplash fallback galleries for places based on their category
+const CAFE_GALLERY = [
+  "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80"
+];
+
+const HOTEL_GALLERY = [
+  "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80"
+];
+
+const RESTAURANT_GALLERY = [
+  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=600&q=80"
+];
+
+const GENERAL_GALLERY = [
+  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=600&q=80"
+];
 
 export function initMapModule(data, onSync) {
   allMapData = data || [];
@@ -44,7 +97,7 @@ export function initMapModule(data, onSync) {
     });
   }
 
-  // 2. Build the initial adventure grid
+  // 2. Build the initial adventure list
   buildMapGrid();
 }
 
@@ -52,7 +105,6 @@ export function buildMapGrid() {
   const gridContainer = document.getElementById('map-places-list-container');
   if (!gridContainer) return;
   gridContainer.innerHTML = "";
- 
  
   // 2. Read Active Filters
   const searchVal = document.getElementById('mapSearchInput') ? document.getElementById('mapSearchInput').value.toLowerCase().trim() : "";
@@ -62,7 +114,7 @@ export function buildMapGrid() {
  
   let firstFilteredItem = null;
 
-  // 3. Render Rows
+  // 3. Render Rows (Defensive 5-column mapping)
   allMapData.forEach(item => {
     if (!item || !item.place) return;
     
@@ -72,27 +124,6 @@ export function buildMapGrid() {
       const city = String(item.city || "").trim();
       const category = String(item.category || "").trim();
       const address = String(item.address || "").trim();
-      
-      // Safe numeric casting for rating
-      let rating = 0;
-      if (item.rating !== undefined && item.rating !== null) {
-        const parsedRating = parseFloat(item.rating);
-        if (!isNaN(parsedRating)) {
-          rating = parsedRating;
-        }
-      }
- 
-      // Safe numeric casting for total reviews
-      let totalReviews = 0;
-      if (item.total_reviews !== undefined && item.total_reviews !== null) {
-        const cleanReviews = String(item.total_reviews).replace(/[^\d]/g, '');
-        const parsedReviews = parseInt(cleanReviews, 10);
-        if (!isNaN(parsedReviews)) {
-          totalReviews = parsedReviews;
-        }
-      }
- 
-      const link = String(item.link || "").trim() || "#";
       const isExplored = item.check === true;
  
       // Apply Filter constraints
@@ -124,6 +155,9 @@ export function buildMapGrid() {
         categoryEmoji = "🍴";
       }
  
+      // Direct Google Maps URL generation (since link column is removed)
+      const searchUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeName + ' ' + city)}`;
+
       gridContainer.insertAdjacentHTML('beforeend', `
         <div id="map-card-container-${id}" onclick="focusMapOnLocation('${escapeHTML(placeName)}', '${escapeHTML(city)}')" 
           class="glass-card flex items-center justify-between p-4 cursor-pointer hover:border-blue-300 hover:shadow-xs transition duration-200 group">
@@ -144,14 +178,11 @@ export function buildMapGrid() {
           </div>
  
           <div class="flex items-center gap-4 shrink-0">
-            <div class="flex flex-col items-end">
-              <span class="text-[10px] font-black bg-amber-50 text-amber-600 px-2 py-0.5 rounded-lg border border-amber-100/30 flex items-center gap-1">
-                <i class="fa-solid fa-star text-[9px] text-amber-500"></i> ${rating.toFixed(1)}
-              </span>
-              <span class="text-[8px] text-slate-400 font-extrabold uppercase mt-1 tracking-wide">${totalReviews.toLocaleString()} reviews</span>
-            </div>
-            
             <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+              <a href="${searchUrl}" target="_blank" class="border border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-500 hover:text-blue-600 font-bold text-[10px] px-3.5 py-2 rounded-xl transition shadow-3xs flex items-center gap-1.5 no-underline">
+                <i class="fa-solid fa-map-location-dot"></i> <span>Xem bản đồ 🗺️</span>
+              </a>
+
               <label class="px-3.5 py-2 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 flex items-center justify-center gap-1.5 cursor-pointer transition select-none shadow-3xs">
                 <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0 scale-90" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
                 <span class="text-[10px] font-bold text-slate-500 map-chk-lbl-${id}">${isExplored ? 'Chinh phục 🎉' : 'Check-in'}</span>
@@ -190,6 +221,75 @@ window.focusMapOnLocation = function(placeName, city) {
     const query = `${placeName}, ${city}`;
     mapIframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
   }
+
+  // 1. Find dynamic photos for this place
+  let photos = MAP_PLACE_PHOTOS[placeName.trim()];
+  if (!photos) {
+    // Find category-specific Unsplash photodeck
+    let targetMapData = allMapData.find(item => item && item.place && item.place.trim() === placeName.trim());
+    const category = targetMapData ? String(targetMapData.category || "").toLowerCase() : "";
+    
+    if (category.includes("cafe") || category.includes("coffee") || category.includes("cà phê")) {
+      photos = CAFE_GALLERY;
+    } else if (category.includes("hotel") || category.includes("resort") || category.includes("staycation") || category.includes("khách sạn")) {
+      photos = HOTEL_GALLERY;
+    } else if (category.includes("restaurant") || category.includes("nhà hàng") || category.includes("quán ăn") || category.includes("food")) {
+      photos = RESTAURANT_GALLERY;
+    } else {
+      photos = GENERAL_GALLERY;
+    }
+  }
+
+  currentPhotos = photos;
+  currentPhotoIdx = 0;
+
+  // 2. Update UI Visualizer elements
+  const visualizerTitle = document.getElementById('visualizer-title');
+  const activePhotoImg = document.getElementById('visualizer-active-photo');
+  const photoIndicator = document.getElementById('visualizer-photo-indicator');
+
+  if (visualizerTitle) {
+    visualizerTitle.innerText = `Không gian: ${placeName}`;
+  }
+  
+  if (activePhotoImg) {
+    // Apply soft scale fade effect
+    activePhotoImg.style.opacity = '0.3';
+    activePhotoImg.style.transform = 'scale(0.98)';
+    setTimeout(() => {
+      activePhotoImg.src = currentPhotos[currentPhotoIdx];
+      activePhotoImg.style.opacity = '1';
+      activePhotoImg.style.transform = 'scale(100)';
+    }, 200);
+  }
+
+  if (photoIndicator) {
+    photoIndicator.innerText = `1 / ${currentPhotos.length}`;
+  }
+};
+
+window.slideVisualizerPhoto = function(dir) {
+  if (!currentPhotos || currentPhotos.length === 0) return;
+
+  // Change index circular
+  currentPhotoIdx = (currentPhotoIdx + dir + currentPhotos.length) % currentPhotos.length;
+
+  const activePhotoImg = document.getElementById('visualizer-active-photo');
+  const photoIndicator = document.getElementById('visualizer-photo-indicator');
+
+  if (activePhotoImg) {
+    activePhotoImg.style.opacity = '0.3';
+    activePhotoImg.style.transform = 'scale(0.98)';
+    setTimeout(() => {
+      activePhotoImg.src = currentPhotos[currentPhotoIdx];
+      activePhotoImg.style.opacity = '1';
+      activePhotoImg.style.transform = 'scale(100)';
+    }, 200);
+  }
+
+  if (photoIndicator) {
+    photoIndicator.innerText = `${currentPhotoIdx + 1} / ${currentPhotos.length}`;
+  }
 };
 
 window.quickSearchMap = function() {
@@ -199,6 +299,9 @@ window.quickSearchMap = function() {
     const val = searchInput.value.trim();
     if (val) {
       mapIframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(val)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+      
+      const visualizerTitle = document.getElementById('visualizer-title');
+      if (visualizerTitle) visualizerTitle.innerText = `Tìm kiếm: ${val}`;
     }
   }
 };

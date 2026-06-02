@@ -43,12 +43,12 @@ export function getMockData() {
       { rowNumber: 3, date: todayStr, task: "Thiết lập cấu hình Vite và Tailwind CSS", status: true }
     ],
     google_map: [
-      { rowNumber: 2, place: "XLIII Specialty Coffee", city: "Da Nang", category: "Cafe", address: "422 Ngô Thì Sĩ, Mỹ An, Ngũ Hành Sơn, Đà Nẵng", rating: 4.8, total_reviews: 6893, link: "https://www.google.com/maps/search/?api=1&query=XLIII+Specialty+Coffee+Da+Nang", check: false },
-      { rowNumber: 3, place: "Trinh Cafe", city: "Da Nang", category: "Cafe", address: "25 Phạm Hồng Thái, Hải Châu 1, Hải Châu, Đà Nẵng", rating: 4.7, total_reviews: 4126, link: "https://www.google.com/maps/search/?api=1&query=Trinh+Cafe+Da+Nang", check: false },
-      { rowNumber: 4, place: "Nối Coffee", city: "Da Nang", category: "Cafe", address: "113/18 Nguyễn Chí Thanh, Hải Châu 1, Hải Châu, Đà Nẵng", rating: 4.6, total_reviews: 1520, link: "https://maps.app.goo.gl/hmNsK6Aa2omb2Ddn9", check: false },
-      { rowNumber: 5, place: "HAIAN Beach Hotel & Spa", city: "Da Nang", category: "Hotel", address: "278 Võ Nguyên Giáp, Bắc Mỹ Phú, Ngũ Hành Sơn, Đà Nẵng", rating: 4.7, total_reviews: 3800, link: "https://haianbeach.backhotelite.com/en/", check: false },
-      { rowNumber: 6, place: "TMS Hotel Da Nang Beach", city: "Da Nang", category: "Hotel", address: "292 Võ Nguyên Giáp, Mỹ An, Ngũ Hành Sơn, Đà Nẵng", rating: 4.8, total_reviews: 9165, link: "https://tmshotel.vn/", check: false },
-      { rowNumber: 7, place: "Sala Danang Beach Hotel", city: "Da Nang", category: "Hotel", address: "36 Lâm Hoành, Phước Mỹ, Sơn Trà, Đà Nẵng", rating: 4.7, total_reviews: 3465, link: "https://salahotelgroup.com/en/saladanangbeachhotel/", check: false }
+      { rowNumber: 2, place: "XLIII Specialty Coffee", city: "Da Nang", category: "Cafe", address: "422 Ngô Thì Sĩ, Mỹ An, Ngũ Hành Sơn, Đà Nẵng", check: false },
+      { rowNumber: 3, place: "Trinh Cafe", city: "Da Nang", category: "Cafe", address: "25 Phạm Hồng Thái, Hải Châu 1, Hải Châu, Đà Nẵng", check: false },
+      { rowNumber: 4, place: "Nối Coffee", city: "Da Nang", category: "Cafe", address: "113/18 Nguyễn Chí Thanh, Hải Châu 1, Hải Châu, Đà Nẵng", check: false },
+      { rowNumber: 5, place: "HAIAN Beach Hotel & Spa", city: "Da Nang", category: "Hotel", address: "278 Võ Nguyên Giáp, Bắc Mỹ Phú, Ngũ Hành Sơn, Đà Nẵng", check: false },
+      { rowNumber: 6, place: "TMS Hotel Da Nang Beach", city: "Da Nang", category: "Hotel", address: "292 Võ Nguyên Giáp, Mỹ An, Ngũ Hành Sơn, Đà Nẵng", check: false },
+      { rowNumber: 7, place: "Sala Danang Beach Hotel", city: "Da Nang", category: "Hotel", address: "36 Lâm Hoành, Phước Mỹ, Sơn Trà, Đà Nẵng", check: false }
     ],
     collections: [
       { rowNumber: 2, item: "Audemars Piguet Royal Oak", brand: "Audemars Piguet", category: "Luxury", price: 800000000, segment: "Luxury", type: "Watch" },

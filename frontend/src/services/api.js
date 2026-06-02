@@ -370,7 +370,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Content', 'Category']] },
       { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
       { range: `${mappings['task'] || 'tasks'}!A1:C1`, values: [['Date', 'Task', 'Status']] },
-      { range: `${mappings['google_map'] || 'google_maps'}!A1:H1`, values: [['place', 'city', 'category', 'address', 'rating', 'total reviews', 'link', 'check']] },
+      { range: `${mappings['google_map'] || 'google_maps'}!A1:E1`, values: [['place', 'city', 'category', 'address', 'check']] },
       { range: `${mappings['collections'] || 'collections'}!A1:F1`, values: [['item', 'brand', 'category', 'price', 'segment', 'type']] }
     ].filter(h => {
       const rangeSheetName = h.range.split('!')[0];
@@ -449,7 +449,7 @@ export function callServer(methodName, args) {
             `${promptTab}!A2:C`,
             `${goalTab}!A2:E`,
             `${taskTab}!A2:C`,
-            `${mappings['google_map']}!A2:I`,
+            `${mappings['google_map']}!A2:E`,
             `${mappings['collections'] || 'collections'}!A2:F`
           ],
           valueRenderOption: 'UNFORMATTED_VALUE'
@@ -522,11 +522,7 @@ export function callServer(methodName, args) {
             city: row[1] || "",
             category: row[2] || "",
             address: row[3] || "",
-            rating: Number(row[4]) || 0,
-            total_reviews: Number(row[5]) || 0,
-            link: row[6] || "",
-            check: row[7] === "TRUE" || row[7] === true || row[7] === "true" || row[7] === "v" || row[7] === "checked",
-            image: row[8] || ""
+            check: row[4] === "TRUE" || row[4] === true || row[4] === "true" || row[4] === "v" || row[4] === "checked"
           })).filter(item => item.place),
 
           collections: getRows(valueRanges[8]).map((row, idx) => ({
@@ -703,7 +699,7 @@ export function callServer(methodName, args) {
         const [rowNumber, isChecked] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${mappings['google_map']}!H${rowNumber}`,
+          range: `${mappings['google_map']}!E${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
         });
