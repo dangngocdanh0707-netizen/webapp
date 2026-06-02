@@ -21,6 +21,7 @@ import { initPromptsModule } from './components/prompts.js';
 import { initGoalsModule } from './components/goals.js';
 import { initTasksModule } from './components/tasks.js';
 import { initHabitsModule } from './components/habits.js';
+import { initMapModule } from './components/google_map.js';
 
 let serverSyncTimeout = null;
 
@@ -287,6 +288,7 @@ function renderDashboard(data) {
     initGoalsModule(data.goal, loadDataFromServer);
     initTasksModule(data.task, loadDataFromServer);
     initHabitsModule(data.habit_tracker, loadDataFromServer);
+    initMapModule(data.google_map, loadDataFromServer);
 
   } catch (err) {
     console.error("Critical rendering failure:", err);

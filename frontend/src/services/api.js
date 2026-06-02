@@ -171,7 +171,7 @@ async function resolveAllTabs(spreadsheetId) {
     const sheets = response.result.sheets || [];
     const existingTitles = sheets.map(s => s.properties.title);
 
-    const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task'];
+    const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map'];
     const mappings = {};
 
     // Bước 1: Khớp trực tiếp không phân biệt chữ hoa thường (Case-insensitive)
@@ -259,6 +259,12 @@ async function resolveAllTabs(spreadsheetId) {
               bestMatch = title;
               break;
             }
+          } else if (target === 'google_map') {
+            const hasPlace = headers.includes('place') || headers.includes('địa điểm') || headers.some(h => h.includes('place') || h.includes('địa điểm'));
+            if (hasPlace) {
+              bestMatch = title;
+              break;
+            }
           }
         }
 
@@ -301,7 +307,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
   const mappings = await resolveAllTabs(spreadsheetId);
   const response = await gapi.client.sheets.spreadsheets.get({ spreadsheetId });
   const existingTitles = response.result.sheets.map(s => s.properties.title);
-  const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task'];
+  const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map'];
 
   const missingTabs = targetTabs.filter(target => {
     const mappedName = mappings[target];
@@ -328,7 +334,8 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: 'link!A1:C1', values: [['Title', 'Category', 'Content']] },
       { range: 'prompt!A1:C1', values: [['Title', 'Content', 'Category']] },
       { range: 'goal!A1:E1', values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
-      { range: 'task!A1:C1', values: [['Date', 'Task', 'Status']] }
+      { range: 'task!A1:C1', values: [['Date', 'Task', 'Status']] },
+      { range: 'google_map!A1:H1', values: [['place', 'city', 'category', 'address', 'rating', 'total reviews', 'link', 'check']] }
     ].filter(h => missingTabs.includes(h.range.split('!')[0]));
 
     if (headersData.length > 0) {
@@ -402,7 +409,8 @@ export function callServer(methodName, args) {
             `${linkTab}!A2:C`,
             `${promptTab}!A2:C`,
             `${goalTab}!A2:E`,
-            `${taskTab}!A2:C`
+            `${taskTab}!A2:C`,
+            `${mappings['google_map']}!A2:H`
           ],
           valueRenderOption: 'UNFORMATTED_VALUE'
         });
@@ -466,7 +474,19 @@ export function callServer(methodName, args) {
             date: cleanDateValue(row[0]),
             task: row[1] || "",
             status: row[2] === "TRUE" || row[2] === true || row[2] === "true"
-          })).filter(item => item.task)
+          })).filter(item => item.task),
+          
+          google_map: getRows(valueRanges[7]).map((row, idx) => ({
+            rowNumber: idx + 2,
+            place: row[0] || "",
+            city: row[1] || "",
+            category: row[2] || "",
+            address: row[3] || "",
+            rating: Number(row[4]) || 0,
+            total_reviews: Number(row[5]) || 0,
+            link: row[6] || "",
+            check: row[7] === "TRUE" || row[7] === true || row[7] === "true" || row[7] === "v" || row[7] === "checked"
+          })).filter(item => item.place)
         });
         return;
       }
@@ -620,6 +640,19 @@ export function callServer(methodName, args) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${habitTab}!C${rowNumber}`,
+          valueInputOption: 'USER_ENTERED',
+          resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
+        });
+        resolve("Thành công");
+        return;
+      }
+      
+      // 9. Nghiệp vụ BẢN ĐỒ (Google Maps Explorer)
+      if (methodName === "updateMapCheckStatusRow") {
+        const [rowNumber, isChecked] = args;
+        await gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${mappings['google_map']}!H${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
         });
@@ -868,7 +901,8 @@ const STORES = {
   link: "DB_LINKS_DATA",
   prompt: "DB_PROMPTS_DATA",
   goal: "DB_GOALS_DATA",
-  task: "DB_TASKS_DATA"
+  task: "DB_TASKS_DATA",
+  google_map: "DB_GOOGLE_MAP_DATA"
 };
 
 function getLocalData(storeKey) {
@@ -1147,6 +1181,17 @@ function handleLocalTransaction(method, args) {
     if (idx !== -1) {
       data[idx].status = isChecked;
       saveLocalData("task", data);
+    }
+    return "Thành công";
+  }
+  
+  if (method === "updateMapCheckStatusRow") {
+    const [rowNumber, isChecked] = args;
+    const data = getLocalData("google_map");
+    const idx = data.findIndex(item => item.rowNumber == rowNumber);
+    if (idx !== -1) {
+      data[idx].check = isChecked;
+      saveLocalData("google_map", data);
     }
     return "Thành công";
   }
