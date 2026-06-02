@@ -171,7 +171,7 @@ async function resolveAllTabs(spreadsheetId) {
     const sheets = response.result.sheets || [];
     const existingTitles = sheets.map(s => s.properties.title);
 
-    const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map'];
+    const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections'];
     const mappings = {};
 
     // Bước 1: Khớp trực tiếp và hỗ trợ các biến thể/tên thay thế phổ biến (ví dụ số nhiều, từ đồng nghĩa)
@@ -183,7 +183,8 @@ async function resolveAllTabs(spreadsheetId) {
       prompt: ['prompts', 'prompt', 'gợi ý'],
       goal: ['goals', 'goal', 'mục tiêu'],
       task: ['tasks', 'task', 'công việc'],
-      google_map: ['google_maps', 'google_map', 'bản đồ']
+      google_map: ['google_maps', 'google_map', 'bản đồ'],
+      collections: ['collections', 'collection', 'sưu tập', 'bộ sưu tập']
     };
 
     targetTabs.forEach(target => {
@@ -285,6 +286,12 @@ async function resolveAllTabs(spreadsheetId) {
               bestMatch = title;
               break;
             }
+          } else if (target === 'collections') {
+            const hasItem = headers.includes('item') || headers.includes('mặt hàng') || headers.some(h => h.includes('item'));
+            if (hasItem) {
+              bestMatch = title;
+              break;
+            }
           }
         }
 
@@ -308,6 +315,7 @@ async function resolveAllTabs(spreadsheetId) {
         else if (target === 'goal') mappings[target] = 'goals';
         else if (target === 'task') mappings[target] = 'tasks';
         else if (target === 'google_map') mappings[target] = 'google_maps';
+        else if (target === 'collections') mappings[target] = 'collections';
         else mappings[target] = target;
       }
     });
@@ -334,7 +342,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
   const mappings = await resolveAllTabs(spreadsheetId);
   const response = await gapi.client.sheets.spreadsheets.get({ spreadsheetId });
   const existingTitles = response.result.sheets.map(s => s.properties.title);
-  const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map'];
+  const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections'];
 
   const missingTabs = targetTabs.filter(target => {
     const mappedName = mappings[target];
@@ -362,7 +370,8 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Content', 'Category']] },
       { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
       { range: `${mappings['task'] || 'tasks'}!A1:C1`, values: [['Date', 'Task', 'Status']] },
-      { range: `${mappings['google_map'] || 'google_maps'}!A1:H1`, values: [['place', 'city', 'category', 'address', 'rating', 'total reviews', 'link', 'check']] }
+      { range: `${mappings['google_map'] || 'google_maps'}!A1:H1`, values: [['place', 'city', 'category', 'address', 'rating', 'total reviews', 'link', 'check']] },
+      { range: `${mappings['collections'] || 'collections'}!A1:F1`, values: [['item', 'brand', 'category', 'price', 'segment', 'type']] }
     ].filter(h => {
       const rangeSheetName = h.range.split('!')[0];
       return missingTabs.some(target => (mappings[target] || target) === rangeSheetName);
@@ -440,7 +449,8 @@ export function callServer(methodName, args) {
             `${promptTab}!A2:C`,
             `${goalTab}!A2:E`,
             `${taskTab}!A2:C`,
-            `${mappings['google_map']}!A2:H`
+            `${mappings['google_map']}!A2:H`,
+            `${mappings['collections'] || 'collections'}!A2:F`
           ],
           valueRenderOption: 'UNFORMATTED_VALUE'
         });
@@ -516,7 +526,17 @@ export function callServer(methodName, args) {
             total_reviews: Number(row[5]) || 0,
             link: row[6] || "",
             check: row[7] === "TRUE" || row[7] === true || row[7] === "true" || row[7] === "v" || row[7] === "checked"
-          })).filter(item => item.place)
+          })).filter(item => item.place),
+
+          collections: getRows(valueRanges[8]).map((row, idx) => ({
+            rowNumber: idx + 2,
+            item: row[0] || "",
+            brand: row[1] || "",
+            category: row[2] || "",
+            price: parseAmount(row[3]),
+            segment: row[4] || "",
+            type: row[5] || ""
+          })).filter(item => item.item)
         });
         return;
       }
@@ -685,6 +705,55 @@ export function callServer(methodName, args) {
           range: `${mappings['google_map']}!H${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
+        });
+        resolve("Thành công");
+        return;
+      }
+
+      // 10. Nghiệp vụ SƯU TẬP (Collections CRUD)
+      if (methodName === "insertCollectionRow") {
+        const [item, brand, category, price, segment, type] = args;
+        const colTab = mappings['collections'] || 'collections';
+        await gapi.client.sheets.spreadsheets.values.append({
+          spreadsheetId,
+          range: `${colTab}!A:F`,
+          valueInputOption: 'USER_ENTERED',
+          insertDataOption: 'OVERWRITE',
+          resource: { values: [[item, brand, category, Number(price) || 0, segment, type]] }
+        });
+        resolve("Thành công");
+        return;
+      }
+      if (methodName === "updateCollectionRow") {
+        const [rowNumber, item, brand, category, price, segment, type] = args;
+        const colTab = mappings['collections'] || 'collections';
+        await gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${colTab}!A${rowNumber}:F${rowNumber}`,
+          valueInputOption: 'USER_ENTERED',
+          resource: { values: [[item, brand, category, Number(price) || 0, segment, type]] }
+        });
+        resolve("Thành công");
+        return;
+      }
+      if (methodName === "deleteCollectionRow") {
+        const [rowNumber] = args;
+        const colTab = mappings['collections'] || 'collections';
+        const sheetId = await getSheetId(colTab, spreadsheetId);
+        await gapi.client.sheets.spreadsheets.batchUpdate({
+          spreadsheetId,
+          resource: {
+            requests: [{
+              deleteDimension: {
+                range: {
+                  sheetId,
+                  dimension: 'ROWS',
+                  startIndex: rowNumber - 1,
+                  endIndex: rowNumber
+                }
+              }
+            }]
+          }
         });
         resolve("Thành công");
         return;
@@ -1223,6 +1292,35 @@ function handleLocalTransaction(method, args) {
       data[idx].check = isChecked;
       saveLocalData("google_map", data);
     }
+    return "Thành công";
+  }
+
+  // 10. Nghiệp vụ SƯU TẬP (Collections CRUD)
+  if (method === "insertCollectionRow") {
+    const [item, brand, category, price, segment, type] = args;
+    const data = getLocalData("collections");
+    const nextRow = data.length > 0 ? Math.max(...data.map(i => i.rowNumber)) + 1 : 2;
+    data.push({ rowNumber: nextRow, item, brand, category, price: Number(price) || 0, segment, type });
+    saveLocalData("collections", data);
+    return "Thành công";
+  }
+
+  if (method === "updateCollectionRow") {
+    const [rowNumber, item, brand, category, price, segment, type] = args;
+    const data = getLocalData("collections");
+    const idx = data.findIndex(i => i.rowNumber == rowNumber);
+    if (idx !== -1) {
+      data[idx] = { rowNumber, item, brand, category, price: Number(price) || 0, segment, type };
+      saveLocalData("collections", data);
+    }
+    return "Thành công";
+  }
+
+  if (method === "deleteCollectionRow") {
+    const [rowNumber] = args;
+    let data = getLocalData("collections");
+    data = data.filter(i => i.rowNumber != rowNumber);
+    saveLocalData("collections", data);
     return "Thành công";
   }
 

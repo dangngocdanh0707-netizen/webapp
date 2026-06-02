@@ -22,6 +22,7 @@ import { initGoalsModule } from './components/goals.js';
 import { initTasksModule } from './components/tasks.js';
 import { initHabitsModule } from './components/habits.js';
 import { initMapModule } from './components/google_maps.js';
+import { initCollectionsModule } from './components/collections.js';
 
 let serverSyncTimeout = null;
 
@@ -289,6 +290,7 @@ function renderDashboard(data) {
     initTasksModule(data.task, loadDataFromServer);
     initHabitsModule(data.habit_tracker, loadDataFromServer);
     initMapModule(data.google_map, loadDataFromServer);
+    initCollectionsModule(data.collections, loadDataFromServer);
 
   } catch (err) {
     console.error("Critical rendering failure:", err);
@@ -319,6 +321,12 @@ window.switchTab = function(tabId, btn) {
     // Find matching link in sidebar
     const link = document.querySelector(`.nav-link[data-tab="${tabId}"]`);
     if (link) link.classList.add('active');
+  }
+
+  if (tabId === 'collections-tab') {
+    if (typeof window.filterCollectionGrid === 'function') {
+      window.filterCollectionGrid();
+    }
   }
 };
 

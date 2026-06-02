@@ -49,6 +49,19 @@ export function getMockData() {
       { rowNumber: 5, place: "HAIAN Beach Hotel & Spa", city: "Da Nang", category: "Hotel", address: "278 Võ Nguyên Giáp, Bắc Mỹ Phú, Ngũ Hành Sơn, Đà Nẵng", rating: 4.7, total_reviews: 3800, link: "https://haianbeach.backhotelite.com/en/", check: false },
       { rowNumber: 6, place: "TMS Hotel Da Nang Beach", city: "Da Nang", category: "Hotel", address: "292 Võ Nguyên Giáp, Mỹ An, Ngũ Hành Sơn, Đà Nẵng", rating: 4.8, total_reviews: 9165, link: "https://tmshotel.vn/", check: false },
       { rowNumber: 7, place: "Sala Danang Beach Hotel", city: "Da Nang", category: "Hotel", address: "36 Lâm Hoành, Phước Mỹ, Sơn Trà, Đà Nẵng", rating: 4.7, total_reviews: 3465, link: "https://salahotelgroup.com/en/saladanangbeachhotel/", check: false }
+    ],
+    collections: [
+      { rowNumber: 2, item: "Audemars Piguet Royal Oak", brand: "Audemars Piguet", category: "Luxury", price: 800000000, segment: "Luxury", type: "Watch" },
+      { rowNumber: 3, item: "Audemars Piguet Royal Oak Offshore", brand: "Audemars Piguet", category: "Sport", price: 950000000, segment: "Luxury", type: "Watch" },
+      { rowNumber: 4, item: "Audi A4", brand: "Audi", category: "Sedan", price: 1700000000, segment: "Luxury", type: "Car" },
+      { rowNumber: 5, item: "Audi A6", brand: "Audi", category: "Sedan", price: 2500000000, segment: "Luxury", type: "Car" },
+      { rowNumber: 6, item: "Audi Q5", brand: "Audi", category: "SUV", price: 2400000000, segment: "Luxury", type: "Car" },
+      { rowNumber: 7, item: "Audi Q7", brand: "Audi", category: "SUV", price: 3400000000, segment: "Luxury", type: "Car" },
+      { rowNumber: 8, item: "BMW 3 Series", brand: "BMW", category: "Sedan", price: 1899000000, segment: "Luxury", type: "Car" },
+      { rowNumber: 9, item: "BMW 5 Series", brand: "BMW", category: "Sedan", price: 2499000000, segment: "Luxury", type: "Car" },
+      { rowNumber: 10, item: "BMW X3", brand: "BMW", category: "SUV", price: 2299000000, segment: "Luxury", type: "Car" },
+      { rowNumber: 11, item: "BMW X5", brand: "BMW", category: "SUV", price: 3900000000, segment: "Luxury", type: "Car" },
+      { rowNumber: 12, item: "Breguet Classique", brand: "Breguet", category: "Luxury", price: 500000000, segment: "Luxury", type: "Watch" }
     ]
   };
 }
