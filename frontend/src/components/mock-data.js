@@ -51,17 +51,17 @@ export function getMockData() {
       { rowNumber: 7, place: "Sala Danang Beach Hotel", city: "Da Nang", category: "Hotel", address: "36 Lâm Hoành, Phước Mỹ, Sơn Trà, Đà Nẵng", check: false }
     ],
     collections: [
-      { rowNumber: 2, item: "Audemars Piguet Royal Oak", brand: "Audemars Piguet", category: "Luxury", price: 800000000, segment: "Luxury", type: "Watch" },
-      { rowNumber: 3, item: "Audemars Piguet Royal Oak Offshore", brand: "Audemars Piguet", category: "Sport", price: 950000000, segment: "Luxury", type: "Watch" },
-      { rowNumber: 4, item: "Audi A4", brand: "Audi", category: "Sedan", price: 1700000000, segment: "Luxury", type: "Car" },
-      { rowNumber: 5, item: "Audi A6", brand: "Audi", category: "Sedan", price: 2500000000, segment: "Luxury", type: "Car" },
-      { rowNumber: 6, item: "Audi Q5", brand: "Audi", category: "SUV", price: 2400000000, segment: "Luxury", type: "Car" },
-      { rowNumber: 7, item: "Audi Q7", brand: "Audi", category: "SUV", price: 3400000000, segment: "Luxury", type: "Car" },
-      { rowNumber: 8, item: "BMW 3 Series", brand: "BMW", category: "Sedan", price: 1899000000, segment: "Luxury", type: "Car" },
-      { rowNumber: 9, item: "BMW 5 Series", brand: "BMW", category: "Sedan", price: 2499000000, segment: "Luxury", type: "Car" },
-      { rowNumber: 10, item: "BMW X3", brand: "BMW", category: "SUV", price: 2299000000, segment: "Luxury", type: "Car" },
-      { rowNumber: 11, item: "BMW X5", brand: "BMW", category: "SUV", price: 3900000000, segment: "Luxury", type: "Car" },
-      { rowNumber: 12, item: "Breguet Classique", brand: "Breguet", category: "Luxury", price: 500000000, segment: "Luxury", type: "Watch" }
+      { rowNumber: 2, item: "Audemars Piguet Royal Oak", category: "Watch", price: 800000000 },
+      { rowNumber: 3, item: "Audemars Piguet Royal Oak Offshore", category: "Watch", price: 950000000 },
+      { rowNumber: 4, item: "Audi A4", category: "Car", price: 1700000000 },
+      { rowNumber: 5, item: "Audi A6", category: "Car", price: 2500000000 },
+      { rowNumber: 6, item: "Audi Q5", category: "Car", price: 2400000000 },
+      { rowNumber: 7, item: "Audi Q7", category: "Car", price: 3400000000 },
+      { rowNumber: 8, item: "BMW 3 Series", category: "Car", price: 1899000000 },
+      { rowNumber: 9, item: "BMW 5 Series", category: "Car", price: 2499000000 },
+      { rowNumber: 10, item: "BMW X3", category: "Car", price: 2299000000 },
+      { rowNumber: 11, item: "BMW X5", category: "Car", price: 3900000000 },
+      { rowNumber: 12, item: "Breguet Classique", category: "Watch", price: 500000000 }
     ]
   };
 }

@@ -371,7 +371,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
       { range: `${mappings['task'] || 'tasks'}!A1:C1`, values: [['Date', 'Task', 'Status']] },
       { range: `${mappings['google_map'] || 'google_maps'}!A1:E1`, values: [['place', 'city', 'category', 'address', 'check']] },
-      { range: `${mappings['collections'] || 'collections'}!A1:F1`, values: [['item', 'brand', 'category', 'price', 'segment', 'type']] }
+      { range: `${mappings['collections'] || 'collections'}!A1:C1`, values: [['item', 'category', 'price']] }
     ].filter(h => {
       const rangeSheetName = h.range.split('!')[0];
       return missingTabs.some(target => (mappings[target] || target) === rangeSheetName);
@@ -450,7 +450,7 @@ export function callServer(methodName, args) {
             `${goalTab}!A2:E`,
             `${taskTab}!A2:C`,
             `${mappings['google_map']}!A2:E`,
-            `${mappings['collections'] || 'collections'}!A2:F`
+            `${mappings['collections'] || 'collections'}!A2:C`
           ],
           valueRenderOption: 'UNFORMATTED_VALUE'
         });
@@ -528,11 +528,8 @@ export function callServer(methodName, args) {
           collections: getRows(valueRanges[8]).map((row, idx) => ({
             rowNumber: idx + 2,
             item: row[0] || "",
-            brand: row[1] || "",
-            category: row[2] || "",
-            price: parseAmount(row[3]),
-            segment: row[4] || "",
-            type: row[5] || ""
+            category: row[1] || "",
+            price: parseAmount(row[2])
           })).filter(item => item.item)
         });
         return;
@@ -709,26 +706,26 @@ export function callServer(methodName, args) {
 
       // 10. Nghiệp vụ SƯU TẬP (Collections CRUD)
       if (methodName === "insertCollectionRow") {
-        const [item, brand, category, price, segment, type] = args;
+        const [item, category, price] = args;
         const colTab = mappings['collections'] || 'collections';
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${colTab}!A:F`,
+          range: `${colTab}!A:C`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[item, brand, category, Number(price) || 0, segment, type]] }
+          resource: { values: [[item, category, Number(price) || 0]] }
         });
         resolve("Thành công");
         return;
       }
       if (methodName === "updateCollectionRow") {
-        const [rowNumber, item, brand, category, price, segment, type] = args;
+        const [rowNumber, item, category, price] = args;
         const colTab = mappings['collections'] || 'collections';
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${colTab}!A${rowNumber}:F${rowNumber}`,
+          range: `${colTab}!A${rowNumber}:C${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[item, brand, category, Number(price) || 0, segment, type]] }
+          resource: { values: [[item, category, Number(price) || 0]] }
         });
         resolve("Thành công");
         return;
@@ -1294,20 +1291,20 @@ function handleLocalTransaction(method, args) {
 
   // 10. Nghiệp vụ SƯU TẬP (Collections CRUD)
   if (method === "insertCollectionRow") {
-    const [item, brand, category, price, segment, type] = args;
+    const [item, category, price] = args;
     const data = getLocalData("collections");
     const nextRow = data.length > 0 ? Math.max(...data.map(i => i.rowNumber)) + 1 : 2;
-    data.push({ rowNumber: nextRow, item, brand, category, price: Number(price) || 0, segment, type });
+    data.push({ rowNumber: nextRow, item, category, price: Number(price) || 0 });
     saveLocalData("collections", data);
     return "Thành công";
   }
 
   if (method === "updateCollectionRow") {
-    const [rowNumber, item, brand, category, price, segment, type] = args;
+    const [rowNumber, item, category, price] = args;
     const data = getLocalData("collections");
     const idx = data.findIndex(i => i.rowNumber == rowNumber);
     if (idx !== -1) {
-      data[idx] = { rowNumber, item, brand, category, price: Number(price) || 0, segment, type };
+      data[idx] = { rowNumber, item, category, price: Number(price) || 0 };
       saveLocalData("collections", data);
     }
     return "Thành công";

@@ -4,68 +4,6 @@ import { showToast } from '../services/toast.js';
 let allMapData = [];
 let onSyncNeeded = null;
 
-// Global visualizer state
-let currentPhotos = [];
-let currentPhotoIdx = 0;
-
-// Hand-curated premium high-resolution authentic cover photo galleries (3 photos per place) for default Da Nang spots
-const MAP_PLACE_PHOTOS = {
-  "XLIII Specialty Coffee": [
-    "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80"
-  ],
-  "Trinh Cafe": [
-    "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=600&q=80"
-  ],
-  "Nối Coffee": [
-    "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=600&q=80"
-  ],
-  "HAIAN Beach Hotel & Spa": [
-    "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80"
-  ],
-  "TMS Hotel Da Nang Beach": [
-    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80"
-  ],
-  "Sala Danang Beach Hotel": [
-    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80"
-  ]
-};
-
-// Premium Unsplash fallback galleries for places based on their category
-const CAFE_GALLERY = [
-  "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80"
-];
-
-const HOTEL_GALLERY = [
-  "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80"
-];
-
-const RESTAURANT_GALLERY = [
-  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=600&q=80"
-];
-
-const GENERAL_GALLERY = [
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=600&q=80"
-];
 
 export function initMapModule(data, onSync) {
   allMapData = data || [];
@@ -221,76 +159,9 @@ window.focusMapOnLocation = function(placeName, city) {
     const query = `${placeName}, ${city}`;
     mapIframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
   }
-
-  // 1. Find dynamic photos for this place
-  let photos = MAP_PLACE_PHOTOS[placeName.trim()];
-  if (!photos) {
-    // Find category-specific Unsplash photodeck
-    let targetMapData = allMapData.find(item => item && item.place && item.place.trim() === placeName.trim());
-    const category = targetMapData ? String(targetMapData.category || "").toLowerCase() : "";
-    
-    if (category.includes("cafe") || category.includes("coffee") || category.includes("cà phê")) {
-      photos = CAFE_GALLERY;
-    } else if (category.includes("hotel") || category.includes("resort") || category.includes("staycation") || category.includes("khách sạn")) {
-      photos = HOTEL_GALLERY;
-    } else if (category.includes("restaurant") || category.includes("nhà hàng") || category.includes("quán ăn") || category.includes("food")) {
-      photos = RESTAURANT_GALLERY;
-    } else {
-      photos = GENERAL_GALLERY;
-    }
-  }
-
-  currentPhotos = photos;
-  currentPhotoIdx = 0;
-
-  // 2. Update UI Visualizer elements
-  const visualizerTitle = document.getElementById('visualizer-title');
-  const activePhotoImg = document.getElementById('visualizer-active-photo');
-  const photoIndicator = document.getElementById('visualizer-photo-indicator');
-
-  if (visualizerTitle) {
-    visualizerTitle.innerText = `Không gian: ${placeName}`;
-  }
-  
-  if (activePhotoImg) {
-    // Apply soft scale fade effect
-    activePhotoImg.style.opacity = '0.3';
-    activePhotoImg.style.transform = 'scale(0.98)';
-    setTimeout(() => {
-      activePhotoImg.src = currentPhotos[currentPhotoIdx];
-      activePhotoImg.style.opacity = '1';
-      activePhotoImg.style.transform = 'scale(100)';
-    }, 200);
-  }
-
-  if (photoIndicator) {
-    photoIndicator.innerText = `1 / ${currentPhotos.length}`;
-  }
 };
 
-window.slideVisualizerPhoto = function(dir) {
-  if (!currentPhotos || currentPhotos.length === 0) return;
 
-  // Change index circular
-  currentPhotoIdx = (currentPhotoIdx + dir + currentPhotos.length) % currentPhotos.length;
-
-  const activePhotoImg = document.getElementById('visualizer-active-photo');
-  const photoIndicator = document.getElementById('visualizer-photo-indicator');
-
-  if (activePhotoImg) {
-    activePhotoImg.style.opacity = '0.3';
-    activePhotoImg.style.transform = 'scale(0.98)';
-    setTimeout(() => {
-      activePhotoImg.src = currentPhotos[currentPhotoIdx];
-      activePhotoImg.style.opacity = '1';
-      activePhotoImg.style.transform = 'scale(100)';
-    }, 200);
-  }
-
-  if (photoIndicator) {
-    photoIndicator.innerText = `${currentPhotoIdx + 1} / ${currentPhotos.length}`;
-  }
-};
 
 window.quickSearchMap = function() {
   const searchInput = document.getElementById('quickMapSearchInput');
@@ -299,9 +170,6 @@ window.quickSearchMap = function() {
     const val = searchInput.value.trim();
     if (val) {
       mapIframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(val)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-      
-      const visualizerTitle = document.getElementById('visualizer-title');
-      if (visualizerTitle) visualizerTitle.innerText = `Tìm kiếm: ${val}`;
     }
   }
 };
