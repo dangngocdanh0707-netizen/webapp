@@ -13,7 +13,7 @@ import {
 
 import { showToast } from './services/toast.js';
 import { initSortableSidebar, initResizeSidebar } from './components/sidebar.js';
-import { initCostModule } from './components/expense.js';
+import { initCostModule } from './components/expenses.js';
 import { initVocabModule } from './components/vocabulary.js';
 import { initSrsModule } from './components/srs.js';
 import { initLinksModule } from './components/links.js';
@@ -21,7 +21,7 @@ import { initPromptsModule } from './components/prompts.js';
 import { initGoalsModule } from './components/goals.js';
 import { initTasksModule } from './components/tasks.js';
 import { initHabitsModule } from './components/habits.js';
-import { initMapModule } from './components/google_map.js';
+import { initMapModule } from './components/google_maps.js';
 
 let serverSyncTimeout = null;
 
