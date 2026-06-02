@@ -53,32 +53,6 @@ export function buildMapGrid() {
   if (!gridContainer) return;
   gridContainer.innerHTML = "";
  
-  // 1. Calculate Stats & Gamified Rank
-  const validMapData = allMapData.filter(item => item && item.place);
-  const totalCount = validMapData.length;
-  const exploredCount = validMapData.filter(item => item.check === true).length;
-  const explorationRate = totalCount > 0 ? Math.round((exploredCount / totalCount) * 100) : 0;
- 
-  // Update Stats UI elements
-  const percentageEl = document.getElementById('exploration-percentage');
-  const progressBarEl = document.getElementById('exploration-progress-bar');
-  const countEl = document.getElementById('explored-stats-count');
-  const rankEl = document.getElementById('explorer-rank');
- 
-  if (percentageEl) percentageEl.innerText = `${explorationRate}%`;
-  if (progressBarEl) progressBarEl.style.width = `${explorationRate}%`;
-  if (countEl) countEl.innerText = `${exploredCount}/${totalCount} places`;
- 
-  if (rankEl) {
-    let rankText = "Level 1: Newcomer 🐣";
-    if (exploredCount === 0) rankText = "Level 0: Couch Potato 🥔";
-    else if (exploredCount > 0 && exploredCount <= 2) rankText = "Level 1: Newcomer 🐣";
-    else if (exploredCount > 2 && exploredCount <= 5) rankText = "Level 2: Curious Wanderer 🧭";
-    else if (exploredCount > 5 && exploredCount <= 10) rankText = "Level 3: Active Explorer 🗺️";
-    else if (exploredCount > 10 && exploredCount < 15) rankText = "Level 4: Local Expert 🏆";
-    else if (exploredCount >= 15) rankText = "Level 5: Legend Traveler 👑";
-    rankEl.innerText = rankText;
-  }
  
   // 2. Read Active Filters
   const searchVal = document.getElementById('mapSearchInput') ? document.getElementById('mapSearchInput').value.toLowerCase().trim() : "";

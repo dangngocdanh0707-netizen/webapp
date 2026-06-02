@@ -865,31 +865,12 @@
 
       <!-- Google Maps Explorer Tab -->
       <div id="map-tab" class="tab-content">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <div class="flex items-center gap-3">
-            <button onclick="launchApp('home-tab')"
-              class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
-              <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
-            </button>
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Google Maps</h1>
-          </div>
-          
-          <!-- Gamified Exploration Rank Panel -->
-          <div class="glass-card px-6 py-4 min-w-[320px] flex items-center gap-4 transition shadow-xs">
-            <div class="bg-gradient-to-tr from-emerald-500 to-teal-400 w-12 h-12 rounded-xl flex items-center justify-center shadow-[0_8px_20px_rgba(16,185,129,0.2)] shrink-0">
-              <i class="fa-solid fa-compass text-white text-xl animate-spin" style="animation-duration: 10s;"></i>
-            </div>
-            <div class="flex-1">
-              <div class="flex justify-between items-end mb-1">
-                <span id="explorer-rank" class="text-xs font-bold text-slate-700 uppercase tracking-wider">Level 1: Newcomer 🐣</span>
-                <span id="exploration-percentage" class="text-xs font-bold text-slate-500">0%</span>
-              </div>
-              <div class="w-full bg-slate-200/60 h-2 rounded-full overflow-hidden">
-                <div id="exploration-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
-              </div>
-              <p class="text-[10px] text-slate-400 font-semibold mt-1">Conquered: <span id="explored-stats-count" class="font-bold text-slate-650">0/0 places</span></p>
-            </div>
-          </div>
+        <div class="flex items-center mb-8 gap-4">
+          <button onclick="launchApp('home-tab')"
+            class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+            <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+          </button>
+          <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Google Maps</h1>
         </div>
 
         <!-- Filter bar -->
@@ -931,13 +912,13 @@
 
         <!-- Places Explorer Split View -->
         <div class="flex flex-col lg:flex-row gap-8 items-start mb-8 h-[calc(100vh-320px)] min-h-[500px]">
-          <!-- Left Column: Scrollable list of places -->
-          <div class="w-full lg:w-7/12 flex flex-col gap-4 overflow-y-auto pr-2 h-full" id="map-places-list-container">
+          <!-- Left Column: Scrollable list of places (Narrower) -->
+          <div class="w-full lg:w-5/12 flex flex-col gap-4 overflow-y-auto pr-2 h-full" id="map-places-list-container">
             <!-- Dynamic rows will be inserted here -->
           </div>
 
-          <!-- Right Column: Interactive Map Widget -->
-          <div class="w-full lg:w-5/12 h-full flex flex-col gap-3 rounded-2xl overflow-hidden border border-slate-100 shadow-sm bg-white p-4 shrink-0 lg:sticky lg:top-8">
+          <!-- Right Column: Interactive Map Widget (Wider) -->
+          <div class="w-full lg:w-7/12 h-full flex flex-col gap-3 rounded-2xl overflow-hidden border border-slate-100 shadow-sm bg-white p-4 shrink-0 lg:sticky lg:top-8">
             <!-- Quick search bar above map -->
             <div class="flex items-center gap-2 bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs">
               <i class="fa-solid fa-map-location-dot text-blue-500 text-xs"></i>
