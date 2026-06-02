@@ -309,6 +309,9 @@ window.forceLoadMockData = function() {
 };
 
 window.switchTab = function(tabId, btn) {
+  // Reset scroll position to top of the page so that tab headers are fully visible
+  window.scrollTo(0, 0);
+
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
   
