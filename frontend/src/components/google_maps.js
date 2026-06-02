@@ -49,26 +49,26 @@ export function initMapModule(data, onSync) {
 }
 
 export function buildMapGrid() {
-  const gridContainer = document.getElementById('map-places-grid');
+  const gridContainer = document.getElementById('map-places-list-container');
   if (!gridContainer) return;
   gridContainer.innerHTML = "";
-
+ 
   // 1. Calculate Stats & Gamified Rank
   const validMapData = allMapData.filter(item => item && item.place);
   const totalCount = validMapData.length;
   const exploredCount = validMapData.filter(item => item.check === true).length;
   const explorationRate = totalCount > 0 ? Math.round((exploredCount / totalCount) * 100) : 0;
-
+ 
   // Update Stats UI elements
   const percentageEl = document.getElementById('exploration-percentage');
   const progressBarEl = document.getElementById('exploration-progress-bar');
   const countEl = document.getElementById('explored-stats-count');
   const rankEl = document.getElementById('explorer-rank');
-
+ 
   if (percentageEl) percentageEl.innerText = `${explorationRate}%`;
   if (progressBarEl) progressBarEl.style.width = `${explorationRate}%`;
   if (countEl) countEl.innerText = `${exploredCount}/${totalCount} places`;
-
+ 
   if (rankEl) {
     let rankText = "Level 1: Newcomer 🐣";
     if (exploredCount === 0) rankText = "Level 0: Couch Potato 🥔";
@@ -79,14 +79,16 @@ export function buildMapGrid() {
     else if (exploredCount >= 15) rankText = "Level 5: Legend Traveler 👑";
     rankEl.innerText = rankText;
   }
-
+ 
   // 2. Read Active Filters
   const searchVal = document.getElementById('mapSearchInput') ? document.getElementById('mapSearchInput').value.toLowerCase().trim() : "";
   const cityVal = document.getElementById('mapCityFilter') ? document.getElementById('mapCityFilter').value : "All";
   const catVal = document.getElementById('mapCategoryFilter') ? document.getElementById('mapCategoryFilter').value : "All";
   const checkVal = document.getElementById('mapCheckFilter') ? document.getElementById('mapCheckFilter').value : "All";
+ 
+  let firstFilteredItem = null;
 
-  // 3. Render Cards
+  // 3. Render Rows
   allMapData.forEach(item => {
     if (!item || !item.place) return;
     
@@ -105,7 +107,7 @@ export function buildMapGrid() {
           rating = parsedRating;
         }
       }
-
+ 
       // Safe numeric casting for total reviews
       let totalReviews = 0;
       if (item.total_reviews !== undefined && item.total_reviews !== null) {
@@ -115,16 +117,16 @@ export function buildMapGrid() {
           totalReviews = parsedReviews;
         }
       }
-
+ 
       const link = String(item.link || "").trim() || "#";
       const isExplored = item.check === true;
-
+ 
       // Apply Filter constraints
       if (cityVal !== "All" && city !== cityVal) return;
       if (catVal !== "All" && category !== catVal) return;
       if (checkVal === "Explored" && !isExplored) return;
       if (checkVal === "Unexplored" && isExplored) return;
-
+ 
       if (searchVal !== "") {
         const match = placeName.toLowerCase().includes(searchVal) || 
                       category.toLowerCase().includes(searchVal) || 
@@ -132,87 +134,53 @@ export function buildMapGrid() {
                       city.toLowerCase().includes(searchVal);
         if (!match) return;
       }
-
-      // Layered image loader: 1. Sheet custom URL | 2. Hand-curated Place Photo dictionary | 3. Category Fallback
-      let coverUrl = item.image ? String(item.image).trim() : "";
-      if (!coverUrl) {
-        coverUrl = MAP_PLACE_PHOTOS[placeName.trim()];
-      }
-      const catLower = category.toLowerCase();
-      if (!coverUrl) {
-        if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
-          coverUrl = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80"; // Vintage garden cafe
-        } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("khách sạn")) {
-          coverUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; // Luxury resort room/pool
-        } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
-          coverUrl = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"; // Premium restaurant space
-        } else {
-          coverUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"; // General beach/travel
-        }
+ 
+      if (!firstFilteredItem) {
+        firstFilteredItem = { placeName, city };
       }
 
       // Determine dynamic category with appropriate emoji
-      let displayCategory = "📍 Địa điểm";
-      if (category) {
-        let categoryEmoji = "📍";
-        if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
-          categoryEmoji = "☕";
-        } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("homestay") || catLower.includes("khách sạn")) {
-          categoryEmoji = "🏨";
-        } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
-          categoryEmoji = "🍴";
-        }
-        displayCategory = `${categoryEmoji} ${category.trim()}`;
+      const catLower = category.toLowerCase();
+      let categoryEmoji = "📍";
+      if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
+        categoryEmoji = "☕";
+      } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("homestay") || catLower.includes("khách sạn")) {
+        categoryEmoji = "🏨";
+      } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
+        categoryEmoji = "🍴";
       }
-
+ 
       gridContainer.insertAdjacentHTML('beforeend', `
-        <div id="map-card-container-${id}" class="glass-card flex flex-col overflow-hidden transition duration-300 hover:-translate-y-1.5 hover:shadow-lg">
+        <div id="map-card-container-${id}" onclick="focusMapOnLocation('${escapeHTML(placeName)}', '${escapeHTML(city)}')" 
+          class="glass-card flex items-center justify-between p-4 cursor-pointer hover:border-blue-300 hover:shadow-xs transition duration-200 group">
           
-          <!-- CARD TOP: COVER PHOTO & OVERLAYS -->
-          <div class="relative w-full h-48 overflow-hidden shrink-0 group">
-            <img src="${coverUrl}" alt="${escapeHTML(placeName)}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent"></div>
-            
-            <!-- Badges on Photo -->
-            <span class="absolute top-4 left-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-white/90 backdrop-blur-xs text-slate-800 shadow-sm border border-white/20">
-              ${escapeHTML(displayCategory)}
-            </span>
-            
-            <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-amber-500 text-white shadow-sm flex items-center gap-1">
-              <i class="fa-solid fa-star text-[9px]"></i> ${rating.toFixed(1)}
-            </span>
-
-            <!-- Explored stamp if checked -->
-            ${isExplored ? `<div class="explored-stamp">🏆 Explored</div>` : ''}
-
-            <!-- Bottom Title on Image overlay -->
-            <div class="absolute bottom-4 left-4 right-4 text-left">
-              <h3 class="text-white text-base font-black tracking-tight line-clamp-1">${escapeHTML(placeName)}</h3>
-              <p class="text-white/70 text-[10px] font-semibold flex items-center gap-1 mt-0.5"><i class="fa-solid fa-location-dot"></i> ${escapeHTML(city)}</p>
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100/50 group-hover:bg-white transition text-base shadow-3xs">
+              ${categoryEmoji}
+            </div>
+            <div class="min-w-0">
+              <h4 class="font-bold text-slate-800 text-sm truncate pr-2">${escapeHTML(placeName)}</h4>
+              <p class="text-[10px] text-slate-400 font-semibold truncate flex items-center gap-1.5 mt-0.5">
+                <i class="fa-solid fa-location-dot text-[8px] text-slate-350"></i> 
+                <span>${escapeHTML(city)}</span> 
+                <span class="text-slate-250">•</span> 
+                <span class="text-slate-450">${escapeHTML(address)}</span>
+              </p>
             </div>
           </div>
-
-          <!-- CARD BOTTOM: INFO & ACTIONS -->
-          <div class="p-5 flex-1 flex flex-col justify-between text-left">
-            <div>
-              <p class="text-xs text-slate-500 font-semibold line-clamp-2 mb-3 bg-slate-50/50 p-2.5 rounded-xl border border-slate-100/50">
-                ${escapeHTML(address)}
-              </p>
-              <div class="flex items-center justify-between text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-4">
-                <span>Reviews count</span>
-                <span class="text-slate-650 font-black">${totalReviews.toLocaleString()} reviews</span>
-              </div>
+ 
+          <div class="flex items-center gap-4 shrink-0">
+            <div class="flex flex-col items-end">
+              <span class="text-[10px] font-black bg-amber-50 text-amber-600 px-2 py-0.5 rounded-lg border border-amber-100/30 flex items-center gap-1">
+                <i class="fa-solid fa-star text-[9px] text-amber-500"></i> ${rating.toFixed(1)}
+              </span>
+              <span class="text-[8px] text-slate-400 font-extrabold uppercase mt-1 tracking-wide">${totalReviews.toLocaleString()} reviews</span>
             </div>
-
-            <!-- Action buttons -->
-            <div class="flex items-center gap-2">
-              <a href="${escapeHTML(link)}" target="_blank" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 rounded-xl transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer no-underline text-center">
-                <i class="fa-solid fa-map-location-dot text-sm"></i> <span>Xem bản đồ 🗺️</span>
-              </a>
-              
-              <label class="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:border-emerald-200 hover:bg-emerald-50/30 flex items-center justify-center gap-2 cursor-pointer transition select-none">
-                <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
-                <span class="text-xs font-bold text-slate-500 map-chk-lbl-${id}">${isExplored ? 'Chinh phục 🎉' : 'Check-in'}</span>
+            
+            <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+              <label class="px-3.5 py-2 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 flex items-center justify-center gap-1.5 cursor-pointer transition select-none shadow-3xs">
+                <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0 scale-90" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
+                <span class="text-[10px] font-bold text-slate-500 map-chk-lbl-${id}">${isExplored ? 'Chinh phục 🎉' : 'Check-in'}</span>
               </label>
             </div>
           </div>
@@ -221,26 +189,44 @@ export function buildMapGrid() {
     } catch (cardError) {
       console.error("Card Render Error for item:", item, cardError);
       gridContainer.insertAdjacentHTML('beforeend', `
-        <div class="glass-card p-5 border border-rose-200 bg-rose-50/20 text-rose-800 text-xs flex flex-col justify-between h-48 animate-in fade-in duration-250">
-          <div>
-            <p class="font-bold flex items-center gap-1.5 text-rose-750"><i class="fa-solid fa-triangle-exclamation"></i> Lỗi dựng địa điểm #${item.rowNumber || '?'}</p>
-            <p class="font-mono mt-2 text-[10px] bg-white/80 p-2.5 rounded-lg border border-rose-100 max-h-24 overflow-y-auto">${cardError.message}</p>
-          </div>
-          <p class="text-[10px] text-slate-500 font-semibold truncate">Địa điểm: ${escapeHTML(item.place || 'Trống')}</p>
+        <div class="glass-card p-3 border border-rose-200 bg-rose-50/10 text-rose-800 text-xs flex flex-col justify-between min-h-[70px] animate-in fade-in duration-200">
+          <p class="font-bold flex items-center gap-1.5 text-rose-750"><i class="fa-solid fa-triangle-exclamation"></i> Lỗi dữ liệu dòng #${item.rowNumber || '?'}</p>
+          <p class="font-mono text-[9px] mt-1 text-slate-500">${cardError.message}</p>
         </div>
       `);
     }
   });
-
+ 
   if (gridContainer.children.length === 0) {
     gridContainer.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400 italic glass-card border-dashed">No adventures match the active filters. Keep exploring!</div>`;
+  } else if (firstFilteredItem) {
+    focusMapOnLocation(firstFilteredItem.placeName, firstFilteredItem.city);
   }
 }
-
+ 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
-
+ 
 window.filterMapGrid = function() {
   buildMapGrid();
+};
+ 
+window.focusMapOnLocation = function(placeName, city) {
+  const mapIframe = document.getElementById('interactive-google-map');
+  if (mapIframe) {
+    const query = `${placeName}, ${city}`;
+    mapIframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+  }
+};
+
+window.quickSearchMap = function() {
+  const searchInput = document.getElementById('quickMapSearchInput');
+  const mapIframe = document.getElementById('interactive-google-map');
+  if (searchInput && mapIframe) {
+    const val = searchInput.value.trim();
+    if (val) {
+      mapIframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(val)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+    }
+  }
 };
 
 window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
@@ -249,17 +235,17 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
   
   checkboxEl.disabled = true;
   if (labelEl) {
-    labelEl.innerText = isChecked ? "Saving..." : "Reverting...";
-    labelEl.className = `text-xs font-bold text-amber-500 animate-pulse map-chk-lbl-${rowNumber}`;
+    labelEl.innerText = "Saving...";
+    labelEl.className = `text-[10px] font-bold text-amber-500 animate-pulse map-chk-lbl-${rowNumber}`;
   }
-
+ 
   callServer("updateMapCheckStatusRow", [rowNumber, isChecked])
     .then(res => {
       checkboxEl.disabled = false;
       if (res === "Thành công") {
         let idx = allMapData.findIndex(item => item.rowNumber == rowNumber);
         if (idx !== -1) allMapData[idx].check = isChecked;
-
+ 
         showToast(isChecked ? "Đã check-in chinh phục địa điểm này! 🎉" : "Đã hủy thám hiểm địa điểm", "success");
         buildMapGrid();
       } else {
@@ -267,7 +253,7 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
         checkboxEl.checked = !isChecked;
         if (labelEl) {
           labelEl.innerText = !isChecked ? "Chinh phục 🎉" : "Check-in";
-          labelEl.className = `text-xs font-bold text-slate-500 map-chk-lbl-${rowNumber}`;
+          labelEl.className = `text-[10px] font-bold text-slate-500 map-chk-lbl-${rowNumber}`;
         }
       }
     })
@@ -277,7 +263,7 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
       showToast("Lỗi đồng bộ: " + err.message, "error");
       if (labelEl) {
         labelEl.innerText = !isChecked ? "Chinh phục 🎉" : "Check-in";
-        labelEl.className = `text-xs font-bold text-slate-500 map-chk-lbl-${rowNumber}`;
+        labelEl.className = `text-[10px] font-bold text-slate-500 map-chk-lbl-${rowNumber}`;
       }
     });
 };

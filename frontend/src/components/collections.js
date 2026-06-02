@@ -4,21 +4,6 @@ import { showToast } from '../services/toast.js';
 let allCollectionData = [];
 let onSyncNeeded = null;
 
-// Hand-curated premium high-resolution cover photos for each of the 11 luxury models
-const COLLECTION_PHOTOS = {
-  "Audemars Piguet Royal Oak": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80",
-  "Audemars Piguet Royal Oak Offshore": "https://images.unsplash.com/photo-1547996160-81dfa63595aa?auto=format&fit=crop&w=800&q=80",
-  "Audi A4": "https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?auto=format&fit=crop&w=800&q=80",
-  "Audi A6": "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80",
-  "Audi Q5": "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=800&q=80",
-  "Audi Q7": "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
-  "BMW 3 Series": "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=800&q=80",
-  "BMW 5 Series": "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?auto=format&fit=crop&w=800&q=80",
-  "BMW X3": "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80",
-  "BMW X5": "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=800&q=80",
-  "Breguet Classique": "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=800&q=80"
-};
-
 export function initCollectionsModule(data, onSync) {
   allCollectionData = data || [];
   onSyncNeeded = onSync;
@@ -29,9 +14,10 @@ export function initCollectionsModule(data, onSync) {
   let categories = new Set();
 
   allCollectionData.forEach(item => {
-    if (item.brand) brands.add(item.brand.trim());
-    if (item.segment) segments.add(item.segment.trim());
-    if (item.category) categories.add(item.category.trim());
+    if (!item) return;
+    if (item.brand) brands.add(String(item.brand).trim());
+    if (item.segment) segments.add(String(item.segment).trim());
+    if (item.category) categories.add(String(item.category).trim());
   });
 
   const brandSelect = document.getElementById('collectionBrandFilter');
@@ -63,9 +49,9 @@ export function initCollectionsModule(data, onSync) {
 }
 
 export function buildCollectionsGrid() {
-  const gridContainer = document.getElementById('collections-grid');
-  if (!gridContainer) return;
-  gridContainer.innerHTML = "";
+  const tableBody = document.getElementById('collections-table-body');
+  if (!tableBody) return;
+  tableBody.innerHTML = "";
 
   // 1. Filter Data
   const searchVal = document.getElementById('collectionSearchInput') ? document.getElementById('collectionSearchInput').value.toLowerCase().trim() : "";
@@ -75,6 +61,7 @@ export function buildCollectionsGrid() {
   const catVal = document.getElementById('collectionCategoryFilter') ? document.getElementById('collectionCategoryFilter').value : "All";
 
   const filteredData = allCollectionData.filter(item => {
+    if (!item || !item.item) return false;
     if (typeVal !== "All" && item.type !== typeVal) return false;
     if (brandVal !== "All" && item.brand !== brandVal) return false;
     if (segmentVal !== "All" && item.segment !== segmentVal) return false;
@@ -94,85 +81,81 @@ export function buildCollectionsGrid() {
   // Format currency
   const formatVnd = (num) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(num);
 
-  // 3. Render Cards styled exactly like Google Maps Explorer
+  // 2. Render Rows to Table
   filteredData.forEach(item => {
-    const id = item.rowNumber;
-    const name = item.item || "";
-    const brand = item.brand || "";
-    const category = item.category || "";
-    const price = item.price || 0;
-    const segment = item.segment || "";
-    const type = item.type || "";
+    try {
+      const id = item.rowNumber;
+      const name = String(item.item || "").trim();
+      const brand = String(item.brand || "").trim();
+      const category = String(item.category || "").trim();
+      const price = Number(item.price) || 0;
+      const segment = String(item.segment || "").trim();
+      const type = String(item.type || "").trim();
 
-    // Cover image mapping: corresponding or fallback Unsplash photo
-    let coverUrl = COLLECTION_PHOTOS[name.trim()];
-    if (!coverUrl) {
-      if (type.toLowerCase().includes("car")) {
-        coverUrl = "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80"; // Premium car fallback
-      } else {
-        coverUrl = "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=600&q=80"; // Premium watch fallback
+      const typeEmoji = type.toLowerCase().includes("car") ? "🚗" : "⌚";
+      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(brand + ' ' + name)}`;
+
+      // Dynamic segment color pill badges
+      let segmentClass = "bg-slate-50 text-slate-500 border-slate-200";
+      const segLower = segment.toLowerCase();
+      if (segLower.includes("luxury") || segLower.includes("high-end") || segLower.includes("premium")) {
+        segmentClass = "bg-amber-50 text-amber-600 border-amber-200/50 font-bold";
+      } else if (segLower.includes("supercar") || segLower.includes("hyper")) {
+        segmentClass = "bg-rose-50 text-rose-600 border-rose-200/50 font-bold";
       }
-    }
 
-    // Determine category emoji
-    const typeEmoji = type.toLowerCase().includes("car") ? "🚗" : "⌚";
-    const displayCategory = `${typeEmoji} ${category.trim() || type}`;
-
-    // Direct Google Search link for this specific model
-    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(brand + ' ' + name)}`;
-
-    gridContainer.insertAdjacentHTML('beforeend', `
-      <div id="col-card-container-${id}" class="glass-card flex flex-col overflow-hidden transition duration-300 hover:-translate-y-1.5 hover:shadow-lg">
-        
-        <!-- CARD TOP: COVER PHOTO & OVERLAYS (Google Maps explorer style) -->
-        <div class="relative w-full h-48 overflow-hidden shrink-0 group">
-          <img src="${coverUrl}" alt="${escapeHTML(name)}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent"></div>
-          
-          <!-- Badges on Photo -->
-          <span class="absolute top-4 left-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-white/90 backdrop-blur-xs text-slate-800 shadow-sm border border-white/20">
-            ${escapeHTML(displayCategory)}
-          </span>
-          
-          <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-amber-500 text-white shadow-sm flex items-center gap-1">
-            <i class="fa-solid fa-gem text-[9px]"></i> ${escapeHTML(segment)}
-          </span>
- 
-          <!-- Bottom Title on Image overlay (Maps Style) -->
-          <div class="absolute bottom-4 left-4 right-4 text-left">
-            <h3 class="text-white text-base font-black tracking-tight line-clamp-1">${escapeHTML(name)}</h3>
-            <p class="text-white/70 text-[10px] font-semibold flex items-center gap-1 mt-0.5">
-              <i class="fa-solid fa-tag text-[9px]"></i> ${escapeHTML(brand)}
-            </p>
-          </div>
-        </div>
-
-        <!-- CARD BOTTOM: INFO & ACTIONS (Maps Style layout) -->
-        <div class="p-5 flex-1 flex flex-col justify-between text-left">
-          <div>
-            <!-- Shaded Box exactly like the address box -->
-            <p class="text-xs text-slate-500 font-semibold line-clamp-2 mb-3 bg-slate-50/50 p-2.5 rounded-xl border border-slate-100/50">
-              Segment: ${escapeHTML(segment)} • Type: ${escapeHTML(type)} • Category: ${escapeHTML(category)}
-            </p>
-            <div class="flex items-center justify-between text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-4">
-              <span>Valuation</span>
-              <span class="text-emerald-600 font-black">${formatVnd(price)}</span>
+      tableBody.insertAdjacentHTML('beforeend', `
+        <tr class="hover:bg-slate-50/30 transition group">
+          <td class="p-4 pl-6">
+            <div class="flex items-center gap-3.5">
+              <div class="w-9 h-9 rounded-xl bg-slate-50 group-hover:bg-white flex items-center justify-center shrink-0 border border-slate-100/50 transition text-base shadow-3xs">
+                ${typeEmoji}
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-800 text-sm">${escapeHTML(name)}</h4>
+                <p class="text-[10px] text-slate-400 font-semibold uppercase mt-0.5 tracking-wider">${escapeHTML(type)} • ${escapeHTML(category)}</p>
+              </div>
             </div>
-          </div>
-
-          <!-- Action button -->
-          <div class="flex items-center">
-            <a href="${searchUrl}" target="_blank" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer no-underline text-center">
-              <i class="fa-solid fa-magnifying-glass text-xs"></i> <span>Explore 🔍</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    `);
+          </td>
+          <td class="p-4 font-semibold text-slate-650 text-xs">${escapeHTML(brand)}</td>
+          <td class="p-4">
+            <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase border tracking-wider ${segmentClass}">
+              ${escapeHTML(segment)}
+            </span>
+          </td>
+          <td class="p-4 font-black text-emerald-600 text-sm">${formatVnd(price)}</td>
+          <td class="p-4 pr-6 text-center">
+            <div class="flex items-center justify-center gap-2">
+              <a href="${searchUrl}" target="_blank" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-3xs flex items-center justify-center gap-1 cursor-pointer no-underline">
+                <i class="fa-solid fa-magnifying-glass text-[9px]"></i> <span>Explore</span>
+              </a>
+              <button onclick="deleteCollectionItem(${id})" class="border border-rose-200 hover:bg-rose-50 text-rose-600 font-bold text-[10px] px-2 py-1.5 rounded-lg transition cursor-pointer flex items-center justify-center gap-1">
+                <i class="fa-solid fa-trash-can text-[9px]"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `);
+    } catch (rowError) {
+      console.error("Asset Ledger Render Error:", item, rowError);
+      tableBody.insertAdjacentHTML('beforeend', `
+        <tr class="bg-rose-50/10">
+          <td colspan="5" class="p-4 pl-6 text-xs text-rose-800 font-medium">
+            ⚠️ Lỗi dữ liệu dòng #${item.rowNumber || '?'}: ${rowError.message}
+          </td>
+        </tr>
+      `);
+    }
   });
 
   if (filteredData.length === 0) {
-    gridContainer.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400 italic glass-card border-dashed">No items found matching the active filters. Feel free to add a new asset!</div>`;
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="5" class="p-12 text-center text-slate-400 italic">
+          No items found matching the active filters. Feel free to add a new asset!
+        </td>
+      </tr>
+    `;
   }
 }
 
