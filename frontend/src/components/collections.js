@@ -91,44 +91,8 @@ export function buildCollectionsGrid() {
     return true;
   });
 
-  // 2. Calculate Portfolio Statistics
-  const totalValue = filteredData.reduce((acc, curr) => acc + (curr.price || 0), 0);
-  const totalCount = filteredData.length;
-  
-  const watchesCount = filteredData.filter(i => i.type.toLowerCase().includes("watch")).length;
-  const carsCount = filteredData.filter(i => i.type.toLowerCase().includes("car")).length;
-  
-  // Find top brand
-  let brandCounts = {};
-  filteredData.forEach(i => {
-    if (i.brand) brandCounts[i.brand] = (brandCounts[i.brand] || 0) + 1;
-  });
-  let topBrand = "N/A";
-  let maxCount = 0;
-  Object.keys(brandCounts).forEach(b => {
-    if (brandCounts[b] > maxCount) {
-      maxCount = brandCounts[b];
-      topBrand = b;
-    }
-  });
-
-  const avgPrice = totalCount > 0 ? Math.round(totalValue / totalCount) : 0;
-
   // Format currency
   const formatVnd = (num) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(num);
-
-  // Update Stats UI elements
-  const totalValueEl = document.getElementById('col-total-value');
-  const countEl = document.getElementById('col-count-summary');
-  const distributionEl = document.getElementById('col-distribution');
-  const topBrandEl = document.getElementById('col-top-brand');
-  const avgPriceEl = document.getElementById('col-avg-price');
-
-  if (totalValueEl) totalValueEl.innerText = formatVnd(totalValue);
-  if (countEl) countEl.innerText = `${totalCount} items`;
-  if (distributionEl) distributionEl.innerText = `🚗 ${carsCount} Cars • ⌚ ${watchesCount} Watches`;
-  if (topBrandEl) topBrandEl.innerText = topBrand;
-  if (avgPriceEl) avgPriceEl.innerText = formatVnd(avgPrice);
 
   // 3. Render Cards styled exactly like Google Maps Explorer
   filteredData.forEach(item => {
@@ -196,15 +160,11 @@ export function buildCollectionsGrid() {
             </div>
           </div>
 
-          <!-- Action buttons side-by-side -->
-          <div class="flex items-center gap-2">
-            <a href="${searchUrl}" target="_blank" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 rounded-xl transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer no-underline text-center">
+          <!-- Action button -->
+          <div class="flex items-center">
+            <a href="${searchUrl}" target="_blank" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer no-underline text-center">
               <i class="fa-solid fa-magnifying-glass text-xs"></i> <span>Explore 🔍</span>
             </a>
-            
-            <button onclick="deleteCollectionItem(${id})" class="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:border-rose-200 hover:bg-rose-50/30 text-slate-500 hover:text-rose-600 flex items-center justify-center gap-2 cursor-pointer transition select-none">
-              <i class="fa-solid fa-trash-can text-sm"></i> <span>Delete</span>
-            </button>
           </div>
         </div>
       </div>
