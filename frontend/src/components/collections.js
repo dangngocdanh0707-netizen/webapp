@@ -143,8 +143,6 @@ export function buildCollectionsGrid() {
     }
   });
 
-  // 3. Update Metrics Dashboard Panel
-  updateCollectionsMetrics();
 
   if (filteredData.length === 0) {
     tableBody.innerHTML = `
@@ -157,32 +155,6 @@ export function buildCollectionsGrid() {
   }
 }
 
-function updateCollectionsMetrics() {
-  const totalEl = document.getElementById('col-stat-total');
-  const watchesEl = document.getElementById('col-stat-watches');
-  const carsEl = document.getElementById('col-stat-cars');
-
-  if (!totalEl || !watchesEl || !carsEl) return;
-
-  const total = allCollectionData.length;
-  
-  let watches = 0;
-  let cars = 0;
-
-  allCollectionData.forEach(item => {
-    if (!item || !item.category) return;
-    const cat = String(item.category).toLowerCase().trim();
-    if (cat.includes("watch") || cat.includes("đồng hồ")) {
-      watches++;
-    } else if (cat.includes("car") || cat.includes("xe")) {
-      cars++;
-    }
-  });
-
-  totalEl.innerHTML = `${total} <span class="text-xs font-bold text-slate-400">items</span>`;
-  watchesEl.innerHTML = `${watches} <span class="text-xs font-bold text-amber-400">items</span>`;
-  carsEl.innerHTML = `${cars} <span class="text-xs font-bold text-rose-400">items</span>`;
-}
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 

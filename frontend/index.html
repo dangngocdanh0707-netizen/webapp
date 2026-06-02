@@ -955,25 +955,6 @@
           </button>
         </div>
 
-        <!-- Metrics Dashboard Panel -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-          <div class="glass-card p-5 relative overflow-hidden group hover:border-blue-200 transition duration-200">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Tổng tài sản sở hữu</span>
-            <h3 id="col-stat-total" class="text-3xl font-black text-slate-800 mt-2 flex items-baseline gap-1">0 <span class="text-xs font-bold text-slate-400">items</span></h3>
-            <i class="fa-solid fa-gem absolute -right-2 -bottom-2 text-6xl text-slate-100/50 group-hover:text-blue-500/5 transition-transform group-hover:scale-110"></i>
-          </div>
-          <div class="glass-card p-5 relative overflow-hidden group hover:border-amber-200 transition duration-200">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Đồng hồ sưu tập (Watches)</span>
-            <h3 id="col-stat-watches" class="text-3xl font-black text-amber-600 mt-2 flex items-baseline gap-1">0 <span class="text-xs font-bold text-amber-400">items</span></h3>
-            <i class="fa-solid fa-clock absolute -right-2 -bottom-2 text-6xl text-slate-100/50 group-hover:text-amber-500/5 transition-transform group-hover:scale-110"></i>
-          </div>
-          <div class="glass-card p-5 relative overflow-hidden group hover:border-rose-200 transition duration-200">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Xe cộ (Cars)</span>
-            <h3 id="col-stat-cars" class="text-3xl font-black text-rose-600 mt-2 flex items-baseline gap-1">0 <span class="text-xs font-bold text-rose-400">items</span></h3>
-            <i class="fa-solid fa-car absolute -right-2 -bottom-2 text-6xl text-slate-100/50 group-hover:text-rose-500/5 transition-transform group-hover:scale-110"></i>
-          </div>
-        </div>
-
         <!-- Add Collection Item Form Panel (Collapsible) -->
         <div id="col-add-panel" class="glass-card p-6 mb-8 hidden transition-all duration-300">
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
@@ -1014,7 +995,7 @@
           <div class="flex flex-wrap items-center gap-2.5 w-full justify-start">
             <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-80">
               <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
-              <input type="text" id="collectionSearchInput" onkeyup="filterCollectionGrid()" placeholder="Tìm kiếm tên vật phẩm, thương hiệu, kiểu dáng..."
+              <input type="text" id="collectionSearchInput" onkeyup="filterCollectionGrid()" placeholder="Search item, brand, style..."
                 class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
             </div>
             
