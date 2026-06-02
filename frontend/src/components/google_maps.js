@@ -4,6 +4,16 @@ import { showToast } from '../services/toast.js';
 let allMapData = [];
 let onSyncNeeded = null;
 
+// Hand-curated premium high-resolution authentic cover photos for default Da Nang spots
+const MAP_PLACE_PHOTOS = {
+  "XLIII Specialty Coffee": "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=800&q=80",
+  "Trinh Cafe": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
+  "Nối Coffee": "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80",
+  "HAIAN Beach Hotel & Spa": "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=800&q=80",
+  "TMS Hotel Da Nang Beach": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+  "Sala Danang Beach Hotel": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80"
+};
+
 export function initMapModule(data, onSync) {
   allMapData = data || [];
   onSyncNeeded = onSync;
@@ -100,17 +110,22 @@ export function buildMapGrid() {
       if (!match) return;
     }
 
-    // High-quality category cover placeholder photograph from Unsplash
-    let coverUrl = "";
-    const catLower = category.toLowerCase();
-    if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
-      coverUrl = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80"; // Vintage garden cafe
-    } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("khách sạn")) {
-      coverUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; // Luxury resort room/pool
-    } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
-      coverUrl = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"; // Premium restaurant space
-    } else {
-      coverUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"; // General beach/travel
+    // Layered image loader: 1. Sheet custom URL | 2. Hand-curated Place Photo dictionary | 3. Category Fallback
+    let coverUrl = item.image ? item.image.trim() : "";
+    if (!coverUrl) {
+      coverUrl = MAP_PLACE_PHOTOS[placeName.trim()];
+    }
+    if (!coverUrl) {
+      const catLower = category.toLowerCase();
+      if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
+        coverUrl = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80"; // Vintage garden cafe
+      } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("khách sạn")) {
+        coverUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; // Luxury resort room/pool
+      } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
+        coverUrl = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"; // Premium restaurant space
+      } else {
+        coverUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"; // General beach/travel
+      }
     }
 
     // Determine dynamic category with appropriate emoji

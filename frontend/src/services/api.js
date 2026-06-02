@@ -449,7 +449,7 @@ export function callServer(methodName, args) {
             `${promptTab}!A2:C`,
             `${goalTab}!A2:E`,
             `${taskTab}!A2:C`,
-            `${mappings['google_map']}!A2:H`,
+            `${mappings['google_map']}!A2:I`,
             `${mappings['collections'] || 'collections'}!A2:F`
           ],
           valueRenderOption: 'UNFORMATTED_VALUE'
@@ -525,7 +525,8 @@ export function callServer(methodName, args) {
             rating: Number(row[4]) || 0,
             total_reviews: Number(row[5]) || 0,
             link: row[6] || "",
-            check: row[7] === "TRUE" || row[7] === true || row[7] === "true" || row[7] === "v" || row[7] === "checked"
+            check: row[7] === "TRUE" || row[7] === true || row[7] === "true" || row[7] === "v" || row[7] === "checked",
+            image: row[8] || ""
           })).filter(item => item.place),
 
           collections: getRows(valueRanges[8]).map((row, idx) => ({
