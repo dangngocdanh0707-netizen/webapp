@@ -72,19 +72,6 @@ export function buildCollectionsGrid() {
       const style = String(item.style || "").trim();
       const category = String(item.category || "").trim();
 
-      // Dynamic icon based on Category keyword
-      const catLower = category.toLowerCase();
-      let typeEmoji = "💎";
-      if (catLower.includes("car") || catLower.includes("xe")) {
-        typeEmoji = "🚗";
-      } else if (catLower.includes("watch") || catLower.includes("đồng hồ")) {
-        typeEmoji = "⌚";
-      } else if (catLower.includes("real estate") || catLower.includes("nhà")) {
-        typeEmoji = "🏠";
-      } else if (catLower.includes("art") || catLower.includes("tranh")) {
-        typeEmoji = "🎨";
-      }
-
       // Uniform minimalist gray pill badge for all Styles
       const styleClass = "bg-slate-50 text-slate-500 border-slate-200 font-bold";
 
@@ -92,15 +79,8 @@ export function buildCollectionsGrid() {
 
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-50/30 transition group">
-          <td class="p-4 pl-6">
-            <div class="flex items-center gap-3.5">
-              <div class="w-9 h-9 rounded-xl bg-slate-50 group-hover:bg-white flex items-center justify-center shrink-0 border border-slate-100/50 transition text-base shadow-3xs">
-                ${typeEmoji}
-              </div>
-              <div>
-                <h4 class="font-bold text-slate-800 text-sm">${escapeHTML(name)}</h4>
-              </div>
-            </div>
+          <td class="p-4 pl-6 font-bold text-slate-800 text-sm">
+            ${escapeHTML(name)}
           </td>
           <td class="p-4 font-semibold text-slate-650 text-xs">${escapeHTML(brand)}</td>
           <td class="p-4">
