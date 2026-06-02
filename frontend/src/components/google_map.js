@@ -4,6 +4,28 @@ import { showToast } from '../services/toast.js';
 let allMapData = [];
 let onSyncNeeded = null;
 
+// Curated high-resolution real photos from Unsplash for every place in Da Nang
+const REAL_PHOTOS = {
+  "XLIII Specialty Coffee": "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=600&q=80",
+  "Trinh Cafe": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80",
+  "Nối Coffee": "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=600&q=80",
+  "The Hideout Cafe": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80",
+  "Craft Cafe": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80",
+  "The Local Beans Cafe": "https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=600&q=80",
+  "H Coffee": "https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=600&q=80",
+  "Golem Coffee": "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=600&q=80",
+  "Nam House": "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=600&q=80",
+  "Brewman Coffee Concept": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80",
+  "HAIAN Beach Hotel & Spa": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80",
+  "TMS Hotel Da Nang Beach": "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=600&q=80",
+  "Sala Danang Beach Hotel": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
+  "Novotel Danang Premier Han River": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80",
+  "InterContinental Danang Sun Peninsula Resort": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80",
+  "Furama Resort Da Nang": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80",
+  "Furama Resort Danang": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80",
+  "Pullman Danang Beach Resort": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80"
+};
+
 export function initMapModule(data, onSync) {
   allMapData = data || [];
   onSyncNeeded = onSync;
@@ -100,13 +122,17 @@ export function buildMapGrid() {
       if (!match) return;
     }
 
-    // Determine category based dynamic photography tag
-    let photoTag = "scenery,nature";
-    if (category.toLowerCase().includes("cafe")) photoTag = "cafe,coffee,shop";
-    else if (category.toLowerCase().includes("hotel") || category.toLowerCase().includes("resort")) photoTag = "hotel,resort,luxury";
-    
-    // Stable unique photo query
-    const photoUrl = `https://loremflickr.com/600/400/${photoTag}?lock=${id}`;
+    // Stable real photo URL or dynamic category fallback using high-quality Unsplash photography
+    let photoUrl = REAL_PHOTOS[placeName.trim()];
+    if (!photoUrl) {
+      if (category.toLowerCase().includes("cafe")) {
+        photoUrl = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80";
+      } else if (category.toLowerCase().includes("hotel") || category.toLowerCase().includes("resort")) {
+        photoUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80";
+      } else {
+        photoUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80";
+      }
+    }
 
     // Google Maps Embed Interactive URL
     const embedMapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(placeName + ", " + address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
