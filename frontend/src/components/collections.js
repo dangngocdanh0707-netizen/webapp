@@ -125,8 +125,8 @@ export function buildCollectionsGrid() {
   const avgPriceEl = document.getElementById('col-avg-price');
 
   if (totalValueEl) totalValueEl.innerText = formatVnd(totalValue);
-  if (countEl) countEl.innerText = `${totalCount} món`;
-  if (distributionEl) distributionEl.innerText = `🚗 ${carsCount} Xe • ⌚ ${watchesCount} Đồ hiệu`;
+  if (countEl) countEl.innerText = `${totalCount} items`;
+  if (distributionEl) distributionEl.innerText = `🚗 ${carsCount} Cars • ⌚ ${watchesCount} Watches`;
   if (topBrandEl) topBrandEl.innerText = topBrand;
   if (avgPriceEl) avgPriceEl.innerText = formatVnd(avgPrice);
 
@@ -173,7 +173,7 @@ export function buildCollectionsGrid() {
           <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-amber-500 text-white shadow-sm flex items-center gap-1">
             <i class="fa-solid fa-gem text-[9px]"></i> ${escapeHTML(segment)}
           </span>
-
+ 
           <!-- Bottom Title on Image overlay (Maps Style) -->
           <div class="absolute bottom-4 left-4 right-4 text-left">
             <h3 class="text-white text-base font-black tracking-tight line-clamp-1">${escapeHTML(name)}</h3>
@@ -188,10 +188,10 @@ export function buildCollectionsGrid() {
           <div>
             <!-- Shaded Box exactly like the address box -->
             <p class="text-xs text-slate-500 font-semibold line-clamp-2 mb-3 bg-slate-50/50 p-2.5 rounded-xl border border-slate-100/50">
-              Phân khúc: ${escapeHTML(segment)} • Loại: ${escapeHTML(type)} • Dòng: ${escapeHTML(category)}
+              Segment: ${escapeHTML(segment)} • Type: ${escapeHTML(type)} • Category: ${escapeHTML(category)}
             </p>
             <div class="flex items-center justify-between text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-4">
-              <span>Định giá</span>
+              <span>Valuation</span>
               <span class="text-emerald-600 font-black">${formatVnd(price)}</span>
             </div>
           </div>
@@ -199,11 +199,11 @@ export function buildCollectionsGrid() {
           <!-- Action buttons side-by-side -->
           <div class="flex items-center gap-2">
             <a href="${searchUrl}" target="_blank" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 rounded-xl transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer no-underline text-center">
-              <i class="fa-solid fa-magnifying-glass text-xs"></i> <span>Tìm hiểu 🔍</span>
+              <i class="fa-solid fa-magnifying-glass text-xs"></i> <span>Explore 🔍</span>
             </a>
             
             <button onclick="deleteCollectionItem(${id})" class="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:border-rose-200 hover:bg-rose-50/30 text-slate-500 hover:text-rose-600 flex items-center justify-center gap-2 cursor-pointer transition select-none">
-              <i class="fa-solid fa-trash-can text-sm"></i> <span>Xóa</span>
+              <i class="fa-solid fa-trash-can text-sm"></i> <span>Delete</span>
             </button>
           </div>
         </div>
@@ -212,7 +212,7 @@ export function buildCollectionsGrid() {
   });
 
   if (filteredData.length === 0) {
-    gridContainer.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400 italic glass-card border-dashed">Không có món đồ nào khớp với bộ lọc thám hiểm. Hãy thêm món mới!</div>`;
+    gridContainer.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400 italic glass-card border-dashed">No items found matching the active filters. Feel free to add a new asset!</div>`;
   }
 }
 
@@ -240,7 +240,7 @@ window.saveNewCollection = function() {
   const type = typeSelect ? typeSelect.value : "Watch";
 
   if (!item || !brand || !priceVal) {
-    showToast("Vui lòng điền đầy đủ Tên, Hãng và Giá trị!", "warning");
+    showToast("Please fill in Name, Brand, and Valuation!", "warning");
     return;
   }
 
@@ -252,7 +252,7 @@ window.saveNewCollection = function() {
   callServer("insertCollectionRow", [item, brand, category, price, segment, type])
     .then(res => {
       if (res === "Thành công") {
-        showToast("Đã thêm món sưu tập mới thành công! 🎉", "success");
+        showToast("Successfully added new collection item! 🎉", "success");
         // Clear inputs
         itemInput.value = "";
         brandInput.value = "";
@@ -266,18 +266,18 @@ window.saveNewCollection = function() {
 
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        showToast("Lỗi thêm: " + res, "error");
+        showToast("Add failed: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
+      showToast("Connection error: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
 
 window.deleteCollectionItem = function(id) {
-  if (!confirm("Bạn có chắc chắn muốn xóa món sưu tập này khỏi danh mục thám hiểm không? 🗑️")) {
+  if (!confirm("Are you sure you want to delete this asset from your collection? 🗑️")) {
     return;
   }
 
@@ -287,15 +287,15 @@ window.deleteCollectionItem = function(id) {
   callServer("deleteCollectionRow", [id])
     .then(res => {
       if (res === "Thành công") {
-        showToast("Đã xóa món đồ khỏi danh mục thành công!", "success");
+        showToast("Asset successfully deleted from collection!", "success");
         if (onSyncNeeded) onSyncNeeded();
       } else {
-        showToast("Lỗi xóa: " + res, "error");
+        showToast("Delete failed: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
+      showToast("Connection error: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
 };
