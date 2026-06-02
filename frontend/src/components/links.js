@@ -3,10 +3,16 @@ import { showToast } from '../services/toast.js';
 
 let allLinkData = [];
 let onSyncNeeded = null;
+let clearSearchTimeout = null;
 
 export function initLinksModule(data, onSync) {
   allLinkData = data || [];
   onSyncNeeded = onSync;
+  
+  if (clearSearchTimeout) {
+    clearTimeout(clearSearchTimeout);
+    clearSearchTimeout = null;
+  }
   
   const totalLinksEl = document.getElementById('total-links');
   if (totalLinksEl) totalLinksEl.innerText = allLinkData.length;
@@ -93,6 +99,19 @@ export function buildLinkTable() {
 
 window.filterLinkTable = function() {
   buildLinkTable();
+  
+  const searchInput = document.getElementById('linkSearchInput');
+  if (clearSearchTimeout) {
+    clearTimeout(clearSearchTimeout);
+    clearSearchTimeout = null;
+  }
+  
+  if (searchInput && searchInput.value.trim() !== "") {
+    clearSearchTimeout = setTimeout(() => {
+      searchInput.value = "";
+      buildLinkTable();
+    }, 10000);
+  }
 };
 
 window.copyLinkText = function(id, text) {
