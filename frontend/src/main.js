@@ -13,7 +13,7 @@ import {
 
 import { showToast } from './services/toast.js';
 import { initSortableSidebar, initResizeSidebar } from './components/sidebar.js';
-import { initCostModule } from './components/cost.js';
+import { initCostModule } from './components/expense.js';
 import { initVocabModule } from './components/vocabulary.js';
 import { initSrsModule } from './components/srs.js';
 import { initLinksModule } from './components/links.js';

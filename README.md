@@ -44,7 +44,7 @@ webapp_project/ (personal_webapp/)
         └── components/          # Các mô-đun UI cô lập điều khiển nghiệp vụ chi tiết
             ├── charts.js        # Vẽ biểu đồ tương tác thời gian thực bằng Chart.js (Import Local)
             ├── sidebar.js       # Co giãn và kéo thả sắp xếp vị trí các menu trên Sidebar
-            ├── cost.js          # Nghiệp vụ & CRUD tài chính chi tiêu (Expenses)
+            ├── expense.js       # Nghiệp vụ & CRUD tài chính chi tiêu (Expenses)
             ├── vocabulary.js    # Nghiệp vụ & CRUD kho từ vựng (Vocabulary)
             ├── srs.js           # Game tương tác & thuật toán học tập Anki Spaced Repetition (Practice)
             ├── links.js         # Quản lý liên kết nhanh (Quick Links)
