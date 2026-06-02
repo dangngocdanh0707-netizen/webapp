@@ -174,13 +174,29 @@ async function resolveAllTabs(spreadsheetId) {
     const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map'];
     const mappings = {};
 
-    // Bước 1: Khớp trực tiếp không phân biệt chữ hoa thường (Case-insensitive)
+    // Bước 1: Khớp trực tiếp và hỗ trợ các biến thể/tên thay thế phổ biến (ví dụ số nhiều, từ đồng nghĩa)
+    const alternativeNames = {
+      cost: ['expenses', 'expense', 'cost', 'costs', 'chi tiêu'],
+      vocabulary: ['vocabulary', 'vocabularies', 'vocab', 'vocabs', 'từ vựng'],
+      habit_tracker: ['habit_tracker', 'habit_trackers', 'habits', 'habit', 'thói quen'],
+      link: ['links', 'link', 'liên kết'],
+      prompt: ['prompts', 'prompt', 'gợi ý'],
+      goal: ['goals', 'goal', 'mục tiêu'],
+      task: ['tasks', 'task', 'công việc'],
+      google_map: ['google_maps', 'google_map', 'bản đồ']
+    };
+
     targetTabs.forEach(target => {
+      // Thử khớp trực tiếp không phân biệt chữ hoa/thường
       let match = existingTitles.find(t => t.toLowerCase() === target.toLowerCase());
-      // Hỗ trợ khớp tên thay thế cho tab chi tiêu (như 'expense', 'expenses', 'chi tiêu')
-      if (!match && target === 'cost') {
-        match = existingTitles.find(t => t.toLowerCase() === 'expense' || t.toLowerCase() === 'expenses' || t.toLowerCase() === 'chi tiêu');
+      
+      // Nếu không khớp trực tiếp, thử khớp với danh sách tên thay thế phổ biến
+      if (!match && alternativeNames[target]) {
+        match = existingTitles.find(t => 
+          alternativeNames[target].some(alt => t.toLowerCase() === alt.toLowerCase())
+        );
       }
+      
       if (match) {
         mappings[target] = match;
       }
@@ -285,11 +301,14 @@ async function resolveAllTabs(spreadsheetId) {
     // Bước 3: Đặt mặc định nếu vẫn không tìm thấy
     targetTabs.forEach(target => {
       if (!mappings[target]) {
-        if (target === 'cost') {
-          mappings[target] = 'expense';
-        } else {
-          mappings[target] = target;
-        }
+        if (target === 'cost') mappings[target] = 'expenses';
+        else if (target === 'habit_tracker') mappings[target] = 'habits';
+        else if (target === 'link') mappings[target] = 'links';
+        else if (target === 'prompt') mappings[target] = 'prompts';
+        else if (target === 'goal') mappings[target] = 'goals';
+        else if (target === 'task') mappings[target] = 'tasks';
+        else if (target === 'google_map') mappings[target] = 'google_maps';
+        else mappings[target] = target;
       }
     });
 
@@ -336,14 +355,14 @@ async function ensureSheetTabsExist(spreadsheetId) {
 
     // Tạo tiêu đề cột cho các tab mới tạo
     const headersData = [
-      { range: `${mappings['cost'] || 'expense'}!A1:D1`, values: [['Date', 'Category', 'Amount', 'Note']] },
+      { range: `${mappings['cost'] || 'expenses'}!A1:D1`, values: [['Date', 'Category', 'Amount', 'Note']] },
       { range: `${mappings['vocabulary'] || 'vocabulary'}!A1:I1`, values: [['Content', 'Category', 'Topic', 'Level', 'Meaning', 'Status', 'Next Review', 'Interval', 'Ease Factor']] },
-      { range: `${mappings['habit_tracker'] || 'habit_tracker'}!A1:C1`, values: [['Date', 'Habit', 'Status']] },
-      { range: `${mappings['link'] || 'link'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
-      { range: `${mappings['prompt'] || 'prompt'}!A1:C1`, values: [['Title', 'Content', 'Category']] },
-      { range: `${mappings['goal'] || 'goal'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
-      { range: `${mappings['task'] || 'task'}!A1:C1`, values: [['Date', 'Task', 'Status']] },
-      { range: `${mappings['google_map'] || 'google_map'}!A1:H1`, values: [['place', 'city', 'category', 'address', 'rating', 'total reviews', 'link', 'check']] }
+      { range: `${mappings['habit_tracker'] || 'habits'}!A1:C1`, values: [['Date', 'Habit', 'Status']] },
+      { range: `${mappings['link'] || 'links'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
+      { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Content', 'Category']] },
+      { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
+      { range: `${mappings['task'] || 'tasks'}!A1:C1`, values: [['Date', 'Task', 'Status']] },
+      { range: `${mappings['google_map'] || 'google_maps'}!A1:H1`, values: [['place', 'city', 'category', 'address', 'rating', 'total reviews', 'link', 'check']] }
     ].filter(h => {
       const rangeSheetName = h.range.split('!')[0];
       return missingTabs.some(target => (mappings[target] || target) === rangeSheetName);
