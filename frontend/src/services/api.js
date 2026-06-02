@@ -371,7 +371,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
       { range: `${mappings['task'] || 'tasks'}!A1:C1`, values: [['Date', 'Task', 'Status']] },
       { range: `${mappings['google_map'] || 'google_maps'}!A1:E1`, values: [['place', 'city', 'category', 'address', 'check']] },
-      { range: `${mappings['collections'] || 'collections'}!A1:C1`, values: [['item', 'category', 'price']] }
+      { range: `${mappings['collections'] || 'collections'}!A1:D1`, values: [['item', 'brand', 'style', 'category']] }
     ].filter(h => {
       const rangeSheetName = h.range.split('!')[0];
       return missingTabs.some(target => (mappings[target] || target) === rangeSheetName);
@@ -450,7 +450,7 @@ export function callServer(methodName, args) {
             `${goalTab}!A2:E`,
             `${taskTab}!A2:C`,
             `${mappings['google_map']}!A2:E`,
-            `${mappings['collections'] || 'collections'}!A2:C`
+            `${mappings['collections'] || 'collections'}!A2:D`
           ],
           valueRenderOption: 'UNFORMATTED_VALUE'
         });
@@ -528,8 +528,9 @@ export function callServer(methodName, args) {
           collections: getRows(valueRanges[8]).map((row, idx) => ({
             rowNumber: idx + 2,
             item: row[0] || "",
-            category: row[1] || "",
-            price: parseAmount(row[2])
+            brand: row[1] || "",
+            style: row[2] || "",
+            category: row[3] || ""
           })).filter(item => item.item)
         });
         return;
@@ -706,26 +707,26 @@ export function callServer(methodName, args) {
 
       // 10. Nghiệp vụ SƯU TẬP (Collections CRUD)
       if (methodName === "insertCollectionRow") {
-        const [item, category, price] = args;
+        const [item, brand, style, category] = args;
         const colTab = mappings['collections'] || 'collections';
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${colTab}!A:C`,
+          range: `${colTab}!A:D`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[item, category, Number(price) || 0]] }
+          resource: { values: [[item, brand, style, category]] }
         });
         resolve("Thành công");
         return;
       }
       if (methodName === "updateCollectionRow") {
-        const [rowNumber, item, category, price] = args;
+        const [rowNumber, item, brand, style, category] = args;
         const colTab = mappings['collections'] || 'collections';
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${colTab}!A${rowNumber}:C${rowNumber}`,
+          range: `${colTab}!A${rowNumber}:D${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[item, category, Number(price) || 0]] }
+          resource: { values: [[item, brand, style, category]] }
         });
         resolve("Thành công");
         return;
@@ -1291,20 +1292,20 @@ function handleLocalTransaction(method, args) {
 
   // 10. Nghiệp vụ SƯU TẬP (Collections CRUD)
   if (method === "insertCollectionRow") {
-    const [item, category, price] = args;
+    const [item, brand, style, category] = args;
     const data = getLocalData("collections");
     const nextRow = data.length > 0 ? Math.max(...data.map(i => i.rowNumber)) + 1 : 2;
-    data.push({ rowNumber: nextRow, item, category, price: Number(price) || 0 });
+    data.push({ rowNumber: nextRow, item, brand, style, category });
     saveLocalData("collections", data);
     return "Thành công";
   }
 
   if (method === "updateCollectionRow") {
-    const [rowNumber, item, category, price] = args;
+    const [rowNumber, item, brand, style, category] = args;
     const data = getLocalData("collections");
     const idx = data.findIndex(i => i.rowNumber == rowNumber);
     if (idx !== -1) {
-      data[idx] = { rowNumber, item, category, price: Number(price) || 0 };
+      data[idx] = { rowNumber, item, brand, style, category };
       saveLocalData("collections", data);
     }
     return "Thành công";
