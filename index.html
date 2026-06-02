@@ -21,8 +21,8 @@
   <!-- Thư viện SDK Google Sheets & Auth -->
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script type="module" crossorigin src="/webapp_project/assets/index-xUV4Hxbh.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-B_dAc3K0.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-BBaMNr-Y.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-Aw6tzRyY.css">
 </head>
 
 <body>
@@ -67,6 +67,10 @@
 
       <div data-tab="map-tab" onclick="switchTab('map-tab', this)" class="nav-link">
         <i class="fa-solid fa-map-location-dot text-base"></i> <span>Google Maps</span>
+      </div>
+
+      <div data-tab="collections-tab" onclick="switchTab('collections-tab', this)" class="nav-link">
+        <i class="fa-solid fa-gem text-base text-amber-500"></i> <span>Collections</span>
       </div>
     </div>
     <div class="p-4 border-t border-slate-100 flex flex-col gap-2 sidebar-collapsed-hide">
@@ -211,6 +215,18 @@
               </div>
               <span
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition font-medium">Google Maps</span>
+            </div>
+
+            <!-- App Card: Collections -->
+            <div onclick="launchApp('collections-tab')"
+              class="flex flex-col items-center justify-center group cursor-pointer transition">
+              <div
+                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-amber-500 group-hover:to-yellow-400 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(245,158,11,0.22)]">
+                <i
+                  class="fa-solid fa-gem text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+              </div>
+              <span
+                class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-amber-500 transition font-medium">Collections</span>
             </div>
           </div>
         </div>
@@ -917,6 +933,171 @@
         <!-- Places Explorer Grid -->
         <div id="map-places-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
           <!-- Places Cards Rendered Dynamically -->
+        </div>
+      </div>
+
+      <!-- Collections Tab -->
+      <div id="collections-tab" class="tab-content">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div class="flex items-center gap-3">
+            <button onclick="launchApp('home-tab')"
+              class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-amber-500 hover:border-amber-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+              <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+            </button>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Bộ sưu tập Tài sản</h1>
+          </div>
+
+          <!-- Add Button -->
+          <button onclick="toggleAddCollectionPanel()"
+            class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2">
+            <i class="fa-solid fa-circle-plus mr-1"></i> Thêm Tài sản mới
+          </button>
+        </div>
+
+        <!-- Portfolio Statistics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <!-- Total Value -->
+          <div class="glass-card p-6 flex justify-between items-center transition hover:-translate-y-0.5 hover:shadow-xs duration-300">
+            <div>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TỔNG GIÁ TRỊ</span>
+              <p id="col-total-value" class="text-2xl font-black text-slate-900 mt-1">0 ₫</p>
+            </div>
+            <div class="bg-amber-500/10 p-3.5 rounded-xl border border-amber-500/10 flex items-center justify-center">
+              <i class="fa-solid fa-gem text-amber-500 text-xl animate-pulse"></i>
+            </div>
+          </div>
+
+          <!-- Total Count -->
+          <div class="glass-card p-6 flex justify-between items-center transition hover:-translate-y-0.5 hover:shadow-xs duration-300">
+            <div>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">SỐ LƯỢNG MÓN</span>
+              <p id="col-count-summary" class="text-2xl font-black text-slate-900 mt-1">0 món</p>
+              <p id="col-distribution" class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">0 Xe • 0 Đồ hiệu</p>
+            </div>
+            <div class="bg-blue-500/10 p-3.5 rounded-xl border border-blue-500/10 flex items-center justify-center">
+              <i class="fa-solid fa-layer-group text-blue-500 text-xl"></i>
+            </div>
+          </div>
+
+          <!-- Favorite Brand -->
+          <div class="glass-card p-6 flex justify-between items-center transition hover:-translate-y-0.5 hover:shadow-xs duration-300">
+            <div>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">HÃNG YÊU THÍCH</span>
+              <p id="col-top-brand" class="text-2xl font-black text-slate-900 mt-1">N/A</p>
+            </div>
+            <div class="bg-emerald-500/10 p-3.5 rounded-xl border border-emerald-500/10 flex items-center justify-center">
+              <i class="fa-solid fa-star text-emerald-500 text-xl"></i>
+            </div>
+          </div>
+
+          <!-- Average Value -->
+          <div class="glass-card p-6 flex justify-between items-center transition hover:-translate-y-0.5 hover:shadow-xs duration-300">
+            <div>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">GIÁ TRỊ TRUNG BÌNH</span>
+              <p id="col-avg-price" class="text-2xl font-black text-slate-900 mt-1">0 ₫</p>
+            </div>
+            <div class="bg-rose-500/10 p-3.5 rounded-xl border border-rose-500/10 flex items-center justify-center">
+              <i class="fa-solid fa-chart-line text-rose-500 text-xl"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Collection Item Form Panel (Collapsible) -->
+        <div id="col-add-panel" class="glass-card p-6 mb-8 hidden transition-all duration-300">
+          <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-circle-plus text-amber-500 animate-pulse"></i> Thêm Tài sản vào Bộ sưu tập
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+            <div>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Tên vật phẩm / Model</label>
+              <input type="text" id="ins-col-item" placeholder="Ví dụ: BMW X5" class="form-input">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Thương hiệu / Hãng</label>
+              <input type="text" id="ins-col-brand" placeholder="Ví dụ: BMW" class="form-input">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Phân loại (Type)</label>
+              <select id="ins-col-type" class="form-input font-semibold">
+                <option value="Watch">Đồng hồ (Watch)</option>
+                <option value="Car">Xe hơi (Car)</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Dòng sản phẩm (Category)</label>
+              <input type="text" id="ins-col-category" placeholder="Ví dụ: SUV, Sedan, Luxury, Sport" class="form-input">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Phân khúc (Segment)</label>
+              <input type="text" id="ins-col-segment" placeholder="Ví dụ: Luxury, Standard" class="form-input">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Định giá (VNĐ)</label>
+              <input type="number" id="ins-col-price" placeholder="Nhập số tiền..." class="form-input font-bold text-emerald-600">
+            </div>
+          </div>
+          <div class="flex justify-end gap-3 mt-5">
+            <button onclick="toggleAddCollectionPanel()"
+              class="border border-slate-200 hover:bg-slate-50 text-slate-650 font-bold text-xs px-5 py-3 rounded-xl transition cursor-pointer">
+              Hủy bỏ
+            </button>
+            <button onclick="saveNewCollection()"
+              class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2">
+              <i class="fa-solid fa-floppy-disk mr-1"></i> Lưu tài sản
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="glass-card p-6 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+          <div class="flex flex-wrap items-center gap-2.5 w-full justify-start">
+            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-60">
+              <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
+              <input type="text" id="collectionSearchInput" onkeyup="filterCollectionGrid()" placeholder="Tìm tên, hãng, dòng..."
+                class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
+            </div>
+            
+            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+              <i class="fa-solid fa-circle-info text-slate-400 text-xs pl-1"></i>
+              <select id="collectionTypeFilter" onchange="filterCollectionGrid()"
+                class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+                <option value="All">All Types</option>
+                <option value="Watch">Đồng hồ</option>
+                <option value="Car">Xe hơi</option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+              <i class="fa-solid fa-copyright text-slate-400 text-xs pl-1"></i>
+              <select id="collectionBrandFilter" onchange="filterCollectionGrid()"
+                class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+                <option value="All">All Brands</option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+              <i class="fa-solid fa-gem text-slate-400 text-xs pl-1"></i>
+              <select id="collectionSegmentFilter" onchange="filterCollectionGrid()"
+                class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+                <option value="All">All Segments</option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+              <i class="fa-solid fa-tags text-slate-400 text-xs pl-1"></i>
+              <select id="collectionCategoryFilter" onchange="filterCollectionGrid()"
+                class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+                <option value="All">All Categories</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Collections Grid -->
+        <div id="collections-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+          <!-- Rendered dynamically from collections.js -->
         </div>
       </div>
 
