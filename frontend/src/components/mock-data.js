@@ -11,8 +11,8 @@ export function getMockData() {
     cost: [
       { rowNumber: 2, date: todayStr, category: "Must have", amount: 150000, note: "Trưa văn phòng" },
       { rowNumber: 3, date: todayStr, category: "Nice to have", amount: 65000, note: "Trà sữa" },
-      { rowNumber: 4, date: yesterdayStr, category: "Wasted", amount: 200000, note: "Phạt vi phạm giao thông" },
-      { rowNumber: 5, date: yesterdayStr, category: "Must have", amount: 800000, note: "Đi chợ tuần" }
+      { rowNumber: 4, date: yesterdayStr, category: "Wasted", amount: 200000, note: "Mua tài liệu tham khảo" },
+      { rowNumber: 5, date: yesterdayStr, category: "Must have", amount: 800000, note: "Mua nhu yếu phẩm" }
     ],
     vocabulary: [
       { rowNumber: 2, content: "resilient", category: "Core", topic: "Psychology", level: "B2", meaning: "Kiên cường, phục hồi nhanh", status: "Learning", next_review: todayStr, interval: 3, ease_factor: 2.5 },
