@@ -7,34 +7,34 @@ let onSyncNeeded = null;
 // Curated high-resolution real-world photos for every core place in Da Nang (multiple images per place)
 const REAL_PHOTOS = {
   "XLIII Specialty Coffee": [
-    "src/assets/images/xliii_1.jpg",
-    "src/assets/images/xliii_2.jpg",
-    "src/assets/images/xliii_3.jpg"
+    "assets/images/xliii_1.jpg",
+    "assets/images/xliii_2.jpg",
+    "assets/images/xliii_3.jpg"
   ],
   "Trinh Cafe": [
-    "src/assets/images/trinh_1.jpg",
-    "src/assets/images/trinh_2.jpg",
-    "src/assets/images/trinh_3.jpg"
+    "assets/images/trinh_1.jpg",
+    "assets/images/trinh_2.jpg",
+    "assets/images/trinh_3.jpg"
   ],
   "Nối Coffee": [
-    "src/assets/images/noi_1.jpg",
-    "src/assets/images/noi_2.jpg",
-    "src/assets/images/noi_3.jpg"
+    "assets/images/noi_1.jpg",
+    "assets/images/noi_2.jpg",
+    "assets/images/noi_3.jpg"
   ],
   "HAIAN Beach Hotel & Spa": [
-    "src/assets/images/haian_1.jpg",
-    "src/assets/images/haian_2.jpg",
-    "src/assets/images/haian_3.jpg"
+    "assets/images/haian_1.jpg",
+    "assets/images/haian_2.jpg",
+    "assets/images/haian_3.jpg"
   ],
   "TMS Hotel Da Nang Beach": [
-    "src/assets/images/tms_1.jpg",
-    "src/assets/images/tms_2.jpg",
-    "src/assets/images/tms_3.jpg"
+    "assets/images/tms_1.jpg",
+    "assets/images/tms_2.jpg",
+    "assets/images/tms_3.jpg"
   ],
   "Sala Danang Beach Hotel": [
-    "src/assets/images/sala_1.jpg",
-    "src/assets/images/sala_2.jpg",
-    "src/assets/images/sala_3.jpg"
+    "assets/images/sala_1.jpg",
+    "assets/images/sala_2.jpg",
+    "assets/images/sala_3.jpg"
   ]
 };
 
