@@ -4,40 +4,6 @@ import { showToast } from '../services/toast.js';
 let allMapData = [];
 let onSyncNeeded = null;
 
-// Curated high-resolution real-world photos for every core place in Da Nang (multiple images per place)
-const REAL_PHOTOS = {
-  "XLIII Specialty Coffee": [
-    "assets/images/xliii_1.jpg",
-    "assets/images/xliii_2.jpg",
-    "assets/images/xliii_3.jpg"
-  ],
-  "Trinh Cafe": [
-    "assets/images/trinh_1.jpg",
-    "assets/images/trinh_2.jpg",
-    "assets/images/trinh_3.jpg"
-  ],
-  "Nối Coffee": [
-    "assets/images/noi_1.jpg",
-    "assets/images/noi_2.jpg",
-    "assets/images/noi_3.jpg"
-  ],
-  "HAIAN Beach Hotel & Spa": [
-    "assets/images/haian_1.jpg",
-    "assets/images/haian_2.jpg",
-    "assets/images/haian_3.jpg"
-  ],
-  "TMS Hotel Da Nang Beach": [
-    "assets/images/tms_1.jpg",
-    "assets/images/tms_2.jpg",
-    "assets/images/tms_3.jpg"
-  ],
-  "Sala Danang Beach Hotel": [
-    "assets/images/sala_1.jpg",
-    "assets/images/sala_2.jpg",
-    "assets/images/sala_3.jpg"
-  ]
-};
-
 export function initMapModule(data, onSync) {
   allMapData = data || [];
   onSyncNeeded = onSync;
@@ -67,25 +33,8 @@ export function initMapModule(data, onSync) {
     });
   }
 
-  // 2. Build the initial thám hiểm grid
+  // 2. Build the initial adventure grid
   buildMapGrid();
-
-  // 3. Set up global gallery keyboard controller
-  if (!window.mapGalleryKeyHandlerBound) {
-    document.addEventListener('keydown', (e) => {
-      const galleryModal = document.getElementById('map-gallery-modal');
-      if (galleryModal && !galleryModal.classList.contains('hidden')) {
-        if (e.key === 'ArrowLeft') {
-          window.changeGalleryImage(-1);
-        } else if (e.key === 'ArrowRight') {
-          window.changeGalleryImage(1);
-        } else if (e.key === 'Escape') {
-          window.closePhotoGallery();
-        }
-      }
-    });
-    window.mapGalleryKeyHandlerBound = true;
-  }
 }
 
 export function buildMapGrid() {
@@ -93,7 +42,7 @@ export function buildMapGrid() {
   if (!gridContainer) return;
   gridContainer.innerHTML = "";
 
-  // 1. Calculate Stats & Gamified Rank Cấp Độ
+  // 1. Calculate Stats & Gamified Rank
   const totalCount = allMapData.length;
   const exploredCount = allMapData.filter(item => item.check === true).length;
   const explorationRate = totalCount > 0 ? Math.round((exploredCount / totalCount) * 100) : 0;
@@ -151,33 +100,23 @@ export function buildMapGrid() {
       if (!match) return;
     }
 
-    // Stable real photo URL or dynamic category fallback using high-quality Unsplash photography
-    let photoUrl = REAL_PHOTOS[placeName.trim()];
+    // High-quality category cover placeholder photograph from Unsplash
     let coverUrl = "";
-    if (Array.isArray(photoUrl)) {
-      coverUrl = photoUrl[0];
+    const catLower = category.toLowerCase();
+    if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
+      coverUrl = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80"; // Vintage garden cafe
+    } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("khách sạn")) {
+      coverUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"; // Luxury resort room/pool
+    } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
+      coverUrl = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"; // Premium restaurant space
     } else {
-      coverUrl = photoUrl;
-    }
-
-    if (!coverUrl) {
-      const catLower = category.toLowerCase();
-      if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
-        coverUrl = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80";
-      } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("khách sạn")) {
-        coverUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80";
-      } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
-        coverUrl = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80";
-      } else {
-        coverUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80";
-      }
+      coverUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"; // General beach/travel
     }
 
     // Determine dynamic category with appropriate emoji
     let displayCategory = "📍 Địa điểm";
     if (category) {
       let categoryEmoji = "📍";
-      const catLower = category.toLowerCase();
       if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
         categoryEmoji = "☕";
       } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("homestay") || catLower.includes("khách sạn")) {
@@ -188,88 +127,56 @@ export function buildMapGrid() {
       displayCategory = `${categoryEmoji} ${category.trim()}`;
     }
 
-    // Google Maps Embed Interactive URL
-    const embedMapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(placeName + ", " + address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-
     gridContainer.insertAdjacentHTML('beforeend', `
-      <div id="map-card-container-${id}" class="explorer-card-container">
-        <div class="explorer-card-inner">
+      <div id="map-card-container-${id}" class="glass-card flex flex-col overflow-hidden transition duration-300 hover:-translate-y-1.5 hover:shadow-lg">
+        
+        <!-- CARD TOP: COVER PHOTO & OVERLAYS -->
+        <div class="relative w-full h-48 overflow-hidden shrink-0 group">
+          <img src="${coverUrl}" alt="${escapeHTML(placeName)}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent"></div>
           
-          <!-- FRONT FACE: PHOTOGRAPHY & ADVENTURE TITLE -->
-          <div class="explorer-card-front flex flex-col">
-            <div onclick="openPhotoGallery('${escapeHTML(placeName)}', event)" class="relative w-full h-48 overflow-hidden shrink-0 group cursor-zoom-in" title="Click to view photo gallery 📸">
-              <img src="${coverUrl}" alt="${escapeHTML(placeName)}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent"></div>
-              
-              <!-- Badges on Photo -->
-              <span class="absolute top-4 left-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-white/90 backdrop-blur-xs text-slate-800 shadow-sm border border-white/20">
-                ${escapeHTML(displayCategory)}
-              </span>
-              
-              <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-amber-500 text-white shadow-sm flex items-center gap-1">
-                <i class="fa-solid fa-star text-[9px]"></i> ${rating.toFixed(1)}
-              </span>
+          <!-- Badges on Photo -->
+          <span class="absolute top-4 left-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-white/90 backdrop-blur-xs text-slate-800 shadow-sm border border-white/20">
+            ${escapeHTML(displayCategory)}
+          </span>
+          
+          <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-amber-500 text-white shadow-sm flex items-center gap-1">
+            <i class="fa-solid fa-star text-[9px]"></i> ${rating.toFixed(1)}
+          </span>
 
-              <!-- Explored stamp if checked -->
-              ${isExplored ? `<div class="explored-stamp">🏆 Explored</div>` : ''}
+          <!-- Explored stamp if checked -->
+          ${isExplored ? `<div class="explored-stamp">🏆 Explored</div>` : ''}
 
-              <!-- Bottom Title on Image overlay -->
-              <div class="absolute bottom-4 left-4 right-4 text-left">
-                <h3 class="text-white text-base font-black tracking-tight line-clamp-1">${escapeHTML(placeName)}</h3>
-                <p class="text-white/70 text-[10px] font-semibold flex items-center gap-1 mt-0.5"><i class="fa-solid fa-location-dot"></i> ${escapeHTML(city)}</p>
-              </div>
-            </div>
+          <!-- Bottom Title on Image overlay -->
+          <div class="absolute bottom-4 left-4 right-4 text-left">
+            <h3 class="text-white text-base font-black tracking-tight line-clamp-1">${escapeHTML(placeName)}</h3>
+            <p class="text-white/70 text-[10px] font-semibold flex items-center gap-1 mt-0.5"><i class="fa-solid fa-location-dot"></i> ${escapeHTML(city)}</p>
+          </div>
+        </div>
 
-            <!-- Card Info Body -->
-            <div class="p-5 flex-1 flex flex-col justify-between text-left">
-              <div>
-                <p class="text-xs text-slate-500 font-semibold line-clamp-2 mb-3 bg-slate-50/50 p-2.5 rounded-xl border border-slate-100/50">
-                  ${escapeHTML(address)}
-                </p>
-                <div class="flex items-center justify-between text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-4">
-                  <span>Reviews count</span>
-                  <span class="text-slate-650 font-black">${totalReviews.toLocaleString()} reviews</span>
-                </div>
-              </div>
-
-              <!-- Action buttons -->
-              <div class="flex items-center gap-2">
-                <button onclick="toggleExplorerCardFlip(${id})" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 rounded-xl transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer">
-                  <i class="fa-solid fa-map-location-dot text-sm"></i> <span>Xem bản đồ 🗺️</span>
-                </button>
-                
-                <label class="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:border-emerald-200 hover:bg-emerald-50/30 flex items-center justify-center gap-2 cursor-pointer transition select-none">
-                  <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
-                  <span class="text-xs font-bold text-slate-500 map-chk-lbl-${id}">${isExplored ? 'Chinh phục 🎉' : 'Check-in'}</span>
-                </label>
-              </div>
+        <!-- CARD BOTTOM: INFO & ACTIONS -->
+        <div class="p-5 flex-1 flex flex-col justify-between text-left">
+          <div>
+            <p class="text-xs text-slate-500 font-semibold line-clamp-2 mb-3 bg-slate-50/50 p-2.5 rounded-xl border border-slate-100/50">
+              ${escapeHTML(address)}
+            </p>
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-4">
+              <span>Reviews count</span>
+              <span class="text-slate-650 font-black">${totalReviews.toLocaleString()} reviews</span>
             </div>
           </div>
 
-          <!-- BACK FACE: LIVE INTERACTIVE GOOGLE MAPS EMBED -->
-          <div class="explorer-card-back flex flex-col">
-            <div class="w-full h-72 border-b border-slate-100 relative">
-              <iframe 
-                src="${embedMapUrl}" 
-                class="w-full h-full border-0 rounded-t-2xl" 
-                allowfullscreen="" 
-                loading="lazy" 
-                referrerpolicy="no-referrer-when-downgrade">
-              </iframe>
-            </div>
-
-            <!-- Map Controls footer -->
-            <div class="p-4 flex-1 flex items-center justify-between bg-slate-50/50">
-              <button onclick="toggleExplorerCardFlip(${id})" class="border border-slate-200 hover:bg-slate-100 text-slate-650 font-bold text-xs px-4 py-3 rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-2xs">
-                <i class="fa-solid fa-arrow-left"></i> Quay lại
-              </button>
-              
-              <a href="${escapeHTML(link)}" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl transition shadow-md flex items-center gap-1.5 cursor-pointer">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Google Maps ↗️
-              </a>
-            </div>
+          <!-- Action buttons -->
+          <div class="flex items-center gap-2">
+            <a href="${escapeHTML(link)}" target="_blank" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 rounded-xl transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer no-underline text-center">
+              <i class="fa-solid fa-map-location-dot text-sm"></i> <span>Xem bản đồ 🗺️</span>
+            </a>
+            
+            <label class="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:border-emerald-200 hover:bg-emerald-50/30 flex items-center justify-center gap-2 cursor-pointer transition select-none">
+              <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
+              <span class="text-xs font-bold text-slate-500 map-chk-lbl-${id}">${isExplored ? 'Chinh phục 🎉' : 'Check-in'}</span>
+            </label>
           </div>
-
         </div>
       </div>
     `);
@@ -284,13 +191,6 @@ export function buildMapGrid() {
 
 window.filterMapGrid = function() {
   buildMapGrid();
-};
-
-window.toggleExplorerCardFlip = function(id) {
-  const container = document.getElementById(`map-card-container-${id}`);
-  if (container) {
-    container.classList.toggle('flipped');
-  }
 };
 
 window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
@@ -331,111 +231,3 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
       }
     });
 };
-
-
-
-// ---- INTERACTIVE PHOTO GALLERY MODAL CAROUSEL ----
-let currentGalleryImages = [];
-let currentGalleryIndex = 0;
-
-window.openPhotoGallery = function(placeName, event) {
-  if (event) event.stopPropagation();
-
-  let images = REAL_PHOTOS[placeName];
-  if (!images || images.length === 0) {
-    // Fallback if not mapped
-    images = [
-      "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80"
-    ];
-  }
-
-  currentGalleryImages = images;
-  currentGalleryIndex = 0;
-
-  // Insert modal container dynamically if not exist
-  let modal = document.getElementById('map-gallery-modal');
-  if (!modal) {
-    document.body.insertAdjacentHTML('beforeend', `
-      <div id="map-gallery-modal" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950/85 backdrop-blur-md transition-all duration-300 hidden">
-        <div class="relative w-full max-w-4xl mx-4 p-4 flex flex-col items-center">
-          
-          <!-- Close button -->
-          <button onclick="closePhotoGallery()" class="absolute -top-12 right-4 text-white/80 hover:text-white transition cursor-pointer text-3xl">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-          
-          <!-- Large Image Container -->
-          <div class="relative w-full h-[60vh] sm:h-[70vh] rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-slate-900 flex items-center justify-center">
-            <img id="gallery-active-img" src="" class="w-full h-full object-cover transition-all duration-300">
-            
-            <!-- Left Arrow -->
-            <button onclick="changeGalleryImage(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition cursor-pointer">
-              <i class="fa-solid fa-chevron-left text-lg"></i>
-            </button>
-            
-            <!-- Right Arrow -->
-            <button onclick="changeGalleryImage(1)" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition cursor-pointer">
-              <i class="fa-solid fa-chevron-right text-lg"></i>
-            </button>
-          </div>
-          
-          <!-- Place Title & Indicators -->
-          <div class="mt-5 text-center text-white">
-            <h4 id="gallery-place-title" class="text-xl font-extrabold tracking-wide uppercase font-sans">Place Name</h4>
-            
-            <!-- Thumbnails/Dots indicators -->
-            <div id="gallery-indicators" class="flex gap-2 justify-center mt-3"></div>
-          </div>
-          
-        </div>
-      </div>
-    `);
-    modal = document.getElementById('map-gallery-modal');
-  }
-
-  document.getElementById('gallery-place-title').innerText = placeName;
-  modal.classList.remove('hidden');
-  updateGalleryUI();
-};
-
-window.closePhotoGallery = function() {
-  const modal = document.getElementById('map-gallery-modal');
-  if (modal) {
-    modal.classList.add('hidden');
-  }
-};
-
-window.changeGalleryImage = function(direction) {
-  currentGalleryIndex = (currentGalleryIndex + direction + currentGalleryImages.length) % currentGalleryImages.length;
-  updateGalleryUI();
-};
-
-window.setGalleryIndex = function(index) {
-  currentGalleryIndex = index;
-  updateGalleryUI();
-};
-
-function updateGalleryUI() {
-  const imgEl = document.getElementById('gallery-active-img');
-  if (imgEl) {
-    imgEl.style.opacity = 0;
-    setTimeout(() => {
-      imgEl.src = currentGalleryImages[currentGalleryIndex];
-      imgEl.style.opacity = 1;
-    }, 150);
-  }
-
-  // Update indicators
-  const indicatorsContainer = document.getElementById('gallery-indicators');
-  if (indicatorsContainer) {
-    indicatorsContainer.innerHTML = "";
-    currentGalleryImages.forEach((img, idx) => {
-      const isActive = idx === currentGalleryIndex;
-      indicatorsContainer.insertAdjacentHTML('beforeend', `
-        <button onclick="setGalleryIndex(${idx})" class="w-3 h-3 rounded-full transition-all duration-300 cursor-pointer ${isActive ? 'bg-emerald-500 scale-125 shadow-[0_0_10px_#10b981]' : 'bg-white/40 hover:bg-white/60'}"></button>
-      `);
-    });
-  }
-}
