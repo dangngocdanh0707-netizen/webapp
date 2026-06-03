@@ -174,10 +174,6 @@ window.saveNewCollection = function() {
         brandInput.value = "";
         if (styleInput) styleInput.value = "";
         if (catInput) catInput.value = "";
-        
-        // Hide form panel
-        const formPanel = document.getElementById('col-add-panel');
-        if (formPanel) formPanel.classList.add('hidden');
 
         if (onSyncNeeded) onSyncNeeded();
       } else {
@@ -213,11 +209,4 @@ window.deleteCollectionItem = function(id) {
       showToast("Connection error: " + err.message, "error");
       if (loading) loading.style.display = 'none';
     });
-};
-
-window.toggleAddCollectionPanel = function() {
-  const panel = document.getElementById('col-add-panel');
-  if (panel) {
-    panel.classList.toggle('hidden');
-  }
 };

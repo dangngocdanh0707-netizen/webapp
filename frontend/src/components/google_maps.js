@@ -50,8 +50,6 @@ export function buildMapGrid() {
   const catVal = document.getElementById('mapCategoryFilter') ? document.getElementById('mapCategoryFilter').value : "All";
   const checkVal = document.getElementById('mapCheckFilter') ? document.getElementById('mapCheckFilter').value : "All";
  
-  let firstFilteredItem = null;
- 
   // 3. Render Rows (Defensive 5-column mapping)
   allMapData.forEach(item => {
     if (!item || !item.place) return;
@@ -78,10 +76,6 @@ export function buildMapGrid() {
         if (!match) return;
       }
  
-      if (!firstFilteredItem) {
-        firstFilteredItem = { placeName, city };
-      }
- 
       // Direct Google Search URL generation (matching Explore in Collections page)
       const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(placeName + ' ' + city)}`;
  
@@ -89,11 +83,7 @@ export function buildMapGrid() {
       const styleClass = "bg-slate-50 text-slate-650 border-slate-200 font-semibold";
  
       tableBody.insertAdjacentHTML('beforeend', `
-        <tr onclick="focusMapOnLocation(this.dataset.place, this.dataset.city)" 
-          data-place="${escapeHTML(placeName)}" 
-          data-city="${escapeHTML(city)}" 
-          class="hover:bg-slate-50/30 transition group cursor-pointer">
-          
+        <tr class="hover:bg-slate-50/30 transition group">
           <td class="p-4 pl-6 font-bold text-slate-800 text-sm">
             ${escapeHTML(placeName)}
           </td>
@@ -110,13 +100,13 @@ export function buildMapGrid() {
           <td class="p-4 text-xs text-slate-500 max-w-[250px] truncate">
             ${escapeHTML(address) || '-'}
           </td>
-          <td class="p-4 text-center" onclick="event.stopPropagation()">
+          <td class="p-4 text-center">
             <label class="px-2.5 py-1 rounded-lg border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 inline-flex items-center justify-center gap-1.5 cursor-pointer transition select-none shadow-3xs">
               <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0 scale-90" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
               <span class="text-[10px] font-bold text-slate-500 map-chk-lbl-${id}">${isExplored ? 'Chinh phục 🎉' : 'Check-in'}</span>
             </label>
           </td>
-          <td class="p-4 pr-6 text-center" onclick="event.stopPropagation()">
+          <td class="p-4 pr-6 text-center">
             <div class="flex items-center justify-center gap-2">
               <a href="${searchUrl}" target="_blank" class="border border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-500 hover:text-blue-600 font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-3xs flex items-center justify-center gap-1 cursor-pointer no-underline">
                 <i class="fa-solid fa-magnifying-glass text-[9px]"></i> <span>Explore</span>
@@ -148,8 +138,6 @@ export function buildMapGrid() {
         </td>
       </tr>
     `;
-  } else if (firstFilteredItem) {
-    focusMapOnLocation(firstFilteredItem.placeName, firstFilteredItem.city);
   }
 }
  
@@ -159,27 +147,49 @@ window.filterMapGrid = function() {
   buildMapGrid();
 };
  
-window.focusMapOnLocation = function(placeName, city) {
-  const mapIframe = document.getElementById('interactive-google-map');
-  if (mapIframe) {
-    const query = `${placeName}, ${city}`;
-    mapIframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+window.addMapRow = function() {
+  const placeInput = document.getElementById('ins-map-place');
+  const cityInput = document.getElementById('ins-map-city');
+  const catInput = document.getElementById('ins-map-cat');
+  const addressInput = document.getElementById('ins-map-address');
+ 
+  if (!placeInput || !cityInput) return;
+ 
+  const place = placeInput.value.trim();
+  const city = cityInput.value.trim();
+  const category = catInput ? catInput.value.trim() : "";
+  const address = addressInput ? addressInput.value.trim() : "";
+ 
+  if (!place || !city) {
+    showToast("Vui lòng nhập Tên địa điểm và Thành phố!", "warning");
+    return;
   }
+ 
+  const loading = document.getElementById('loading');
+  if (loading) loading.style.display = 'flex';
+ 
+  callServer("insertMapRow", [place, city, category, address])
+    .then(res => {
+      if (res === "Thành công") {
+        showToast("Đã thêm địa điểm mới thành công! 🎉", "success");
+        // Clear inputs
+        placeInput.value = "";
+        cityInput.value = "";
+        if (catInput) catInput.value = "";
+        if (addressInput) addressInput.value = "";
+ 
+        if (onSyncNeeded) onSyncNeeded();
+      } else {
+        showToast("Lỗi thêm: " + res, "error");
+        if (loading) loading.style.display = 'none';
+      }
+    })
+    .catch(err => {
+      showToast("Lỗi kết nối: " + err.message, "error");
+      if (loading) loading.style.display = 'none';
+    });
 };
-
-
-
-window.quickSearchMap = function() {
-  const searchInput = document.getElementById('quickMapSearchInput');
-  const mapIframe = document.getElementById('interactive-google-map');
-  if (searchInput && mapIframe) {
-    const val = searchInput.value.trim();
-    if (val) {
-      mapIframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(val)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-    }
-  }
-};
-
+ 
 window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
   const isChecked = checkboxEl.checked;
   const labelEl = document.querySelector(`.map-chk-lbl-${rowNumber}`);
@@ -218,7 +228,7 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
       }
     });
 };
-
+ 
 window.deleteMapPlace = function(id) {
   if (!confirm("Bạn có chắc chắn muốn xóa địa điểm này khỏi bản đồ? 🗑️")) {
     return;
