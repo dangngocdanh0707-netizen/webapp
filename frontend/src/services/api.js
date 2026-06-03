@@ -696,6 +696,18 @@ export function callServer(methodName, args) {
         resolve("Thành công");
         return;
       }
+      if (methodName === "updateMapRow") {
+        const [rowNumber, place, city, category, address] = args;
+        const mapTab = mappings['google_map'];
+        await gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${mapTab}!A${rowNumber}:D${rowNumber}`,
+          valueInputOption: 'USER_ENTERED',
+          resource: { values: [[place, city, category, address]] }
+        });
+        resolve("Thành công");
+        return;
+      }
       if (methodName === "insertMapRow") {
         const [place, city, category, address] = args;
         const mapTab = mappings['google_map'];

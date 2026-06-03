@@ -84,38 +84,53 @@ export function buildCollectionsGrid() {
 
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition group">
-          <td class="p-4 pl-6 font-semibold text-slate-800 text-sm">
+          <td class="p-4 pl-6 font-semibold text-slate-800 text-sm col-view-${id}">
             ${escapeHTML(name)}
           </td>
-          <td class="p-4">
+          <td class="p-4 col-view-${id}">
             <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
               ${escapeHTML(brand)}
             </span>
           </td>
-          <td class="p-4">
+          <td class="p-4 col-view-${id}">
             <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
               ${escapeHTML(formattedStyle)}
             </span>
           </td>
-          <td class="p-4">
+          <td class="p-4 col-view-${id}">
             <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
               ${escapeHTML(formattedCategory)}
             </span>
           </td>
-          <td class="p-4 pl-12 text-left">
+          <td class="p-4 pl-12 text-left col-view-${id}">
             <label class="inline-flex items-center gap-3 cursor-pointer select-none">
               <input type="checkbox" id="col-check-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="toggleCollectionStatusDirectly(${id}, this)">
               <span id="col-chk-lbl-${id}" class="text-xs font-semibold tracking-wide ${isDone ? 'text-emerald-600' : 'text-slate-400'}">${isDone ? 'Completed' : 'Pending'}</span>
             </label>
           </td>
+
+          <!-- Edit inputs -->
+          <td class="p-4 pl-6 hidden col-edit-${id}"><input type="text" id="col-edit-item-${id}" class="edit-input font-bold" value="${escapeHTML(name)}"></td>
+          <td class="p-4 hidden col-edit-${id}"><input type="text" id="col-edit-brand-${id}" class="edit-input" value="${escapeHTML(brand)}"></td>
+          <td class="p-4 hidden col-edit-${id}"><input type="text" id="col-edit-style-${id}" class="edit-input" value="${escapeHTML(formattedStyle)}"></td>
+          <td class="p-4 hidden col-edit-${id}"><input type="text" id="col-edit-cat-${id}" class="edit-input" value="${escapeHTML(formattedCategory)}"></td>
+          <td class="p-4 pl-12 text-left hidden col-edit-${id}"><span class="text-xs italic text-slate-400">Locked</span></td>
+
           <td class="p-4 pr-6 text-center">
-            <div class="flex items-center justify-center gap-2">
-              <a href="${searchUrl}" target="_blank" class="border border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-500 hover:text-blue-600 font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-3xs flex items-center justify-center gap-1 cursor-pointer no-underline">
-                <i class="fa-solid fa-magnifying-glass text-[9px]"></i> <span>Explore</span>
+            <div class="col-view-${id} flex items-center justify-center gap-2">
+              <a href="${searchUrl}" target="_blank" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Explore">
+                <i class="fa-solid fa-magnifying-glass text-sm"></i>
               </a>
+              <button onclick="toggleCollectionEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Edit">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
               <button onclick="deleteCollectionItem(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Delete">
                 <i class="fa-solid fa-trash"></i>
               </button>
+            </div>
+            <div class="hidden col-edit-${id} flex justify-center gap-1.5">
+              <button onclick="saveCollectionItem(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+              <button onclick="toggleCollectionEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
             </div>
           </td>
         </tr>
@@ -205,6 +220,42 @@ window.deleteCollectionItem = function(id) {
         if (onSyncNeeded) onSyncNeeded();
       } else {
         showToast("Delete failed: " + res, "error");
+        if (loading) loading.style.display = 'none';
+      }
+    })
+    .catch(err => {
+      showToast("Connection error: " + err.message, "error");
+      if (loading) loading.style.display = 'none';
+    });
+};
+
+window.toggleCollectionEdit = function(id, isEdit) {
+  document.querySelectorAll(`.col-view-${id}`).forEach(el => isEdit ? el.classList.add('hidden') : el.classList.remove('hidden'));
+  document.querySelectorAll(`.col-edit-${id}`).forEach(el => isEdit ? el.classList.remove('hidden') : el.classList.add('hidden'));
+};
+
+window.saveCollectionItem = function(id) {
+  const item = document.getElementById(`col-edit-item-${id}`).value.trim();
+  const brand = document.getElementById(`col-edit-brand-${id}`).value.trim();
+  const style = document.getElementById(`col-edit-style-${id}`).value.trim();
+  const category = document.getElementById(`col-edit-cat-${id}`).value.trim();
+
+  if (!item || !brand) {
+    showToast("Please fill in Name and Brand!", "warning");
+    return;
+  }
+
+  const loading = document.getElementById('loading');
+  if (loading) loading.style.display = 'flex';
+
+  callServer("updateCollectionRow", [id, item, brand, style, category])
+    .then(res => {
+      if (res === "Thành công") {
+        window.toggleCollectionEdit(id, false);
+        showToast("Asset successfully updated! 🎉", "success");
+        if (onSyncNeeded) onSyncNeeded();
+      } else {
+        showToast("Update failed: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })

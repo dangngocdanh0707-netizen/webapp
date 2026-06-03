@@ -84,36 +84,51 @@ export function buildMapGrid() {
  
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition group">
-          <td class="p-4 pl-6 font-semibold text-slate-800 text-sm">
+          <td class="p-4 pl-6 font-semibold text-slate-800 text-sm map-view-${id}">
             ${escapeHTML(placeName)}
           </td>
-          <td class="p-4">
+          <td class="p-4 map-view-${id}">
             <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
               ${escapeHTML(city)}
             </span>
           </td>
-          <td class="p-4">
+          <td class="p-4 map-view-${id}">
             <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
               ${escapeHTML(category)}
             </span>
           </td>
-          <td class="p-4 text-xs text-slate-500 max-w-[250px] truncate">
+          <td class="p-4 text-xs text-slate-500 max-w-[250px] truncate map-view-${id}">
             ${escapeHTML(address) || '-'}
           </td>
-          <td class="p-4 pl-12 text-left">
+          <td class="p-4 pl-12 text-left map-view-${id}">
             <label class="inline-flex items-center gap-3 cursor-pointer select-none">
               <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
               <span id="map-chk-lbl-${id}" class="text-xs font-semibold tracking-wide ${isExplored ? 'text-emerald-600' : 'text-slate-400'}">${isExplored ? 'Completed' : 'Pending'}</span>
             </label>
           </td>
+
+          <!-- Edit inputs -->
+          <td class="p-4 pl-6 hidden map-edit-${id}"><input type="text" id="map-edit-place-${id}" class="edit-input font-bold" value="${escapeHTML(placeName)}"></td>
+          <td class="p-4 hidden map-edit-${id}"><input type="text" id="map-edit-city-${id}" class="edit-input" value="${escapeHTML(city)}"></td>
+          <td class="p-4 hidden map-edit-${id}"><input type="text" id="map-edit-cat-${id}" class="edit-input" value="${escapeHTML(category)}"></td>
+          <td class="p-4 hidden map-edit-${id}"><input type="text" id="map-edit-address-${id}" class="edit-input" value="${escapeHTML(address)}"></td>
+          <td class="p-4 pl-12 text-left hidden map-edit-${id}"><span class="text-xs italic text-slate-400">Locked</span></td>
+
           <td class="p-4 pr-6 text-center">
-            <div class="flex items-center justify-center gap-2">
-              <a href="${searchUrl}" target="_blank" class="border border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-500 hover:text-blue-600 font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-3xs flex items-center justify-center gap-1 cursor-pointer no-underline">
-                <i class="fa-solid fa-magnifying-glass text-[9px]"></i> <span>Explore</span>
+            <div class="map-view-${id} flex items-center justify-center gap-2">
+              <a href="${searchUrl}" target="_blank" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Explore">
+                <i class="fa-solid fa-magnifying-glass text-sm"></i>
               </a>
+              <button onclick="toggleMapEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Edit">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
               <button onclick="deleteMapPlace(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Delete">
                 <i class="fa-solid fa-trash"></i>
               </button>
+            </div>
+            <div class="hidden map-edit-${id} flex justify-center gap-1.5">
+              <button onclick="saveMapPlace(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+              <button onclick="toggleMapEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
             </div>
           </td>
         </tr>
@@ -240,6 +255,42 @@ window.deleteMapPlace = function(id) {
         if (onSyncNeeded) onSyncNeeded();
       } else {
         showToast("Lỗi xóa: " + res, "error");
+        if (loading) loading.style.display = 'none';
+      }
+    })
+    .catch(err => {
+      showToast("Lỗi kết nối: " + err.message, "error");
+      if (loading) loading.style.display = 'none';
+    });
+};
+
+window.toggleMapEdit = function(id, isEdit) {
+  document.querySelectorAll(`.map-view-${id}`).forEach(el => isEdit ? el.classList.add('hidden') : el.classList.remove('hidden'));
+  document.querySelectorAll(`.map-edit-${id}`).forEach(el => isEdit ? el.classList.remove('hidden') : el.classList.add('hidden'));
+};
+
+window.saveMapPlace = function(id) {
+  const place = document.getElementById(`map-edit-place-${id}`).value.trim();
+  const city = document.getElementById(`map-edit-city-${id}`).value.trim();
+  const category = document.getElementById(`map-edit-cat-${id}`).value.trim();
+  const address = document.getElementById(`map-edit-address-${id}`).value.trim();
+
+  if (!place || !city) {
+    showToast("Vui lòng nhập Tên địa điểm và Thành phố!", "warning");
+    return;
+  }
+
+  const loading = document.getElementById('loading');
+  if (loading) loading.style.display = 'flex';
+
+  callServer("updateMapRow", [id, place, city, category, address])
+    .then(res => {
+      if (res === "Thành công") {
+        window.toggleMapEdit(id, false);
+        showToast("Đã cập nhật địa điểm thành công! 🎉", "success");
+        if (onSyncNeeded) onSyncNeeded();
+      } else {
+        showToast("Lỗi cập nhật: " + res, "error");
         if (loading) loading.style.display = 'none';
       }
     })
