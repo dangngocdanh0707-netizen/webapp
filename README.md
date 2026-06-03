@@ -39,7 +39,7 @@ webapp_project/ (personal_webapp/)
         ├── styles/
         │   └── main.css         # CSS gốc chứa Tailwind directives, thiết kế Glassmorphism & Toast
         ├── services/
-        │   ├── api.js           # Core API Client (Direct Sheets API v4 CRUD & LocalStorage Fallback)
+        │   ├── api.js           # Core API Client (Direct Sheets API v4 CRUD)
         │   └── toast.js         # Hệ thống thông báo Custom Toast xếp chồng cao cấp
         └── components/          # Các mô-đun UI cô lập điều khiển nghiệp vụ chi tiết
             ├── charts.js        # Vẽ biểu đồ tương tác thời gian thực bằng Chart.js (Import Local)
@@ -78,9 +78,9 @@ webapp_project/ (personal_webapp/)
 * **XSS Clean-up**: Lọc sạch 100% mã độc đầu ra bằng hàm `escapeHTML` ở tất cả các mô-đun UI (bao gồm cả danh mục Habits mới cập nhật), bảo vệ trình duyệt của bạn khỏi việc thực thi mã script độc hại.
 * **Bảo vệ khóa bí mật**: Các thông tin bảo mật kết nối Google Cloud của bạn được che giấu an toàn thông qua tệp cấu hình `.env` cục bộ (được bỏ qua bởi `.gitignore`), hoặc được mã hóa lưu trữ an toàn trong `localStorage` cá nhân của riêng bạn khi chạy trực tuyến.
 
-### 5. 🌐 Cơ chế hoạt động Offline & Bundle Thư viện cục bộ (Local-First)
+### 5. 📦 Bundle Thư viện cục bộ (Self-hosted Assets)
 * Loại bỏ hoàn toàn CDNs ngoài tại thời gian chạy (runtime) cho các thư viện bên thứ ba như `Chart.js` hay `SortableJS`. 
-* Tất cả được cài đặt cục bộ qua `npm` và đóng gói tĩnh thông qua Vite. Ứng dụng khởi chạy tức thì và tự động kích hoạt chế độ **Offline Fallback** (ghi/đọc trực tiếp trên LocalStorage) khi mất kết nối mạng.
+* Tất cả được cài đặt cục bộ qua `npm` và đóng gói tĩnh thông qua Vite. Ứng dụng khởi chạy tức thì, an toàn và tối ưu hóa tài nguyên mạng.
 
 ### 6. 🗺️ Bản đồ tương tác Google Maps Explorer Split-View Tinh Giản
 * **Giao diện Split-View Cân đối 5:7**: Thiết kế hiện đại giúp cột danh sách địa điểm bên trái gọn gàng, dành trọn không gian cho bản đồ tương tác ở cột bên phải với chiều cao mở rộng **`480px`** cực kỳ sắc nét.

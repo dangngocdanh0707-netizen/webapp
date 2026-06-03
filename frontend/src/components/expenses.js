@@ -97,19 +97,10 @@ export function buildTable(filterValue) {
     let amount = parseFloat(item.amount.toString().replace(/[^\d]/g, '') || 0);
     let id = item.rowNumber;
 
-    let badgeStyle = "bg-slate-100 text-slate-650 border-slate-200";
-    if (cat === "Must have") {
-      badgeStyle = "bg-blue-50 text-blue-600 border-blue-100 font-bold";
-    } else if (cat === "Wasted") {
-      badgeStyle = "bg-rose-50 text-rose-600 border-rose-100 font-bold";
-    } else if (cat === "Nice to have") {
-      badgeStyle = "bg-emerald-50 text-emerald-600 border-emerald-100 font-bold";
-    }
-
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="row-${id}" class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500 view-mode-${id}">${formatDateView(item.date)}</td>
-        <td class="p-4 view-mode-${id}"><span class="px-2.5 py-1 rounded-md text-xs border ${badgeStyle}">${escapeHTML(cat)}</span></td>
+        <td class="p-4 view-mode-${id}"><span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold">${escapeHTML(cat)}</span></td>
         <td class="p-4 text-right font-bold text-slate-900 view-mode-${id}">${amount.toLocaleString('vi-VN')}đ</td>
         <td class="p-4 text-slate-650 view-mode-${id}">${escapeHTML(item.note) || '-'}</td>
         

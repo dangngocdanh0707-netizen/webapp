@@ -1,7 +1,8 @@
 // DỊCH VỤ ĐỒNG BỘ DỮ LIỆU - API & LOCAL STORAGE SERVICE
-// Lớp cơ sở dữ liệu kết nối an toàn trực tiếp với Google Sheets API v4 & hỗ trợ Offline Storage dự phòng
+// Lớp cơ sở dữ liệu kết nối an toàn trực tiếp với Google Sheets API v4
 
 import { showToast } from './toast.js';
+
 
 // Cấu hình phím lưu trữ trong localStorage
 const KEY_SPREADSHEET_ID = "GOOGLE_SPREADSHEET_ID";
@@ -59,7 +60,7 @@ export function initGoogleAuth() {
   return new Promise((resolve) => {
     const creds = getCredentials();
     if (!creds.spreadsheetId || !creds.clientId || !creds.apiKey) {
-      console.log("[api.js] Thiếu cấu hình Google Credentials. Chạy chế độ Cục bộ (Offline).");
+      console.log("[api.js] Thiếu cấu hình Google Credentials.");
       resolve(false);
       return;
     }

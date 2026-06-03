@@ -201,35 +201,32 @@ function loadDataFromServer() {
   if (loading) loading.style.display = 'flex';
   if (dashboardContent) dashboardContent.classList.add('hidden');
 
-  // Đặt timeout 7 giây phòng khi API bị chậm hoặc không có mạng
+  // Đặt timeout 4 giây phòng khi API bị chậm
   if (serverSyncTimeout) clearTimeout(serverSyncTimeout);
   serverSyncTimeout = setTimeout(() => {
     if (loading && loading.querySelector('.animate-spin')) {
       const creds = getCredentials();
       const needsSetup = !creds.spreadsheetId || !creds.clientId || !creds.apiKey;
       
-      loading.innerHTML = `
-        <div class="text-center p-8 glass-card max-w-lg mx-auto border-amber-200 bg-amber-50/50 shadow-lg mt-10 animate-in fade-in duration-200">
-          <div class="bg-amber-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
-            <i class="fa-solid fa-circle-info text-amber-600 text-lg animate-pulse"></i>
-          </div>
-          <h3 class="font-bold text-slate-800 text-base mb-1">${needsSetup ? 'Chưa cấu hình Google Sheets API' : 'Đồng Bộ Lâu Hơn Dự Kiến...'}</h3>
-          <p class="text-xs text-amber-800 font-medium mb-5">
-            ${needsSetup 
-              ? 'Ứng dụng cần cấu hình Google Sheets API để hoạt động. Bạn hãy nhấn Thiết lập Credentials để bắt đầu.' 
-              : 'Hệ thống đang đồng bộ lâu hơn bình thường hoặc token xác thực hết hạn. Bạn có thể kiểm tra lại kết nối mạng hoặc thử tải lại trang.'}
-          </p>
-          
-          <div class="flex flex-wrap gap-3 justify-center">
-            ${needsSetup 
-              ? `<button onclick="openSettingsModal()" class="bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer transition shadow-sm"><i class="fa-solid fa-sliders mr-1"></i> Thiết lập Credentials</button>`
-              : `<button onclick="location.reload()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer transition shadow-sm"><i class="fa-solid fa-arrows-rotate mr-1"></i> Thử lại (Retry)</button>`
-            }
-          </div>
-        </div>
-      `;
+      if (needsSetup) {
+        showToast("Chưa cấu hình Google Sheets API. Vui lòng nhấn Thiết lập Credentials ở góc dưới bên trái.", "warning");
+      } else {
+        showToast("Đồng bộ lâu hơn dự kiến. Vui lòng kiểm tra lại kết nối mạng.", "info");
+      }
+      
+      renderDashboard({
+        cost: [],
+        vocabulary: [],
+        habit_tracker: [],
+        link: [],
+        prompt: [],
+        goal: [],
+        task: [],
+        google_map: [],
+        collections: []
+      });
     }
-  }, 4000); // 4 giây cho trải nghiệm offline mượt mà hơn
+  }, 4000); // 4 giây cho trải nghiệm tải mượt mà hơn
 
   callServer("getAllDashboardData", [])
     .then(data => {
@@ -246,26 +243,21 @@ function handleScriptError(err) {
   console.error("Sync Failure:", err);
   let errMsg = err.message || err.toString();
   
-  const loading = document.getElementById('loading');
-  if (loading) {
-    loading.innerHTML = `
-      <div class="text-center p-8 glass-card max-w-lg mx-auto border-rose-200 bg-rose-50/50 shadow-lg mt-10 animate-in fade-in duration-200">
-        <div class="bg-rose-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 shadow-[0_0_15px_rgba(244,63,94,0.15)]">
-          <i class="fa-solid fa-triangle-exclamation text-rose-600 text-lg"></i>
-        </div>
-        <h3 class="font-bold text-slate-800 text-base mb-1">Đồng Bộ Thất Bại (Sync Failed)</h3>
-        <p class="text-xs text-rose-750 font-medium mb-4 max-h-32 overflow-y-auto bg-white/70 p-2.5 rounded-lg border border-rose-100/50 text-left font-mono">${errMsg}</p>
-        <div class="flex flex-col gap-2.5 text-left text-xs text-slate-650 bg-white/50 p-4 rounded-xl border border-slate-100 mb-6">
-          <p class="font-bold text-slate-800 mb-1"><i class="fa-solid fa-circle-info mr-1 text-blue-500"></i> Hướng dẫn khắc phục:</p>
-          <p>1. <b>Hết hạn token</b>: Nhấp vào <b>Sign out</b> trong thanh Sidebar và nhấp <b>Connect Google Sheets</b> để kết nối & cấp quyền lại.</p>
-          <p>2. <b>Cấu hình sai Credentials</b>: Hãy nhấn nút <b>Settings (Gear)</b> ở góc dưới bên trái và kiểm tra xem Spreadsheet ID, API Key, Client ID đã điền chuẩn chưa.</p>
-        </div>
-        <div class="flex gap-3 justify-center">
-          <button onclick="location.reload()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-5 py-3 rounded-xl cursor-pointer transition shadow-md"><i class="fa-solid fa-arrows-rotate mr-1"></i> Tải lại trang (Retry)</button>
-        </div>
-      </div>
-    `;
-  }
+  // Hiển thị thông báo qua Toast thay vì chặn toàn màn hình
+  showToast("Đồng bộ thất bại: " + errMsg, "error");
+  
+  // Tự động chuyển qua hiển thị giao diện chính với dữ liệu trống để người dùng có thể tự do bấm Connect Google Sheets trong Sidebar
+  renderDashboard({
+    cost: [],
+    vocabulary: [],
+    habit_tracker: [],
+    link: [],
+    prompt: [],
+    goal: [],
+    task: [],
+    google_map: [],
+    collections: []
+  });
 }
 
 function renderDashboard(data) {

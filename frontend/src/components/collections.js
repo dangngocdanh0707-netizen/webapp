@@ -77,18 +77,29 @@ export function buildCollectionsGrid() {
 
       const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(brand + ' ' + name)}`;
 
+      // Capitalize first letter of category and lowercase the rest
+      const formattedCategory = category ? (category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()) : "";
+
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-50/30 transition group">
           <td class="p-4 pl-6 font-bold text-slate-800 text-sm">
             ${escapeHTML(name)}
           </td>
-          <td class="p-4 font-semibold text-slate-650 text-xs">${escapeHTML(brand)}</td>
+          <td class="p-4">
+            <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase border tracking-wider ${styleClass}">
+              ${escapeHTML(brand)}
+            </span>
+          </td>
           <td class="p-4">
             <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase border tracking-wider ${styleClass}">
               ${escapeHTML(style)}
             </span>
           </td>
-          <td class="p-4 text-slate-500 font-bold text-xs uppercase tracking-wider">${escapeHTML(category)}</td>
+          <td class="p-4">
+            <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold border tracking-wider ${styleClass}">
+              ${escapeHTML(formattedCategory)}
+            </span>
+          </td>
           <td class="p-4 pr-6 text-center">
             <div class="flex items-center justify-center gap-2">
               <a href="${searchUrl}" target="_blank" class="border border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-500 hover:text-blue-600 font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-3xs flex items-center justify-center gap-1 cursor-pointer no-underline">
