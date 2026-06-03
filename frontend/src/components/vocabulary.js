@@ -85,11 +85,11 @@ export function buildVocabTable() {
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="vocab-row-${id}" class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-slate-800 v-view-${id}">${escapeHTML(item.content) || ''}</td>
-        <td class="p-4 hidden v-view-${id}"><span class="px-2.5 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(cat)}</span></td>
-        <td class="p-4 v-view-${id}"><span class="px-2.5 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(topic)}</span></td>
+        <td class="p-4 hidden v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(cat)}</span></td>
+        <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(topic)}</span></td>
         <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(item.level) || '-'}</span></td>
         <td class="p-4 text-slate-650 v-view-${id}">${escapeHTML(item.meaning) || ''}</td>
-        <td class="p-4 v-view-${id}"><span class="px-2.5 py-0.5 rounded-md text-xs border ${statusBadgeStyle}">${escapeHTML(statusStr)}</span></td>
+        <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${statusBadgeStyle}">${escapeHTML(statusStr)}</span></td>
         <td class="p-4 font-semibold text-xs text-slate-500 v-view-${id}">${nextReviewView}</td>
         
         <td class="p-4 pl-6 hidden v-edit-${id}"><input type="text" id="v-edit-content-${id}" class="edit-input font-bold" value="${escapeHTML(item.content)}"></td>

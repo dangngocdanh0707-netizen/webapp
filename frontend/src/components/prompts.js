@@ -54,7 +54,7 @@ export function buildPromptTable() {
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="prompt-row-${id}" class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-slate-800 prompt-view-${id}">${escapeHTML(titleText) || '-'}</td>
-        <td class="p-4 prompt-view-${id}"><span class="px-2.5 py-1 rounded-md text-xs border ${badgeStyle}">${escapeHTML(catText) || '-'}</span></td>
+        <td class="p-4 prompt-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${badgeStyle}">${escapeHTML(catText) || '-'}</span></td>
         <td class="p-4 text-slate-650 prompt-view-${id}">${escapeHTML(contentText)}</td>
         
         <td class="p-4 pl-6 hidden prompt-edit-${id}"><input type="text" id="prompt-edit-title-${id}" class="edit-input font-bold" value="${escapeHTML(titleText)}"></td>

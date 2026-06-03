@@ -111,8 +111,6 @@ export function buildMapGrid() {
               <h4 class="font-bold text-slate-800 text-sm truncate pr-2">${escapeHTML(placeName)}</h4>
               <p class="text-[10px] text-slate-400 font-semibold truncate flex items-center gap-1.5 mt-0.5">
                 <i class="fa-solid fa-location-dot text-[8px] text-slate-350"></i> 
-                <span>${escapeHTML(city)}</span> 
-                <span class="text-slate-250">•</span> 
                 <span class="text-slate-450">${escapeHTML(address)}</span>
               </p>
             </div>
