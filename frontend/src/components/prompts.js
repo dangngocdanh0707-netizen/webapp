@@ -53,7 +53,7 @@ export function buildPromptTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="prompt-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-800 prompt-view-${id}">${escapeHTML(titleText) || '-'}</td>
+        <td class="p-4 pl-6 font-semibold text-slate-800 text-sm prompt-view-${id}">${escapeHTML(titleText) || '-'}</td>
         <td class="p-4 prompt-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${badgeStyle}">${escapeHTML(catText) || '-'}</span></td>
         <td class="p-4 text-slate-650 prompt-view-${id}">${escapeHTML(contentText)}</td>
         
@@ -68,8 +68,8 @@ export function buildPromptTable() {
             <button onclick="deletePrompt(${id})" title="Delete" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden prompt-edit-${id} flex justify-center gap-1.5">
-            <button onclick="savePrompt(${id})" class="text-emerald-600 hover:text-emerald-700 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
-            <button onclick="togglePromptEdit(${id}, false)" class="text-slate-400 hover:text-slate-600 text-xs px-1 py-1 cursor-pointer transition">Cancel</button>
+            <button onclick="savePrompt(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+            <button onclick="togglePromptEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
           </div>
         </td>
       </tr>

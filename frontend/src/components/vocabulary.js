@@ -82,7 +82,7 @@ export function buildVocabTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="vocab-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-800 v-view-${id}">${escapeHTML(item.content) || ''}</td>
+        <td class="p-4 pl-6 font-semibold text-slate-800 text-sm v-view-${id}">${escapeHTML(item.content) || ''}</td>
         <td class="p-4 hidden v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(cat)}</span></td>
         <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(topic)}</span></td>
         <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(item.level) || '-'}</span></td>
@@ -103,8 +103,8 @@ export function buildVocabTable() {
             <button onclick="deleteVocab(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Delete"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden v-edit-${id} flex justify-center gap-1.5">
-            <button onclick="saveVocab(${id})" class="text-emerald-600 hover:text-emerald-700 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
-            <button onclick="toggleVocabEdit(${id}, false)" class="text-slate-400 hover:text-slate-600 text-xs px-1 py-1 cursor-pointer transition">Cancel</button>
+            <button onclick="saveVocab(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+            <button onclick="toggleVocabEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
           </div>
         </td>
       </tr>

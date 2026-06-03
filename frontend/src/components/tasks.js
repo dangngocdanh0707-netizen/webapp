@@ -54,7 +54,7 @@ export function buildTaskTable() {
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="task-row-${id}" class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500 task-view-${id}">${formatDateView(dateStr)}</td>
-        <td class="p-4 font-semibold text-slate-800 task-view-${id} ${isDone ? 'text-slate-400 font-medium' : ''}">${escapeHTML(taskText)}</td>
+        <td class="p-4 font-semibold text-slate-800 text-sm task-view-${id} ${isDone ? 'text-slate-400 font-medium' : ''}">${escapeHTML(taskText)}</td>
         <td class="p-4 pl-12 text-left">
           <label class="inline-flex items-center gap-3 cursor-pointer select-none">
             <input type="checkbox" id="task-chk-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="toggleTaskStatusDirectly(${id}, this)">
@@ -71,8 +71,8 @@ export function buildTaskTable() {
             <button onclick="deleteTask(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden task-edit-${id} flex justify-center gap-1.5">
-            <button onclick="saveTask(${id})" class="text-emerald-600 hover:text-emerald-700 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
-            <button onclick="toggleTaskEdit(${id}, false)" class="text-slate-400 hover:text-slate-600 text-xs px-1 py-1 cursor-pointer transition">Cancel</button>
+            <button onclick="saveTask(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+            <button onclick="toggleTaskEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
           </div>
         </td>
       </tr>

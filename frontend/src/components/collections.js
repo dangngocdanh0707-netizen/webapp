@@ -82,8 +82,8 @@ export function buildCollectionsGrid() {
       const formattedCategory = category ? (category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()) : "";
 
       tableBody.insertAdjacentHTML('beforeend', `
-        <tr class="hover:bg-slate-50/30 transition group">
-          <td class="p-4 pl-6 font-bold text-slate-800 text-sm">
+        <tr class="hover:bg-slate-900/5 transition group">
+          <td class="p-4 pl-6 font-semibold text-slate-800 text-sm">
             ${escapeHTML(name)}
           </td>
           <td class="p-4">

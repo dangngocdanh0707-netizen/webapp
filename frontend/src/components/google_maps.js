@@ -83,8 +83,8 @@ export function buildMapGrid() {
       const styleClass = "bg-slate-50 text-slate-650 border-slate-200 font-semibold";
  
       tableBody.insertAdjacentHTML('beforeend', `
-        <tr class="hover:bg-slate-50/30 transition group">
-          <td class="p-4 pl-6 font-bold text-slate-800 text-sm">
+        <tr class="hover:bg-slate-900/5 transition group">
+          <td class="p-4 pl-6 font-semibold text-slate-800 text-sm">
             ${escapeHTML(placeName)}
           </td>
           <td class="p-4">

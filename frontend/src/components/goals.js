@@ -27,7 +27,7 @@ export function buildGoalTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="goal-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-800 goal-view-${id}">${escapeHTML(item.goal_name) || '-'}</td>
+        <td class="p-4 pl-6 font-semibold text-slate-800 text-sm goal-view-${id}">${escapeHTML(item.goal_name) || '-'}</td>
         <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${formatDateView(item.start_date)}</td>
         <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${formatDateView(item.end_date)}</td>
         <td class="p-4 goal-view-${id}">
@@ -64,8 +64,8 @@ export function buildGoalTable() {
             <button onclick="deleteGoal(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden goal-edit-${id} flex justify-center gap-1.5">
-            <button onclick="saveGoal(${id})" class="text-emerald-600 hover:text-emerald-700 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
-            <button onclick="toggleGoalEdit(${id}, false)" class="text-slate-400 hover:text-slate-600 text-xs px-1 py-1 cursor-pointer transition">Cancel</button>
+            <button onclick="saveGoal(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+            <button onclick="toggleGoalEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
           </div>
         </td>
       </tr>
