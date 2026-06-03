@@ -6,9 +6,7 @@ import {
   getCredentials, 
   saveCredentials, 
   isGoogleConnected, 
-  isGoogleSheetsActive,
-  initLocalDatabase, 
-  getLocalDashboard 
+  isGoogleSheetsActive
 } from './services/api.js';
 
 import { showToast } from './services/toast.js';
@@ -59,7 +57,6 @@ async function initApp() {
     localStorage.removeItem("TOAST_PENDING");
   }
 
-  initLocalDatabase();
   initSortableSidebar();
   initResizeSidebar();
 
@@ -219,8 +216,8 @@ function loadDataFromServer() {
           <h3 class="font-bold text-slate-800 text-base mb-1">${needsSetup ? 'Chưa cấu hình Google Sheets API' : 'Đồng Bộ Lâu Hơn Dự Kiến...'}</h3>
           <p class="text-xs text-amber-800 font-medium mb-5">
             ${needsSetup 
-              ? 'Ứng dụng đang chạy hoàn toàn Offline bằng bộ nhớ Cục bộ của trình duyệt. Bạn có thể nhấn Cài đặt để đồng bộ hai chiều lên đám mây Google Sheets.' 
-              : 'Hệ thống đang đồng bộ lâu hơn bình thường hoặc token xác thực hết hạn. Bạn có thể chạy bản Offline hoặc thử tải lại trang.'}
+              ? 'Ứng dụng cần cấu hình Google Sheets API để hoạt động. Bạn hãy nhấn Thiết lập Credentials để bắt đầu.' 
+              : 'Hệ thống đang đồng bộ lâu hơn bình thường hoặc token xác thực hết hạn. Bạn có thể kiểm tra lại kết nối mạng hoặc thử tải lại trang.'}
           </p>
           
           <div class="flex flex-wrap gap-3 justify-center">
@@ -228,7 +225,6 @@ function loadDataFromServer() {
               ? `<button onclick="openSettingsModal()" class="bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer transition shadow-sm"><i class="fa-solid fa-sliders mr-1"></i> Thiết lập Credentials</button>`
               : `<button onclick="location.reload()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer transition shadow-sm"><i class="fa-solid fa-arrows-rotate mr-1"></i> Thử lại (Retry)</button>`
             }
-            <button onclick="forceLoadMockData()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer transition shadow-sm"><i class="fa-solid fa-bolt mr-1"></i> Tiếp tục Offline</button>
           </div>
         </div>
       `;
@@ -266,7 +262,6 @@ function handleScriptError(err) {
         </div>
         <div class="flex gap-3 justify-center">
           <button onclick="location.reload()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-5 py-3 rounded-xl cursor-pointer transition shadow-md"><i class="fa-solid fa-arrows-rotate mr-1"></i> Tải lại trang (Retry)</button>
-          <button onclick="forceLoadMockData()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl cursor-pointer transition shadow-md"><i class="fa-solid fa-bolt mr-1"></i> Chạy Cục bộ/Offline</button>
         </div>
       </div>
     `;
@@ -302,11 +297,6 @@ function renderDashboard(data) {
 }
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
-
-window.forceLoadMockData = function() {
-  if (serverSyncTimeout) clearTimeout(serverSyncTimeout);
-  renderDashboard(getLocalDashboard());
-};
 
 window.switchTab = function(tabId, btn) {
   // Reset scroll position to top of the page so that tab headers are fully visible

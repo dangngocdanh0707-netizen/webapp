@@ -106,7 +106,7 @@ export function buildCollectionsGrid() {
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="bg-rose-50/10">
           <td colspan="5" class="p-4 pl-6 text-xs text-rose-800 font-medium">
-            ⚠️ Lỗi dữ liệu dòng #${item.rowNumber || '?'}: ${rowError.message}
+            ⚠️ Lỗi dữ liệu dòng #${item.rowNumber || '?'}: ${escapeHTML(rowError.message)}
           </td>
         </tr>
       `);

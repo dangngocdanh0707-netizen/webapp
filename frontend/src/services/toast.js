@@ -47,12 +47,13 @@ export function showToast(message, type = 'info') {
       <i class="${iconClass} text-lg"></i>
     </div>
     <div class="flex-grow">
-      <p class="text-xs font-semibold text-slate-800 leading-relaxed">${message}</p>
+      <p class="text-xs font-semibold text-slate-800 leading-relaxed"></p>
     </div>
-    <button class="flex-shrink-0 ml-1 text-slate-400 hover:text-slate-600 transition cursor-pointer self-start" aria-label="Close">
+    <button class="flex-shrink-0 ml-1 text-slate-400 hover:text-slate-650 transition cursor-pointer self-start" aria-label="Close">
       <i class="fa-solid fa-xmark text-xs"></i>
     </button>
   `;
+  toast.querySelector('p').innerText = message;
 
   // Thêm vào container
   container.appendChild(toast);

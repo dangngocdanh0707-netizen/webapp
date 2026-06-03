@@ -31,7 +31,7 @@ export function initLinksModule(data, onSync) {
     const prevSelected = linkCatSelect.value;
     linkCatSelect.innerHTML = '<option value="All">All Categories</option>';
     linkCategories.forEach(cat => {
-      linkCatSelect.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`);
+      linkCatSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`);
     });
     if (Array.from(linkCategories).includes(prevSelected)) {
       linkCatSelect.value = prevSelected;

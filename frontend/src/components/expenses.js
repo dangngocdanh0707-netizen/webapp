@@ -109,7 +109,7 @@ export function buildTable(filterValue) {
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="row-${id}" class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500 view-mode-${id}">${formatDateView(item.date)}</td>
-        <td class="p-4 view-mode-${id}"><span class="px-2.5 py-1 rounded-md text-xs border ${badgeStyle}">${cat}</span></td>
+        <td class="p-4 view-mode-${id}"><span class="px-2.5 py-1 rounded-md text-xs border ${badgeStyle}">${escapeHTML(cat)}</span></td>
         <td class="p-4 text-right font-bold text-slate-900 view-mode-${id}">${amount.toLocaleString('vi-VN')}đ</td>
         <td class="p-4 text-slate-650 view-mode-${id}">${escapeHTML(item.note) || '-'}</td>
         

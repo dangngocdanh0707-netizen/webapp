@@ -82,11 +82,6 @@ export function buildHabitTable(filterValue) {
 
   if (allHabitData.length === 0) return;
 
-  const filterTextEl = document.getElementById('currentHabitFilterText');
-  if (filterTextEl) {
-    filterTextEl.innerText = filterValue === "All" ? "Showing: All Recorded Days" : `Filtered Date: ${formatDateView(filterValue)}`;
-  }
-
   let displayHabitData = [...allHabitData];
   displayHabitData.sort((a, b) => {
     let tsA = parseDateToTimestamp(a.date);

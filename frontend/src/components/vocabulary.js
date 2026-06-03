@@ -41,7 +41,7 @@ function populateVocabFilters(categories, topicCounts) {
   if (catSelect) {
     catSelect.innerHTML = '<option value="All">All Categories</option>';
     categories.forEach(cat => {
-      catSelect.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`);
+      catSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`);
     });
   }
   
@@ -50,7 +50,7 @@ function populateVocabFilters(categories, topicCounts) {
     let sortedTopics = Object.entries(topicCounts).sort((a, b) => b[1] - a[1]);
     topicSelect.innerHTML = '<option value="All">All Topics</option>';
     sortedTopics.forEach(item => {
-      topicSelect.insertAdjacentHTML('beforeend', `<option value="${item[0]}">${item[0]}</option>`);
+      topicSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(item[0])}">${escapeHTML(item[0])}</option>`);
     });
   }
 }
@@ -65,15 +65,6 @@ export function buildVocabTable() {
   
   let selectedCat = catSelect ? catSelect.value : "All";
   let selectedTopic = topicSelect ? topicSelect.value : "All";
-  
-  let filterText = "Showing: ";
-  if (selectedCat === "All" && selectedTopic === "All") filterText += "All System Data";
-  else if (selectedCat !== "All" && selectedTopic === "All") filterText += `Category [${selectedCat}]`;
-  else if (selectedCat === "All" && selectedTopic !== "All") filterText += `Topic [${selectedTopic}]`;
-  else filterText += `Category [${selectedCat}] + Topic [${selectedTopic}]`;
-  
-  const filterTextEl = document.getElementById('currentVocabFilterText');
-  if (filterTextEl) filterTextEl.innerText = filterText;
 
   allVocabData.forEach(item => {
     let cat = item.category ? item.category.toString().trim() : "-";

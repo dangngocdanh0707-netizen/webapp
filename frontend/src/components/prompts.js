@@ -24,7 +24,7 @@ export function initPromptsModule(data, onSync) {
   if (promptCatSelect) {
     promptCatSelect.innerHTML = '<option value="All">All Categories</option>';
     promptCategories.forEach(cat => {
-      promptCatSelect.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`);
+      promptCatSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`);
     });
   }
   

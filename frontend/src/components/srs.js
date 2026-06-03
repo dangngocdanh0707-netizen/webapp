@@ -52,14 +52,11 @@ export function initSrsModule(vocabData, onSync) {
   if (masterEl) masterEl.innerText = countMastered;
   
   const headlineEl = document.getElementById('practice-headline');
-  const sublineEl = document.getElementById('practice-subline');
   
   if (reviewQueue.length > 0) {
     if (headlineEl) headlineEl.innerText = `You have ${reviewQueue.length} items due for today!`;
-    if (sublineEl) sublineEl.innerText = "Listen to the audio, type the full answer, and trigger Spaced Repetition.";
   } else {
     if (headlineEl) headlineEl.innerText = "🎉 All caught up!";
-    if (sublineEl) sublineEl.innerText = "Excellent. You have no pending card reviews scheduled for today.";
   }
 }
 
@@ -136,16 +133,8 @@ window.triggerRandomVocab = function() {
   const wordContent = currentPracticeWord.content || 'Untitled';
   
   const wordDisplay = document.getElementById('practice-word-display');
-  const badgeTopic = document.getElementById('practice-badge-topic');
-  const badgeLevel = document.getElementById('practice-badge-level');
-  const badgeStatus = document.getElementById('practice-badge-status');
   const meaningDisplay = document.getElementById('practice-meaning-display');
   
-  if (badgeTopic) badgeTopic.innerText = currentPracticeWord.topic ? currentPracticeWord.topic.toString().trim().toUpperCase() : 'GENERAL';
-  if (badgeLevel) badgeLevel.innerText = currentPracticeWord.level ? currentPracticeWord.level.toString().trim() : 'N/A';
-  
-  let curStatus = currentPracticeWord.status ? currentPracticeWord.status.toString().trim() : "New";
-  if (badgeStatus) badgeStatus.innerText = curStatus.toUpperCase();
   if (meaningDisplay) meaningDisplay.innerText = currentPracticeWord.meaning || 'No translation attached.';
   
   // Hide all mode containers first

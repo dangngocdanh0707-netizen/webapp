@@ -97,7 +97,10 @@ export function buildMapGrid() {
       const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(placeName + ' ' + city)}`;
 
       gridContainer.insertAdjacentHTML('beforeend', `
-        <div id="map-card-container-${id}" onclick="focusMapOnLocation('${escapeHTML(placeName)}', '${escapeHTML(city)}')" 
+        <div id="map-card-container-${id}" 
+          data-place="${escapeHTML(placeName)}" 
+          data-city="${escapeHTML(city)}" 
+          onclick="focusMapOnLocation(this.dataset.place, this.dataset.city)" 
           class="glass-card flex items-center justify-between p-4 cursor-pointer hover:border-blue-300 hover:shadow-xs transition duration-200 group">
           
           <div class="flex items-center gap-3.5 min-w-0">
@@ -114,7 +117,7 @@ export function buildMapGrid() {
               </p>
             </div>
           </div>
- 
+  
           <div class="flex items-center gap-4 shrink-0">
             <div class="flex items-center gap-2" onclick="event.stopPropagation()">
               <a href="${searchUrl}" target="_blank" class="border border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-500 hover:text-blue-600 font-bold text-[10px] px-3.5 py-2.5 rounded-xl transition shadow-3xs flex items-center gap-1.5 no-underline">
@@ -134,7 +137,7 @@ export function buildMapGrid() {
       gridContainer.insertAdjacentHTML('beforeend', `
         <div class="glass-card p-3 border border-rose-200 bg-rose-50/10 text-rose-800 text-xs flex flex-col justify-between min-h-[70px] animate-in fade-in duration-200">
           <p class="font-bold flex items-center gap-1.5 text-rose-750"><i class="fa-solid fa-triangle-exclamation"></i> Lỗi dữ liệu dòng #${item.rowNumber || '?'}</p>
-          <p class="font-mono text-[9px] mt-1 text-slate-500">${cardError.message}</p>
+          <p class="font-mono text-[9px] mt-1 text-slate-500">${escapeHTML(cardError.message)}</p>
         </div>
       `);
     }
