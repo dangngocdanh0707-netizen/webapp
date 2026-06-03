@@ -370,8 +370,8 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Content', 'Category']] },
       { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
       { range: `${mappings['task'] || 'tasks'}!A1:C1`, values: [['Date', 'Task', 'Status']] },
-      { range: `${mappings['google_map'] || 'google_maps'}!A1:E1`, values: [['place', 'city', 'category', 'address', 'check']] },
-      { range: `${mappings['collections'] || 'collections'}!A1:D1`, values: [['item', 'brand', 'style', 'category']] }
+      { range: `${mappings['google_map'] || 'google_maps'}!A1:E1`, values: [['place', 'city', 'category', 'address', 'status']] },
+      { range: `${mappings['collections'] || 'collections'}!A1:E1`, values: [['item', 'brand', 'style', 'category', 'status']] }
     ].filter(h => {
       const rangeSheetName = h.range.split('!')[0];
       return missingTabs.some(target => (mappings[target] || target) === rangeSheetName);
@@ -441,7 +441,7 @@ export function callServer(methodName, args) {
             `${goalTab}!A2:E`,
             `${taskTab}!A2:C`,
             `${mappings['google_map']}!A2:E`,
-            `${mappings['collections'] || 'collections'}!A2:D`
+            `${mappings['collections'] || 'collections'}!A2:E`
           ],
           valueRenderOption: 'UNFORMATTED_VALUE'
         });
@@ -513,7 +513,7 @@ export function callServer(methodName, args) {
             city: row[1] || "",
             category: row[2] || "",
             address: row[3] || "",
-            check: row[4] === "TRUE" || row[4] === true || row[4] === "true" || row[4] === "v" || row[4] === "checked"
+            status: row[4] === "TRUE" || row[4] === true || row[4] === "true" || row[4] === "v" || row[4] === "checked"
           })).filter(item => item.place),
 
           collections: getRows(valueRanges[8]).map((row, idx) => ({
@@ -521,7 +521,8 @@ export function callServer(methodName, args) {
             item: row[0] || "",
             brand: row[1] || "",
             style: row[2] || "",
-            category: row[3] || ""
+            category: row[3] || "",
+            status: row[4] === "TRUE" || row[4] === true || row[4] === "true" || row[4] === "v" || row[4] === "checked"
           })).filter(item => item.item)
         });
         return;
@@ -737,10 +738,22 @@ export function callServer(methodName, args) {
         const colTab = mappings['collections'] || 'collections';
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${colTab}!A:D`,
+          range: `${colTab}!A:E`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[item, brand, style, category]] }
+          resource: { values: [[item, brand, style, category, "FALSE"]] }
+        });
+        resolve("Thành công");
+        return;
+      }
+      if (methodName === "updateCollectionStatusRow") {
+        const [rowNumber, isChecked] = args;
+        const colTab = mappings['collections'] || 'collections';
+        await gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${colTab}!E${rowNumber}`,
+          valueInputOption: 'USER_ENTERED',
+          resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
         });
         resolve("Thành công");
         return;

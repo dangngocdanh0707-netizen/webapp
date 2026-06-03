@@ -60,7 +60,7 @@ export function buildMapGrid() {
       const city = String(item.city || "").trim();
       const category = String(item.category || "").trim();
       const address = String(item.address || "").trim();
-      const isExplored = item.check === true;
+      const isExplored = item.status === true;
  
       // Apply Filter constraints
       if (cityVal !== "All" && city !== cityVal) return;
@@ -205,7 +205,7 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
       checkboxEl.disabled = false;
       if (res === "Thành công") {
         let idx = allMapData.findIndex(item => item.rowNumber == rowNumber);
-        if (idx !== -1) allMapData[idx].check = isChecked;
+        if (idx !== -1) allMapData[idx].status = isChecked;
  
         showToast(isChecked ? "Đã check-in chinh phục địa điểm này! 🎉" : "Đã hủy thám hiểm địa điểm", "success");
         buildMapGrid();

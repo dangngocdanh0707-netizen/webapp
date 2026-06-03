@@ -71,6 +71,7 @@ export function buildCollectionsGrid() {
       const brand = String(item.brand || "").trim();
       const style = String(item.style || "").trim();
       const category = String(item.category || "").trim();
+      const isDone = item.status === true;
 
       // Uniform minimalist gray pill badge styling matching expenses category badge
       const styleClass = "bg-slate-50 text-slate-650 border-slate-200 font-semibold";
@@ -101,6 +102,12 @@ export function buildCollectionsGrid() {
               ${escapeHTML(formattedCategory)}
             </span>
           </td>
+          <td class="p-4 pl-12 text-left">
+            <label class="inline-flex items-center gap-3 cursor-pointer select-none">
+              <input type="checkbox" id="col-check-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="toggleCollectionStatusDirectly(${id}, this)">
+              <span id="col-chk-lbl-${id}" class="text-xs font-semibold tracking-wide ${isDone ? 'text-emerald-600' : 'text-slate-400'}">${isDone ? 'Completed' : 'Pending'}</span>
+            </label>
+          </td>
           <td class="p-4 pr-6 text-center">
             <div class="flex items-center justify-center gap-2">
               <a href="${searchUrl}" target="_blank" class="border border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-500 hover:text-blue-600 font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-3xs flex items-center justify-center gap-1 cursor-pointer no-underline">
@@ -117,7 +124,7 @@ export function buildCollectionsGrid() {
       console.error("Asset Ledger Render Error:", item, rowError);
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="bg-rose-50/10">
-          <td colspan="5" class="p-4 pl-6 text-xs text-rose-800 font-medium">
+          <td colspan="6" class="p-4 pl-6 text-xs text-rose-800 font-medium">
             ⚠️ Lỗi dữ liệu dòng #${item.rowNumber || '?'}: ${escapeHTML(rowError.message)}
           </td>
         </tr>
@@ -129,7 +136,7 @@ export function buildCollectionsGrid() {
   if (filteredData.length === 0) {
     tableBody.innerHTML = `
       <tr>
-        <td colspan="5" class="p-12 text-center text-slate-400 italic">
+        <td colspan="6" class="p-12 text-center text-slate-400 italic">
           No items found matching the active filters. Feel free to add a new asset!
         </td>
       </tr>
@@ -204,5 +211,44 @@ window.deleteCollectionItem = function(id) {
     .catch(err => {
       showToast("Connection error: " + err.message, "error");
       if (loading) loading.style.display = 'none';
+    });
+};
+
+window.toggleCollectionStatusDirectly = function(rowNumber, checkboxEl) {
+  const isChecked = checkboxEl.checked;
+  const labelEl = document.getElementById(`col-chk-lbl-${rowNumber}`);
+  
+  checkboxEl.disabled = true;
+  if (labelEl) {
+    labelEl.innerText = isChecked ? "Saving..." : "Reverting...";
+    labelEl.className = "text-xs font-semibold text-amber-500 animate-pulse";
+  }
+ 
+  callServer("updateCollectionStatusRow", [rowNumber, isChecked])
+    .then(res => {
+      checkboxEl.disabled = false;
+      if (res === "Thành công") {
+        let idx = allCollectionData.findIndex(item => item.rowNumber == rowNumber);
+        if (idx !== -1) allCollectionData[idx].status = isChecked;
+ 
+        showToast(isChecked ? "Asset status updated successfully! 🎉" : "Asset status reverted successfully", "success");
+        buildCollectionsGrid();
+      } else {
+        showToast("Lỗi đồng bộ: " + res, "error");
+        checkboxEl.checked = !isChecked;
+        if (labelEl) {
+          labelEl.innerText = !isChecked ? "Completed" : "Pending";
+          labelEl.className = !isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
+        }
+      }
+    })
+    .catch(err => {
+      checkboxEl.disabled = false;
+      checkboxEl.checked = !isChecked;
+      showToast("Lỗi đồng bộ: " + err.message, "error");
+      if (labelEl) {
+        labelEl.innerText = !isChecked ? "Completed" : "Pending";
+        labelEl.className = !isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
+      }
     });
 };
