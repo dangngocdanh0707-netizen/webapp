@@ -230,10 +230,6 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
 };
  
 window.deleteMapPlace = function(id) {
-  if (!confirm("Bạn có chắc chắn muốn xóa địa điểm này khỏi bản đồ? 🗑️")) {
-    return;
-  }
- 
   const loading = document.getElementById('loading');
   if (loading) loading.style.display = 'flex';
  

@@ -188,10 +188,6 @@ window.saveNewCollection = function() {
 };
 
 window.deleteCollectionItem = function(id) {
-  if (!confirm("Are you sure you want to delete this asset from your collection? 🗑️")) {
-    return;
-  }
-
   const loading = document.getElementById('loading');
   if (loading) loading.style.display = 'flex';
 
