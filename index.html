@@ -21,8 +21,8 @@
   <!-- Thư viện SDK Google Sheets & Auth -->
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script type="module" crossorigin src="/webapp_project/assets/index-qrma4415.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-DTR6x-T0.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-ijwmKikb.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-QBhab5wS.css">
 </head>
 
 <body>
@@ -874,43 +874,6 @@
           <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Google Maps</h1>
         </div>
 
-        <!-- Filter bar -->
-        <div class="glass-card p-6 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
-          <div class="flex flex-wrap items-center gap-2.5 w-full justify-start">
-            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-60">
-              <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
-              <input type="text" id="mapSearchInput" onkeyup="filterMapGrid()" placeholder=""
-                class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
-            </div>
-            
-            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
-              <i class="fa-solid fa-city text-slate-400 text-xs pl-1"></i>
-              <select id="mapCityFilter" onchange="filterMapGrid()"
-                class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
-                <option value="All">All Cities</option>
-              </select>
-            </div>
-
-            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
-              <i class="fa-solid fa-filter text-slate-400 text-xs pl-1"></i>
-              <select id="mapCategoryFilter" onchange="filterMapGrid()"
-                class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
-                <option value="All">All Categories</option>
-              </select>
-            </div>
-
-            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs sm:ml-auto">
-              <i class="fa-solid fa-circle-check text-slate-400 text-xs pl-1"></i>
-              <select id="mapCheckFilter" onchange="filterMapGrid()"
-                class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
-                <option value="All">All Statuses</option>
-                <option value="Unexplored">Bucket List 📍</option>
-                <option value="Explored">Explored 🏆</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
         <!-- Add Location Form Panel (Inline, styled like Prompts add form) -->
         <div class="glass-card p-6 mb-8">
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
@@ -944,6 +907,44 @@
 
         <!-- Places Explorer Table Container (below map, matching collections ledger format) -->
         <div class="glass-card overflow-hidden border border-slate-100 shadow-3xs mb-8 bg-white/80 backdrop-blur-md">
+          <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">Locations Ledger</h3>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
+              <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-60">
+                <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
+                <input type="text" id="mapSearchInput" onkeyup="filterMapGrid()" placeholder=""
+                  class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
+              </div>
+              
+              <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+                <i class="fa-solid fa-city text-slate-400 text-xs pl-1"></i>
+                <select id="mapCityFilter" onchange="filterMapGrid()"
+                  class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+                  <option value="All">All Cities</option>
+                </select>
+              </div>
+
+              <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+                <i class="fa-solid fa-filter text-slate-400 text-xs pl-1"></i>
+                <select id="mapCategoryFilter" onchange="filterMapGrid()"
+                  class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+                  <option value="All">All Categories</option>
+                </select>
+              </div>
+
+              <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+                <i class="fa-solid fa-circle-check text-slate-400 text-xs pl-1"></i>
+                <select id="mapCheckFilter" onchange="filterMapGrid()"
+                  class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+                  <option value="All">All Statuses</option>
+                  <option value="Unexplored">Bucket List 📍</option>
+                  <option value="Explored">Explored 🏆</option>
+                </select>
+              </div>
+            </div>
+          </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse" id="table-map">
               <thead>
@@ -979,24 +980,24 @@
         <!-- Add Collection Item Form Panel (Inline, styled like Prompts add form) -->
         <div id="col-add-panel" class="glass-card p-6 mb-8 transition-all duration-300">
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-circle-plus text-blue-500 animate-pulse"></i> Add Asset to Portfolio
+            <i class="fa-solid fa-circle-plus text-blue-500"></i> Add Asset to Portfolio
           </h4>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Item / Model Name</label>
-              <input type="text" id="ins-col-item" placeholder="e.g. Royal Oak, A4..." class="form-input font-semibold">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Item Name</label>
+              <input type="text" id="ins-col-item" placeholder="" class="form-input font-semibold">
             </div>
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Brand / Thương hiệu</label>
-              <input type="text" id="ins-col-brand" placeholder="e.g. AP, Audi, BMW..." class="form-input">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Brand</label>
+              <input type="text" id="ins-col-brand" placeholder="" class="form-input">
             </div>
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Style / Kiểu dáng</label>
-              <input type="text" id="ins-col-style" placeholder="e.g. Luxury, Sport, Sedan..." class="form-input">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Style</label>
+              <input type="text" id="ins-col-style" placeholder="" class="form-input">
             </div>
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Category / Phân loại</label>
-              <input type="text" id="ins-col-category" placeholder="e.g. Watch, Car..." class="form-input">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Category</label>
+              <input type="text" id="ins-col-category" placeholder="" class="form-input">
             </div>
           </div>
           <div class="flex justify-end mt-4">
@@ -1007,35 +1008,36 @@
           </div>
         </div>
 
-        <!-- Filter bar -->
-        <div class="glass-card p-6 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
-          <div class="flex flex-wrap items-center gap-2.5 w-full justify-start">
-            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-80">
-              <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
-              <input type="text" id="collectionSearchInput" onkeyup="filterCollectionGrid()" placeholder=""
-                class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
-            </div>
-            
-            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
-              <i class="fa-solid fa-copyright text-slate-400 text-xs pl-1"></i>
-              <select id="collectionBrandFilter" onchange="filterCollectionGrid()"
-                class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
-                <option value="All">All Brands</option>
-              </select>
-            </div>
-
-            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
-              <i class="fa-solid fa-tags text-slate-400 text-xs pl-1"></i>
-              <select id="collectionCategoryFilter" onchange="filterCollectionGrid()"
-                class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
-                <option value="All">All Categories</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
         <!-- Asset Ledger Table Container -->
         <div class="glass-card overflow-hidden border border-slate-100 shadow-3xs mb-8 bg-white/80 backdrop-blur-md">
+          <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">Asset Ledger</h3>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
+              <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-64">
+                <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
+                <input type="text" id="collectionSearchInput" onkeyup="filterCollectionGrid()" placeholder=""
+                  class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
+              </div>
+              
+              <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+                <i class="fa-solid fa-copyright text-slate-400 text-xs pl-1"></i>
+                <select id="collectionBrandFilter" onchange="filterCollectionGrid()"
+                  class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+                  <option value="All">All Brands</option>
+                </select>
+              </div>
+
+              <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+                <i class="fa-solid fa-tags text-slate-400 text-xs pl-1"></i>
+                <select id="collectionCategoryFilter" onchange="filterCollectionGrid()"
+                  class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+                  <option value="All">All Categories</option>
+                </select>
+              </div>
+            </div>
+          </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
