@@ -72,12 +72,13 @@ export function buildCollectionsGrid() {
       const style = String(item.style || "").trim();
       const category = String(item.category || "").trim();
 
-      // Uniform minimalist gray pill badge for all Styles
-      const styleClass = "bg-slate-50 text-slate-500 border-slate-200 font-bold";
+      // Uniform minimalist gray pill badge styling matching expenses category badge
+      const styleClass = "bg-slate-50 text-slate-650 border-slate-200 font-semibold";
 
       const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(brand + ' ' + name)}`;
 
-      // Capitalize first letter of category and lowercase the rest
+      // Capitalize first letter of style/category and lowercase the rest
+      const formattedStyle = style ? (style.charAt(0).toUpperCase() + style.slice(1).toLowerCase()) : "";
       const formattedCategory = category ? (category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()) : "";
 
       tableBody.insertAdjacentHTML('beforeend', `
@@ -86,17 +87,17 @@ export function buildCollectionsGrid() {
             ${escapeHTML(name)}
           </td>
           <td class="p-4">
-            <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase border tracking-wider ${styleClass}">
+            <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
               ${escapeHTML(brand)}
             </span>
           </td>
           <td class="p-4">
-            <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold uppercase border tracking-wider ${styleClass}">
-              ${escapeHTML(style)}
+            <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
+              ${escapeHTML(formattedStyle)}
             </span>
           </td>
           <td class="p-4">
-            <span class="px-2.5 py-0.5 rounded-lg text-[9px] font-extrabold border tracking-wider ${styleClass}">
+            <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
               ${escapeHTML(formattedCategory)}
             </span>
           </td>
