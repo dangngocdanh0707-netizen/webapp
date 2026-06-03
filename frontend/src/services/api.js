@@ -695,6 +695,28 @@ export function callServer(methodName, args) {
         resolve("Thành công");
         return;
       }
+      if (methodName === "deleteMapRow") {
+        const [rowNumber] = args;
+        const mapTab = mappings['google_map'];
+        const sheetId = await getSheetId(mapTab, spreadsheetId);
+        await gapi.client.sheets.spreadsheets.batchUpdate({
+          spreadsheetId,
+          resource: {
+            requests: [{
+              deleteDimension: {
+                range: {
+                  sheetId,
+                  dimension: 'ROWS',
+                  startIndex: rowNumber - 1,
+                  endIndex: rowNumber
+                }
+              }
+            }]
+          }
+        });
+        resolve("Thành công");
+        return;
+      }
 
       // 10. Nghiệp vụ SƯU TẬP (Collections CRUD)
       if (methodName === "insertCollectionRow") {

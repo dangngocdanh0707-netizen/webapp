@@ -106,8 +106,8 @@ export function buildCollectionsGrid() {
               <a href="${searchUrl}" target="_blank" class="border border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-500 hover:text-blue-600 font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-3xs flex items-center justify-center gap-1 cursor-pointer no-underline">
                 <i class="fa-solid fa-magnifying-glass text-[9px]"></i> <span>Explore</span>
               </a>
-              <button onclick="deleteCollectionItem(${id})" class="border border-rose-200 hover:bg-rose-50 text-rose-600 font-bold text-[10px] px-2 py-1.5 rounded-lg transition cursor-pointer flex items-center justify-center gap-1">
-                <i class="fa-solid fa-trash-can text-[9px]"></i>
+              <button onclick="deleteCollectionItem(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Delete">
+                <i class="fa-solid fa-trash"></i>
               </button>
             </div>
           </td>

@@ -40,9 +40,9 @@ export function initMapModule(data, onSync) {
 }
 
 export function buildMapGrid() {
-  const gridContainer = document.getElementById('map-places-list-container');
-  if (!gridContainer) return;
-  gridContainer.innerHTML = "";
+  const tableBody = document.getElementById('map-places-table-body');
+  if (!tableBody) return;
+  tableBody.innerHTML = "";
  
   // 2. Read Active Filters
   const searchVal = document.getElementById('mapSearchInput') ? document.getElementById('mapSearchInput').value.toLowerCase().trim() : "";
@@ -51,7 +51,7 @@ export function buildMapGrid() {
   const checkVal = document.getElementById('mapCheckFilter') ? document.getElementById('mapCheckFilter').value : "All";
  
   let firstFilteredItem = null;
-
+ 
   // 3. Render Rows (Defensive 5-column mapping)
   allMapData.forEach(item => {
     if (!item || !item.place) return;
@@ -81,68 +81,73 @@ export function buildMapGrid() {
       if (!firstFilteredItem) {
         firstFilteredItem = { placeName, city };
       }
-
-      // Determine dynamic category with appropriate emoji
-      const catLower = category.toLowerCase();
-      let categoryEmoji = "📍";
-      if (catLower.includes("cafe") || catLower.includes("coffee") || catLower.includes("cà phê")) {
-        categoryEmoji = "☕";
-      } else if (catLower.includes("hotel") || catLower.includes("resort") || catLower.includes("staycation") || catLower.includes("homestay") || catLower.includes("khách sạn")) {
-        categoryEmoji = "🏨";
-      } else if (catLower.includes("restaurant") || catLower.includes("nhà hàng") || catLower.includes("quán ăn") || catLower.includes("food") || catLower.includes("ăn uống")) {
-        categoryEmoji = "🍴";
-      }
  
       // Direct Google Search URL generation (matching Explore in Collections page)
       const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(placeName + ' ' + city)}`;
-
-      gridContainer.insertAdjacentHTML('beforeend', `
-        <div id="map-card-container-${id}" 
+ 
+      // Uniform minimalist gray pill badge styling matching expenses category badge
+      const styleClass = "bg-slate-50 text-slate-650 border-slate-200 font-semibold";
+ 
+      tableBody.insertAdjacentHTML('beforeend', `
+        <tr onclick="focusMapOnLocation(this.dataset.place, this.dataset.city)" 
           data-place="${escapeHTML(placeName)}" 
           data-city="${escapeHTML(city)}" 
-          onclick="focusMapOnLocation(this.dataset.place, this.dataset.city)" 
-          class="glass-card flex items-center justify-between p-4 cursor-pointer hover:border-blue-300 hover:shadow-xs transition duration-200 group">
+          class="hover:bg-slate-50/30 transition group cursor-pointer">
           
-          <div class="flex items-center gap-3.5 min-w-0">
-            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100/50 group-hover:bg-white transition text-base shadow-3xs">
-              ${categoryEmoji}
-            </div>
-            <div class="min-w-0">
-              <h4 class="font-bold text-slate-800 text-sm truncate pr-2">${escapeHTML(placeName)}</h4>
-              <p class="text-[10px] text-slate-400 font-semibold truncate flex items-center gap-1.5 mt-0.5">
-                <i class="fa-solid fa-location-dot text-[8px] text-slate-350"></i> 
-                <span class="text-slate-450">${escapeHTML(address)}</span>
-              </p>
-            </div>
-          </div>
-  
-          <div class="flex items-center gap-4 shrink-0">
-            <div class="flex items-center gap-2" onclick="event.stopPropagation()">
-              <a href="${searchUrl}" target="_blank" class="border border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-500 hover:text-blue-600 font-bold text-[10px] px-3.5 py-2.5 rounded-xl transition shadow-3xs flex items-center gap-1.5 no-underline">
-                <i class="fa-solid fa-magnifying-glass"></i> <span>Explore 🔍</span>
+          <td class="p-4 pl-6 font-bold text-slate-800 text-sm">
+            ${escapeHTML(placeName)}
+          </td>
+          <td class="p-4">
+            <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
+              ${escapeHTML(city)}
+            </span>
+          </td>
+          <td class="p-4">
+            <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
+              ${escapeHTML(category)}
+            </span>
+          </td>
+          <td class="p-4 text-xs text-slate-500 max-w-[250px] truncate">
+            ${escapeHTML(address) || '-'}
+          </td>
+          <td class="p-4 text-center" onclick="event.stopPropagation()">
+            <label class="px-2.5 py-1 rounded-lg border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 inline-flex items-center justify-center gap-1.5 cursor-pointer transition select-none shadow-3xs">
+              <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0 scale-90" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
+              <span class="text-[10px] font-bold text-slate-500 map-chk-lbl-${id}">${isExplored ? 'Chinh phục 🎉' : 'Check-in'}</span>
+            </label>
+          </td>
+          <td class="p-4 pr-6 text-center" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-center gap-2">
+              <a href="${searchUrl}" target="_blank" class="border border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-500 hover:text-blue-600 font-bold text-[10px] px-3 py-1.5 rounded-lg transition shadow-3xs flex items-center justify-center gap-1 cursor-pointer no-underline">
+                <i class="fa-solid fa-magnifying-glass text-[9px]"></i> <span>Explore</span>
               </a>
-
-              <label class="px-3.5 py-2 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 flex items-center justify-center gap-1.5 cursor-pointer transition select-none shadow-3xs">
-                <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0 scale-90" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
-                <span class="text-[10px] font-bold text-slate-500 map-chk-lbl-${id}">${isExplored ? 'Chinh phục 🎉' : 'Check-in'}</span>
-              </label>
+              <button onclick="deleteMapPlace(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Delete">
+                <i class="fa-solid fa-trash"></i>
+              </button>
             </div>
-          </div>
-        </div>
+          </td>
+        </tr>
       `);
-    } catch (cardError) {
-      console.error("Card Render Error for item:", item, cardError);
-      gridContainer.insertAdjacentHTML('beforeend', `
-        <div class="glass-card p-3 border border-rose-200 bg-rose-50/10 text-rose-800 text-xs flex flex-col justify-between min-h-[70px] animate-in fade-in duration-200">
-          <p class="font-bold flex items-center gap-1.5 text-rose-750"><i class="fa-solid fa-triangle-exclamation"></i> Lỗi dữ liệu dòng #${item.rowNumber || '?'}</p>
-          <p class="font-mono text-[9px] mt-1 text-slate-500">${escapeHTML(cardError.message)}</p>
-        </div>
+    } catch (rowError) {
+      console.error("Table Row Render Error for item:", item, rowError);
+      tableBody.insertAdjacentHTML('beforeend', `
+        <tr class="bg-rose-50/10">
+          <td colspan="6" class="p-4 pl-6 text-xs text-rose-800 font-medium">
+            ⚠️ Lỗi dữ liệu dòng #${item.rowNumber || '?'}: ${escapeHTML(rowError.message)}
+          </td>
+        </tr>
       `);
     }
   });
  
-  if (gridContainer.children.length === 0) {
-    gridContainer.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400 italic glass-card border-dashed">No adventures match the active filters. Keep exploring!</div>`;
+  if (tableBody.children.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="6" class="p-12 text-center text-slate-400 italic">
+          No adventures match the active filters. Keep exploring!
+        </td>
+      </tr>
+    `;
   } else if (firstFilteredItem) {
     focusMapOnLocation(firstFilteredItem.placeName, firstFilteredItem.city);
   }
@@ -211,5 +216,29 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
         labelEl.innerText = !isChecked ? "Chinh phục 🎉" : "Check-in";
         labelEl.className = `text-[10px] font-bold text-slate-500 map-chk-lbl-${rowNumber}`;
       }
+    });
+};
+
+window.deleteMapPlace = function(id) {
+  if (!confirm("Bạn có chắc chắn muốn xóa địa điểm này khỏi bản đồ? 🗑️")) {
+    return;
+  }
+ 
+  const loading = document.getElementById('loading');
+  if (loading) loading.style.display = 'flex';
+ 
+  callServer("deleteMapRow", [id])
+    .then(res => {
+      if (res === "Thành công") {
+        showToast("Đã xóa địa điểm thành công!", "success");
+        if (onSyncNeeded) onSyncNeeded();
+      } else {
+        showToast("Lỗi xóa: " + res, "error");
+        if (loading) loading.style.display = 'none';
+      }
+    })
+    .catch(err => {
+      showToast("Lỗi kết nối: " + err.message, "error");
+      if (loading) loading.style.display = 'none';
     });
 };
