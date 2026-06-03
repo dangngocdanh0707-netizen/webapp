@@ -100,10 +100,10 @@ export function buildMapGrid() {
           <td class="p-4 text-xs text-slate-500 max-w-[250px] truncate">
             ${escapeHTML(address) || '-'}
           </td>
-          <td class="p-4 text-center">
-            <label class="px-2.5 py-1 rounded-lg border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 inline-flex items-center justify-center gap-1.5 cursor-pointer transition select-none shadow-3xs">
-              <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0 scale-90" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
-              <span class="text-[10px] font-bold text-slate-500 map-chk-lbl-${id}">${isExplored ? 'Chinh phục 🎉' : 'Check-in'}</span>
+          <td class="p-4 pl-12 text-left">
+            <label class="inline-flex items-center gap-3 cursor-pointer select-none">
+              <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
+              <span id="map-chk-lbl-${id}" class="text-xs font-semibold tracking-wide ${isExplored ? 'text-emerald-600' : 'text-slate-400'}">${isExplored ? 'Completed' : 'Pending'}</span>
             </label>
           </td>
           <td class="p-4 pr-6 text-center">
@@ -192,12 +192,12 @@ window.addMapRow = function() {
  
 window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
   const isChecked = checkboxEl.checked;
-  const labelEl = document.querySelector(`.map-chk-lbl-${rowNumber}`);
+  const labelEl = document.getElementById(`map-chk-lbl-${rowNumber}`);
   
   checkboxEl.disabled = true;
   if (labelEl) {
-    labelEl.innerText = "Saving...";
-    labelEl.className = `text-[10px] font-bold text-amber-500 animate-pulse map-chk-lbl-${rowNumber}`;
+    labelEl.innerText = isChecked ? "Saving..." : "Reverting...";
+    labelEl.className = "text-xs font-semibold text-amber-500 animate-pulse";
   }
  
   callServer("updateMapCheckStatusRow", [rowNumber, isChecked])
@@ -213,8 +213,8 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
         showToast("Lỗi đồng bộ: " + res, "error");
         checkboxEl.checked = !isChecked;
         if (labelEl) {
-          labelEl.innerText = !isChecked ? "Chinh phục 🎉" : "Check-in";
-          labelEl.className = `text-[10px] font-bold text-slate-500 map-chk-lbl-${rowNumber}`;
+          labelEl.innerText = !isChecked ? "Completed" : "Pending";
+          labelEl.className = !isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
         }
       }
     })
@@ -223,8 +223,8 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
       checkboxEl.checked = !isChecked;
       showToast("Lỗi đồng bộ: " + err.message, "error");
       if (labelEl) {
-        labelEl.innerText = !isChecked ? "Chinh phục 🎉" : "Check-in";
-        labelEl.className = `text-[10px] font-bold text-slate-500 map-chk-lbl-${rowNumber}`;
+        labelEl.innerText = !isChecked ? "Completed" : "Pending";
+        labelEl.className = !isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
       }
     });
 };
