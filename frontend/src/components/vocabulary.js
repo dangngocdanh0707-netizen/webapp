@@ -78,9 +78,7 @@ export function buildVocabTable() {
     let id = item.rowNumber;
     let defaultBadgeStyle = "bg-slate-50 text-slate-650 border-slate-200 font-semibold";
     
-    let statusBadgeStyle = "bg-blue-50 text-blue-600 border-blue-100 font-bold";
-    if (statusStr === "Learning") statusBadgeStyle = "bg-amber-50 text-amber-600 border-amber-100 font-bold";
-    if (statusStr === "Mastered") statusBadgeStyle = "bg-emerald-50 text-emerald-600 border-emerald-100 font-bold";
+    let statusBadgeStyle = defaultBadgeStyle;
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="vocab-row-${id}" class="hover:bg-slate-900/5 transition">
