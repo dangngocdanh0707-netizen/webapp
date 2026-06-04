@@ -67,11 +67,11 @@ webapp_project/ (personal_webapp/)
 
 ### 2. 🖱️ Cơ chế Ghép từ Word Scramble kéo thả (HTML5 Drag & Drop) mượt mà
 * Tích hợp đồng thời hai chế độ: click chọn nhanh thẻ từ và **kéo thả vật lý** trực tiếp trên Desktop để thay đổi vị trí các thẻ câu vô cùng trực quan và sinh động.
-* **Auto-Check & Ẩn động**: Ngay khi ghép đúng thẻ chữ cuối cùng, hệ thống tự động chấm điểm và hiển thị banner kết quả mà không cần nút bấm thủ công rườm rà. Ô chứa thẻ từ trống bên dưới sẽ tự động được ẩn đi (`hidden`) để giải phóng không gian.
+* **Auto-Check & Đồng bộ hiển thị tối giản**: Ngay khi ghép đúng thẻ chữ cuối cùng hoặc khi xem đáp án (Reveal), hệ thống tự động hoàn thành và quy về chung một kiểu hiển thị tối giản: ẩn hoàn toàn các nền ô chữ (word buttons) rườm rà, chỉ giữ lại văn bản trơn (Plain Text) được căn giữa gọn gàng bên trong một khung viền dày dặn `border-[3px]` sắc nét (màu xanh lá khi đúng, xanh dương khi reveal) trên nền trắng tinh tế. Đồng bộ hóa hoàn hảo với giao diện của chế độ Tự gõ (Typing).
 * **Bảo toàn từ viết tắt**: Thuật toán xử lý chuỗi thông minh, bảo toàn nguyên vẹn dấu nháy đơn (`'`) của các từ viết tắt tiếng Anh (như *That's, don't, I'm*) mà không bị lọc bỏ nhầm.
 
 ### 3. 🎯 Khử hoàn toàn hiện tượng co giãn và giật khung (CLS Elimination)
-* Thiết lập chiều cao tối thiểu cố định (`min-h-[460px] sm:min-h-[480px]`) kết hợp cấu trúc cột Flexbox (`flex flex-col justify-between`).
+* Thiết lập chiều cao tối thiểu cố định (`min-h-[360px] sm:min-h-[380px]`) kết hợp cấu trúc cột Flexbox (`flex flex-col justify-between`).
 * Toàn bộ cụm nút hành động và đánh giá Anki được neo chặt (anchor) ở đáy thẻ học. Các thông tin đáp án xuất hiện chỉ lấp đầy khoảng trống ở giữa, giúp giao diện ôn tập ổn định tuyệt đối trước và sau khi lật đáp án, loại bỏ 100% cảm giác giật khung hình gây khó chịu cho mắt.
 
 ### 4. 🛡️ Bảo mật tối đa chống tấn công chéo XSS & Lộ Key
@@ -84,14 +84,20 @@ webapp_project/ (personal_webapp/)
 
 ### 6. 🗺️ Bản đồ tương tác Google Maps Explorer Split-View Tinh Giản
 * **Giao diện Split-View Cân đối 5:7**: Thiết kế hiện đại giúp cột danh sách địa điểm bên trái gọn gàng, dành trọn không gian cho bản đồ tương tác ở cột bên phải với chiều cao mở rộng **`480px`** cực kỳ sắc nét.
+* **Hộp số liệu thống kê ở đầu thẻ**: Bổ sung bảng hiển thị tổng số địa điểm và số danh mục (Categories) trực quan ngay tại phần tiêu đề giúp theo dõi tiến độ thám hiểm nhanh chóng.
 * **Tối giản hóa và Tải cực nhanh**: Loại bỏ hoàn toàn các thành phần hình ảnh mẫu rườm rà giúp tối ưu hóa không gian hiển thị và nâng cao tốc độ phản hồi.
 * **Đồng bộ hóa 5 Cột Tinh giản**: Dữ liệu chạy hoàn toàn trên 5 cột Sheet gọn nhẹ: `place`, `city`, `category`, `address`, `check` (với Check-in lưu vào cột E).
 * **Nút Explore Google Search thông minh**: Nút "Explore 🔍" tự sinh liên kết Google Search tìm kiếm thông tin địa điểm theo Tên quán + Thành phố, tạo nên tính đồng bộ cao cấp.
 
 ### 7. 💎 Quản lý Tài sản Collections (Asset Portfolio) Tối Giản 3 Cột
 * **Ledger 3 Cột Hiện đại**: Thay thế hoàn toàn card hình ảnh cồng kềnh bằng bảng kê tài sản 3 cột tinh gọn: `Asset Item` (Tên), `Category` (Phân loại), `Valuation` (Định giá VNĐ).
+* **Hộp số liệu thống kê ở đầu thẻ**: Bổ sung bảng hiển thị tổng số tài sản, số thương hiệu và số danh mục (Categories) trực quan ngay tại phần tiêu đề.
 * **Form & Bộ lọc Tối giản**: Tinh giản tối đa form thêm mới tài sản chỉ còn 3 trường nhập liệu và bộ lọc lọc theo Category tự động sinh.
 * **Icon & Explore Liên kết Thông minh**: Tự sinh các badge phân loại gradient màu sắc bắt mắt, tự sinh các Icon biểu trưng sống động theo từ khóa của Category (🚗 Xe, ⌚ Đồng hồ, 🏠 Nhà đất, 💎 Khác) và nút Explore tìm kiếm thông tin nhanh chóng trên Google Search.
+
+### 8. 🎯 Theo dõi Tiến độ Mục tiêu (Goals Tracker) Nâng cấp 2 Cột & Progress Bar
+* **Tách cột Current / Target**: Phân chia chỉ số hiện tại và mục tiêu thành 2 cột riêng biệt (`CURRENT` và `TARGET`) giúp bảng dữ liệu trực quan và dễ đọc hơn.
+* **Thanh tiến độ Progress Bar Gradient Xanh biển**: Cập nhật màu sắc thanh tiến độ sang dải gradient xanh dương hiện đại (`from-blue-600 to-sky-500`) đồng bộ với hệ thống.
 
 ---
 

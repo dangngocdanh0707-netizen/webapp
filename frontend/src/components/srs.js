@@ -442,17 +442,8 @@ window.checkScrambleAnswer = function() {
   if (isCorrect) {
     const outputContainer = document.getElementById('practice-scramble-output');
     if (outputContainer) {
-      outputContainer.classList.remove('border-dashed', 'border-slate-200/80', 'bg-slate-50/50');
-      outputContainer.classList.add('border-solid', 'border-emerald-500', 'bg-emerald-50/60', 'shadow-[0_0_15px_rgba(16,185,129,0.15)]');
-      
-      const buttons = outputContainer.querySelectorAll('button');
-      buttons.forEach(btn => {
-        // Do NOT change styling of the inner buttons (leave them as standard bg-white border-slate-200 text-slate-700)
-        btn.className = "px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-sm shadow-2xs cursor-default";
-        btn.removeAttribute('draggable');
-        btn.style.cursor = 'default';
-        btn.onclick = null;
-      });
+      outputContainer.className = "w-full text-center rounded-xl border-[3px] border-solid border-emerald-500 bg-white shadow-[0_0_15px_rgba(16,185,129,0.15)] py-3 px-4 min-h-[52px] flex items-center justify-center transition-all duration-300";
+      outputContainer.innerHTML = `<span class="font-semibold text-lg text-slate-700">${targetText}</span>`;
     }
     showInteractiveFeedback(true, "");
   } else {
@@ -489,9 +480,7 @@ window.checkTypingAnswer = function() {
   const isCorrect = clean(userAns) === clean(targetAns);
   
   if (isCorrect) {
-    inputEl.classList.remove('border-slate-200', 'focus:border-blue-500');
-    // Only color the border and add shadow (no background or text color change)
-    inputEl.classList.add('!border-emerald-500', 'shadow-[0_0_15px_rgba(16,185,129,0.15)]');
+    inputEl.className = "form-input text-center font-semibold text-lg !border-[3px] !border-emerald-500 !bg-white rounded-xl py-3 px-4 shadow-[0_0_15px_rgba(16,185,129,0.15)] outline-none";
     inputEl.disabled = true;
     showInteractiveFeedback(true, "");
   } else {
@@ -523,47 +512,19 @@ window.revealPracticeMeaning = function() {
     // Reveal correct answer inside interactive containers if not already correct
     if (isSingleWord(currentPracticeWord)) {
       const inputEl = document.getElementById('practice-typing-input');
-      if (inputEl && !inputEl.classList.contains('!border-emerald-500')) {
+      if (inputEl && !inputEl.className.includes('!border-emerald-500')) {
         inputEl.value = currentPracticeWord.content || "";
-        inputEl.classList.remove('border-slate-200', 'focus:border-blue-500');
-        // Only color the border and add shadow (no background or text color change)
-        inputEl.classList.add('!border-blue-500', 'shadow-[0_0_15px_rgba(59,130,246,0.15)]');
+        inputEl.className = "form-input text-center font-semibold text-lg !border-[3px] !border-blue-500 !bg-white rounded-xl py-3 px-4 shadow-[0_0_15px_rgba(59,130,246,0.15)] outline-none";
         inputEl.disabled = true;
       }
     } else {
       const outputContainer = document.getElementById('practice-scramble-output');
-      if (outputContainer && !outputContainer.classList.contains('border-emerald-500')) {
+      if (outputContainer && !outputContainer.className.includes('border-emerald-500')) {
         const targetText = currentPracticeWord.content || "";
-        const rawWords = targetText
-          .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "")
-          .split(/\s+/)
-          .filter(w => w.trim() !== "");
-        
-        // Find correct tile IDs in order
-        const correctOrder = [];
-        const usedTileIds = new Set();
-        rawWords.forEach(word => {
-          const tile = scrambleTiles.find(t => t.word === word && !usedTileIds.has(t.id));
-          if (tile) {
-            correctOrder.push(tile.id);
-            usedTileIds.add(tile.id);
-          }
-        });
-        
-        scrambleUserOrder = correctOrder;
+        scrambleUserOrder = [];
         updateScrambleUI();
-        
-        outputContainer.classList.remove('border-dashed', 'border-slate-200/80', 'bg-slate-50/50');
-        outputContainer.classList.add('border-solid', 'border-blue-500', 'bg-blue-50/60', 'shadow-[0_0_15px_rgba(59,130,246,0.15)]');
-        
-        const buttons = outputContainer.querySelectorAll('button');
-        buttons.forEach(btn => {
-          // Do NOT change styling of the inner buttons (leave them as standard bg-white border-slate-200 text-slate-700)
-          btn.className = "px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-sm shadow-2xs cursor-default";
-          btn.removeAttribute('draggable');
-          btn.style.cursor = 'default';
-          btn.onclick = null;
-        });
+        outputContainer.className = "w-full text-center rounded-xl border-[3px] border-solid border-blue-500 bg-white shadow-[0_0_15px_rgba(59,130,246,0.15)] py-3 px-4 min-h-[52px] flex items-center justify-center transition-all duration-300";
+        outputContainer.innerHTML = `<span class="font-semibold text-lg text-slate-700">${targetText}</span>`;
       }
     }
   }
