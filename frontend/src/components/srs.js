@@ -1,4 +1,4 @@
-import { callServer, parseDateToTimestamp } from '../services/api.js';
+import { callServer, parseDateToTimestamp, escapeHTML } from '../services/api.js';
 import { showToast } from '../services/toast.js';
 
 let reviewQueue = [];
@@ -352,7 +352,7 @@ function updateScrambleUI() {
           ondragend="onScrambleDragEnd(event)"
           onclick="deselectScrambleTile('${tile.id}')"
           class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-sm shadow-2xs hover:border-blue-400 transition-all duration-200 transform hover:scale-105 active:scale-95 cursor-grab">
-          ${tile.word}
+          ${escapeHTML(tile.word)}
         </button>
       `;
     }).join("");
@@ -363,14 +363,14 @@ function updateScrambleUI() {
       return `
         <button disabled
           class="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-100 text-transparent font-semibold text-sm cursor-default select-none opacity-0">
-          ${tile.word}
+          ${escapeHTML(tile.word)}
         </button>
       `;
     } else {
       return `
         <button onclick="selectScrambleTile('${tile.id}')"
           class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-blue-400 text-slate-700 font-semibold text-sm shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer flex items-center justify-center transform hover:scale-105 active:scale-95">
-          ${tile.word}
+          ${escapeHTML(tile.word)}
         </button>
       `;
     }
@@ -443,7 +443,7 @@ window.checkScrambleAnswer = function() {
     const outputContainer = document.getElementById('practice-scramble-output');
     if (outputContainer) {
       outputContainer.className = "practice-interactive-box practice-state-correct";
-      outputContainer.innerHTML = `<span class="font-semibold text-lg text-slate-700">${targetText}</span>`;
+      outputContainer.innerHTML = `<span class="font-semibold text-lg text-slate-700">${escapeHTML(targetText)}</span>`;
     }
     showInteractiveFeedback(true, "");
   } else {
@@ -520,7 +520,7 @@ window.revealPracticeMeaning = function() {
         scrambleUserOrder = [];
         updateScrambleUI();
         outputContainer.className = "practice-interactive-box practice-state-revealed";
-        outputContainer.innerHTML = `<span class="font-semibold text-lg text-slate-700">${targetText}</span>`;
+        outputContainer.innerHTML = `<span class="font-semibold text-lg text-slate-700">${escapeHTML(targetText)}</span>`;
       }
     }
   }

@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatDateView } from '../services/api.js';
+import { callServer, escapeHTML } from '../services/api.js';
 import { showToast } from '../services/toast.js';
 
 let allVocabData = [];
@@ -13,9 +13,10 @@ export function initVocabModule(data, onSync) {
   const totalTopicsEl = document.getElementById('total-topics');
   if (totalWordsEl) totalWordsEl.innerText = allVocabData.length;
   
-  // Parse Topics and Categories for filter dropdowns
+  // Parse Topics, Categories and Levels for filter dropdowns
   let vocabTopicCounts = {};
   let vocabCategories = new Set();
+  let vocabLevels = new Set();
   
   allVocabData.forEach(v => {
     if (v.topic) {
@@ -26,17 +27,21 @@ export function initVocabModule(data, onSync) {
       let catName = v.category.toString().trim();
       if (catName !== "") vocabCategories.add(catName);
     }
+    if (v.level) {
+      let levelName = v.level.toString().trim();
+      if (levelName !== "") vocabLevels.add(levelName);
+    }
   });
   if (totalTopicsEl) totalTopicsEl.innerText = Object.keys(vocabTopicCounts).length;
   
   // Populate filter selects
-  populateVocabFilters(vocabCategories, vocabTopicCounts);
+  populateVocabFilters(vocabCategories, vocabTopicCounts, vocabLevels);
   
   // Render table
   buildVocabTable();
 }
 
-function populateVocabFilters(categories, topicCounts) {
+function populateVocabFilters(categories, topicCounts, levels) {
   const catSelect = document.getElementById('vocabCategoryFilter');
   if (catSelect) {
     catSelect.innerHTML = '<option value="All">All Categories</option>';
@@ -53,6 +58,14 @@ function populateVocabFilters(categories, topicCounts) {
       topicSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(item[0])}">${escapeHTML(item[0])}</option>`);
     });
   }
+
+  const levelSelect = document.getElementById('vocabLevelFilter');
+  if (levelSelect) {
+    levelSelect.innerHTML = '<option value="All">All Levels</option>';
+    levels.forEach(lvl => {
+      levelSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(lvl)}">${escapeHTML(lvl)}</option>`);
+    });
+  }
 }
 
 export function buildVocabTable() {
@@ -62,18 +75,32 @@ export function buildVocabTable() {
   
   const catSelect = document.getElementById('vocabCategoryFilter');
   const topicSelect = document.getElementById('vocabTopicFilter');
+  const levelSelect = document.getElementById('vocabLevelFilter');
+  const searchInput = document.getElementById('vocabSearchInput');
   
   let selectedCat = catSelect ? catSelect.value : "All";
   let selectedTopic = topicSelect ? topicSelect.value : "All";
+  let selectedLevel = levelSelect ? levelSelect.value : "All";
+  let keyword = searchInput ? searchInput.value.toLowerCase().trim() : "";
 
   allVocabData.forEach(item => {
+    let content = item.content ? item.content.toString() : "";
+    let meaning = item.meaning ? item.meaning.toString() : "";
     let cat = item.category ? item.category.toString().trim() : "-";
     let topic = item.topic ? item.topic.toString().trim() : "-";
+    let level = item.level ? item.level.toString().trim() : "-";
     let statusStr = item.status ? item.status.toString().trim() : "New";
-    let nextReviewView = item.next_review ? formatDateView(item.next_review) : "-";
+    let nextReviewView = item.next_review ? escapeHTML(item.next_review) : "-";
 
     if (selectedCat !== "All" && cat !== selectedCat) return;
     if (selectedTopic !== "All" && topic !== selectedTopic) return;
+    if (selectedLevel !== "All" && level !== selectedLevel) return;
+    if (keyword !== "" && 
+        !content.toLowerCase().includes(keyword) && 
+        !meaning.toLowerCase().includes(keyword) && 
+        !topic.toLowerCase().includes(keyword) && 
+        !cat.toLowerCase().includes(keyword) &&
+        !level.toLowerCase().includes(keyword)) return;
     
     let id = item.rowNumber;
     let defaultBadgeStyle = "bg-slate-50 text-slate-650 border-slate-200 font-semibold";

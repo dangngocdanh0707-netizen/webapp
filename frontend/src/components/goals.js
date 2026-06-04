@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatDateView, formatDateInput, formatDateDb } from '../services/api.js';
+import { callServer, escapeHTML, formatDateInput, formatDateDb } from '../services/api.js';
 import { showToast } from '../services/toast.js';
 
 let allGoalData = [];
@@ -28,8 +28,8 @@ export function buildGoalTable() {
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="goal-row-${id}" class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-slate-800 text-sm goal-view-${id}">${escapeHTML(item.goal_name) || '-'}</td>
-        <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${formatDateView(item.start_date)}</td>
-        <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${formatDateView(item.end_date)}</td>
+        <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${escapeHTML(item.start_date)}</td>
+        <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${escapeHTML(item.end_date)}</td>
         <td class="p-4 font-bold text-slate-800 text-sm goal-view-${id}">${cur.toLocaleString()}</td>
         <td class="p-4 font-semibold text-slate-450 text-sm goal-view-${id}">${tar.toLocaleString()}</td>
         <td class="p-4 goal-view-${id}">

@@ -5,8 +5,7 @@ import {
   signOutFromGoogle, 
   getCredentials, 
   saveCredentials, 
-  isGoogleConnected, 
-  isGoogleSheetsActive
+  isGoogleConnected
 } from './services/api.js';
 
 import { showToast } from './services/toast.js';

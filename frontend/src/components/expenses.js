@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatDateView, formatDateInput, formatDateDb, parseDateToTimestamp } from '../services/api.js';
+import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp } from '../services/api.js';
 import { renderExpensePie, renderExpenseBar } from './charts.js';
 import { showToast } from '../services/toast.js';
 
@@ -99,7 +99,7 @@ export function buildTable(filterValue) {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-xs text-slate-500 view-mode-${id}">${formatDateView(item.date)}</td>
+        <td class="p-4 pl-6 font-semibold text-xs text-slate-500 view-mode-${id}">${escapeHTML(item.date)}</td>
         <td class="p-4 view-mode-${id}"><span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold">${escapeHTML(cat)}</span></td>
         <td class="p-4 text-right font-bold text-slate-900 view-mode-${id}">${amount.toLocaleString('vi-VN')}đ</td>
         <td class="p-4 text-slate-650 view-mode-${id}">${escapeHTML(item.note) || '-'}</td>

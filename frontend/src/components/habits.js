@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatDateView, parseDateToTimestamp } from '../services/api.js';
+import { callServer, escapeHTML, parseDateToTimestamp } from '../services/api.js';
 import { renderHabitLine, updateHabitChartData } from './charts.js';
 import { showToast } from '../services/toast.js';
 
@@ -50,7 +50,7 @@ export function initHabitsModule(data, onSync) {
   let performanceDataPerDay = [];
   let totalPerformanceSum = 0;
   
-  let activeDates = habitDates.filter(d => allHabitData.some(h => h.date === d));
+  let activeDates = [...habitDates];
   activeDates.sort((a, b) => parseDateToTimestamp(a) - parseDateToTimestamp(b));
 
   activeDates.forEach(dateStr => {
@@ -100,7 +100,7 @@ export function buildHabitTable(filterValue) {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-xs text-slate-500">${escapeHTML(formatDateView(item.date))}</td>
+        <td class="p-4 pl-6 font-semibold text-xs text-slate-500">${escapeHTML(item.date)}</td>
         <td class="p-4 font-semibold text-slate-800 text-sm">${escapeHTML(item.habit) || '-'}</td>
         <td class="p-4 pl-12">
           <label class="inline-flex items-center gap-3 cursor-pointer select-none">

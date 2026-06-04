@@ -82,18 +82,17 @@ webapp_project/ (personal_webapp/)
 * Loại bỏ hoàn toàn CDNs ngoài tại thời gian chạy (runtime) cho các thư viện bên thứ ba như `Chart.js` hay `SortableJS`. 
 * Tất cả được cài đặt cục bộ qua `npm` và đóng gói tĩnh thông qua Vite. Ứng dụng khởi chạy tức thì, an toàn và tối ưu hóa tài nguyên mạng.
 
-### 6. 🗺️ Bản đồ tương tác Google Maps Explorer Split-View Tinh Giản
-* **Giao diện Split-View Cân đối 5:7**: Thiết kế hiện đại giúp cột danh sách địa điểm bên trái gọn gàng, dành trọn không gian cho bản đồ tương tác ở cột bên phải với chiều cao mở rộng **`480px`** cực kỳ sắc nét.
-* **Hộp số liệu thống kê ở đầu thẻ**: Bổ sung bảng hiển thị tổng số địa điểm và số danh mục (Categories) trực quan ngay tại phần tiêu đề giúp theo dõi tiến độ thám hiểm nhanh chóng.
-* **Tối giản hóa và Tải cực nhanh**: Loại bỏ hoàn toàn các thành phần hình ảnh mẫu rườm rà giúp tối ưu hóa không gian hiển thị và nâng cao tốc độ phản hồi.
-* **Đồng bộ hóa 5 Cột Tinh giản**: Dữ liệu chạy hoàn toàn trên 5 cột Sheet gọn nhẹ: `place`, `city`, `category`, `address`, `check` (với Check-in lưu vào cột E).
-* **Nút Explore Google Search thông minh**: Nút "Explore 🔍" tự sinh liên kết Google Search tìm kiếm thông tin địa điểm theo Tên quán + Thành phố, tạo nên tính đồng bộ cao cấp.
+### 6. 🗺️ Danh sách địa điểm Google Maps Explorer Tinh Giản
+* **Bảng theo dõi chuyến đi**: Giúp lưu trữ, phân loại và đánh dấu check-in trạng thái đã chinh phục đối với các quán ăn, địa danh du lịch mong muốn thám hiểm.
+* **Hộp số liệu thống kê ở đầu thẻ**: Bổ sung bảng hiển thị tổng số địa điểm và số danh mục (Categories) trực quan ngay tại phần tiêu đề giúp theo dõi tiến độ nhanh chóng.
+* **Đồng bộ hóa 5 Cột Tinh giản**: Dữ liệu chạy hoàn toàn trên 5 cột Sheet gọn nhẹ: `place` (Địa điểm), `city` (Thành phố), `category` (Phân loại), `address` (Địa chỉ), `check` (Trạng thái Check-in).
+* **Nút Explore Google Search thông minh**: Nút "Explore 🔍" tự sinh liên kết Google Search tìm kiếm nhanh thông tin chi tiết về địa điểm theo Tên quán + Thành phố tiện lợi.
 
-### 7. 💎 Quản lý Tài sản Collections (Asset Portfolio) Tối Giản 3 Cột
-* **Ledger 3 Cột Hiện đại**: Thay thế hoàn toàn card hình ảnh cồng kềnh bằng bảng kê tài sản 3 cột tinh gọn: `Asset Item` (Tên), `Category` (Phân loại), `Valuation` (Định giá VNĐ).
+### 7. 💎 Quản lý Bộ sưu tập Collections (Asset Portfolio) Tinh Giản
+* **Ledger Theo Dõi Chi Tiết**: Ghi nhận toàn diện danh mục đồ dùng cá nhân thông qua bảng 6 cột: `Asset Item` (Tên vật phẩm), `Brand` (Thương hiệu), `Style` (Kiểu dáng/Loại), `Category` (Phân loại), `Status` (Trạng thái Check-in hoàn thành) và các nút hành động.
 * **Hộp số liệu thống kê ở đầu thẻ**: Bổ sung bảng hiển thị tổng số tài sản, số thương hiệu và số danh mục (Categories) trực quan ngay tại phần tiêu đề.
-* **Form & Bộ lọc Tối giản**: Tinh giản tối đa form thêm mới tài sản chỉ còn 3 trường nhập liệu và bộ lọc lọc theo Category tự động sinh.
-* **Icon & Explore Liên kết Thông minh**: Tự sinh các badge phân loại gradient màu sắc bắt mắt, tự sinh các Icon biểu trưng sống động theo từ khóa của Category (🚗 Xe, ⌚ Đồng hồ, 🏠 Nhà đất, 💎 Khác) và nút Explore tìm kiếm thông tin nhanh chóng trên Google Search.
+* **Form & Bộ lọc Tiện ích**: Nhập liệu nhanh chóng qua form 4 trường nhập liệu và bộ lọc tự động phân tích theo Brand & Category.
+* **Nút Explore Liên kết Thông minh**: Tự sinh liên kết tìm kiếm nhanh vật phẩm trên Google Search hỗ trợ tra cứu nguồn gốc.
 
 ### 8. 🎯 Theo dõi Tiến độ Mục tiêu (Goals Tracker) Nâng cấp 2 Cột & Progress Bar
 * **Tách cột Current / Target**: Phân chia chỉ số hiện tại và mục tiêu thành 2 cột riêng biệt (`CURRENT` và `TARGET`) giúp bảng dữ liệu trực quan và dễ đọc hơn.
