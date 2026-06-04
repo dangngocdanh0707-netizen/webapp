@@ -447,9 +447,8 @@ window.checkScrambleAnswer = function() {
       
       const buttons = outputContainer.querySelectorAll('button');
       buttons.forEach(btn => {
-        // Apply light green background and border, but keep the original slate text color
-        btn.classList.remove('bg-white', 'border-slate-200', 'hover:border-blue-400');
-        btn.classList.add('bg-emerald-50/40', 'border-emerald-300');
+        // Do NOT change styling of the inner buttons (leave them as standard bg-white border-slate-200 text-slate-700)
+        btn.className = "px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-sm shadow-2xs cursor-default";
         btn.removeAttribute('draggable');
         btn.style.cursor = 'default';
         btn.onclick = null;
@@ -491,8 +490,8 @@ window.checkTypingAnswer = function() {
   
   if (isCorrect) {
     inputEl.classList.remove('border-slate-200', 'focus:border-blue-500');
-    // Color border, add light green background, and shadow (no text color change)
-    inputEl.classList.add('!border-emerald-500', '!bg-emerald-50/60', 'shadow-[0_0_15px_rgba(16,185,129,0.15)]');
+    // Only color the border and add shadow (no background or text color change)
+    inputEl.classList.add('!border-emerald-500', 'shadow-[0_0_15px_rgba(16,185,129,0.15)]');
     inputEl.disabled = true;
     showInteractiveFeedback(true, "");
   } else {
@@ -527,8 +526,8 @@ window.revealPracticeMeaning = function() {
       if (inputEl && !inputEl.classList.contains('!border-emerald-500')) {
         inputEl.value = currentPracticeWord.content || "";
         inputEl.classList.remove('border-slate-200', 'focus:border-blue-500');
-        // Color border, add light blue background, and shadow (no text color change)
-        inputEl.classList.add('!border-blue-500', '!bg-blue-50/60', 'shadow-[0_0_15px_rgba(59,130,246,0.15)]');
+        // Only color the border and add shadow (no background or text color change)
+        inputEl.classList.add('!border-blue-500', 'shadow-[0_0_15px_rgba(59,130,246,0.15)]');
         inputEl.disabled = true;
       }
     } else {
@@ -559,9 +558,8 @@ window.revealPracticeMeaning = function() {
         
         const buttons = outputContainer.querySelectorAll('button');
         buttons.forEach(btn => {
-          // Apply light blue background and border, but keep the original slate text color
-          btn.classList.remove('bg-white', 'border-slate-200', 'hover:border-blue-400');
-          btn.classList.add('bg-blue-50/40', 'border-blue-300');
+          // Do NOT change styling of the inner buttons (leave them as standard bg-white border-slate-200 text-slate-700)
+          btn.className = "px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-sm shadow-2xs cursor-default";
           btn.removeAttribute('draggable');
           btn.style.cursor = 'default';
           btn.onclick = null;
