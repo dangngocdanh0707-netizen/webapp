@@ -500,7 +500,7 @@ window.revealPracticeMeaning = function() {
   }
   
   const poolContainer = document.getElementById('practice-scramble-pool');
-  if (poolContainer) poolContainer.classList.add('invisible');
+  if (poolContainer) poolContainer.classList.add('hidden');
   
   // Do NOT change wordDisplay to English content anymore, keep it as the Vietnamese meaning
   
