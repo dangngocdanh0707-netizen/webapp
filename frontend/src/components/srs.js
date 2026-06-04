@@ -215,7 +215,7 @@ window.triggerRandomVocab = function() {
   
   // Calculate Dynamic Anki Days
   let currentInterval = Number(currentPracticeWord.interval) || 0;
-  let currentEase = Number(currentPracticeWord.ease_factor) || 2.5;
+  let currentEase = Number(currentPracticeWord.ease_factor) || 2.0;
 
   function formatAnkiTime(days) {
     if (days < 1) return "<10m";
@@ -225,7 +225,7 @@ window.triggerRandomVocab = function() {
 
   let daysAgain = 0; let daysHard = 0; let daysGood = 0; let daysEasy = 0;
   if (currentInterval === 0) {
-    daysAgain = 0; daysHard = 1; daysGood = 1; daysEasy = 4;
+    daysAgain = 0; daysHard = 1; daysGood = 2; daysEasy = 4;
   } else {
     let today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -241,9 +241,9 @@ window.triggerRandomVocab = function() {
     let actualInterval = currentInterval + delayDays;
 
     daysAgain = 0;
-    daysHard = Math.max(1, Math.round(actualInterval * 1.2));
+    daysHard = Math.max(1, Math.round(actualInterval * 1.4));
     daysGood = Math.round(actualInterval * currentEase);
-    daysEasy = Math.round(actualInterval * Math.min(5.0, currentEase + 0.15) * 1.3);
+    daysEasy = Math.round(actualInterval * Math.min(5.0, currentEase + 0.15) * 1.2);
   }
 
   const lblAgain = document.getElementById('lbl-time-again');
