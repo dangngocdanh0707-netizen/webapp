@@ -442,7 +442,7 @@ window.checkScrambleAnswer = function() {
   if (isCorrect) {
     const outputContainer = document.getElementById('practice-scramble-output');
     if (outputContainer) {
-      outputContainer.className = "w-full text-center rounded-xl border-[3px] border-solid border-emerald-500 bg-white shadow-[0_0_15px_rgba(16,185,129,0.15)] py-3 px-4 min-h-[52px] flex items-center justify-center transition-all duration-300";
+      outputContainer.className = "w-full text-center rounded-xl border-[3px] border-solid border-emerald-400 bg-white shadow-[0_0_15px_rgba(16,185,129,0.15)] py-3 px-4 min-h-[52px] flex items-center justify-center transition-all duration-300";
       outputContainer.innerHTML = `<span class="font-semibold text-lg text-slate-700">${targetText}</span>`;
     }
     showInteractiveFeedback(true, "");
@@ -480,7 +480,7 @@ window.checkTypingAnswer = function() {
   const isCorrect = clean(userAns) === clean(targetAns);
   
   if (isCorrect) {
-    inputEl.className = "form-input text-center font-semibold text-lg !border-[3px] !border-emerald-500 !bg-white rounded-xl py-3 px-4 shadow-[0_0_15px_rgba(16,185,129,0.15)] outline-none";
+    inputEl.className = "form-input text-center font-semibold text-lg !border-[3px] !border-emerald-400 !bg-white rounded-xl py-3 px-4 shadow-[0_0_15px_rgba(16,185,129,0.15)] outline-none";
     inputEl.disabled = true;
     showInteractiveFeedback(true, "");
   } else {
@@ -512,18 +512,18 @@ window.revealPracticeMeaning = function() {
     // Reveal correct answer inside interactive containers if not already correct
     if (isSingleWord(currentPracticeWord)) {
       const inputEl = document.getElementById('practice-typing-input');
-      if (inputEl && !inputEl.className.includes('!border-emerald-500')) {
+      if (inputEl && !inputEl.className.includes('!border-emerald-400')) {
         inputEl.value = currentPracticeWord.content || "";
-        inputEl.className = "form-input text-center font-semibold text-lg !border-[3px] !border-blue-500 !bg-white rounded-xl py-3 px-4 shadow-[0_0_15px_rgba(59,130,246,0.15)] outline-none";
+        inputEl.className = "form-input text-center font-semibold text-lg !border-[3px] !border-blue-400 !bg-white rounded-xl py-3 px-4 shadow-[0_0_15px_rgba(59,130,246,0.15)] outline-none";
         inputEl.disabled = true;
       }
     } else {
       const outputContainer = document.getElementById('practice-scramble-output');
-      if (outputContainer && !outputContainer.className.includes('border-emerald-500')) {
+      if (outputContainer && !outputContainer.className.includes('border-emerald-400')) {
         const targetText = currentPracticeWord.content || "";
         scrambleUserOrder = [];
         updateScrambleUI();
-        outputContainer.className = "w-full text-center rounded-xl border-[3px] border-solid border-blue-500 bg-white shadow-[0_0_15px_rgba(59,130,246,0.15)] py-3 px-4 min-h-[52px] flex items-center justify-center transition-all duration-300";
+        outputContainer.className = "w-full text-center rounded-xl border-[3px] border-solid border-blue-400 bg-white shadow-[0_0_15px_rgba(59,130,246,0.15)] py-3 px-4 min-h-[52px] flex items-center justify-center transition-all duration-300";
         outputContainer.innerHTML = `<span class="font-semibold text-lg text-slate-700">${targetText}</span>`;
       }
     }
