@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
+        sans: ['Outfit', 'Plus Jakarta Sans', 'sans-serif'],
       },
       colors: {
         slate: {
