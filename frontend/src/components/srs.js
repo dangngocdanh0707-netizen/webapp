@@ -490,15 +490,15 @@ window.checkTypingAnswer = function() {
   
   if (isCorrect) {
     inputEl.classList.remove('border-slate-200', 'focus:border-blue-500');
-    inputEl.classList.add('border-emerald-500', 'bg-emerald-50/60', 'text-emerald-800', 'shadow-[0_0_15px_rgba(16,185,129,0.15)]');
+    inputEl.classList.add('!border-emerald-500', '!bg-emerald-50/60', '!text-emerald-800', 'shadow-[0_0_15px_rgba(16,185,129,0.15)]');
     inputEl.disabled = true;
     showInteractiveFeedback(true, "");
   } else {
     showInteractiveFeedback(false, `❌ Chưa đúng! Đáp án đúng là: "${targetAns}"`);
     inputEl.classList.remove('border-slate-200');
-    inputEl.classList.add('border-rose-400', 'bg-rose-50/30');
+    inputEl.classList.add('!border-rose-400', '!bg-rose-50/30');
     setTimeout(() => {
-      inputEl.classList.remove('border-rose-400', 'bg-rose-50/30');
+      inputEl.classList.remove('!border-rose-400', '!bg-rose-50/30');
       inputEl.classList.add('border-slate-200');
     }, 1000);
   }
@@ -522,10 +522,10 @@ window.revealPracticeMeaning = function() {
     // Reveal correct answer inside interactive containers if not already correct
     if (isSingleWord(currentPracticeWord)) {
       const inputEl = document.getElementById('practice-typing-input');
-      if (inputEl && !inputEl.classList.contains('border-emerald-500')) {
+      if (inputEl && !inputEl.classList.contains('!border-emerald-500')) {
         inputEl.value = currentPracticeWord.content || "";
         inputEl.classList.remove('border-slate-200', 'focus:border-blue-500');
-        inputEl.classList.add('border-blue-500', 'bg-blue-50/60', 'text-blue-800', 'shadow-[0_0_15px_rgba(59,130,246,0.15)]');
+        inputEl.classList.add('!border-blue-500', '!bg-blue-50/60', '!text-blue-800', 'shadow-[0_0_15px_rgba(59,130,246,0.15)]');
         inputEl.disabled = true;
       }
     } else {
