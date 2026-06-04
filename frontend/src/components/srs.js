@@ -155,6 +155,8 @@ window.triggerRandomVocab = function() {
     if (inputEl) {
       inputEl.value = "";
       inputEl.placeholder = "";
+      inputEl.disabled = false;
+      inputEl.className = "form-input text-center font-semibold text-lg border-2 border-slate-200 focus:border-blue-500 rounded-xl py-3 px-4 shadow-sm outline-none";
       inputEl.onkeydown = function(e) {
         if (e.key === "Enter") {
           e.preventDefault();
@@ -176,6 +178,10 @@ window.triggerRandomVocab = function() {
     }
   } else {
     document.getElementById('practice-mode-scramble').classList.remove('hidden');
+    const outputContainer = document.getElementById('practice-scramble-output');
+    if (outputContainer) {
+      outputContainer.className = "min-h-[70px] p-4 rounded-2xl border-2 border-dashed border-slate-200/80 bg-slate-50/50 flex flex-wrap justify-center gap-2 items-center transition-all duration-300";
+    }
     const poolContainer = document.getElementById('practice-scramble-pool');
     if (poolContainer) poolContainer.classList.remove('hidden');
     const rawWords = wordContent
@@ -432,7 +438,35 @@ window.checkScrambleAnswer = function() {
   }).join(" ");
   
   const isCorrect = clean(userSentence) === clean(targetText);
-  showInteractiveFeedback(isCorrect, isCorrect ? "🎉 Chính xác tuyệt đối!" : `❌ Chưa đúng! Đáp án đúng là: "${targetText}"`);
+  
+  if (isCorrect) {
+    const outputContainer = document.getElementById('practice-scramble-output');
+    if (outputContainer) {
+      outputContainer.classList.remove('border-dashed', 'border-slate-200/80', 'bg-slate-50/50');
+      outputContainer.classList.add('border-solid', 'border-emerald-500', 'bg-emerald-50/60', 'shadow-[0_0_15px_rgba(16,185,129,0.15)]');
+      
+      const buttons = outputContainer.querySelectorAll('button');
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-white', 'border-slate-200', 'text-slate-700', 'hover:border-blue-400');
+        btn.classList.add('bg-emerald-100/40', 'border-emerald-200', 'text-emerald-800');
+        btn.removeAttribute('draggable');
+        btn.style.cursor = 'default';
+        btn.onclick = null;
+      });
+    }
+    showInteractiveFeedback(true, "");
+  } else {
+    showInteractiveFeedback(false, `❌ Chưa đúng! Đáp án đúng là: "${targetText}"`);
+    const outputContainer = document.getElementById('practice-scramble-output');
+    if (outputContainer) {
+      outputContainer.classList.remove('border-slate-200/80');
+      outputContainer.classList.add('border-rose-400', 'bg-rose-50/30');
+      setTimeout(() => {
+        outputContainer.classList.remove('border-rose-400', 'bg-rose-50/30');
+        outputContainer.classList.add('border-slate-200/80');
+      }, 1000);
+    }
+  }
   
   revealPracticeMeaning();
   highlightSrsButton(isCorrect);
@@ -453,7 +487,21 @@ window.checkTypingAnswer = function() {
     .trim();
 
   const isCorrect = clean(userAns) === clean(targetAns);
-  showInteractiveFeedback(isCorrect, isCorrect ? "🎉 Chính xác tuyệt đối!" : `❌ Chưa đúng! Đáp án đúng là: "${targetAns}"`);
+  
+  if (isCorrect) {
+    inputEl.classList.remove('border-slate-200', 'focus:border-blue-500');
+    inputEl.classList.add('border-emerald-500', 'bg-emerald-50/60', 'text-emerald-800', 'shadow-[0_0_15px_rgba(16,185,129,0.15)]');
+    inputEl.disabled = true;
+    showInteractiveFeedback(true, "");
+  } else {
+    showInteractiveFeedback(false, `❌ Chưa đúng! Đáp án đúng là: "${targetAns}"`);
+    inputEl.classList.remove('border-slate-200');
+    inputEl.classList.add('border-rose-400', 'bg-rose-50/30');
+    setTimeout(() => {
+      inputEl.classList.remove('border-rose-400', 'bg-rose-50/30');
+      inputEl.classList.add('border-slate-200');
+    }, 1000);
+  }
   
   revealPracticeMeaning();
   highlightSrsButton(isCorrect);
@@ -462,19 +510,60 @@ window.checkTypingAnswer = function() {
 window.revealPracticeMeaning = function() {
   const meaningBox = document.getElementById('practice-meaning-box');
   if (meaningBox) {
-    meaningBox.classList.remove('hidden');
-    setTimeout(() => { 
-      meaningBox.classList.remove('opacity-0', 'translate-y-2');
-      meaningBox.classList.add('opacity-100', 'translate-y-0');
-    }, 20);
+    meaningBox.classList.add('hidden');
   }
   
   const poolContainer = document.getElementById('practice-scramble-pool');
   if (poolContainer) poolContainer.classList.add('hidden');
   
-  const wordDisplay = document.getElementById('practice-word-display');
-  if (wordDisplay && currentPracticeWord) {
-    wordDisplay.innerText = currentPracticeWord.content || "";
+  // Do NOT change wordDisplay to English content anymore, keep it as the Vietnamese meaning
+  
+  if (currentPracticeWord) {
+    // Reveal correct answer inside interactive containers if not already correct
+    if (isSingleWord(currentPracticeWord)) {
+      const inputEl = document.getElementById('practice-typing-input');
+      if (inputEl && !inputEl.classList.contains('border-emerald-500')) {
+        inputEl.value = currentPracticeWord.content || "";
+        inputEl.classList.remove('border-slate-200', 'focus:border-blue-500');
+        inputEl.classList.add('border-blue-500', 'bg-blue-50/60', 'text-blue-800', 'shadow-[0_0_15px_rgba(59,130,246,0.15)]');
+        inputEl.disabled = true;
+      }
+    } else {
+      const outputContainer = document.getElementById('practice-scramble-output');
+      if (outputContainer && !outputContainer.classList.contains('border-emerald-500')) {
+        const targetText = currentPracticeWord.content || "";
+        const rawWords = targetText
+          .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "")
+          .split(/\s+/)
+          .filter(w => w.trim() !== "");
+        
+        // Find correct tile IDs in order
+        const correctOrder = [];
+        const usedTileIds = new Set();
+        rawWords.forEach(word => {
+          const tile = scrambleTiles.find(t => t.word === word && !usedTileIds.has(t.id));
+          if (tile) {
+            correctOrder.push(tile.id);
+            usedTileIds.add(tile.id);
+          }
+        });
+        
+        scrambleUserOrder = correctOrder;
+        updateScrambleUI();
+        
+        outputContainer.classList.remove('border-dashed', 'border-slate-200/80', 'bg-slate-50/50');
+        outputContainer.classList.add('border-solid', 'border-blue-500', 'bg-blue-50/60', 'shadow-[0_0_15px_rgba(59,130,246,0.15)]');
+        
+        const buttons = outputContainer.querySelectorAll('button');
+        buttons.forEach(btn => {
+          btn.classList.remove('bg-white', 'border-slate-200', 'text-slate-700', 'hover:border-blue-400');
+          btn.classList.add('bg-blue-100/40', 'border-blue-200', 'text-blue-800');
+          btn.removeAttribute('draggable');
+          btn.style.cursor = 'default';
+          btn.onclick = null;
+        });
+      }
+    }
   }
   
   const btnReveal = document.getElementById('btn-practice-reveal');
