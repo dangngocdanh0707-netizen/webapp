@@ -21,8 +21,8 @@
   <!-- Thư viện SDK Google Sheets & Auth -->
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script type="module" crossorigin src="/webapp_project/assets/index-BGU3ei8b.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-h-a6F918.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-HLWRPWLB.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-C8irC67C.css">
 </head>
 
 <body>
@@ -471,13 +471,13 @@
                 <!-- 1. Typing Mode (For Spelling / Reverse Translation) -->
                 <div id="practice-mode-typing" class="hidden flex flex-col gap-3">
                   <input type="text" id="practice-typing-input" autocomplete="off" placeholder=""
-                    class="form-input text-center font-semibold text-lg border-2 border-slate-200 focus:border-blue-500 rounded-xl py-3 px-4 shadow-sm outline-none">
+                    class="practice-typing-input">
                 </div>
 
                 <!-- 2. Word Scramble Mode (For Phrases / Sentences) -->
                 <div id="practice-mode-scramble" class="hidden flex flex-col gap-4">
                   <!-- Output Area where selected words go -->
-                  <div id="practice-scramble-output" class="w-full min-h-[70px] p-4 rounded-2xl border-[3px] border-solid border-blue-400 bg-white flex flex-wrap justify-center gap-2 items-center transition-all duration-300"></div>
+                  <div id="practice-scramble-output" class="practice-interactive-box"></div>
                   <!-- Tiles pool area -->
                   <div id="practice-scramble-pool" class="flex flex-wrap justify-center gap-2 mt-2 min-h-[50px]"></div>
                 </div>
