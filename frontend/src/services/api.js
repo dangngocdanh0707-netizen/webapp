@@ -632,7 +632,9 @@ export function callServer(methodName, args) {
         let interval = Number(row[8]) || 0;
         let daysToAdd = 0;
 
-        if (status === "New" || interval === 0) {
+        const isNewCard = (status === "New" || interval === 0);
+
+        if (isNewCard) {
           if (action === "again") { daysToAdd = 0; interval = 0; }
           else if (action === "hard") { daysToAdd = 1; interval = 1; }
           else if (action === "good") { daysToAdd = 2; interval = 2; }
@@ -655,14 +657,17 @@ export function callServer(methodName, args) {
             daysToAdd = 0;
           } else if (action === "hard") {
             easeFactor = Math.max(1.3, easeFactor - 0.15);
-            interval = Math.max(1, Math.round(actualInterval * 1.4));
+            interval = Math.max(interval, Math.round(actualInterval * 1.2));
             daysToAdd = interval;
           } else if (action === "good") {
-            interval = Math.round(actualInterval * easeFactor);
+            let hardInterval = Math.max(interval, Math.round(actualInterval * 1.2));
+            interval = Math.max(hardInterval + 1, Math.round(actualInterval * easeFactor));
             daysToAdd = interval;
           } else if (action === "easy") {
             easeFactor = Math.min(5.0, easeFactor + 0.15);
-            interval = Math.round(actualInterval * easeFactor * 1.2);
+            let hardInterval = Math.max(interval, Math.round(actualInterval * 1.2));
+            let goodInterval = Math.max(hardInterval + 1, Math.round(actualInterval * easeFactor));
+            interval = Math.max(goodInterval + 1, Math.round(actualInterval * easeFactor * 1.3));
             daysToAdd = interval;
           }
         }

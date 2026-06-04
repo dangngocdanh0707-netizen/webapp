@@ -224,7 +224,8 @@ window.triggerRandomVocab = function() {
   }
 
   let daysAgain = 0; let daysHard = 0; let daysGood = 0; let daysEasy = 0;
-  if (currentInterval === 0) {
+  let isNewCard = (currentInterval === 0 || (currentPracticeWord.status || "").toString().trim() === "New");
+  if (isNewCard) {
     daysAgain = 0; daysHard = 1; daysGood = 2; daysEasy = 4;
   } else {
     let today = new Date();
@@ -241,9 +242,9 @@ window.triggerRandomVocab = function() {
     let actualInterval = currentInterval + delayDays;
 
     daysAgain = 0;
-    daysHard = Math.max(1, Math.round(actualInterval * 1.4));
-    daysGood = Math.round(actualInterval * currentEase);
-    daysEasy = Math.round(actualInterval * Math.min(5.0, currentEase + 0.15) * 1.2);
+    daysHard = Math.max(currentInterval, Math.round(actualInterval * 1.2));
+    daysGood = Math.max(daysHard + 1, Math.round(actualInterval * currentEase));
+    daysEasy = Math.max(daysGood + 1, Math.round(actualInterval * currentEase * 1.3));
   }
 
   const lblAgain = document.getElementById('lbl-time-again');
@@ -555,36 +556,57 @@ window.logPracticeAction = function(action) {
   let rowNumber = currentPracticeWord.rowNumber;
   let currentStatus = currentPracticeWord.status ? currentPracticeWord.status.toString().trim() : "New";
 
-  const buttons = document.querySelectorAll('#practice-action-metrics button');
-  buttons.forEach(btn => btn.disabled = true);
+  // 1. Cập nhật hàng chờ cục bộ
+  if (action === "again") {
+    // Tạo bản sao đã cập nhật để học lại
+    let updatedWord = { ...currentPracticeWord };
+    updatedWord.interval = 0;
+    updatedWord.status = "New";
+    updatedWord.ease_factor = Math.max(1.3, (Number(updatedWord.ease_factor) || 2.0) - 0.2);
+    // Đặt next_review thành hôm nay
+    let todayStr = new Date().toISOString().split('T')[0];
+    updatedWord.next_review = todayStr;
 
+    // Lọc thẻ cũ ra và đẩy thẻ mới cập nhật vào cuối hàng chờ
+    reviewQueue = reviewQueue.filter(v => v.rowNumber !== rowNumber);
+    reviewQueue.push(updatedWord);
+  } else {
+    // Nếu chọn đúng (hard/good/easy), loại bỏ thẻ khỏi hàng chờ hiện tại
+    reviewQueue = reviewQueue.filter(v => v.rowNumber !== rowNumber);
+  }
+
+  // 2. Cập nhật số lượng đếm trên giao diện ngay lập tức
+  const dueEl = document.getElementById('practice-count-due');
+  if (dueEl) dueEl.innerText = reviewQueue.length;
+
+  // 3. Hiển thị từ tiếp theo hoặc trạng thái hoàn thành ngay lập tức
+  const cardContent = document.getElementById('practice-card-content');
+  const emptyState = document.getElementById('practice-empty-state');
+  const btnTrigger = document.getElementById('btn-practice-trigger');
+
+  if (reviewQueue.length > 0) {
+    window.triggerRandomVocab();
+  } else {
+    if (cardContent) cardContent.classList.add('hidden');
+    if (emptyState) emptyState.classList.remove('hidden');
+    
+    const headlineEl = document.getElementById('practice-headline');
+    const sublineEl = document.getElementById('practice-subline');
+    if (headlineEl) headlineEl.innerText = "🎉 All caught up!";
+    if (sublineEl) sublineEl.innerText = "Excellent. You have no pending card reviews scheduled for today.";
+    if (btnTrigger) btnTrigger.classList.remove('hidden');
+  }
+
+  // 4. Đồng bộ dữ liệu lên Google Sheets ở chế độ ngầm (Background Sync)
   callServer("logVocabReviewAction", [rowNumber, currentStatus, action])
     .then(res => {
-      buttons.forEach(btn => btn.disabled = false);
-      
-      reviewQueue = reviewQueue.filter(v => v.rowNumber !== rowNumber);
-      
-      const cardContent = document.getElementById('practice-card-content');
-      const emptyState = document.getElementById('practice-empty-state');
-      const btnTrigger = document.getElementById('btn-practice-trigger');
-      
-      if (reviewQueue.length > 0) {
-        window.triggerRandomVocab();
-      } else {
-        if (cardContent) cardContent.classList.add('hidden');
-        if (emptyState) emptyState.classList.remove('hidden');
-        
-        const headlineEl = document.getElementById('practice-headline');
-        const sublineEl = document.getElementById('practice-subline');
-        if (headlineEl) headlineEl.innerText = "🎉 All caught up!";
-        if (sublineEl) sublineEl.innerText = "Excellent. You have no pending card reviews scheduled for today.";
-        if (btnTrigger) btnTrigger.classList.remove('hidden');
+      // Chỉ tải lại toàn bộ dữ liệu từ server khi phiên học hiện tại đã hoàn thành (reviewQueue trống)
+      if (reviewQueue.length === 0 && onSyncNeeded) {
+        onSyncNeeded();
       }
-      
-      if (onSyncNeeded) onSyncNeeded();
     })
     .catch(err => {
-      buttons.forEach(btn => btn.disabled = false);
+      console.error("Background sync failed for row " + rowNumber, err);
       showToast("Lỗi đồng bộ ôn tập: " + err.message, "error");
     });
 };
