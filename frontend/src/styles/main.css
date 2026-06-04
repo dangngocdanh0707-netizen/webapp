@@ -366,6 +366,81 @@ table th {
   border: 1px solid rgba(37, 99, 235, 0.1);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   border-radius: 28px;
+  height: 400px !important;
+  min-height: 400px !important;
+}
+
+@media (min-width: 640px) {
+  .practice-deck-card {
+    height: 420px !important;
+    min-height: 420px !important;
+  }
+}
+
+/* Custom styles for Practice English interactive elements */
+.practice-interactive-box {
+  width: 100%;
+  min-height: 70px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 2px solid rgba(226, 232, 240, 0.8); /* slate-200 */
+  background-color: #ffffff;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.01);
+  outline: none;
+}
+
+.practice-typing-input {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.125rem; /* text-lg */
+  padding: 12px 16px;
+  width: 100%;
+  border-radius: 16px;
+  border: 2px solid rgba(226, 232, 240, 0.8); /* slate-200 */
+  background-color: #ffffff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.01);
+}
+
+.practice-interactive-box:focus-within,
+.practice-typing-input:focus {
+  border-color: rgba(59, 130, 246, 0.4); /* Soft blue border */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+}
+
+/* Correct state: Soft pastel emerald green */
+.practice-state-correct {
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  background-color: rgba(240, 253, 250, 0.6) !important;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.06), inset 0 1px 2px rgba(0, 0, 0, 0.01) !important;
+}
+
+/* Revealed state: Soft pastel blue */
+.practice-state-revealed {
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  background-color: rgba(239, 246, 255, 0.6) !important;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.06), inset 0 1px 2px rgba(0, 0, 0, 0.01) !important;
+}
+
+/* Incorrect state: Soft pastel rose/red */
+.practice-state-incorrect {
+  border-color: rgba(244, 63, 94, 0.4) !important;
+  background-color: rgba(255, 241, 242, 0.6) !important;
+  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.06), inset 0 1px 2px rgba(0, 0, 0, 0.01) !important;
+  animation: practice-shake 0.4s ease-in-out;
+}
+
+@keyframes practice-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }
 
 /* Ẩn phần cấu hình API khi Sidebar thu gọn */

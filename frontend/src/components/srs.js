@@ -156,7 +156,7 @@ window.triggerRandomVocab = function() {
       inputEl.value = "";
       inputEl.placeholder = "";
       inputEl.disabled = false;
-      inputEl.className = "form-input text-center font-semibold text-lg border-2 border-slate-200 focus:border-blue-500 rounded-xl py-3 px-4 shadow-sm outline-none";
+      inputEl.className = "practice-typing-input";
       inputEl.onkeydown = function(e) {
         if (e.key === "Enter") {
           e.preventDefault();
@@ -180,7 +180,7 @@ window.triggerRandomVocab = function() {
     document.getElementById('practice-mode-scramble').classList.remove('hidden');
     const outputContainer = document.getElementById('practice-scramble-output');
     if (outputContainer) {
-      outputContainer.className = "w-full min-h-[70px] p-4 rounded-2xl border-[3px] border-solid border-blue-400 bg-white flex flex-wrap justify-center gap-2 items-center transition-all duration-300";
+      outputContainer.className = "practice-interactive-box";
     }
     const poolContainer = document.getElementById('practice-scramble-pool');
     if (poolContainer) poolContainer.classList.remove('hidden', 'invisible');
@@ -442,7 +442,7 @@ window.checkScrambleAnswer = function() {
   if (isCorrect) {
     const outputContainer = document.getElementById('practice-scramble-output');
     if (outputContainer) {
-      outputContainer.className = "w-full text-center rounded-2xl border-[3px] border-solid border-emerald-300 bg-white shadow-[0_0_15px_rgba(16,185,129,0.12)] p-4 min-h-[70px] flex items-center justify-center transition-all duration-300";
+      outputContainer.className = "practice-interactive-box practice-state-correct";
       outputContainer.innerHTML = `<span class="font-semibold text-lg text-slate-700">${targetText}</span>`;
     }
     showInteractiveFeedback(true, "");
@@ -450,11 +450,9 @@ window.checkScrambleAnswer = function() {
     showInteractiveFeedback(false, `❌ Chưa đúng! Đáp án đúng là: "${targetText}"`);
     const outputContainer = document.getElementById('practice-scramble-output');
     if (outputContainer) {
-      outputContainer.classList.remove('border-slate-200/80');
-      outputContainer.classList.add('border-rose-400', 'bg-rose-50/30');
+      outputContainer.classList.add('practice-state-incorrect');
       setTimeout(() => {
-        outputContainer.classList.remove('border-rose-400', 'bg-rose-50/30');
-        outputContainer.classList.add('border-slate-200/80');
+        outputContainer.classList.remove('practice-state-incorrect');
       }, 1000);
     }
   }
@@ -480,16 +478,14 @@ window.checkTypingAnswer = function() {
   const isCorrect = clean(userAns) === clean(targetAns);
   
   if (isCorrect) {
-    inputEl.className = "form-input text-center font-semibold text-lg !border-[3px] !border-emerald-300 !bg-white rounded-xl py-3 px-4 shadow-[0_0_15px_rgba(16,185,129,0.12)] outline-none";
+    inputEl.className = "practice-typing-input practice-state-correct";
     inputEl.disabled = true;
     showInteractiveFeedback(true, "");
   } else {
     showInteractiveFeedback(false, `❌ Chưa đúng! Đáp án đúng là: "${targetAns}"`);
-    inputEl.classList.remove('border-slate-200');
-    inputEl.classList.add('!border-rose-400', '!bg-rose-50/30');
+    inputEl.classList.add('practice-state-incorrect');
     setTimeout(() => {
-      inputEl.classList.remove('!border-rose-400', '!bg-rose-50/30');
-      inputEl.classList.add('border-slate-200');
+      inputEl.classList.remove('practice-state-incorrect');
     }, 1000);
   }
   
@@ -512,18 +508,18 @@ window.revealPracticeMeaning = function() {
     // Reveal correct answer inside interactive containers if not already correct
     if (isSingleWord(currentPracticeWord)) {
       const inputEl = document.getElementById('practice-typing-input');
-      if (inputEl && !inputEl.className.includes('!border-emerald-300')) {
+      if (inputEl && !inputEl.className.includes('practice-state-correct')) {
         inputEl.value = currentPracticeWord.content || "";
-        inputEl.className = "form-input text-center font-semibold text-lg !border-[3px] !border-blue-300 !bg-white rounded-xl py-3 px-4 shadow-[0_0_15px_rgba(59,130,246,0.12)] outline-none";
+        inputEl.className = "practice-typing-input practice-state-revealed";
         inputEl.disabled = true;
       }
     } else {
       const outputContainer = document.getElementById('practice-scramble-output');
-      if (outputContainer && !outputContainer.className.includes('border-emerald-300')) {
+      if (outputContainer && !outputContainer.className.includes('practice-state-correct')) {
         const targetText = currentPracticeWord.content || "";
         scrambleUserOrder = [];
         updateScrambleUI();
-        outputContainer.className = "w-full text-center rounded-2xl border-[3px] border-solid border-blue-300 bg-white shadow-[0_0_15px_rgba(59,130,246,0.12)] p-4 min-h-[70px] flex items-center justify-center transition-all duration-300";
+        outputContainer.className = "practice-interactive-box practice-state-revealed";
         outputContainer.innerHTML = `<span class="font-semibold text-lg text-slate-700">${targetText}</span>`;
       }
     }
