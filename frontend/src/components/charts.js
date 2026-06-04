@@ -47,7 +47,7 @@ export function renderExpensePie(categories, onClickCallback) {
           position: 'bottom',
           labels: {
             color: '#475569',
-            font: { family: 'Outfit', size: 12 }
+            font: { family: 'Plus Jakarta Sans', size: 12 }
           }
         },
         datalabels: {
@@ -56,7 +56,7 @@ export function renderExpensePie(categories, onClickCallback) {
             return sum > 0 ? Math.round((v / sum) * 100) + "%" : "0%";
           },
           color: '#fff',
-          font: { weight: 'bold', family: 'Outfit', size: 12 }
+          font: { weight: 'bold', family: 'Plus Jakarta Sans', size: 12 }
         }
       },
       maintainAspectRatio: false
@@ -90,7 +90,7 @@ export function renderExpenseBar(barLabels, barData, onClickCallback) {
       },
       scales: {
         y: { beginAtZero: true, grace: '15%', grid: { color: 'rgba(0, 0, 0, 0.04)' }, ticks: { display: false } },
-        x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: 'Outfit', size: 11 } } }
+        x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 11 } } }
       },
       plugins: {
         legend: { display: false },
@@ -98,7 +98,7 @@ export function renderExpenseBar(barLabels, barData, onClickCallback) {
           anchor: 'end',
           align: 'top',
           formatter: (v) => v.toLocaleString('vi-VN') + "đ",
-          font: { weight: 'bold', family: 'Outfit', size: 11 },
+          font: { weight: 'bold', family: 'Plus Jakarta Sans', size: 11 },
           color: '#0f172a'
         }
       },
@@ -140,7 +140,7 @@ export function renderHabitLine(habitDates, performanceDataPerDay, onClickCallba
       },
       scales: {
         y: { min: 0, max: 100, ticks: { display: false }, grid: { color: 'rgba(0, 0, 0, 0.04)' } },
-        x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: 'Outfit', size: 11 } } }
+        x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 11 } } }
       },
       plugins: {
         legend: { display: false },
@@ -148,7 +148,7 @@ export function renderHabitLine(habitDates, performanceDataPerDay, onClickCallba
           anchor: 'end',
           align: 'top',
           color: '#10b981',
-          font: { weight: 'bold', family: 'Outfit', size: 11 },
+          font: { weight: 'bold', family: 'Plus Jakarta Sans', size: 11 },
           formatter: (v) => v + "%"
         }
       },
