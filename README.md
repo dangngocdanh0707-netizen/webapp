@@ -60,10 +60,12 @@ webapp_project/ (personal_webapp/)
 
 ## ⚡ Các giải pháp công nghệ & Tính năng cao cấp mình đã tích hợp
 
-### 1. 🎓 Hệ thống học tập Anki Spaced Repetition (SM-2) đa chế độ
+### 1. 🎓 Hệ thống ôn tập Anki Spaced Repetition (SM-2) khoa học
 * **Phân tách Chế độ học động**: Hệ thống tự động phân loại học tập dựa trên dữ liệu đầu vào. Kích hoạt **Tự gõ (Typing)** đối với từ vựng đơn (`Vocabulary`) giúp khắc sâu trí nhớ chính tả. Kích hoạt **Ghép thẻ chữ (Word Scramble)** dạng kéo thả đối với cụm từ (`Phrase`) hoặc câu (`Sentence`).
 * **Microphone Shadowing (Web Speech API)**: Tích hợp công nghệ nhận diện giọng nói gốc của trình duyệt. Luyện nói đuổi trực tiếp, tự động so khớp, tính % độ chính xác và tô màu trực quan từng từ đúng/sai mà không tốn chi phí cho API bên thứ ba.
-* **Đồng bộ hóa Thuật toán Anki SM-2 chuẩn xác**: Khắc phục triệt để lỗi hoán đổi chỉ số cột GAPI cũ. Chu kỳ ôn tập của thẻ học được tính toán khoa học dựa trên mức độ đánh giá tương ứng (**Again, Hard, Good, Easy**), giúp giãn cách thời gian học hợp lý.
+* **Chuẩn hóa Thuật toán Anki SM-2**: Chu kỳ ôn tập của thẻ học được tính toán khoa học dựa trên mức độ đánh giá tương ứng (**Again, Hard, Good, Easy**). Quản lý 3 trạng thái thẻ (*New*, *Relearning*, *Review*) với các công số điều chỉnh hệ số dễ (Ease Factor) tối ưu.
+* **Lưu giữ prevInterval & Hệ số quên (20% Lapse Multiplier)**: Khi thẻ bị quên (Again), khoảng cách ngày trước đó được lưu trữ trong session và áp dụng hệ số suy giảm 20% khi thẻ tốt nghiệp lại, giúp thẻ không bị mất dấu sự tiến bộ trước đó (thay vì bị reset hoàn toàn về 1 ngày).
+* **Điểm cộng trễ (Overdue Delay Bonus)**: Tự động cộng thêm ngày thưởng khi người dùng nhấn Hard cho các thẻ ôn tập bị trễ hạn: `new_interval = Math.round((prev_interval + delay / 4) * 1.2)`.
 
 ### 2. 🖱️ Cơ chế Ghép từ Word Scramble kéo thả (HTML5 Drag & Drop) mượt mà
 * Tích hợp đồng thời hai chế độ: click chọn nhanh thẻ từ và **kéo thả vật lý** trực tiếp trên Desktop để thay đổi vị trí các thẻ câu vô cùng trực quan và sinh động.
@@ -97,6 +99,11 @@ webapp_project/ (personal_webapp/)
 ### 8. 🎯 Theo dõi Tiến độ Mục tiêu (Goals Tracker) Nâng cấp 2 Cột & Progress Bar
 * **Tách cột Current / Target**: Phân chia chỉ số hiện tại và mục tiêu thành 2 cột riêng biệt (`CURRENT` và `TARGET`) giúp bảng dữ liệu trực quan và dễ đọc hơn.
 * **Thanh tiến độ Progress Bar Gradient Xanh biển**: Cập nhật màu sắc thanh tiến độ sang dải gradient xanh dương hiện đại (`from-blue-600 to-sky-500`) đồng bộ với hệ thống.
+
+### 9. 🚀 Cơ chế Cập nhật lạc quan (Optimistic UI) & Co giãn số dòng (Row Shifting) tự động
+* **Cập nhật tức thời (Zero Latency)**: Mọi thao tác Thêm mới, Chỉnh sửa, Thay đổi trạng thái hoặc Xóa trên tất cả các trang (Habits, Expenses, Tasks, Goals, Google Maps, Collections, Links, Prompts, Vocabulary) đều cập nhật trực tiếp mảng dữ liệu cục bộ và vẽ lại giao diện ngay lập tức mà không cần chờ API phản hồi. Người dùng trải nghiệm tốc độ phản hồi 0s.
+* **Tự động Hoàn tác (Rollback)**: Nếu API Google Sheets trả về lỗi hoặc mất kết nối mạng, hệ thống tự động phục hồi trạng thái giao diện và mảng dữ liệu về thời điểm trước khi thao tác, hiển thị thông báo lỗi trực quan mà không bị gián đoạn trải nghiệm.
+* **Co giãn số dòng thông minh (Row Shifting on Delete)**: Do đặc thù Google Sheets đẩy các dòng phía sau lên khi xóa 1 dòng, hệ thống tự động co giãn `rowNumber` của các phần tử cục bộ để luôn đồng bộ chỉ số dòng mà không phải tải lại toàn bộ bảng tính (giảm tải 3 giây chờ).
 
 ---
 
