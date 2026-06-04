@@ -30,17 +30,12 @@ export function buildGoalTable() {
         <td class="p-4 pl-6 font-semibold text-slate-800 text-sm goal-view-${id}">${escapeHTML(item.goal_name) || '-'}</td>
         <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${formatDateView(item.start_date)}</td>
         <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${formatDateView(item.end_date)}</td>
-        <td class="p-4 goal-view-${id}">
-          <div class="flex items-center gap-1.5 font-sans">
-            <span class="text-sm font-bold text-slate-800">${cur.toLocaleString()}</span>
-            <span class="text-slate-300 text-xs font-semibold">/</span>
-            <span class="text-sm font-semibold text-slate-400">${tar.toLocaleString()}</span>
-          </div>
-        </td>
+        <td class="p-4 font-bold text-slate-800 text-sm goal-view-${id}">${cur.toLocaleString()}</td>
+        <td class="p-4 font-semibold text-slate-450 text-sm goal-view-${id}">${tar.toLocaleString()}</td>
         <td class="p-4 goal-view-${id}">
           <div class="flex items-center gap-3.5">
             <div class="w-full bg-slate-100/80 h-2 rounded-full overflow-hidden border border-slate-200/40">
-              <div class="bg-gradient-to-r from-blue-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+              <div class="bg-gradient-to-r from-blue-600 to-sky-500 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
             </div>
             <span class="text-sm font-bold text-slate-800 font-sans tracking-wide shrink-0">
               ${pct}%
@@ -51,12 +46,9 @@ export function buildGoalTable() {
         <td class="p-4 pl-6 hidden goal-edit-${id}"><input type="text" id="goal-edit-name-${id}" class="edit-input font-bold" value="${escapeHTML(item.goal_name)}"></td>
         <td class="p-4 hidden goal-edit-${id}"><input type="date" id="goal-edit-start-${id}" class="edit-input" value="${formatDateInput(item.start_date)}"></td>
         <td class="p-4 hidden goal-edit-${id}"><input type="date" id="goal-edit-end-${id}" class="edit-input" value="${formatDateInput(item.end_date)}"></td>
-        <td class="p-4 hidden goal-edit-${id}" colspan="2">
-          <div class="flex gap-2">
-            <input type="number" id="goal-edit-current-${id}" class="edit-input text-center font-bold" value="${cur}">
-            <input type="number" id="goal-edit-target-${id}" class="edit-input text-center font-bold text-blue-600" value="${tar}">
-          </div>
-        </td>
+        <td class="p-4 hidden goal-edit-${id}"><input type="number" id="goal-edit-current-${id}" class="edit-input text-center font-bold" value="${cur}"></td>
+        <td class="p-4 hidden goal-edit-${id}"><input type="number" id="goal-edit-target-${id}" class="edit-input text-center font-bold text-blue-600" value="${tar}"></td>
+        <td class="p-4 hidden goal-edit-${id}"><span class="text-xs italic text-slate-400">Locked</span></td>
         
         <td class="p-4 text-center">
           <div class="goal-view-${id} flex justify-center gap-2">
@@ -73,7 +65,7 @@ export function buildGoalTable() {
   });
   
   if (tbody.children.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500 italic">No objectives scheduled. Establish one below!</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-500 italic">No objectives scheduled. Establish one below!</td></tr>`;
   }
 }
 
