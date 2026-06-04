@@ -466,7 +466,7 @@ export function callServer(methodName, args) {
             meaning: row[4] || "",
             status: row[5] || "New",
             next_review: cleanDateValue(row[6]),
-            ease_factor: Number(row[7]) || 2.0,
+            ease_factor: Number(row[7]) || 2.5,
             interval: Number(row[8]) || 0
           })).filter(item => item.content),
 
@@ -582,7 +582,7 @@ export function callServer(methodName, args) {
           range: `${vocabTab}!A:I`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[content, "", "", "", "", "New", "", 2.0, 0]] }
+          resource: { values: [[content, "", "", "", "", "New", "", 2.5, 0]] }
         });
         resolve("Thành công");
         return;
@@ -620,70 +620,12 @@ export function callServer(methodName, args) {
         return;
       }
       if (methodName === "logVocabReviewAction") {
-        const [rowNumber, currentStatus, action] = args;
-        const res = await gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId,
-          range: `${vocabTab}!A${rowNumber}:I${rowNumber}`
-        });
-        const row = res.result.values ? res.result.values[0] : [];
-        let status = row[5] || "New";
-        let nextReviewStr = row[6] || "";
-        let easeFactor = Number(row[7]) || 2.0;
-        let interval = Number(row[8]) || 0;
-        let daysToAdd = 0;
-
-        const isNewCard = (status === "New" || interval === 0);
-
-        if (isNewCard) {
-          if (action === "again") { daysToAdd = 0; interval = 0; }
-          else if (action === "hard") { daysToAdd = 1; interval = 1; }
-          else if (action === "good") { daysToAdd = 2; interval = 2; }
-          else if (action === "easy") { daysToAdd = 4; interval = 4; }
-        } else {
-          // Tính số ngày trễ thực tế kể từ lịch hẹn trước
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          const todayTs = today.getTime();
-          let nextReviewTs = parseDateToTimestamp(nextReviewStr);
-          let delayDays = 0;
-          if (nextReviewTs > 0) {
-            delayDays = Math.max(0, Math.round((todayTs - nextReviewTs) / (24 * 60 * 60 * 1000)));
-          }
-          let actualInterval = interval + delayDays;
-
-          if (action === "again") {
-            easeFactor = Math.max(1.3, easeFactor - 0.2);
-            interval = 0;
-            daysToAdd = 0;
-          } else if (action === "hard") {
-            easeFactor = Math.max(1.3, easeFactor - 0.15);
-            interval = Math.max(interval, Math.round(actualInterval * 1.2));
-            daysToAdd = interval;
-          } else if (action === "good") {
-            let hardInterval = Math.max(interval, Math.round(actualInterval * 1.2));
-            interval = Math.max(hardInterval + 1, Math.round(actualInterval * easeFactor));
-            daysToAdd = interval;
-          } else if (action === "easy") {
-            easeFactor = Math.min(5.0, easeFactor + 0.15);
-            let hardInterval = Math.max(interval, Math.round(actualInterval * 1.2));
-            let goodInterval = Math.max(hardInterval + 1, Math.round(actualInterval * easeFactor));
-            interval = Math.max(goodInterval + 1, Math.round(actualInterval * easeFactor * 1.3));
-            daysToAdd = interval;
-          }
-        }
-
-        const nextReviewDate = new Date();
-        nextReviewDate.setHours(0, 0, 0, 0);
-        nextReviewDate.setDate(nextReviewDate.getDate() + daysToAdd);
-        const nrStr = nextReviewDate.getFullYear() + '-' + String(nextReviewDate.getMonth() + 1).padStart(2, '0') + '-' + String(nextReviewDate.getDate()).padStart(2, '0');
-        const newStatus = (interval >= 21) ? "Mastered" : "Learning";
-        const finalStatus = interval === 0 ? "New" : newStatus;
-
+        const [rowNumber, finalStatus, nextReviewStr, easeFactor, interval] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${vocabTab}!F${rowNumber}:I${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[finalStatus, formatDateDb(nrStr), easeFactor, interval]] }
+          resource: { values: [[finalStatus, formatDateDb(nextReviewStr), Number(easeFactor), Number(interval)]] }
         });
         resolve("Thành công");
         return;

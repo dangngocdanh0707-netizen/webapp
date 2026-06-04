@@ -9,6 +9,64 @@ let onSyncNeeded = null;
 let scrambleTiles = [];
 let scrambleUserOrder = [];
 
+function applyAnkiFuzz(ivl) {
+  if (ivl < 2) return ivl;
+  if (ivl === 2) return Math.random() < 0.5 ? 2 : 3;
+  let fuzz = 0;
+  if (ivl < 7) {
+    fuzz = Math.floor(ivl * 0.25);
+  } else if (ivl < 30) {
+    fuzz = Math.max(2, Math.floor(ivl * 0.15));
+  } else {
+    fuzz = Math.max(4, Math.floor(ivl * 0.05));
+  }
+  let min = ivl - fuzz;
+  let max = ivl + fuzz;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getAnkiNextState(interval, easeFactor, delayDays, action) {
+  let newEase = easeFactor;
+  let newInterval = 0;
+  let isNewCard = (interval === 0);
+
+  if (isNewCard) {
+    if (action === "again") {
+      newInterval = 0;
+    } else if (action === "hard") {
+      newInterval = 1;
+    } else if (action === "good") {
+      newInterval = 1;
+    } else if (action === "easy") {
+      newInterval = 4;
+    }
+  } else {
+    if (action === "again") {
+      newEase = Math.max(1.3, easeFactor - 0.2);
+      newInterval = 0;
+    } else if (action === "hard") {
+      newEase = Math.max(1.3, easeFactor - 0.15);
+      newInterval = Math.max(interval, Math.round(interval * 1.2));
+    } else if (action === "good") {
+      let actualInterval = interval + Math.round(delayDays / 2);
+      let hardInterval = Math.max(interval, Math.round(interval * 1.2));
+      newInterval = Math.max(hardInterval + 1, Math.round(actualInterval * easeFactor));
+    } else if (action === "easy") {
+      newEase = Math.min(5.0, easeFactor + 0.15);
+      let actualInterval = interval + delayDays;
+      let hardInterval = Math.max(interval, Math.round(interval * 1.2));
+      let goodInterval = Math.max(hardInterval + 1, Math.round((interval + Math.round(delayDays / 2)) * easeFactor));
+      newInterval = Math.max(goodInterval + 1, Math.round(actualInterval * easeFactor * 1.3));
+    }
+
+    if (newInterval > 0) {
+      newInterval = applyAnkiFuzz(newInterval);
+    }
+  }
+
+  return { interval: newInterval, easeFactor: newEase };
+}
+
 function isSingleWord(item) {
   const cat = (item.category || "").toString().trim().toUpperCase();
   if (["PHRASE", "SENTENCE", "CỤM", "CÂU", "CỤM TỪ"].includes(cat)) {
@@ -215,7 +273,26 @@ window.triggerRandomVocab = function() {
   
   // Calculate Dynamic Anki Days
   let currentInterval = Number(currentPracticeWord.interval) || 0;
-  let currentEase = Number(currentPracticeWord.ease_factor) || 2.0;
+  let currentEase = Number(currentPracticeWord.ease_factor) || 2.5;
+
+  let today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let todayTs = today.getTime();
+  let delayDays = 0;
+  if (currentPracticeWord.next_review) {
+    let nrTs = parseDateToTimestamp(currentPracticeWord.next_review);
+    if (nrTs > 0) {
+      delayDays = Math.max(0, Math.round((todayTs - nrTs) / (24 * 60 * 60 * 1000)));
+    }
+  }
+
+  // Pre-calculate all next states
+  currentPracticeWord.nextStates = {
+    again: getAnkiNextState(currentInterval, currentEase, delayDays, "again"),
+    hard: getAnkiNextState(currentInterval, currentEase, delayDays, "hard"),
+    good: getAnkiNextState(currentInterval, currentEase, delayDays, "good"),
+    easy: getAnkiNextState(currentInterval, currentEase, delayDays, "easy")
+  };
 
   function formatAnkiTime(days) {
     if (days < 1) return "<10m";
@@ -223,39 +300,15 @@ window.triggerRandomVocab = function() {
     return days + "d";
   }
 
-  let daysAgain = 0; let daysHard = 0; let daysGood = 0; let daysEasy = 0;
-  let isNewCard = (currentInterval === 0 || (currentPracticeWord.status || "").toString().trim() === "New");
-  if (isNewCard) {
-    daysAgain = 0; daysHard = 1; daysGood = 2; daysEasy = 4;
-  } else {
-    let today = new Date();
-    today.setHours(0, 0, 0, 0);
-    let todayTs = today.getTime();
-    
-    let delayDays = 0;
-    if (currentPracticeWord.next_review) {
-      let nrTs = parseDateToTimestamp(currentPracticeWord.next_review);
-      if (nrTs > 0) {
-        delayDays = Math.max(0, Math.round((todayTs - nrTs) / (24 * 60 * 60 * 1000)));
-      }
-    }
-    let actualInterval = currentInterval + delayDays;
-
-    daysAgain = 0;
-    daysHard = Math.max(currentInterval, Math.round(actualInterval * 1.2));
-    daysGood = Math.max(daysHard + 1, Math.round(actualInterval * currentEase));
-    daysEasy = Math.max(daysGood + 1, Math.round(actualInterval * currentEase * 1.3));
-  }
-
   const lblAgain = document.getElementById('lbl-time-again');
   const lblHard = document.getElementById('lbl-time-hard');
   const lblGood = document.getElementById('lbl-time-good');
   const lblEasy = document.getElementById('lbl-time-easy');
 
-  if (lblAgain) lblAgain.innerText = formatAnkiTime(daysAgain);
-  if (lblHard) lblHard.innerText = formatAnkiTime(daysHard);
-  if (lblGood) lblGood.innerText = formatAnkiTime(daysGood);
-  if (lblEasy) lblEasy.innerText = formatAnkiTime(daysEasy);
+  if (lblAgain) lblAgain.innerText = formatAnkiTime(currentPracticeWord.nextStates.again.interval);
+  if (lblHard) lblHard.innerText = formatAnkiTime(currentPracticeWord.nextStates.hard.interval);
+  if (lblGood) lblGood.innerText = formatAnkiTime(currentPracticeWord.nextStates.good.interval);
+  if (lblEasy) lblEasy.innerText = formatAnkiTime(currentPracticeWord.nextStates.easy.interval);
   
   const btnTrigger = document.getElementById('btn-practice-trigger');
   const btnReveal = document.getElementById('btn-practice-reveal');
@@ -551,21 +604,30 @@ window.revealPracticeMeaning = function() {
 };
 
 window.logPracticeAction = function(action) {
-  if (!currentPracticeWord) return;
+  if (!currentPracticeWord || !currentPracticeWord.nextStates) return;
 
   let rowNumber = currentPracticeWord.rowNumber;
-  let currentStatus = currentPracticeWord.status ? currentPracticeWord.status.toString().trim() : "New";
+  let nextState = currentPracticeWord.nextStates[action];
+  let finalInterval = nextState.interval;
+  let finalEase = nextState.easeFactor;
+  let finalStatus = finalInterval === 0 ? "New" : (finalInterval >= 21 ? "Mastered" : "Learning");
+
+  // Tính chuỗi ngày ôn tiếp theo
+  const nextReviewDate = new Date();
+  nextReviewDate.setHours(0, 0, 0, 0);
+  nextReviewDate.setDate(nextReviewDate.getDate() + finalInterval);
+  const nextReviewStr = nextReviewDate.getFullYear() + '-' + 
+                        String(nextReviewDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                        String(nextReviewDate.getDate()).padStart(2, '0');
 
   // 1. Cập nhật hàng chờ cục bộ
   if (action === "again") {
     // Tạo bản sao đã cập nhật để học lại
     let updatedWord = { ...currentPracticeWord };
-    updatedWord.interval = 0;
-    updatedWord.status = "New";
-    updatedWord.ease_factor = Math.max(1.3, (Number(updatedWord.ease_factor) || 2.0) - 0.2);
-    // Đặt next_review thành hôm nay
-    let todayStr = new Date().toISOString().split('T')[0];
-    updatedWord.next_review = todayStr;
+    updatedWord.interval = finalInterval;
+    updatedWord.status = finalStatus;
+    updatedWord.ease_factor = finalEase;
+    updatedWord.next_review = nextReviewStr;
 
     // Lọc thẻ cũ ra và đẩy thẻ mới cập nhật vào cuối hàng chờ
     reviewQueue = reviewQueue.filter(v => v.rowNumber !== rowNumber);
@@ -598,7 +660,8 @@ window.logPracticeAction = function(action) {
   }
 
   // 4. Đồng bộ dữ liệu lên Google Sheets ở chế độ ngầm (Background Sync)
-  callServer("logVocabReviewAction", [rowNumber, currentStatus, action])
+  // Gửi trực tiếp các giá trị đã tính toán xong để server ghi đè thẳng xuống Sheet, không cần đọc lại
+  callServer("logVocabReviewAction", [rowNumber, finalStatus, nextReviewStr, finalEase, finalInterval])
     .then(res => {
       // Chỉ tải lại toàn bộ dữ liệu từ server khi phiên học hiện tại đã hoàn thành (reviewQueue trống)
       if (reviewQueue.length === 0 && onSyncNeeded) {
