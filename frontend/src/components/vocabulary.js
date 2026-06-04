@@ -161,24 +161,45 @@ window.addVocabRow = function() {
     return;
   }
   
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
-  
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let newRowNumber = Math.max(...allVocabData.map(v => v.rowNumber), 1) + 1;
+  let newObj = {
+    rowNumber: newRowNumber,
+    content: content,
+    category: "",
+    topic: "",
+    level: "",
+    meaning: "",
+    status: "New",
+    next_review: "",
+    ease_factor: 2.5,
+    interval: 0
+  };
+
+  allVocabData.push(newObj);
+  buildVocabTable();
+
+  // Clear inputs
+  document.getElementById('ins-v-content').value = ""; 
+  showToast("Đã thêm từ vựng mới thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertVocabRow", [content])
     .then(res => {
-      if (res === "Thành công") {
-        document.getElementById('ins-v-content').value = ""; 
-        showToast("Đã thêm từ vựng mới thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi đồng bộ: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    allVocabData = allVocabData.filter(v => v.rowNumber !== newRowNumber);
+    buildVocabTable();
+    document.getElementById('ins-v-content').value = content;
+    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
 
 window.saveVocab = function(id) {
@@ -193,42 +214,81 @@ window.saveVocab = function(id) {
     return;
   } 
   
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
-  
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let idx = allVocabData.findIndex(v => v.rowNumber == id);
+  if (idx === -1) return;
+
+  let oldObj = { ...allVocabData[idx] };
+  allVocabData[idx].content = content;
+  allVocabData[idx].category = cat;
+  allVocabData[idx].topic = topic;
+  allVocabData[idx].level = level;
+  allVocabData[idx].meaning = meaning;
+
+  window.toggleVocabEdit(id, false);
+  buildVocabTable();
+  showToast("Đã cập nhật từ vựng thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateVocabRow", [id, content, cat, topic, level, meaning])
     .then(res => {
-      if (res === "Thành công") {
-        window.toggleVocabEdit(id, false);
-        showToast("Đã cập nhật từ vựng thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi cập nhật: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    if (idx !== -1) {
+      allVocabData[idx] = oldObj;
+    }
+    buildVocabTable();
+    window.toggleVocabEdit(id, true);
+    showToast("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
 
 window.deleteVocab = function(id) {
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let idx = allVocabData.findIndex(v => v.rowNumber == id);
+  if (idx === -1) return;
+
+  let deletedItem = allVocabData[idx];
+  let deletedIndex = idx;
+
+  allVocabData.splice(idx, 1);
   
+  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
+  allVocabData.forEach(item => {
+    if (item.rowNumber > id) {
+      item.rowNumber--;
+    }
+  });
+
+  buildVocabTable();
+  showToast("Đã xóa từ vựng thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteVocabRow", [id])
     .then(res => {
-      if (res === "Thành công") {
-        showToast("Đã xóa từ vựng thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi xóa: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    allVocabData.forEach(item => {
+      if (item.rowNumber >= id) {
+        item.rowNumber++;
+      }
+    });
+    allVocabData.splice(deletedIndex, 0, deletedItem);
+    buildVocabTable();
+    showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };

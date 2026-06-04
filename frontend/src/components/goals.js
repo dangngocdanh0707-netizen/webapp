@@ -91,27 +91,47 @@ window.addGoalRow = function() {
     return;
   }
   
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
-  
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let newRowNumber = Math.max(...allGoalData.map(g => g.rowNumber), 1) + 1;
+  let newObj = {
+    rowNumber: newRowNumber,
+    goal_name: name,
+    start_date: start,
+    end_date: end,
+    current_value: Number(current),
+    target_value: Number(target)
+  };
+
+  allGoalData.push(newObj);
+  buildGoalTable();
+
+  // Clear inputs
+  document.getElementById('ins-goal-name').value = "";
+  document.getElementById('ins-goal-end').value = "";
+  document.getElementById('ins-goal-current').value = "0";
+  document.getElementById('ins-goal-target').value = "";
+  showToast("Đã thiết lập mục tiêu mới thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertGoalRow", [name, start, end, current, target])
     .then(res => {
-      if (res === "Thành công") {
-        document.getElementById('ins-goal-name').value = "";
-        document.getElementById('ins-goal-end').value = "";
-        document.getElementById('ins-goal-current').value = "0";
-        document.getElementById('ins-goal-target').value = "";
-        showToast("Đã thiết lập mục tiêu mới thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi đồng bộ: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    allGoalData = allGoalData.filter(g => g.rowNumber !== newRowNumber);
+    buildGoalTable();
+    document.getElementById('ins-goal-name').value = name;
+    document.getElementById('ins-goal-end').value = endVal;
+    document.getElementById('ins-goal-current').value = current;
+    document.getElementById('ins-goal-target').value = target;
+    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
 
 window.saveGoal = function(id) {
@@ -123,41 +143,82 @@ window.saveGoal = function(id) {
   let current = document.getElementById(`goal-edit-current-${id}`).value; 
   let target = document.getElementById(`goal-edit-target-${id}`).value;
   
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
-  
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let idx = allGoalData.findIndex(g => g.rowNumber == id);
+  if (idx === -1) return;
+
+  let oldObj = { ...allGoalData[idx] };
+  allGoalData[idx].goal_name = name;
+  allGoalData[idx].start_date = start;
+  allGoalData[idx].end_date = end;
+  allGoalData[idx].current_value = Number(current);
+  allGoalData[idx].target_value = Number(target);
+
+  window.toggleGoalEdit(id, false);
+  buildGoalTable();
+  showToast("Đã cập nhật mục tiêu thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateGoalRow", [id, name, start, end, current, target])
     .then(res => {
-      if (res === "Thành công") {
-        showToast("Đã cập nhật mục tiêu thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi cập nhật: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    if (idx !== -1) {
+      allGoalData[idx] = oldObj;
+    }
+    buildGoalTable();
+    window.toggleGoalEdit(id, true);
+    showToast("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
 
 window.deleteGoal = function(id) {
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let idx = allGoalData.findIndex(g => g.rowNumber == id);
+  if (idx === -1) return;
+
+  let deletedItem = allGoalData[idx];
+  let deletedIndex = idx;
+
+  allGoalData.splice(idx, 1);
   
+  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
+  allGoalData.forEach(item => {
+    if (item.rowNumber > id) {
+      item.rowNumber--;
+    }
+  });
+
+  buildGoalTable();
+  showToast("Đã xóa mục tiêu thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteGoalRow", [id])
     .then(res => {
-      if (res === "Thành công") {
-        showToast("Đã xóa mục tiêu thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi xóa: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    // Khôi phục lại dòng bị xóa và tăng lại rowNumber của các dòng phía sau
+    allGoalData.forEach(item => {
+      if (item.rowNumber >= id) {
+        item.rowNumber++;
+      }
+    });
+    allGoalData.splice(deletedIndex, 0, deletedItem);
+    buildGoalTable();
+    showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };

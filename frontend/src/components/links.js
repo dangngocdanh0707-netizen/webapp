@@ -138,26 +138,43 @@ window.addLinkRow = function() {
     return;
   }
   
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
-  
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let newRowNumber = Math.max(...allLinkData.map(l => l.rowNumber), 1) + 1;
+  let newObj = {
+    rowNumber: newRowNumber,
+    title: title,
+    category: cat,
+    content: content
+  };
+
+  allLinkData.push(newObj);
+  buildLinkTable();
+
+  // Clear inputs
+  document.getElementById('ins-link-title').value = "";
+  document.getElementById('ins-link-cat').value = "";
+  document.getElementById('ins-link-content').value = "";
+  showToast("Đã thêm liên kết mới thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertLinkRow", [title, cat, content])
     .then(res => {
-      if (res === "Thành công") {
-        document.getElementById('ins-link-title').value = "";
-        document.getElementById('ins-link-cat').value = "";
-        document.getElementById('ins-link-content').value = "";
-        showToast("Đã thêm liên kết mới thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi đồng bộ: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    allLinkData = allLinkData.filter(l => l.rowNumber !== newRowNumber);
+    buildLinkTable();
+    document.getElementById('ins-link-title').value = title;
+    document.getElementById('ins-link-cat').value = cat;
+    document.getElementById('ins-link-content').value = content;
+    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
 
 window.saveLink = function(id) {
@@ -165,41 +182,79 @@ window.saveLink = function(id) {
   let cat = document.getElementById(`link-edit-cat-${id}`).value.trim();
   let content = document.getElementById(`link-edit-content-${id}`).value.trim();
   
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
-  
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let idx = allLinkData.findIndex(l => l.rowNumber == id);
+  if (idx === -1) return;
+
+  let oldObj = { ...allLinkData[idx] };
+  allLinkData[idx].title = title;
+  allLinkData[idx].category = cat;
+  allLinkData[idx].content = content;
+
+  window.toggleLinkEdit(id, false);
+  buildLinkTable();
+  showToast("Đã cập nhật liên kết thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateLinkRow", [id, title, cat, content])
     .then(res => {
-      if (res === "Thành công") {
-        showToast("Đã cập nhật liên kết thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi cập nhật: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    if (idx !== -1) {
+      allLinkData[idx] = oldObj;
+    }
+    buildLinkTable();
+    window.toggleLinkEdit(id, true);
+    showToast("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
 
 window.deleteLink = function(id) {
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let idx = allLinkData.findIndex(l => l.rowNumber == id);
+  if (idx === -1) return;
+
+  let deletedItem = allLinkData[idx];
+  let deletedIndex = idx;
+
+  allLinkData.splice(idx, 1);
   
+  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
+  allLinkData.forEach(item => {
+    if (item.rowNumber > id) {
+      item.rowNumber--;
+    }
+  });
+
+  buildLinkTable();
+  showToast("Đã xóa liên kết thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteLinkRow", [id])
     .then(res => {
-      if (res === "Thành công") {
-        showToast("Đã xóa liên kết thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi xóa: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    allLinkData.forEach(item => {
+      if (item.rowNumber >= id) {
+        item.rowNumber++;
+      }
+    });
+    allLinkData.splice(deletedIndex, 0, deletedItem);
+    buildLinkTable();
+    showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };

@@ -166,25 +166,45 @@ window.addCostRow = function () {
     return;
   }
 
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let newRowNumber = Math.max(...allCostData.map(c => c.rowNumber), 1) + 1;
+  let newObj = {
+    rowNumber: newRowNumber,
+    date: date,
+    category: cat,
+    amount: Number(amount),
+    note: note
+  };
+  
+  allCostData.push(newObj);
+  buildTable("All");
+  renderCostGraphics();
 
+  // Clear inputs
+  document.getElementById('ins-cost-amount').value = "";
+  document.getElementById('ins-cost-note').value = "";
+  showToast("Đã thêm khoản chi tiêu mới thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertCostRow", [date, cat, amount, note])
     .then(res => {
-      if (res === "Thành công") {
-        document.getElementById('ins-cost-amount').value = "";
-        document.getElementById('ins-cost-note').value = "";
-        showToast("Đã thêm khoản chi tiêu mới thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi đồng bộ: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    allCostData = allCostData.filter(c => c.rowNumber !== newRowNumber);
+    buildTable("All");
+    renderCostGraphics();
+    
+    document.getElementById('ins-cost-amount').value = amount;
+    document.getElementById('ins-cost-note').value = note;
+    showToast("Lỗi đồng bộ chi tiêu: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
 
 window.saveRow = function (id) {
@@ -194,41 +214,86 @@ window.saveRow = function (id) {
   let amount = document.getElementById(`edit-amount-${id}`).value;
   let note = document.getElementById(`edit-note-${id}`).value;
 
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let idx = allCostData.findIndex(c => c.rowNumber == id);
+  if (idx === -1) return;
 
+  let oldObj = { ...allCostData[idx] };
+  allCostData[idx].date = date;
+  allCostData[idx].category = cat;
+  allCostData[idx].amount = Number(amount);
+  allCostData[idx].note = note;
+
+  window.cancelEditMode(id);
+  buildTable("All");
+  renderCostGraphics();
+  showToast("Đã cập nhật khoản chi tiêu thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateCostRow", [id, date, cat, amount, note])
     .then(res => {
-      if (res === "Thành công") {
-        showToast("Đã cập nhật khoản chi tiêu thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi cập nhật: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    if (idx !== -1) {
+      allCostData[idx] = oldObj;
+    }
+    buildTable("All");
+    renderCostGraphics();
+    window.enterEditMode(id);
+    showToast("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
 
 window.deleteRow = function (id) {
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let idx = allCostData.findIndex(c => c.rowNumber == id);
+  if (idx === -1) return;
 
+  let deletedItem = allCostData[idx];
+  let deletedIndex = idx;
+
+  allCostData.splice(idx, 1);
+  
+  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
+  allCostData.forEach(item => {
+    if (item.rowNumber > id) {
+      item.rowNumber--;
+    }
+  });
+
+  buildTable("All");
+  renderCostGraphics();
+  showToast("Đã xóa khoản chi tiêu thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteCostRow", [id])
     .then(res => {
-      if (res === "Thành công") {
-        showToast("Đã xóa khoản chi tiêu thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi xóa: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    // Khôi phục lại dòng bị xóa và tăng lại rowNumber của các dòng phía sau
+    allCostData.forEach(item => {
+      if (item.rowNumber >= id) {
+        item.rowNumber++;
+      }
+    });
+    
+    allCostData.splice(deletedIndex, 0, deletedItem);
+    buildTable("All");
+    renderCostGraphics();
+    showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };

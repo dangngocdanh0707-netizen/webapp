@@ -116,26 +116,43 @@ window.addPromptRow = function() {
     return;
   }
   
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
-  
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let newRowNumber = Math.max(...allPromptData.map(p => p.rowNumber), 1) + 1;
+  let newObj = {
+    rowNumber: newRowNumber,
+    title: title,
+    content: content,
+    category: category
+  };
+
+  allPromptData.push(newObj);
+  buildPromptTable();
+
+  // Clear inputs
+  document.getElementById('ins-prompt-title').value = "";
+  document.getElementById('ins-prompt-content').value = "";
+  document.getElementById('ins-prompt-cat').value = "";
+  showToast("Đã thêm mẫu Prompt mới thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertPromptRow", [title, content, category])
     .then(res => {
-      if (res === "Thành công") {
-        document.getElementById('ins-prompt-title').value = "";
-        document.getElementById('ins-prompt-content').value = "";
-        document.getElementById('ins-prompt-cat').value = "";
-        showToast("Đã thêm mẫu Prompt mới thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi đồng bộ: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    allPromptData = allPromptData.filter(p => p.rowNumber !== newRowNumber);
+    buildPromptTable();
+    document.getElementById('ins-prompt-title').value = title;
+    document.getElementById('ins-prompt-content').value = content;
+    document.getElementById('ins-prompt-cat').value = category;
+    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
 
 window.savePrompt = function(id) {
@@ -143,41 +160,80 @@ window.savePrompt = function(id) {
   let content = document.getElementById(`prompt-edit-content-${id}`).value.trim();
   let category = document.getElementById(`prompt-edit-cat-${id}`).value.trim();
   
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
-  
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let idx = allPromptData.findIndex(p => p.rowNumber == id);
+  if (idx === -1) return;
+
+  let oldObj = { ...allPromptData[idx] };
+  allPromptData[idx].title = title;
+  allPromptData[idx].content = content;
+  allPromptData[idx].category = category;
+
+  window.togglePromptEdit(id, false);
+  buildPromptTable();
+  showToast("Đã cập nhật mẫu Prompt thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updatePromptRow", [id, title, content, category])
     .then(res => {
-      if (res === "Thành công") {
-        showToast("Đã cập nhật mẫu Prompt thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi cập nhật: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    if (idx !== -1) {
+      allPromptData[idx] = oldObj;
+    }
+    buildPromptTable();
+    window.togglePromptEdit(id, true);
+    showToast("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
 
 window.deletePrompt = function(id) {
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let idx = allPromptData.findIndex(p => p.rowNumber == id);
+  if (idx === -1) return;
+
+  let deletedItem = allPromptData[idx];
+  let deletedIndex = idx;
+
+  allPromptData.splice(idx, 1);
   
+  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
+  allPromptData.forEach(item => {
+    if (item.rowNumber > id) {
+      item.rowNumber--;
+    }
+  });
+
+  buildPromptTable();
+  showToast("Đã xóa mẫu Prompt thành công!", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deletePromptRow", [id])
     .then(res => {
-      if (res === "Thành công") {
-        showToast("Đã xóa mẫu Prompt thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi xóa: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    // Khôi phục lại dòng bị xóa và tăng lại rowNumber của các dòng phía sau
+    allPromptData.forEach(item => {
+      if (item.rowNumber >= id) {
+        item.rowNumber++;
+      }
+    });
+    allPromptData.splice(deletedIndex, 0, deletedItem);
+    buildPromptTable();
+    showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };

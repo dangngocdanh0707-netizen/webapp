@@ -169,7 +169,7 @@ export function buildMapGrid() {
 window.filterMapGrid = function() {
   buildMapGrid();
 };
- 
+
 window.addMapRow = function() {
   const placeInput = document.getElementById('ins-map-place');
   const cityInput = document.getElementById('ins-map-city');
@@ -188,88 +188,137 @@ window.addMapRow = function() {
     return;
   }
  
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
- 
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let newRowNumber = Math.max(...allMapData.map(m => m.rowNumber), 1) + 1;
+  let newObj = {
+    rowNumber: newRowNumber,
+    place: place,
+    city: city,
+    category: category,
+    address: address,
+    status: false
+  };
+
+  allMapData.push(newObj);
+  buildMapGrid();
+
+  // Clear inputs
+  placeInput.value = "";
+  cityInput.value = "";
+  if (catInput) catInput.value = "";
+  if (addressInput) addressInput.value = "";
+  showToast("Đã thêm địa điểm mới thành công! 🎉", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertMapRow", [place, city, category, address])
     .then(res => {
-      if (res === "Thành công") {
-        showToast("Đã thêm địa điểm mới thành công! 🎉", "success");
-        // Clear inputs
-        placeInput.value = "";
-        cityInput.value = "";
-        if (catInput) catInput.value = "";
-        if (addressInput) addressInput.value = "";
- 
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi thêm: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    allMapData = allMapData.filter(m => m.rowNumber !== newRowNumber);
+    buildMapGrid();
+    placeInput.value = place;
+    cityInput.value = city;
+    if (catInput) catInput.value = category;
+    if (addressInput) addressInput.value = address;
+    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
  
 window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
   const isChecked = checkboxEl.checked;
   const labelEl = document.getElementById(`map-chk-lbl-${rowNumber}`);
   
-  checkboxEl.disabled = true;
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   if (labelEl) {
-    labelEl.innerText = isChecked ? "Saving..." : "Reverting...";
-    labelEl.className = "text-xs font-semibold text-amber-500 animate-pulse";
+    labelEl.innerText = isChecked ? "Completed" : "Pending";
+    labelEl.className = isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
   }
+
+  let idx = allMapData.findIndex(item => item.rowNumber == rowNumber);
+  let oldStatus = false;
+  if (idx !== -1) {
+    oldStatus = allMapData[idx].status;
+    allMapData[idx].status = isChecked;
+  }
+
+  showToast(isChecked ? "Đã check-in chinh phục địa điểm này! 🎉" : "Đã hủy thám hiểm địa điểm", "success");
+  buildMapGrid();
  
+  // 2. Gửi yêu cầu ngầm lên Google Sheets
   callServer("updateMapCheckStatusRow", [rowNumber, isChecked])
     .then(res => {
-      checkboxEl.disabled = false;
-      if (res === "Thành công") {
-        let idx = allMapData.findIndex(item => item.rowNumber == rowNumber);
-        if (idx !== -1) allMapData[idx].status = isChecked;
- 
-        showToast(isChecked ? "Đã check-in chinh phục địa điểm này! 🎉" : "Đã hủy thám hiểm địa điểm", "success");
-        buildMapGrid();
-      } else {
-        showToast("Lỗi đồng bộ: " + res, "error");
-        checkboxEl.checked = !isChecked;
-        if (labelEl) {
-          labelEl.innerText = !isChecked ? "Completed" : "Pending";
-          labelEl.className = !isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
-        }
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      checkboxEl.disabled = false;
-      checkboxEl.checked = !isChecked;
-      showToast("Lỗi đồng bộ: " + err.message, "error");
-      if (labelEl) {
-        labelEl.innerText = !isChecked ? "Completed" : "Pending";
-        labelEl.className = !isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
-      }
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    if (idx !== -1) {
+      allMapData[idx].status = oldStatus;
+    }
+    checkboxEl.checked = oldStatus;
+    if (labelEl) {
+      let isExplored = oldStatus === true;
+      labelEl.innerText = isExplored ? "Completed" : "Pending";
+      labelEl.className = isExplored ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
+    }
+    buildMapGrid();
+    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
  
 window.deleteMapPlace = function(id) {
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let idx = allMapData.findIndex(m => m.rowNumber == id);
+  if (idx === -1) return;
+
+  let deletedItem = allMapData[idx];
+  let deletedIndex = idx;
+
+  allMapData.splice(idx, 1);
+  
+  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
+  allMapData.forEach(item => {
+    if (item.rowNumber > id) {
+      item.rowNumber--;
+    }
+  });
+
+  buildMapGrid();
+  showToast("Đã xóa địa điểm thành công!", "success");
  
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteMapRow", [id])
     .then(res => {
-      if (res === "Thành công") {
-        showToast("Đã xóa địa điểm thành công!", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi xóa: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    // Khôi phục lại dòng bị xóa và tăng lại rowNumber của các dòng phía sau
+    allMapData.forEach(item => {
+      if (item.rowNumber >= id) {
+        item.rowNumber++;
+      }
+    });
+    allMapData.splice(deletedIndex, 0, deletedItem);
+    buildMapGrid();
+    showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
 
 window.toggleMapEdit = function(id, isEdit) {
@@ -282,28 +331,43 @@ window.saveMapPlace = function(id) {
   const city = document.getElementById(`map-edit-city-${id}`).value.trim();
   const category = document.getElementById(`map-edit-cat-${id}`).value.trim();
   const address = document.getElementById(`map-edit-address-${id}`).value.trim();
-
+ 
   if (!place || !city) {
     showToast("Vui lòng nhập Tên địa điểm và Thành phố!", "warning");
     return;
   }
+ 
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  let idx = allMapData.findIndex(m => m.rowNumber == id);
+  if (idx === -1) return;
 
-  const loading = document.getElementById('loading');
-  if (loading) loading.style.display = 'flex';
+  let oldObj = { ...allMapData[idx] };
+  allMapData[idx].place = place;
+  allMapData[idx].city = city;
+  allMapData[idx].category = category;
+  allMapData[idx].address = address;
 
+  window.toggleMapEdit(id, false);
+  buildMapGrid();
+  showToast("Đã cập nhật địa điểm thành công! 🎉", "success");
+ 
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateMapRow", [id, place, city, category, address])
     .then(res => {
-      if (res === "Thành công") {
-        window.toggleMapEdit(id, false);
-        showToast("Đã cập nhật địa điểm thành công! 🎉", "success");
-        if (onSyncNeeded) onSyncNeeded();
-      } else {
-        showToast("Lỗi cập nhật: " + res, "error");
-        if (loading) loading.style.display = 'none';
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      showToast("Lỗi kết nối: " + err.message, "error");
-      if (loading) loading.style.display = 'none';
+      rollback(err.message);
     });
+
+  function rollback(errorMessage) {
+    if (idx !== -1) {
+      allMapData[idx] = oldObj;
+    }
+    buildMapGrid();
+    window.toggleMapEdit(id, true);
+    showToast("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
