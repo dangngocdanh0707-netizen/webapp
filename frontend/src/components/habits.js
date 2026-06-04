@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, parseDateToTimestamp } from '../services/api.js';
+import { callServer, escapeHTML, parseDateToTimestamp, formatDateView } from '../services/api.js';
 import { renderHabitLine, updateHabitChartData } from './charts.js';
 import { showToast } from '../services/toast.js';
 
