@@ -21,8 +21,8 @@
   <!-- Thư viện SDK Google Sheets & Auth -->
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script type="module" crossorigin src="/webapp_project/assets/index-D_bKeKIL.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-Brff-0iD.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-CgFr0Iw8.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-FEuTs5nf.css">
 </head>
 
 <body>
@@ -537,7 +537,7 @@
       </div>
 
       <div id="habit-tab" class="tab-content">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div class="flex items-center gap-3">
             <button onclick="launchApp('home-tab')"
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
@@ -636,7 +636,8 @@
                   <th class="p-4 pl-6">GOAL NAME</th>
                   <th class="p-4 w-32">START DATE</th>
                   <th class="p-4 w-32">END DATE</th>
-                  <th class="p-4 w-44">CURRENT / TARGET</th>
+                  <th class="p-4 w-28">CURRENT</th>
+                  <th class="p-4 w-28">TARGET</th>
                   <th class="p-4 w-1/4">PROGRESS</th>
                   <th class="p-4 text-center w-36">ACTION</th>
                 </tr>
@@ -893,19 +894,19 @@
           </h4>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Place Name</label>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">PLACE NAME</label>
               <input type="text" id="ins-map-place" placeholder="" class="form-input font-bold">
             </div>
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">City</label>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CITY</label>
               <input type="text" id="ins-map-city" placeholder="" class="form-input font-semibold">
             </div>
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Category</label>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label>
               <input type="text" id="ins-map-cat" placeholder="" class="form-input">
             </div>
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Address</label>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">ADDRESS</label>
               <input type="text" id="ins-map-address" placeholder="" class="form-input">
             </div>
           </div>
@@ -960,13 +961,13 @@
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse" id="table-map">
               <thead>
-                <tr class="border-b border-slate-100 bg-slate-50/50 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                  <th class="p-4 pl-6">Place Name</th>
-                  <th class="p-4">City</th>
-                  <th class="p-4">Category</th>
-                  <th class="p-4">Address</th>
-                  <th class="p-4 pl-12 text-left w-48">Status</th>
-                  <th class="p-4 pr-6 text-center">Actions</th>
+                <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+                  <th class="p-4 pl-6">PLACE NAME</th>
+                  <th class="p-4">CITY</th>
+                  <th class="p-4">CATEGORY</th>
+                  <th class="p-4">ADDRESS</th>
+                  <th class="p-4 pl-12 text-left w-48">STATUS</th>
+                  <th class="p-4 pr-6 text-center">ACTIONS</th>
                 </tr>
               </thead>
               <tbody id="map-places-table-body" class="divide-y divide-slate-100">
@@ -1010,19 +1011,19 @@
           </h4>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Item Name</label>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">ITEM NAME</label>
               <input type="text" id="ins-col-item" placeholder="" class="form-input font-semibold">
             </div>
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Brand</label>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">BRAND</label>
               <input type="text" id="ins-col-brand" placeholder="" class="form-input">
             </div>
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Style</label>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">STYLE</label>
               <input type="text" id="ins-col-style" placeholder="" class="form-input">
             </div>
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Category</label>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label>
               <input type="text" id="ins-col-category" placeholder="" class="form-input">
             </div>
           </div>
@@ -1067,13 +1068,13 @@
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="border-b border-slate-100 bg-slate-50/50 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                  <th class="p-4 pl-6">Asset Item</th>
-                  <th class="p-4">Brand</th>
-                  <th class="p-4">Style</th>
-                  <th class="p-4">Category</th>
-                  <th class="p-4 pl-12 text-left w-48">Status</th>
-                  <th class="p-4 pr-6 text-center">Actions</th>
+                <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+                  <th class="p-4 pl-6">ASSET ITEM</th>
+                  <th class="p-4">BRAND</th>
+                  <th class="p-4">STYLE</th>
+                  <th class="p-4">CATEGORY</th>
+                  <th class="p-4 pl-12 text-left w-48">STATUS</th>
+                  <th class="p-4 pr-6 text-center">ACTIONS</th>
                 </tr>
               </thead>
               <tbody id="collections-table-body" class="divide-y divide-slate-100">
