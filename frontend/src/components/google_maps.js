@@ -97,7 +97,7 @@ export function buildMapGrid() {
               ${escapeHTML(category)}
             </span>
           </td>
-          <td class="p-4 text-xs text-slate-500 max-w-[250px] truncate map-view-${id}">
+          <td class="p-4 text-xs text-slate-500 max-w-[300px] break-words whitespace-normal map-view-${id}">
             ${escapeHTML(address) || '-'}
           </td>
           <td class="p-4 pl-12 text-left map-view-${id}">
