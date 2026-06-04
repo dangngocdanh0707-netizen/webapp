@@ -2,6 +2,8 @@
 // Cung cấp thông báo pop-up đẹp mắt thay thế hàm alert() mặc định của trình duyệt
 
 export function showToast(message, type = 'info') {
+  console.log(`[Toast ${type}]:`, message);
+  return;
   let container = document.getElementById('toast-container');
   
   // Nếu chưa có container, tự động tạo mới và gắn vào body
