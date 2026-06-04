@@ -2,6 +2,7 @@ import { callServer, parseDateToTimestamp, escapeHTML } from '../services/api.js
 import { showToast } from '../services/toast.js';
 
 let reviewQueue = [];
+let activeQueue = [];
 let allVocabData = [];
 let currentPracticeWord = null;
 let onSyncNeeded = null;
@@ -25,12 +26,16 @@ function applyAnkiFuzz(ivl) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function getAnkiNextState(interval, easeFactor, delayDays, action) {
+function getAnkiNextState(interval, easeFactor, delayDays, action, status, prevInterval) {
   let newEase = easeFactor;
   let newInterval = 0;
-  let isNewCard = (interval === 0);
 
-  if (isNewCard) {
+  // Chuẩn hóa trạng thái thẻ
+  const cardStatus = (status || "").toString().trim();
+  const isNew = (cardStatus === "New" || interval === 0 && cardStatus !== "Relearning");
+  const isRelearning = (cardStatus === "Relearning");
+
+  if (isNew) {
     if (action === "again") {
       newInterval = 0;
     } else if (action === "hard") {
@@ -38,24 +43,43 @@ function getAnkiNextState(interval, easeFactor, delayDays, action) {
     } else if (action === "good") {
       newInterval = 1;
     } else if (action === "easy") {
+      newEase = Math.min(5.0, easeFactor + 0.15);
       newInterval = 4;
     }
+  } else if (isRelearning) {
+    const originalInterval = prevInterval || 1;
+    const lapseMultiplier = 0.20; // Lapse Multiplier 20%
+    const lapseInterval = Math.max(1, Math.round(originalInterval * lapseMultiplier));
+
+    if (action === "again") {
+      newInterval = 0;
+    } else if (action === "hard") {
+      newInterval = 1;
+    } else if (action === "good") {
+      newInterval = lapseInterval;
+    } else if (action === "easy") {
+      newEase = Math.min(5.0, easeFactor + 0.15);
+      newInterval = Math.max(lapseInterval + 1, Math.round(lapseInterval * 1.3));
+    }
   } else {
+    const prev_interval = interval;
+    const delay = delayDays;
+
     if (action === "again") {
       newEase = Math.max(1.3, easeFactor - 0.2);
       newInterval = 0;
     } else if (action === "hard") {
       newEase = Math.max(1.3, easeFactor - 0.15);
-      newInterval = Math.max(interval, Math.round(interval * 1.2));
+      newInterval = Math.max(prev_interval + 1, Math.round((prev_interval + delay / 4) * 1.2));
     } else if (action === "good") {
-      let actualInterval = interval + Math.round(delayDays / 2);
-      let hardInterval = Math.max(interval, Math.round(interval * 1.2));
+      let actualInterval = prev_interval + delay / 2;
+      let hardInterval = Math.max(prev_interval + 1, Math.round((prev_interval + delay / 4) * 1.2));
       newInterval = Math.max(hardInterval + 1, Math.round(actualInterval * easeFactor));
     } else if (action === "easy") {
       newEase = Math.min(5.0, easeFactor + 0.15);
-      let actualInterval = interval + delayDays;
-      let hardInterval = Math.max(interval, Math.round(interval * 1.2));
-      let goodInterval = Math.max(hardInterval + 1, Math.round((interval + Math.round(delayDays / 2)) * easeFactor));
+      let actualInterval = prev_interval + delay;
+      let hardInterval = Math.max(prev_interval + 1, Math.round((prev_interval + delay / 4) * 1.2));
+      let goodInterval = Math.max(hardInterval + 1, Math.round((prev_interval + delay / 2) * easeFactor));
       newInterval = Math.max(goodInterval + 1, Math.round(actualInterval * easeFactor * 1.3));
     }
 
@@ -65,6 +89,12 @@ function getAnkiNextState(interval, easeFactor, delayDays, action) {
   }
 
   return { interval: newInterval, easeFactor: newEase };
+}
+
+function fillActiveQueue() {
+  while (activeQueue.length < 8 && reviewQueue.length > 0) {
+    activeQueue.push(reviewQueue.shift());
+  }
 }
 
 function isSingleWord(item) {
@@ -87,17 +117,32 @@ export function initSrsModule(vocabData, onSync) {
   today.setHours(0, 0, 0, 0);
   let todayTs = today.getTime();
   
-  // Calculate review queue based on Anki algorithm
-  reviewQueue = allVocabData.filter(v => {
+  // 1. Lọc tất cả thẻ cũ cần ôn tập (due cards) hoặc thẻ đang học lại (Relearning)
+  let dueCards = allVocabData.filter(v => {
     let nr = v.next_review ? v.next_review.toString().trim() : "";
-    let status = v.status ? v.status.toString().trim() : "New";
-    if (status === "New" || nr === "") return true;
+    let status = (v.status || "").toString().trim();
+    if (status === "New" || nr === "") return false;
     
     let nrTs = parseDateToTimestamp(nr);
-    return nrTs <= todayTs;
+    return nrTs <= todayTs || status === "Relearning";
   });
+
+  // 2. Lọc thẻ mới (New) giới hạn tối đa 50 thẻ mỗi ngày
+  let newCards = allVocabData.filter(v => {
+    let status = (v.status || "New").toString().trim();
+    let nr = v.next_review ? v.next_review.toString().trim() : "";
+    return status === "New" || nr === "";
+  }).slice(0, 50);
+
+  // Hàng chờ ôn tập tổng hợp
+  reviewQueue = [...dueCards, ...newCards];
+  activeQueue = [];
+  fillActiveQueue();
   
-  let countLearning = allVocabData.filter(v => (v.status || '').toString().trim() === "Learning").length;
+  let countLearning = allVocabData.filter(v => {
+    let s = (v.status || '').toString().trim();
+    return s === "Learning" || s === "Relearning";
+  }).length;
   let countMastered = allVocabData.filter(v => (v.status || '').toString().trim() === "Mastered").length;
   
   // Update counts
@@ -105,14 +150,15 @@ export function initSrsModule(vocabData, onSync) {
   const learnEl = document.getElementById('practice-count-learning');
   const masterEl = document.getElementById('practice-count-mastered');
   
-  if (dueEl) dueEl.innerText = reviewQueue.length;
+  let totalDue = reviewQueue.length + activeQueue.length;
+  if (dueEl) dueEl.innerText = totalDue;
   if (learnEl) learnEl.innerText = countLearning;
   if (masterEl) masterEl.innerText = countMastered;
   
   const headlineEl = document.getElementById('practice-headline');
   
-  if (reviewQueue.length > 0) {
-    if (headlineEl) headlineEl.innerText = `You have ${reviewQueue.length} items due for today!`;
+  if (totalDue > 0) {
+    if (headlineEl) headlineEl.innerText = `You have ${totalDue} items due for today!`;
   } else {
     if (headlineEl) headlineEl.innerText = "🎉 All caught up!";
   }
@@ -168,7 +214,25 @@ window.playPracticeTTS = function() {
 };
 
 window.triggerRandomVocab = function() {
-  if (!reviewQueue || reviewQueue.length === 0) {
+  fillActiveQueue();
+  let totalDue = reviewQueue.length + activeQueue.length;
+  if (totalDue === 0) {
+    const emptyState = document.getElementById('practice-empty-state');
+    const cardContent = document.getElementById('practice-card-content');
+    if (cardContent) cardContent.classList.add('hidden');
+    if (emptyState) emptyState.classList.remove('hidden');
+    
+    const headlineEl = document.getElementById('practice-headline');
+    const sublineEl = document.getElementById('practice-subline');
+    if (headlineEl) headlineEl.innerText = "🎉 All caught up!";
+    if (sublineEl) sublineEl.innerText = "Excellent. You have no pending card reviews scheduled for today.";
+    
+    const dueEl = document.getElementById('practice-count-due');
+    if (dueEl) dueEl.innerText = "0";
+    return;
+  }
+  
+  if (activeQueue.length === 0) {
     showToast("Hộp từ vựng ôn tập của bạn đã trống! Hãy thêm từ mới hoặc quay lại vào ngày mai nhé.", "info");
     return;
   }
@@ -185,8 +249,8 @@ window.triggerRandomVocab = function() {
     meaningBox.classList.remove('opacity-100', 'translate-y-0');
   }
   
-  const randomIndex = Math.floor(Math.random() * reviewQueue.length);
-  currentPracticeWord = reviewQueue[randomIndex];
+  const randomIndex = Math.floor(Math.random() * activeQueue.length);
+  currentPracticeWord = activeQueue[randomIndex];
   
   const wordContent = currentPracticeWord.content || 'Untitled';
   
@@ -288,10 +352,10 @@ window.triggerRandomVocab = function() {
 
   // Pre-calculate all next states
   currentPracticeWord.nextStates = {
-    again: getAnkiNextState(currentInterval, currentEase, delayDays, "again"),
-    hard: getAnkiNextState(currentInterval, currentEase, delayDays, "hard"),
-    good: getAnkiNextState(currentInterval, currentEase, delayDays, "good"),
-    easy: getAnkiNextState(currentInterval, currentEase, delayDays, "easy")
+    again: getAnkiNextState(currentInterval, currentEase, delayDays, "again", currentPracticeWord.status, currentPracticeWord.prevInterval),
+    hard: getAnkiNextState(currentInterval, currentEase, delayDays, "hard", currentPracticeWord.status, currentPracticeWord.prevInterval),
+    good: getAnkiNextState(currentInterval, currentEase, delayDays, "good", currentPracticeWord.status, currentPracticeWord.prevInterval),
+    easy: getAnkiNextState(currentInterval, currentEase, delayDays, "easy", currentPracticeWord.status, currentPracticeWord.prevInterval)
   };
 
   function formatAnkiTime(days) {
@@ -610,7 +674,7 @@ window.logPracticeAction = function(action) {
   let nextState = currentPracticeWord.nextStates[action];
   let finalInterval = nextState.interval;
   let finalEase = nextState.easeFactor;
-  let finalStatus = finalInterval === 0 ? "New" : (finalInterval >= 21 ? "Mastered" : "Learning");
+  let finalStatus = finalInterval === 0 ? "Relearning" : (finalInterval >= 21 ? "Mastered" : "Learning");
 
   // Tính chuỗi ngày ôn tiếp theo
   const nextReviewDate = new Date();
@@ -622,31 +686,36 @@ window.logPracticeAction = function(action) {
 
   // 1. Cập nhật hàng chờ cục bộ
   if (action === "again") {
-    // Tạo bản sao đã cập nhật để học lại
-    let updatedWord = { ...currentPracticeWord };
-    updatedWord.interval = finalInterval;
-    updatedWord.status = finalStatus;
-    updatedWord.ease_factor = finalEase;
-    updatedWord.next_review = nextReviewStr;
-
-    // Lọc thẻ cũ ra và đẩy thẻ mới cập nhật vào cuối hàng chờ
-    reviewQueue = reviewQueue.filter(v => v.rowNumber !== rowNumber);
-    reviewQueue.push(updatedWord);
+    // Cập nhật thông tin trực tiếp trong activeQueue để ôn lại trong phiên hiện tại
+    let wordInActive = activeQueue.find(v => v.rowNumber === rowNumber);
+    if (wordInActive) {
+      // Chỉ lưu giữ prevInterval lần đầu tiên nhấn "again" (khi interval vẫn lớn hơn 0)
+      if (wordInActive.interval > 0 && (wordInActive.prevInterval === undefined || wordInActive.prevInterval === null)) {
+        wordInActive.prevInterval = wordInActive.interval;
+      }
+      wordInActive.interval = finalInterval;
+      wordInActive.status = finalStatus;
+      wordInActive.ease_factor = finalEase;
+      wordInActive.next_review = nextReviewStr;
+    }
   } else {
-    // Nếu chọn đúng (hard/good/easy), loại bỏ thẻ khỏi hàng chờ hiện tại
-    reviewQueue = reviewQueue.filter(v => v.rowNumber !== rowNumber);
+    // Nếu chọn đúng (hard/good/easy), loại bỏ thẻ khỏi activeQueue
+    activeQueue = activeQueue.filter(v => v.rowNumber !== rowNumber);
+    fillActiveQueue();
   }
+
+  let totalDue = reviewQueue.length + activeQueue.length;
 
   // 2. Cập nhật số lượng đếm trên giao diện ngay lập tức
   const dueEl = document.getElementById('practice-count-due');
-  if (dueEl) dueEl.innerText = reviewQueue.length;
+  if (dueEl) dueEl.innerText = totalDue;
 
   // 3. Hiển thị từ tiếp theo hoặc trạng thái hoàn thành ngay lập tức
   const cardContent = document.getElementById('practice-card-content');
   const emptyState = document.getElementById('practice-empty-state');
   const btnTrigger = document.getElementById('btn-practice-trigger');
 
-  if (reviewQueue.length > 0) {
+  if (totalDue > 0) {
     window.triggerRandomVocab();
   } else {
     if (cardContent) cardContent.classList.add('hidden');
@@ -663,8 +732,8 @@ window.logPracticeAction = function(action) {
   // Gửi trực tiếp các giá trị đã tính toán xong để server ghi đè thẳng xuống Sheet, không cần đọc lại
   callServer("logVocabReviewAction", [rowNumber, finalStatus, nextReviewStr, finalEase, finalInterval])
     .then(res => {
-      // Chỉ tải lại toàn bộ dữ liệu từ server khi phiên học hiện tại đã hoàn thành (reviewQueue trống)
-      if (reviewQueue.length === 0 && onSyncNeeded) {
+      // Chỉ tải lại toàn bộ dữ liệu từ server khi phiên học hiện tại đã hoàn thành (tổng số lượng hàng chờ trống)
+      if (totalDue === 0 && onSyncNeeded) {
         onSyncNeeded();
       }
     })
