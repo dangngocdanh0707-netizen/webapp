@@ -364,7 +364,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
     // Tạo tiêu đề cột cho các tab mới tạo
     const headersData = [
       { range: `${mappings['cost'] || 'expenses'}!A1:D1`, values: [['Date', 'Category', 'Amount', 'Note']] },
-      { range: `${mappings['vocabulary'] || 'vocabulary'}!A1:I1`, values: [['Content', 'Category', 'Topic', 'Level', 'Meaning', 'Status', 'Next Review', 'Interval', 'Ease Factor']] },
+      { range: `${mappings['vocabulary'] || 'vocabulary'}!A1:I1`, values: [['Content', 'Category', 'Topic', 'Level', 'Meaning', 'Status', 'Next Review', 'Ease Factor', 'Interval']] },
       { range: `${mappings['habit_tracker'] || 'habits'}!A1:C1`, values: [['Date', 'Habit', 'Status']] },
       { range: `${mappings['link'] || 'links'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
       { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Content', 'Category']] },
@@ -627,6 +627,7 @@ export function callServer(methodName, args) {
         });
         const row = res.result.values ? res.result.values[0] : [];
         let status = row[5] || "New";
+        let nextReviewStr = row[6] || "";
         let easeFactor = Number(row[7]) || 2.5;
         let interval = Number(row[8]) || 0;
         let daysToAdd = 0;
@@ -634,23 +635,34 @@ export function callServer(methodName, args) {
         if (status === "New" || interval === 0) {
           if (action === "again") { daysToAdd = 0; interval = 0; }
           else if (action === "hard") { daysToAdd = 1; interval = 1; }
-          else if (action === "good") { daysToAdd = 3; interval = 3; }
-          else if (action === "easy") { daysToAdd = 7; interval = 7; }
+          else if (action === "good") { daysToAdd = 1; interval = 1; }
+          else if (action === "easy") { daysToAdd = 4; interval = 4; }
         } else {
+          // Tính số ngày trễ thực tế kể từ lịch hẹn trước
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const todayTs = today.getTime();
+          let nextReviewTs = parseDateToTimestamp(nextReviewStr);
+          let delayDays = 0;
+          if (nextReviewTs > 0) {
+            delayDays = Math.max(0, Math.round((todayTs - nextReviewTs) / (24 * 60 * 60 * 1000)));
+          }
+          let actualInterval = interval + delayDays;
+
           if (action === "again") {
             easeFactor = Math.max(1.3, easeFactor - 0.2);
-            interval = 1;
-            daysToAdd = 1;
+            interval = 0;
+            daysToAdd = 0;
           } else if (action === "hard") {
             easeFactor = Math.max(1.3, easeFactor - 0.15);
-            interval = Math.max(1, Math.round(interval * 1.2));
+            interval = Math.max(1, Math.round(actualInterval * 1.2));
             daysToAdd = interval;
           } else if (action === "good") {
-            interval = Math.round(interval * easeFactor);
+            interval = Math.round(actualInterval * easeFactor);
             daysToAdd = interval;
           } else if (action === "easy") {
-            easeFactor = Math.min(3.0, easeFactor + 0.15);
-            interval = Math.round(interval * easeFactor * 1.3);
+            easeFactor = Math.min(5.0, easeFactor + 0.15);
+            interval = Math.round(actualInterval * easeFactor * 1.3);
             daysToAdd = interval;
           }
         }

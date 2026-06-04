@@ -225,12 +225,25 @@ window.triggerRandomVocab = function() {
 
   let daysAgain = 0; let daysHard = 0; let daysGood = 0; let daysEasy = 0;
   if (currentInterval === 0) {
-    daysAgain = 0; daysHard = 1; daysGood = 3; daysEasy = 7;
+    daysAgain = 0; daysHard = 1; daysGood = 1; daysEasy = 4;
   } else {
-    daysAgain = 1;
-    daysHard = Math.max(1, Math.round(currentInterval * 1.2));
-    daysGood = Math.round(currentInterval * currentEase);
-    daysEasy = Math.round(currentInterval * Math.min(3.0, currentEase + 0.15) * 1.3);
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let todayTs = today.getTime();
+    
+    let delayDays = 0;
+    if (currentPracticeWord.next_review) {
+      let nrTs = parseDateToTimestamp(currentPracticeWord.next_review);
+      if (nrTs > 0) {
+        delayDays = Math.max(0, Math.round((todayTs - nrTs) / (24 * 60 * 60 * 1000)));
+      }
+    }
+    let actualInterval = currentInterval + delayDays;
+
+    daysAgain = 0;
+    daysHard = Math.max(1, Math.round(actualInterval * 1.2));
+    daysGood = Math.round(actualInterval * currentEase);
+    daysEasy = Math.round(actualInterval * Math.min(5.0, currentEase + 0.15) * 1.3);
   }
 
   const lblAgain = document.getElementById('lbl-time-again');
