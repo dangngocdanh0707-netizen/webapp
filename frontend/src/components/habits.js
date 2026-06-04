@@ -153,30 +153,47 @@ window.filterHabitTable = function () {
 window.toggleHabitStatusDirectly = function (rowNumber, checkboxEl) {
   let isChecked = checkboxEl.checked;
   let labelEl = document.getElementById(`habit-lbl-${rowNumber}`);
-  checkboxEl.disabled = true;
 
-  labelEl.innerText = isChecked ? "Saving..." : "Reverting...";
-  labelEl.className = "text-xs font-semibold text-amber-500 animate-pulse";
+  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  labelEl.innerText = isChecked ? "Completed" : "Pending";
+  labelEl.className = isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
 
+  // Cập nhật dữ liệu trong mảng cục bộ
+  let idx = allHabitData.findIndex(h => h.rowNumber == rowNumber);
+  let oldStatus = false;
+  if (idx !== -1) {
+    oldStatus = allHabitData[idx].status;
+    allHabitData[idx].status = isChecked;
+  }
+
+  // Vẽ lại biểu đồ hiệu suất và hiện Toast thành công tức thì
+  recalculateHabitChartOnly();
+  showToast(isChecked ? "Tuyệt vời! Bạn đã hoàn thành một thói quen!" : "Đã đặt thói quen thành Chưa hoàn thành", "success");
+
+  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateHabitStatusRow", [rowNumber, isChecked])
     .then(res => {
-      checkboxEl.disabled = false;
-      if (res === "Thành công") {
-        let idx = allHabitData.findIndex(h => h.rowNumber == rowNumber);
-        if (idx !== -1) allHabitData[idx].status = isChecked;
-
-        labelEl.innerText = isChecked ? "Completed" : "Pending";
-        labelEl.className = isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
-        showToast(isChecked ? "Tuyệt vời! Bạn đã hoàn thành một thói quen!" : "Đã đặt thói quen thành Chưa hoàn thành", "success");
-        recalculateHabitChartOnly();
-      } else {
-        showToast("Lỗi đồng bộ thói quen: " + res, "error");
-        checkboxEl.checked = !isChecked;
+      if (res !== "Thành công") {
+        rollback(res);
       }
     })
     .catch(err => {
-      checkboxEl.disabled = false;
-      checkboxEl.checked = !isChecked;
-      showToast("Lỗi đồng bộ thói quen: " + err.message, "error");
+      rollback(err.message);
     });
+
+  // Hàm hoàn tác khi xảy ra lỗi đồng bộ
+  function rollback(errorMessage) {
+    if (idx !== -1) {
+      allHabitData[idx].status = oldStatus;
+    }
+    checkboxEl.checked = oldStatus;
+    
+    // Cập nhật lại giao diện cũ
+    let isDone = oldStatus === true || oldStatus === "TRUE" || oldStatus === "√" || oldStatus === "checked";
+    labelEl.innerText = isDone ? "Completed" : "Pending";
+    labelEl.className = isDone ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
+    
+    recalculateHabitChartOnly();
+    showToast("Lỗi đồng bộ thói quen: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
 };
