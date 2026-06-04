@@ -180,7 +180,7 @@ window.triggerRandomVocab = function() {
     document.getElementById('practice-mode-scramble').classList.remove('hidden');
     const outputContainer = document.getElementById('practice-scramble-output');
     if (outputContainer) {
-      outputContainer.className = "min-h-[70px] p-4 rounded-2xl border-2 border-solid border-blue-400 bg-white flex flex-wrap justify-center gap-2 items-center transition-all duration-300";
+      outputContainer.className = "w-full min-h-[70px] p-4 rounded-2xl border-[3px] border-solid border-blue-400 bg-white flex flex-wrap justify-center gap-2 items-center transition-all duration-300";
     }
     const poolContainer = document.getElementById('practice-scramble-pool');
     if (poolContainer) poolContainer.classList.remove('hidden', 'invisible');
