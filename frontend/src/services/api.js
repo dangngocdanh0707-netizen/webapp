@@ -1054,38 +1054,38 @@ export function escapeHTML(str) {
 // đồng thời hiển thị đúng định dạng dd/MM/yyyy và chỉnh sửa bằng thẻ <input type="date"> chuẩn.
 // ==========================================
 
-// 1. Hiển thị ngày dạng dd/MM/yyyy trên giao diện web (bất kể dữ liệu gốc từ Google Sheets là gì)
+// 1. Chuẩn hóa ngày nhận được từ Google Sheets thành định dạng yyyy-MM-dd
 export function cleanDateValue(val) {
   if (val === undefined || val === null) return "";
   
   if (typeof val === 'number') {
     // Convert Google Sheets serial number to Date (base: Dec 30, 1899 in UTC)
-    // Using UTC avoids historical timezone offset changes and local timezone shifts
     const baseDate = Date.UTC(1899, 11, 30);
     const date = new Date(baseDate + val * 24 * 60 * 60 * 1000);
     const day = String(date.getUTCDate()).padStart(2, '0');
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
     const year = date.getUTCFullYear();
-    return `${day}/${month}/${year}`;
+    return `${year}-${month}-${day}`;
   }
   
   let str = val.toString().trim();
   if (str.startsWith("'")) str = str.substring(1);
   if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
 
-  // Nếu là dạng yyyy-MM-dd hoặc dd-MM-yyyy -> dd/MM/yyyy
+  // Nếu là dạng yyyy-MM-dd hoặc dd-MM-yyyy -> yyyy-MM-dd
   if (str.includes('-')) {
     let parts = str.split('-');
     if (parts.length === 3) {
       if (parts[0].length === 4) {
-        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
       } else if (parts[2].length === 4) {
-        return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+        // dd-MM-yyyy -> yyyy-MM-dd
+        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
       }
     }
   }
 
-  // Nếu là dạng MM/dd/yyyy hoặc dd/MM/yyyy -> chuẩn hóa về dd/MM/yyyy
+  // Nếu là dạng MM/dd/yyyy hoặc dd/MM/yyyy -> yyyy-MM-dd
   if (str.includes('/')) {
     let parts = str.split('/');
     if (parts.length === 3) {
@@ -1096,67 +1096,17 @@ export function cleanDateValue(val) {
         let m = parts[1].padStart(2, '0');
         let y = parts[2];
         if (p0 > 12) {
-          // p0 > 12 chắc chắn là ngày -> dd/MM/yyyy
-          return `${d}/${m}/${y}`;
+          // dd/MM/yyyy -> yyyy-MM-dd
+          return `${y}-${m}-${d}`;
         } else if (p1 > 12) {
-          // p1 > 12 chắc chắn là ngày (định dạng US: MM/dd/yyyy) -> chuyển sang dd/MM/yyyy
-          return `${m}/${d}/${y}`;
+          // MM/dd/yyyy -> yyyy-MM-dd
+          return `${y}-${d}-${m}`;
         }
-        // Trường hợp còn lại (cả 2 đều <= 12):
-        // Vì ta lưu trữ dưới dạng MM/dd/yyyy khi ghi xuống Google Sheets, 
-        // chuỗi này từ DB đại diện cho MM/dd/yyyy nên ta hoán đổi thành dd/MM/yyyy.
-        return `${m}/${d}/${y}`;
+        // Fallback: dd/MM/yyyy -> yyyy-MM-dd
+        return `${y}-${m}-${d}`;
       } else if (parts[0].length === 4) {
-        // yyyy/MM/dd -> dd/MM/yyyy
-        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
-      }
-    }
-  }
-
-  return str;
-}
-
-// 1. Hiển thị ngày dạng dd/MM/yyyy trên giao diện web (bất kể dữ liệu gốc từ Google Sheets là gì)
-export function formatDateView(dateStr) {
-  if (!dateStr) return '-';
-  let str = dateStr.toString().trim();
-  if (str.startsWith("'")) str = str.substring(1);
-  if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
-
-  // Xử lý định dạng yyyy-MM-dd hoặc tương tự có dấu gạch ngang -
-  if (str.includes('-')) {
-    let parts = str.split('-');
-    if (parts.length === 3) {
-      if (parts[0].length === 4) {
-        // yyyy-MM-dd -> dd/MM/yyyy
-        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
-      } else if (parts[2].length === 4) {
-        // dd-MM-yyyy -> dd/MM/yyyy
-        return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
-      }
-    }
-  }
-
-  // Xử lý định dạng có dấu gạch chéo / (Ví dụ: dd/MM/yyyy hoặc MM/dd/yyyy hoặc yyyy/MM/dd)
-  if (str.includes('/')) {
-    let parts = str.split('/');
-    if (parts.length === 3) {
-      if (parts[2].length === 4) {
-        // Có thể là dd/MM/yyyy hoặc MM/dd/yyyy
-        let p0 = parseInt(parts[0], 10);
-        let p1 = parseInt(parts[1], 10);
-        if (p0 > 12) {
-          // p0 > 12 chắc chắn là ngày -> dd/MM/yyyy
-          return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
-        } else if (p1 > 12) {
-          // p1 > 12 chắc chắn là ngày (định dạng US: MM/dd/yyyy) -> chuyển sang dd/MM/yyyy
-          return `${parts[1].padStart(2, '0')}/${parts[0].padStart(2, '0')}/${parts[2]}`;
-        }
-        // Trường hợp còn lại (cả 2 đều <= 12), mặc định xem là dd/MM/yyyy
-        return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
-      } else if (parts[0].length === 4) {
-        // yyyy/MM/dd -> dd/MM/yyyy
-        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+        // yyyy/MM/dd -> yyyy-MM-dd
+        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
       }
     }
   }
@@ -1168,136 +1118,36 @@ export function formatDateView(dateStr) {
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
+    return `${year}-${month}-${day}`;
   }
 
   return str;
 }
 
-// 2. Chuyển đổi định dạng ngày lưu trữ sang dạng yyyy-MM-dd để gán vào ô nhập liệu <input type="date">
+// 2. Định dạng ngày hiển thị trên giao diện (sử dụng yyyy-MM-dd thống nhất)
+export function formatDateView(dateStr) {
+  if (!dateStr) return '-';
+  return cleanDateValue(dateStr);
+}
+
+// 3. Chuẩn hóa ngày trước khi ghi xuống ô nhập liệu <input type="date">
 export function formatDateInput(dateStr) {
   if (!dateStr) return '';
-  let str = dateStr.toString().trim();
-  if (str.startsWith("'")) str = str.substring(1);
-  if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
-
-  if (str.includes('/')) {
-    let parts = str.split('/');
-    if (parts.length === 3) {
-      if (parts[2].length === 4) {
-        // dd/MM/yyyy hoặc MM/dd/yyyy -> yyyy-MM-dd
-        let p0 = parseInt(parts[0], 10);
-        let p1 = parseInt(parts[1], 10);
-        let d = parts[0].padStart(2, '0');
-        let m = parts[1].padStart(2, '0');
-        let y = parts[2];
-
-        if (p1 > 12) {
-          // MM/dd/yyyy (US) -> d và m hoán đổi
-          d = parts[1].padStart(2, '0');
-          m = parts[0].padStart(2, '0');
-        }
-        return `${y}-${m}-${d}`;
-      } else if (parts[0].length === 4) {
-        // yyyy/MM/dd -> yyyy-MM-dd
-        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
-      }
-    }
-  }
-
-  if (str.includes('-')) {
-    let parts = str.split('-');
-    if (parts.length === 3) {
-      if (parts[0].length === 4) return str; // Đã là yyyy-MM-dd
-      // dd-MM-yyyy -> yyyy-MM-dd
-      let d = parts[0].padStart(2, '0');
-      let m = parts[1].padStart(2, '0');
-      let y = parts[2];
-      return `${y}-${m}-${d}`;
-    }
-  }
-
-  const ts = Date.parse(str);
-  if (!isNaN(ts)) {
-    const d = new Date(ts);
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  }
-
-  return '';
+  return cleanDateValue(dateStr);
 }
 
-// 3. Chuẩn hóa ngày trước khi ghi xuống Google Sheets thành dạng MM/dd/yyyy để Google Sheets tự động nhận diện chính xác
+// 4. Chuẩn hóa ngày trước khi ghi xuống Google Sheets thành dạng yyyy-MM-dd
 export function formatDateDb(dateStr) {
   if (!dateStr) return '';
-  let str = dateStr.toString().trim();
-  if (str.startsWith("'")) str = str.substring(1);
-  if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
-
-  // yyyy-MM-dd hoặc dd-MM-yyyy -> MM/dd/yyyy
-  if (str.includes('-')) {
-    let parts = str.split('-');
-    if (parts.length === 3) {
-      if (parts[0].length === 4) {
-        return `${parts[1].padStart(2, '0')}/${parts[2].padStart(2, '0')}/${parts[0]}`;
-      } else if (parts[2].length === 4) {
-        return `${parts[1].padStart(2, '0')}/${parts[0].padStart(2, '0')}/${parts[2]}`;
-      }
-    }
-  }
-
-  // yyyy/MM/dd hoặc dd/MM/yyyy -> MM/dd/yyyy
-  if (str.includes('/')) {
-    let parts = str.split('/');
-    if (parts.length === 3) {
-      if (parts[0].length === 4) {
-        return `${parts[1].padStart(2, '0')}/${parts[2].padStart(2, '0')}/${parts[0]}`;
-      } else if (parts[2].length === 4) {
-        let p0 = parseInt(parts[0], 10);
-        let p1 = parseInt(parts[1], 10);
-        let d = parts[0].padStart(2, '0');
-        let m = parts[1].padStart(2, '0');
-        let y = parts[2];
-        if (p1 > 12) {
-          // Đã là US format: MM/dd/yyyy -> giữ nguyên
-          return `${d}/${m}/${y}`;
-        }
-        // Còn lại là dd/MM/yyyy -> đổi thành MM/dd/yyyy
-        return `${m}/${d}/${y}`;
-      }
-    }
-  }
-
-  const ts = Date.parse(str);
-  if (!isNaN(ts)) {
-    const d = new Date(ts);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${month}/${day}/${year}`;
-  }
-
-  return str;
+  return cleanDateValue(dateStr);
 }
 
-// 4. Chuyển đổi định dạng ngày thành Timestamp phục vụ việc sắp xếp danh sách
+// 5. Chuyển đổi định dạng ngày thành Timestamp phục vụ việc sắp xếp danh sách
 export function parseDateToTimestamp(dateStr) {
   if (!dateStr) return 0;
-  let str = dateStr.toString().trim();
-  if (str.startsWith("'")) str = str.substring(1);
-  if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
-
-  if (str.includes('/')) {
-    let parts = str.split('/');
-    if (parts.length === 3) {
-      let y = parseInt(parts[2], 10);
-      let m = parseInt(parts[1], 10) - 1;
-      let d = parseInt(parts[0], 10);
-      return new Date(y, m, d).getTime();
-    }
-  }
-
-  if (str.includes('-')) {
-    let parts = str.split('-');
+  let cleanStr = cleanDateValue(dateStr);
+  if (cleanStr.includes('-')) {
+    let parts = cleanStr.split('-');
     if (parts.length === 3) {
       let y = parseInt(parts[0], 10);
       let m = parseInt(parts[1], 10) - 1;
@@ -1305,7 +1155,6 @@ export function parseDateToTimestamp(dateStr) {
       return new Date(y, m, d).getTime();
     }
   }
-
-  let ts = Date.parse(str);
+  let ts = Date.parse(cleanStr);
   return isNaN(ts) ? 0 : ts;
 }
