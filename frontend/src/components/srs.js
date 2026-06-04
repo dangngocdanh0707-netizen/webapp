@@ -447,8 +447,7 @@ window.checkScrambleAnswer = function() {
       
       const buttons = outputContainer.querySelectorAll('button');
       buttons.forEach(btn => {
-        btn.classList.remove('bg-white', 'border-slate-200', 'hover:border-blue-400');
-        btn.classList.add('bg-emerald-50/30', 'border-emerald-400');
+        // Do NOT change styling of the inner buttons (leave them as standard bg-white border-slate-200)
         btn.removeAttribute('draggable');
         btn.style.cursor = 'default';
         btn.onclick = null;
@@ -490,7 +489,8 @@ window.checkTypingAnswer = function() {
   
   if (isCorrect) {
     inputEl.classList.remove('border-slate-200', 'focus:border-blue-500');
-    inputEl.classList.add('!border-emerald-500', '!bg-emerald-50/60', 'shadow-[0_0_15px_rgba(16,185,129,0.15)]');
+    // Only color the border and add shadow (no bg color change)
+    inputEl.classList.add('!border-emerald-500', 'shadow-[0_0_15px_rgba(16,185,129,0.15)]');
     inputEl.disabled = true;
     showInteractiveFeedback(true, "");
   } else {
@@ -525,7 +525,8 @@ window.revealPracticeMeaning = function() {
       if (inputEl && !inputEl.classList.contains('!border-emerald-500')) {
         inputEl.value = currentPracticeWord.content || "";
         inputEl.classList.remove('border-slate-200', 'focus:border-blue-500');
-        inputEl.classList.add('!border-blue-500', '!bg-blue-50/60', 'shadow-[0_0_15px_rgba(59,130,246,0.15)]');
+        // Only color the border and add shadow (no bg color change)
+        inputEl.classList.add('!border-blue-500', 'shadow-[0_0_15px_rgba(59,130,246,0.15)]');
         inputEl.disabled = true;
       }
     } else {
@@ -556,8 +557,7 @@ window.revealPracticeMeaning = function() {
         
         const buttons = outputContainer.querySelectorAll('button');
         buttons.forEach(btn => {
-          btn.classList.remove('bg-white', 'border-slate-200', 'hover:border-blue-400');
-          btn.classList.add('bg-blue-50/30', 'border-blue-400');
+          // Do NOT change styling of the inner buttons (leave them as standard bg-white border-slate-200)
           btn.removeAttribute('draggable');
           btn.style.cursor = 'default';
           btn.onclick = null;
