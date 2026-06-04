@@ -241,7 +241,7 @@ var jl=Object.defineProperty;var Ul=(n,t,e)=>t in n?jl(n,t,{enumerable:!0,config
               ${D(c)}
             </span>
           </td>
-          <td class="p-4 text-xs text-slate-500 max-w-[250px] truncate map-view-${a}">
+          <td class="p-4 text-xs text-slate-500 max-w-[300px] break-words whitespace-normal map-view-${a}">
             ${D(d)||"-"}
           </td>
           <td class="p-4 pl-12 text-left map-view-${a}">
