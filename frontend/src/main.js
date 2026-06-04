@@ -162,6 +162,53 @@ async function initApp() {
     }
   });
   
+  // Tự động làm sạch ô tìm kiếm sau 10 giây không tương tác
+  const searchTimeoutMap = new Map();
+  document.addEventListener('input', (e) => {
+    const target = e.target;
+    if (target && target.tagName.toLowerCase() === 'input' && target.id && target.id.toLowerCase().includes('search')) {
+      const inputId = target.id;
+      
+      // Hủy bỏ timeout cũ nếu người dùng vẫn đang nhập liệu
+      if (searchTimeoutMap.has(inputId)) {
+        clearTimeout(searchTimeoutMap.get(inputId));
+      }
+      
+      if (target.value === '') {
+        searchTimeoutMap.delete(inputId);
+        return;
+      }
+      
+      // Thiết lập timeout mới sau 10 giây (10000ms)
+      const timeoutId = setTimeout(() => {
+        if (target.value !== '') {
+          target.value = '';
+          
+          // Gọi hàm filter tương ứng để cập nhật lại danh sách dữ liệu
+          if (inputId === 'vocabSearchInput' && typeof window.filterVocabTable === 'function') {
+            window.filterVocabTable();
+          } else if (inputId === 'linkSearchInput' && typeof window.filterLinkTable === 'function') {
+            window.filterLinkTable();
+          } else if (inputId === 'promptSearchInput' && typeof window.filterPromptTable === 'function') {
+            window.filterPromptTable();
+          } else if (inputId === 'mapSearchInput' && typeof window.filterMapGrid === 'function') {
+            window.filterMapGrid();
+          } else if (inputId === 'collectionSearchInput' && typeof window.filterCollectionGrid === 'function') {
+            window.filterCollectionGrid();
+          } else if (inputId === 'taskSearchInput' && typeof window.filterTaskTable === 'function') {
+            window.filterTaskTable();
+          } else {
+            target.dispatchEvent(new Event('input', { bubbles: true }));
+            target.dispatchEvent(new Event('keyup', { bubbles: true }));
+          }
+        }
+        searchTimeoutMap.delete(inputId);
+      }, 10000);
+      
+      searchTimeoutMap.set(inputId, timeoutId);
+    }
+  });
+
   // Khởi tạo các SDK Google API/GIS
   const initialized = await initGoogleAuth();
   updateAuthButtonsState();
