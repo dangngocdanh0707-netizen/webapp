@@ -183,7 +183,7 @@ window.triggerRandomVocab = function() {
       outputContainer.className = "min-h-[70px] p-4 rounded-2xl border-2 border-solid border-blue-400 bg-white flex flex-wrap justify-center gap-2 items-center transition-all duration-300";
     }
     const poolContainer = document.getElementById('practice-scramble-pool');
-    if (poolContainer) poolContainer.classList.remove('hidden');
+    if (poolContainer) poolContainer.classList.remove('hidden', 'invisible');
     const rawWords = wordContent
       .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "")
       .split(/\s+/)
@@ -504,7 +504,7 @@ window.revealPracticeMeaning = function() {
   }
   
   const poolContainer = document.getElementById('practice-scramble-pool');
-  if (poolContainer) poolContainer.classList.add('hidden');
+  if (poolContainer) poolContainer.classList.add('invisible');
   
   // Do NOT change wordDisplay to English content anymore, keep it as the Vietnamese meaning
   
