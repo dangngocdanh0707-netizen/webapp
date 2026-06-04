@@ -34,6 +34,16 @@ export function initCollectionsModule(data, onSync) {
     });
   }
 
+  // Update stats cards
+  const totalItemsEl = document.getElementById('total-col-items');
+  const totalBrandsEl = document.getElementById('total-col-brands');
+  const totalCatsEl = document.getElementById('total-col-categories');
+  
+  const validItems = allCollectionData.filter(item => item && item.item);
+  if (totalItemsEl) totalItemsEl.innerText = validItems.length;
+  if (totalBrandsEl) totalBrandsEl.innerText = brands.size;
+  if (totalCatsEl) totalCatsEl.innerText = categories.size;
+
   // 2. Render Grid, Stats & Metrics Panel
   buildCollectionsGrid();
 }

@@ -35,6 +35,14 @@ export function initMapModule(data, onSync) {
     });
   }
 
+  // Update stats cards
+  const totalPlacesEl = document.getElementById('total-map-places');
+  const totalCatsEl = document.getElementById('total-map-categories');
+  
+  const validPlaces = allMapData.filter(item => item && item.place);
+  if (totalPlacesEl) totalPlacesEl.innerText = validPlaces.length;
+  if (totalCatsEl) totalCatsEl.innerText = categories.size;
+
   // 2. Build the initial adventure list
   buildMapGrid();
 }
