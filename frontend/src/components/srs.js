@@ -447,8 +447,8 @@ window.checkScrambleAnswer = function() {
       
       const buttons = outputContainer.querySelectorAll('button');
       buttons.forEach(btn => {
-        btn.classList.remove('bg-white', 'border-slate-200', 'text-slate-700', 'hover:border-blue-400');
-        btn.classList.add('bg-emerald-100/40', 'border-emerald-200', 'text-emerald-800');
+        btn.classList.remove('bg-white', 'border-slate-200', 'hover:border-blue-400');
+        btn.classList.add('bg-emerald-50/30', 'border-emerald-400');
         btn.removeAttribute('draggable');
         btn.style.cursor = 'default';
         btn.onclick = null;
@@ -490,7 +490,7 @@ window.checkTypingAnswer = function() {
   
   if (isCorrect) {
     inputEl.classList.remove('border-slate-200', 'focus:border-blue-500');
-    inputEl.classList.add('!border-emerald-500', '!bg-emerald-50/60', '!text-emerald-800', 'shadow-[0_0_15px_rgba(16,185,129,0.15)]');
+    inputEl.classList.add('!border-emerald-500', '!bg-emerald-50/60', 'shadow-[0_0_15px_rgba(16,185,129,0.15)]');
     inputEl.disabled = true;
     showInteractiveFeedback(true, "");
   } else {
@@ -525,7 +525,7 @@ window.revealPracticeMeaning = function() {
       if (inputEl && !inputEl.classList.contains('!border-emerald-500')) {
         inputEl.value = currentPracticeWord.content || "";
         inputEl.classList.remove('border-slate-200', 'focus:border-blue-500');
-        inputEl.classList.add('!border-blue-500', '!bg-blue-50/60', '!text-blue-800', 'shadow-[0_0_15px_rgba(59,130,246,0.15)]');
+        inputEl.classList.add('!border-blue-500', '!bg-blue-50/60', 'shadow-[0_0_15px_rgba(59,130,246,0.15)]');
         inputEl.disabled = true;
       }
     } else {
@@ -556,8 +556,8 @@ window.revealPracticeMeaning = function() {
         
         const buttons = outputContainer.querySelectorAll('button');
         buttons.forEach(btn => {
-          btn.classList.remove('bg-white', 'border-slate-200', 'text-slate-700', 'hover:border-blue-400');
-          btn.classList.add('bg-blue-100/40', 'border-blue-200', 'text-blue-800');
+          btn.classList.remove('bg-white', 'border-slate-200', 'hover:border-blue-400');
+          btn.classList.add('bg-blue-50/30', 'border-blue-400');
           btn.removeAttribute('draggable');
           btn.style.cursor = 'default';
           btn.onclick = null;
