@@ -16,7 +16,7 @@ import { initCostModule } from './components/expenses.js';
 import { initVocabModule } from './components/vocabulary.js';
 import { initSrsModule } from './components/srs.js';
 import { initAiChatModule } from './components/ai_chat.js';
-import { initGrammarDiaryModule } from './components/grammar_diary.js';
+import { initGrammarDiaryModule } from './components/grammar_diaries.js';
 import { initLinksModule } from './components/links.js';
 import { initPromptsModule } from './components/prompts.js';
 import { initGoalsModule } from './components/goals.js';
