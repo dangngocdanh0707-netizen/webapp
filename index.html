@@ -45,8 +45,8 @@
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <script type="module" crossorigin src="/webapp_project/assets/index-CE6nXkwB.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-Bfnz0pzK.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-BU7wBqB-.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-Immzkezj.css">
 </head>
 
 
@@ -1147,8 +1147,7 @@
                 </div>
 
 
-                <!-- Smart Response Hints (Đề xuất 1) -->
-                <div id="ai-chat-hints-container" class="flex flex-wrap gap-2 py-2 border-t border-slate-100 mt-1 empty:hidden"></div>
+
 
                 <!-- Input area -->
 
@@ -1265,11 +1264,22 @@
                     <!-- Explanatory note -->
 
                     <div id="ai-chat-feedback-explanation-block">
-
                       <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">EXPLANATION</span>
-
                       <p id="ai-chat-feedback-explain-txt" class="text-xs text-slate-650 leading-relaxed font-medium bg-white border border-slate-100 p-3 rounded-lg shadow-3xs"></p>
+                    </div>
 
+                    <!-- Vocabulary Upgrades (Đề xuất 8) -->
+                    <div id="ai-chat-feedback-vocab-block" class="hidden">
+                      <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Vocabulary Upgrades</span>
+                      <div id="ai-chat-feedback-vocab-list" class="flex flex-col gap-2 bg-slate-50/50 p-2.5 rounded-lg border border-slate-100/50">
+                      </div>
+                    </div>
+
+                    <!-- Natural Collocations (Đề xuất 14) -->
+                    <div id="ai-chat-feedback-collocation-block" class="hidden">
+                      <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Natural Collocations</span>
+                      <div id="ai-chat-feedback-collocation-list" class="flex flex-col gap-2 bg-slate-50/50 p-2.5 rounded-lg border border-slate-100/50">
+                      </div>
                     </div>
 
                   </div>
