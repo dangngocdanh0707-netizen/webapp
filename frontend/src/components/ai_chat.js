@@ -160,11 +160,9 @@ function saveChatHistoriesToStorage() {
 }
 
 window.clearAiChatHistory = function() {
-  if (confirm(`Bạn có chắc chắn muốn xóa toàn bộ lịch sử trò chuyện của tình huống "${SCENARIOS[activeScenario].title}" không?`)) {
-    chatHistories[activeScenario] = [];
-    saveChatHistoriesToStorage();
-    initializeActiveScenario();
-  }
+  chatHistories[activeScenario] = [];
+  saveChatHistoriesToStorage();
+  initializeActiveScenario();
 };
 
 // ---------------- RENDER GIAO DIỆN CHAT BUBBLES ----------------
