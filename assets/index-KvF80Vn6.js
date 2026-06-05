@@ -187,7 +187,7 @@ Text: "${n}"`;if(e==="gemini"){if(!i)throw new Error("Thiếu Gemini API Key.");
         <div class="flex justify-between items-center mb-3">
           <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-slate-50 text-slate-500 border border-slate-200">${i}</span>
           <div class="flex items-center gap-2">
-            <span class="text-[10px] font-bold text-slate-400 font-mono">${s}</span>
+            <span class="text-xs font-semibold text-slate-500">${s}</span>
             <button onclick="window.deleteGrammarCard('${e.rowNumber}')" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Delete">
               <i class="fa-solid fa-trash text-[11px]"></i>
             </button>
