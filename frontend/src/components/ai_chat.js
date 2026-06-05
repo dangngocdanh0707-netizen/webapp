@@ -462,6 +462,13 @@ function renderGrammarFeedbackUI(userText, aiResult) {
   emptyEl.classList.add('hidden');
   activeEl.classList.remove('hidden');
 
+  // Tự động kiểm tra chéo: nếu câu gợi ý sửa giống hệt câu gốc thì xem như câu gốc đã chính xác (isCorrect = true)
+  const cleanUser = userText.trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"");
+  const cleanCorrect = (aiResult.correctText || "").trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"");
+  if (cleanUser === cleanCorrect || !aiResult.correctText || aiResult.correctText.trim() === "") {
+    aiResult.isCorrect = true;
+  }
+
   // 1. Cập nhật câu nói gốc của User
   const userTxtEl = document.getElementById('ai-chat-feedback-user-txt');
   if (userTxtEl) userTxtEl.innerText = `"${userText}"`;
@@ -504,7 +511,7 @@ function renderGrammarFeedbackUI(userText, aiResult) {
   const explainTxtEl = document.getElementById('ai-chat-feedback-explain-txt');
 
   if (explainBlock && explainTxtEl) {
-    if (!aiResult.corrections || aiResult.corrections.trim() === "") {
+    if (aiResult.isCorrect || !aiResult.corrections || aiResult.corrections.trim() === "") {
       explainBlock.classList.add('hidden');
     } else {
       explainBlock.classList.remove('hidden');
