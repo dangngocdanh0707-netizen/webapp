@@ -154,7 +154,6 @@ window.addLinkRow = function() {
   document.getElementById('ins-link-title').value = "";
   document.getElementById('ins-link-cat').value = "";
   document.getElementById('ins-link-content').value = "";
-  showToast("Đã thêm liên kết mới thành công!", "success");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertLinkRow", [title, cat, content])

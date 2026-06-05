@@ -192,8 +192,7 @@ window.addVocabRow = function() {
   buildVocabTable();
 
   // Clear inputs
-  document.getElementById('ins-v-content').value = ""; 
-  showToast("Đã thêm từ vựng mới thành công!", "success");
+  document.getElementById('ins-v-content').value = "";
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertVocabRow", [content, ""])

@@ -110,7 +110,6 @@ window.addGoalRow = function() {
   document.getElementById('ins-goal-end').value = "";
   document.getElementById('ins-goal-current').value = "0";
   document.getElementById('ins-goal-target').value = "";
-  showToast("Đã thiết lập mục tiêu mới thành công!", "success");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertGoalRow", [name, start, end, current, target])

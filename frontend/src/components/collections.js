@@ -213,7 +213,6 @@ window.saveNewCollection = function() {
   brandInput.value = "";
   if (styleInput) styleInput.value = "";
   if (catInput) catInput.value = "";
-  showToast("Successfully added new collection item! 🎉", "success");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertCollectionRow", [item, brand, style, category])

@@ -183,7 +183,6 @@ window.addCostRow = function () {
   // Clear inputs
   document.getElementById('ins-cost-amount').value = "";
   document.getElementById('ins-cost-note').value = "";
-  showToast("Đã thêm khoản chi tiêu mới thành công!", "success");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertCostRow", [date, cat, amount, note])

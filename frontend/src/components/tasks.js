@@ -160,7 +160,6 @@ window.addTaskRow = function () {
   buildTaskTable();
 
   document.getElementById('ins-task-desc').value = "";
-  showToast("Đã thêm công việc mới thành công!", "success");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertTaskRow", [date, desc, false])

@@ -128,11 +128,9 @@ window.addPromptRow = function() {
   allPromptData.push(newObj);
   buildPromptTable();
 
-  // Clear inputs
   document.getElementById('ins-prompt-title').value = "";
   document.getElementById('ins-prompt-content').value = "";
   document.getElementById('ins-prompt-cat').value = "";
-  showToast("Đã thêm mẫu Prompt mới thành công!", "success");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertPromptRow", [title, content, category])

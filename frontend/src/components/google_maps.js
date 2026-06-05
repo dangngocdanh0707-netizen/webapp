@@ -207,7 +207,6 @@ window.addMapRow = function() {
   cityInput.value = "";
   if (catInput) catInput.value = "";
   if (addressInput) addressInput.value = "";
-  showToast("Đã thêm địa điểm mới thành công! 🎉", "success");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertMapRow", [place, city, category, address])
