@@ -5,7 +5,9 @@ import {
   signOutFromGoogle, 
   getCredentials, 
   saveCredentials, 
-  isGoogleConnected
+  isGoogleConnected,
+  getAiCredentials,
+  saveAiCredentials
 } from './services/api.js';
 
 import { showToast } from './services/toast.js';
@@ -13,6 +15,7 @@ import { initSortableSidebar, initResizeSidebar } from './components/sidebar.js'
 import { initCostModule } from './components/expenses.js';
 import { initVocabModule } from './components/vocabulary.js';
 import { initSrsModule } from './components/srs.js';
+import { initAiChatModule } from './components/ai_chat.js';
 import { initLinksModule } from './components/links.js';
 import { initPromptsModule } from './components/prompts.js';
 import { initGoalsModule } from './components/goals.js';
@@ -317,6 +320,7 @@ function renderDashboard(data) {
     initCostModule(data.cost, loadDataFromServer);
     initVocabModule(data.vocabulary, loadDataFromServer);
     initSrsModule(data.vocabulary, loadDataFromServer);
+    initAiChatModule(data.vocabulary);
     initLinksModule(data.link, loadDataFromServer);
     initPromptsModule(data.prompt, loadDataFromServer);
     initGoalsModule(data.goal, loadDataFromServer);
@@ -370,6 +374,20 @@ window.signInWithGoogle = signInWithGoogle;
 window.signOutFromGoogle = signOutFromGoogle;
 
 // Điều khiển Settings Modal
+window.toggleAiProviderFields = function() {
+  const provider = document.getElementById('settings-ai-provider').value;
+  const geminiContainer = document.getElementById('settings-gemini-key-container');
+  const openaiContainer = document.getElementById('settings-openai-key-container');
+  
+  if (provider === 'gemini') {
+    if (geminiContainer) geminiContainer.classList.remove('hidden');
+    if (openaiContainer) openaiContainer.classList.add('hidden');
+  } else {
+    if (geminiContainer) geminiContainer.classList.add('hidden');
+    if (openaiContainer) openaiContainer.classList.remove('hidden');
+  }
+};
+
 window.openSettingsModal = function() {
   const modal = document.getElementById('settings-modal');
   if (modal) {
@@ -378,6 +396,13 @@ window.openSettingsModal = function() {
     document.getElementById('settings-api-key').value = creds.apiKey;
     document.getElementById('settings-client-id').value = creds.clientId;
     
+    const aiCreds = getAiCredentials();
+    document.getElementById('settings-ai-provider').value = aiCreds.provider;
+    document.getElementById('settings-gemini-key').value = aiCreds.geminiKey;
+    document.getElementById('settings-openai-key').value = aiCreds.openaiKey;
+    document.getElementById('settings-ai-model').value = aiCreds.model;
+    
+    window.toggleAiProviderFields();
     modal.classList.remove('hidden');
   }
 };
@@ -394,12 +419,19 @@ window.saveSettingsCredentials = function() {
   const apiKey = document.getElementById('settings-api-key').value;
   const clientId = document.getElementById('settings-client-id').value;
   
+  const aiProvider = document.getElementById('settings-ai-provider').value;
+  const aiGeminiKey = document.getElementById('settings-gemini-key').value;
+  const aiOpenaiKey = document.getElementById('settings-openai-key').value;
+  const aiModel = document.getElementById('settings-ai-model').value;
+  
   if (!spreadsheetId.trim() || !apiKey.trim() || !clientId.trim()) {
-    showToast("Vui lòng điền đầy đủ cả 3 cấu hình!", "warning");
+    showToast("Vui lòng điền đầy đủ cả 3 cấu hình Google!", "warning");
     return;
   }
   
   saveCredentials(spreadsheetId, apiKey, clientId);
-  localStorage.setItem("TOAST_PENDING", JSON.stringify({ message: "Đã lưu thông số cấu hình Google thành công! Đang tải lại dữ liệu...", type: "success" }));
+  saveAiCredentials(aiProvider, aiGeminiKey, aiOpenaiKey, aiModel);
+  
+  localStorage.setItem("TOAST_PENDING", JSON.stringify({ message: "Đã lưu thông số cấu hình thành công! Đang tải lại dữ liệu...", type: "success" }));
   window.location.reload();
 };

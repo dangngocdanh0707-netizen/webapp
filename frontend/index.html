@@ -416,7 +416,8 @@
       </div>
 
       <div id="practice-tab" class="tab-content">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <!-- Main Tab Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div class="flex items-center gap-3">
             <button onclick="launchApp('home-tab')"
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
@@ -424,7 +425,9 @@
             </button>
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Practice English</h1>
           </div>
-          <div class="flex flex-wrap gap-4 w-full md:w-auto">
+          
+          <!-- SRS statistics counts (hidden when in AI chat subtab) -->
+          <div id="practice-srs-stats" class="flex flex-wrap gap-4 w-full md:w-auto">
             <div class="glass-card px-5 py-4 flex-1 min-w-[120px] md:min-w-[150px] transition">
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">DUE FOR REVIEW</span>
               <p id="practice-count-due" class="text-2xl font-black text-slate-900 mt-1">0</p>
@@ -448,96 +451,262 @@
           </div>
         </div>
 
-        <div class="max-w-2xl mx-auto mt-12">
-          <div class="practice-deck-card p-6 sm:p-10 text-center relative overflow-hidden transition-all hover:shadow-2xl flex flex-col justify-between min-h-[360px] sm:min-h-[380px]">
-            <div
-              class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-500">
-            </div>
+        <!-- Sub-Tabs Switcher -->
+        <div class="flex border-b border-slate-200/60 mb-6 gap-2">
+          <button id="btn-subtab-srs" onclick="window.switchPracticeSubTab('srs')" class="pb-3 px-4 font-bold text-sm border-b-2 border-blue-600 text-blue-600 transition cursor-pointer flex items-center gap-2">
+            <i class="fa-solid fa-layer-group text-xs"></i> <span>Flashcards (SRS)</span>
+          </button>
+          <button id="btn-subtab-aichat" onclick="window.switchPracticeSubTab('aichat')" class="pb-3 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition cursor-pointer flex items-center gap-2">
+            <i class="fa-solid fa-comments text-xs text-indigo-500"></i> <span>AI Speaking Partner</span>
+          </button>
+        </div>
 
-            <div id="practice-empty-state" class="py-12">
-              <div
-                class="bg-blue-500/5 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-500/10 shadow-[0_0_15px_rgba(37,99,235,0.05)]">
-                <i class="fa-solid fa-graduation-cap text-blue-500 text-2xl animate-bounce"></i>
+        <!-- Sub-Tab 1: Flashcards (SRS) -->
+        <div id="practice-srs-container">
+          <div class="max-w-2xl mx-auto mt-12">
+            <div class="practice-deck-card p-6 sm:p-10 text-center relative overflow-hidden transition-all hover:shadow-2xl flex flex-col justify-between min-h-[360px] sm:min-h-[380px]">
+              <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-500"></div>
+
+              <div id="practice-empty-state" class="py-12">
+                <div class="bg-blue-500/5 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-500/10 shadow-[0_0_15px_rgba(37,99,235,0.05)]">
+                  <i class="fa-solid fa-graduation-cap text-blue-500 text-2xl animate-bounce"></i>
+                </div>
+                <h3 id="practice-headline" class="text-base font-bold text-slate-800">Ready to activate your mind?</h3>
               </div>
-              <h3 id="practice-headline" class="text-base font-bold text-slate-800">Ready to activate your mind?</h3>
-            </div>
 
-            <div id="practice-card-content" class="hidden py-6">
-              <div class="flex items-center justify-center gap-3 my-4">
-                <h2 id="practice-word-display"
-                  class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-sans">Word</h2>
-                <button id="btn-practice-audio" onclick="playPracticeTTS()"
-                  class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-205 text-slate-500 hover:text-blue-600 flex items-center justify-center transition shadow-2xs hover:shadow-xs cursor-pointer">
-                  <i class="fa-solid fa-volume-high text-sm"></i>
+              <div id="practice-card-content" class="hidden py-6">
+                <div class="flex items-center justify-center gap-3 my-4">
+                  <h2 id="practice-word-display" class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-sans">Word</h2>
+                  <button id="btn-practice-audio" onclick="playPracticeTTS()" class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-205 text-slate-500 hover:text-blue-600 flex items-center justify-center transition shadow-2xs hover:shadow-xs cursor-pointer">
+                    <i class="fa-solid fa-volume-high text-sm"></i>
+                  </button>
+                </div>
+
+                <!-- Interactive Mode Container (Typing / Scramble) -->
+                <div id="practice-interactive-zone" class="my-4 max-w-xl mx-auto">
+                  <!-- 1. Typing Mode -->
+                  <div id="practice-mode-typing" class="hidden flex flex-col gap-3">
+                    <input type="text" id="practice-typing-input" autocomplete="off" placeholder="" class="practice-typing-input">
+                  </div>
+
+                  <!-- 2. Word Scramble Mode -->
+                  <div id="practice-mode-scramble" class="hidden flex flex-col gap-4">
+                    <div id="practice-scramble-output" class="practice-interactive-box"></div>
+                    <div id="practice-scramble-pool" class="flex flex-wrap justify-center gap-2 mt-2 min-h-[50px]"></div>
+                  </div>
+
+                  <!-- 4. Interactive Feedback & Scoring -->
+                  <div id="practice-interactive-feedback" class="hidden mt-3 p-3 rounded-xl text-sm font-bold text-center font-sans"></div>
+                </div>
+
+                <div id="practice-meaning-box" class="mt-4 pt-4 border-t border-dashed border-slate-200 max-w-md mx-auto hidden opacity-0 transition-all duration-300 transform translate-y-2">
+                  <p id="practice-meaning-display" class="text-lg font-bold text-slate-700">Ý nghĩa</p>
+                </div>
+              </div>
+
+              <div class="mt-6 flex flex-col justify-center items-center gap-4 border-t border-slate-100 pt-4">
+                <button id="btn-practice-trigger" onclick="triggerRandomVocab()" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition shadow-lg cursor-pointer flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-shuffle"></i> Get Review Card
                 </button>
+                <button id="btn-practice-reveal" onclick="revealPracticeMeaning()" class="w-full sm:w-auto hidden bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition shadow-lg cursor-pointer flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-eye"></i> Reveal Meaning
+                </button>
+
+                <div id="practice-action-metrics" class="hidden w-full flex flex-col items-center gap-4">
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl">
+                    <div class="flex flex-col items-center gap-1.5">
+                      <span id="lbl-time-again" class="text-[11px] font-bold text-slate-400 tracking-wide">&lt;10m</span>
+                      <button onclick="logPracticeAction('again')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Again</button>
+                    </div>
+                    <div class="flex flex-col items-center gap-1.5">
+                      <span id="lbl-time-hard" class="text-[11px] font-bold text-slate-400 tracking-wide">1d</span>
+                      <button onclick="logPracticeAction('hard')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Hard</button>
+                    </div>
+                    <div class="flex flex-col items-center gap-1.5">
+                      <span id="lbl-time-good" class="text-[11px] font-bold text-slate-400 tracking-wide">3d</span>
+                      <button onclick="logPracticeAction('good')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Good</button>
+                    </div>
+                    <div class="flex flex-col items-center gap-1.5">
+                      <span id="lbl-time-easy" class="text-[11px] font-bold text-slate-400 tracking-wide">7d</span>
+                      <button onclick="logPracticeAction('easy')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Easy</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub-Tab 2: AI Speaking Partner -->
+        <div id="practice-aichat-container" class="hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Left panel: Scenarios & Config -->
+            <div class="lg:col-span-1 flex flex-col gap-6">
+              <!-- Scenarios Selection -->
+              <div class="glass-card p-5">
+                <h3 class="font-bold text-slate-800 text-sm mb-3.5 flex items-center gap-2">
+                  <i class="fa-solid fa-compass text-indigo-500"></i> Chọn Tình Huống
+                </h3>
+                <div class="flex flex-col gap-2" id="ai-chat-scenarios">
+                  <button onclick="window.setAiScenario('casual')" id="btn-scenario-casual" class="scenario-btn active">
+                    <span class="text-lg">💬</span>
+                    <div class="text-left">
+                      <div class="font-bold text-xs">Casual Conversation</div>
+                      <div class="text-[9px] text-slate-400 font-bold">Tán gẫu tự do hằng ngày</div>
+                    </div>
+                  </button>
+                  <button onclick="window.setAiScenario('interview')" id="btn-scenario-interview" class="scenario-btn">
+                    <span class="text-lg">👔</span>
+                    <div class="text-left">
+                      <div class="font-bold text-xs">Job Interview Practice</div>
+                      <div class="text-[9px] text-slate-400 font-bold">Luyện phỏng vấn xin việc</div>
+                    </div>
+                  </button>
+                  <button onclick="window.setAiScenario('restaurant')" id="btn-scenario-restaurant" class="scenario-btn">
+                    <span class="text-lg">☕</span>
+                    <div class="text-left">
+                      <div class="font-bold text-xs">At a Restaurant</div>
+                      <div class="text-[9px] text-slate-400 font-bold">Gọi món & giao tiếp phục vụ</div>
+                    </div>
+                  </button>
+                  <button onclick="window.setAiScenario('travel')" id="btn-scenario-travel" class="scenario-btn">
+                    <span class="text-lg">✈️</span>
+                    <div class="text-left">
+                      <div class="font-bold text-xs">Travel & Booking</div>
+                      <div class="text-[9px] text-slate-400 font-bold">Hỏi đường, nhận phòng...</div>
+                    </div>
+                  </button>
+                </div>
               </div>
 
-              <!-- Interactive Mode Container (Typing / Scramble) -->
-              <div id="practice-interactive-zone" class="my-4 max-w-xl mx-auto">
-                
-                <!-- 1. Typing Mode (For Spelling / Reverse Translation) -->
-                <div id="practice-mode-typing" class="hidden flex flex-col gap-3">
-                  <input type="text" id="practice-typing-input" autocomplete="off" placeholder=""
-                    class="practice-typing-input">
+              <!-- Voice & Audio Settings -->
+              <div class="glass-card p-5">
+                <h3 class="font-bold text-slate-800 text-sm mb-3.5 flex items-center gap-2">
+                  <i class="fa-solid fa-volume-high text-indigo-500"></i> Cấu Hình Giọng Nói
+                </h3>
+                <div class="flex flex-col gap-4 text-xs">
+                  <!-- Auto Read Toggle -->
+                  <div class="flex items-center justify-between">
+                    <span class="font-semibold text-slate-650">Tự động đọc lời thoại</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" id="ai-chat-auto-tts" class="sr-only peer" checked>
+                      <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+                  
+                  <!-- Speaking Speed -->
+                  <div>
+                    <div class="flex justify-between font-semibold text-slate-650 mb-1">
+                      <span>Tốc độ đọc AI</span>
+                      <span id="ai-chat-tts-speed-val">0.95x</span>
+                    </div>
+                    <input type="range" id="ai-chat-tts-speed" min="0.5" max="1.5" step="0.05" value="0.95" class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600" oninput="document.getElementById('ai-chat-tts-speed-val').innerText = this.value + 'x'">
+                  </div>
+
+                  <!-- Accent Selector -->
+                  <div>
+                    <label class="font-semibold text-slate-650 block mb-1">Giọng đọc (Accent)</label>
+                    <select id="ai-chat-tts-voice" class="form-input text-xs font-semibold py-1.5 px-2">
+                      <option value="default">Mặc định hệ thống</option>
+                    </select>
+                  </div>
                 </div>
-
-                <!-- 2. Word Scramble Mode (For Phrases / Sentences) -->
-                <div id="practice-mode-scramble" class="hidden flex flex-col gap-4">
-                  <!-- Output Area where selected words go -->
-                  <div id="practice-scramble-output" class="practice-interactive-box"></div>
-                  <!-- Tiles pool area -->
-                  <div id="practice-scramble-pool" class="flex flex-wrap justify-center gap-2 mt-2 min-h-[50px]"></div>
-                </div>
-
-                <!-- 4. Interactive Feedback & Scoring -->
-                <div id="practice-interactive-feedback" class="hidden mt-3 p-3 rounded-xl text-sm font-bold text-center"></div>
-
-              </div>
-
-              <div id="practice-meaning-box"
-                class="mt-4 pt-4 border-t border-dashed border-slate-200 max-w-md mx-auto hidden opacity-0 transition-all duration-300 transform translate-y-2">
-                <p id="practice-meaning-display" class="text-lg font-bold text-slate-700">Ý nghĩa</p>
               </div>
             </div>
 
-            <div class="mt-6 flex flex-col justify-center items-center gap-4 border-t border-slate-100 pt-4">
-              <button id="btn-practice-trigger" onclick="triggerRandomVocab()"
-                class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition shadow-lg cursor-pointer flex items-center justify-center gap-2"><i
-                  class="fa-solid fa-shuffle"></i> Get Review Card</button>
-              <button id="btn-practice-reveal" onclick="revealPracticeMeaning()"
-                class="w-full sm:w-auto hidden bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition shadow-lg cursor-pointer flex items-center justify-center gap-2"><i
-                  class="fa-solid fa-eye"></i> Reveal Meaning</button>
+            <!-- Middle panel: Chat Area -->
+            <div class="lg:col-span-2 flex flex-col gap-4">
+              <div class="glass-card p-4 flex flex-col h-[520px] justify-between relative bg-white/70 backdrop-blur-md">
+                <!-- Active Scenario Header Info -->
+                <div class="border-b border-slate-100 pb-2.5 mb-3 flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="ai-chat-scenario-title" class="font-bold text-slate-800 text-[10px] uppercase tracking-wider">Casual Conversation</span>
+                  </div>
+                  <button onclick="window.clearAiChatHistory()" class="text-slate-400 hover:text-rose-500 transition cursor-pointer text-xs font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-trash-can text-[10px]"></i> Xóa lịch sử
+                  </button>
+                </div>
 
-              <div id="practice-action-metrics" class="hidden w-full flex flex-col items-center gap-4">
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl">
+                <!-- Chat history log -->
+                <div id="ai-chat-history" class="flex-1 overflow-y-auto pr-1 flex flex-col gap-3.5 mb-4 custom-scrollbar">
+                  <!-- Dynamically populated bubbles -->
+                </div>
 
-                  <div class="flex flex-col items-center gap-1.5">
-                    <span id="lbl-time-again" class="text-[11px] font-bold text-slate-400 tracking-wide">&lt;10m</span>
-                    <button onclick="logPracticeAction('again')"
-                      class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Again</button>
-                  </div>
- 
-                  <div class="flex flex-col items-center gap-1.5">
-                    <span id="lbl-time-hard" class="text-[11px] font-bold text-slate-400 tracking-wide">1d</span>
-                    <button onclick="logPracticeAction('hard')"
-                      class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Hard</button>
-                  </div>
- 
-                  <div class="flex flex-col items-center gap-1.5">
-                    <span id="lbl-time-good" class="text-[11px] font-bold text-slate-400 tracking-wide">3d</span>
-                    <button onclick="logPracticeAction('good')"
-                      class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Good</button>
-                  </div>
- 
-                  <div class="flex flex-col items-center gap-1.5">
-                    <span id="lbl-time-easy" class="text-[11px] font-bold text-slate-400 tracking-wide">7d</span>
-                    <button onclick="logPracticeAction('easy')"
-                      class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Easy</button>
-                  </div>
+                <!-- Loading / Status indicator -->
+                <div id="ai-chat-status" class="hidden text-[10px] font-bold text-slate-450 italic mb-2 pl-3 flex items-center gap-1.5">
+                  <span class="flex gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 0ms"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 150ms"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 300ms"></span>
+                  </span>
+                  <span id="ai-chat-status-text">AI is thinking...</span>
+                </div>
 
+                <!-- Input area -->
+                <div class="flex items-center gap-2 border-t border-slate-100 pt-3">
+                  <!-- Mic Button for STT -->
+                  <button id="btn-ai-chat-mic" onclick="window.toggleSpeechRecognition()" class="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-blue-600 flex items-center justify-center transition shadow-2xs cursor-pointer relative group">
+                    <i class="fa-solid fa-microphone text-base"></i>
+                  </button>
+
+                  <!-- Text input field -->
+                  <input type="text" id="ai-chat-input" placeholder="Nhập câu thoại hoặc nhấn Micro để nói..." class="form-input flex-1 font-semibold text-xs py-3 px-4 rounded-xl" autocomplete="off" onkeydown="if(event.key === 'Enter') window.sendAiChatMessage()">
+
+                  <!-- Send Button -->
+                  <button onclick="window.sendAiChatMessage()" id="btn-ai-chat-send" class="w-11 h-11 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition shadow-md cursor-pointer">
+                    <i class="fa-solid fa-paper-plane text-sm"></i>
+                  </button>
                 </div>
               </div>
+            </div>
 
+            <!-- Right panel: Grammar & Vocabulary Feedback -->
+            <div class="lg:col-span-1 flex flex-col gap-6">
+              <div class="glass-card p-5 h-full flex flex-col">
+                <h3 class="font-bold text-slate-800 text-sm mb-4 flex items-center gap-2">
+                  <i class="fa-solid fa-graduation-cap text-indigo-500"></i> Phân Tích Ngữ Pháp
+                </h3>
+                
+                <!-- Feedback panel contents -->
+                <div id="ai-chat-feedback-container" class="flex-1 flex flex-col justify-center text-center">
+                  <!-- Default state -->
+                  <div id="ai-chat-feedback-empty" class="py-12">
+                    <div class="bg-indigo-50 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3.5 border border-indigo-100/50">
+                      <i class="fa-solid fa-magnifying-glass-chart text-indigo-500 text-base"></i>
+                    </div>
+                    <p class="text-xs font-bold text-slate-700">Chưa có phân tích</p>
+                    <p class="text-[10px] text-slate-400 mt-1 font-semibold leading-relaxed">AI sẽ sửa lỗi sai ngữ pháp và gợi ý cách diễn đạt hay hơn của bạn tại đây.</p>
+                  </div>
+
+                  <!-- Active feedback state -->
+                  <div id="ai-chat-feedback-active" class="hidden text-left flex flex-col gap-4">
+                    <!-- Correct/Incorrect Status -->
+                    <div id="ai-chat-feedback-status" class="p-3 rounded-xl flex items-center gap-2 text-xs font-bold">
+                      <i id="ai-chat-feedback-status-icon" class="fa-solid"></i>
+                      <span id="ai-chat-feedback-status-text">Perfect sentence!</span>
+                    </div>
+
+                    <!-- Original input -->
+                    <div>
+                      <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">CÂU CỦA BẠN</span>
+                      <p id="ai-chat-feedback-user-txt" class="text-xs font-bold text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-100/50 italic"></p>
+                    </div>
+
+                    <!-- Correction suggested -->
+                    <div id="ai-chat-feedback-correction-block">
+                      <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">AI GỢI Ý</span>
+                      <p id="ai-chat-feedback-correct-txt" class="text-xs font-bold text-blue-700 bg-blue-50 p-2.5 rounded-lg border border-blue-100/50"></p>
+                    </div>
+
+                    <!-- Explanatory note -->
+                    <div id="ai-chat-feedback-explanation-block">
+                      <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">GIẢI THÍCH (VIETNAMESE)</span>
+                      <p id="ai-chat-feedback-explain-txt" class="text-xs text-slate-650 leading-relaxed font-medium bg-white border border-slate-100 p-3 rounded-lg shadow-3xs"></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1129,6 +1298,39 @@
           <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">OAUTH CLIENT ID</label>
           <input type="text" id="settings-client-id" placeholder="xxx.apps.googleusercontent.com" class="form-input font-mono text-xs">
           <p class="text-[10px] text-slate-500 mt-1">Đăng ký Client ID dạng &quot;Web application&quot; để xác thực đăng nhập bảo mật.</p>
+        </div>
+
+        <div class="border-t border-slate-100/50 pt-4 mt-2">
+          <h4 class="font-bold text-slate-700 text-xs mb-3 flex items-center gap-1.5">
+            <i class="fa-solid fa-robot text-blue-500"></i> Cấu hình AI Speaking Partner
+          </h4>
+          <div class="flex flex-col gap-3">
+            <div>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI PROVIDER (Nhà cung cấp)</label>
+              <select id="settings-ai-provider" class="form-input font-semibold text-xs" onchange="window.toggleAiProviderFields()">
+                <option value="gemini">Google Gemini</option>
+                <option value="openai">OpenAI</option>
+              </select>
+            </div>
+            
+            <div id="settings-gemini-key-container">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">GEMINI API KEY</label>
+              <input type="password" id="settings-gemini-key" placeholder="Nhập Gemini API Key từ Google AI Studio" class="form-input font-mono text-xs">
+              <p class="text-[10px] text-slate-500 mt-1">Lấy key miễn phí tại <a href="https://aistudio.google.com/" target="_blank" class="text-blue-500 underline font-semibold">Google AI Studio</a>.</p>
+            </div>
+            
+            <div id="settings-openai-key-container" class="hidden">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">OPENAI API KEY</label>
+              <input type="password" id="settings-openai-key" placeholder="sk-..." class="form-input font-mono text-xs">
+              <p class="text-[10px] text-slate-500 mt-1">Nhập API Key từ tài khoản OpenAI Developer của bạn.</p>
+            </div>
+            
+            <div>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI MODEL NAME (Tên Model)</label>
+              <input type="text" id="settings-ai-model" placeholder="Mặc định: gemini-2.5-flash hoặc gpt-4o-mini" class="form-input font-mono text-xs">
+              <p class="text-[10px] text-slate-500 mt-1">Nhập model tùy chỉnh nếu muốn (ví dụ: <code>gemini-2.5-pro</code>, <code>gpt-4o</code>).</p>
+            </div>
+          </div>
         </div>
         
         <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100/30 text-xs text-slate-650 flex gap-3">

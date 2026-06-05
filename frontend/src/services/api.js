@@ -40,6 +40,35 @@ export function clearCredentials() {
   localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
 }
 
+// Cấu hình AI credentials trong localStorage
+const KEY_AI_PROVIDER = "AI_PROVIDER";
+const KEY_GEMINI_KEY = "AI_GEMINI_KEY";
+const KEY_OPENAI_KEY = "AI_OPENAI_KEY";
+const KEY_AI_MODEL = "AI_MODEL";
+
+export function getAiCredentials() {
+  return {
+    provider: localStorage.getItem(KEY_AI_PROVIDER) || "gemini",
+    geminiKey: localStorage.getItem(KEY_GEMINI_KEY) || "",
+    openaiKey: localStorage.getItem(KEY_OPENAI_KEY) || "",
+    model: localStorage.getItem(KEY_AI_MODEL) || ""
+  };
+}
+
+export function saveAiCredentials(provider, geminiKey, openaiKey, model) {
+  localStorage.setItem(KEY_AI_PROVIDER, provider.trim());
+  localStorage.setItem(KEY_GEMINI_KEY, geminiKey.trim());
+  localStorage.setItem(KEY_OPENAI_KEY, openaiKey.trim());
+  localStorage.setItem(KEY_AI_MODEL, model.trim());
+}
+
+export function clearAiCredentials() {
+  localStorage.removeItem(KEY_AI_PROVIDER);
+  localStorage.removeItem(KEY_GEMINI_KEY);
+  localStorage.removeItem(KEY_OPENAI_KEY);
+  localStorage.removeItem(KEY_AI_MODEL);
+}
+
 // Kiểm tra xem đã kết nối thành công và có token hợp lệ chưa
 export function isGoogleConnected() {
   const creds = getCredentials();

@@ -40,6 +40,7 @@ webapp_project/ (personal_webapp/)
         │   └── main.css         # CSS gốc chứa Tailwind directives, thiết kế Glassmorphism & Toast
         ├── services/
         │   ├── api.js           # Core API Client (Direct Sheets API v4 CRUD)
+        │   ├── ai.js            # [NEW] AI REST API Client (Gemini & OpenAI integrations)
         │   └── toast.js         # Hệ thống thông báo Custom Toast xếp chồng cao cấp
         └── components/          # Các mô-đun UI cô lập điều khiển nghiệp vụ chi tiết
             ├── charts.js        # Vẽ biểu đồ tương tác thời gian thực bằng Chart.js (Import Local)
@@ -47,6 +48,7 @@ webapp_project/ (personal_webapp/)
             ├── expenses.js      # Nghiệp vụ & CRUD tài chính chi tiêu (Expenses)
             ├── vocabulary.js    # Nghiệp vụ & CRUD kho từ vựng (Vocabulary)
             ├── srs.js           # Game tương tác & thuật toán học tập Anki Spaced Repetition (Practice)
+            ├── ai_chat.js       # [NEW] Logic & giao diện Trợ lý trò chuyện tiếng Anh (AI Speaking Partner)
             ├── links.js         # Quản lý liên kết nhanh (Quick Links)
             ├── prompts.js       # Quản lý gợi ý AI (AI Prompts)
             ├── goals.js         # Theo dõi tiến độ mục tiêu tối giản (Goals)
@@ -108,6 +110,13 @@ webapp_project/ (personal_webapp/)
 ### 10. 📖 Quản lý Từ vựng (Vocabulary Dictionary) & Phát âm bản xứ
 * **Tích hợp Phiên âm (Transcription)**: Thêm cột `Transcription` ngay sau từ vựng giúp theo dõi và sửa đổi cách phát âm chuẩn IPA của từ ngay trên bảng danh sách.
 * **Tính năng Phát âm Tức thì (Speech Synthesis)**: Tích hợp nút loa phát âm ngay cạnh từ vựng trong danh sách, sử dụng Web Speech API để phát giọng đọc tiếng Anh chuẩn bản xứ trực tiếp không qua API bên thứ ba.
+
+### 11. 🤖 Trợ lý luyện nói Tiếng Anh AI Speaking Partner (Gemini & OpenAI)
+* **Tích hợp linh hoạt đa mô hình (Multi-provider AI)**: Cho phép cấu hình và chuyển đổi linh hoạt giữa Google Gemini (`gemini-2.5-flash`) và OpenAI (`gpt-4o-mini`) ngay trong Credentials Modal. Dữ liệu khoá API được lưu trữ cục bộ bảo mật trên trình duyệt cá nhân (`localStorage`).
+* **Nhận diện & Phát âm thời gian thực (Voice STT & TTS)**: Tích hợp nhận diện giọng nói `SpeechRecognition` để bạn nói chuyện trực tiếp qua Micro thay vì gõ văn bản, kết hợp phát giọng đọc câu trả lời của AI tự động bằng `SpeechSynthesis` (tuỳ chọn Accent Mỹ, Anh, Úc... và thanh trượt tốc độ từ 0.5x đến 1.5x).
+* **Báo cáo và Sửa lỗi Ngữ pháp (Grammar & Syntax Analysis)**: AI tự động phân tích độ chính xác trong câu thoại của bạn. Hiển thị trạng thái phân tích ngữ pháp trực quan, đề xuất câu sửa lại tự nhiên hơn và giải thích chi tiết lỗi bằng tiếng Việt ở bảng điều khiển bên phải.
+* **Nhập vai theo Tình huống (Roleplay Scenarios)**: Hỗ trợ 4 kịch bản giao tiếp thực tế bao gồm: Tán gẫu tự do (Casual Chat), Phỏng vấn xin việc (Job Interview Practice), Gọi món tại nhà hàng (At a Restaurant), và Thủ tục du lịch (Travel & Booking).
+* **Khích lệ áp dụng từ vựng SRS**: Tự động so khớp câu trò chuyện của bạn với kho từ vựng tiếng Anh hiện tại trong hệ thống Anki. Khi bạn dùng thành công một từ đang học, ứng dụng sẽ gửi thông báo chúc mừng (Custom Toast) để khích lệ sự tiến bộ.
 
 ---
 
