@@ -1,5 +1,4 @@
 // DỊCH VỤ TÍCH HỢP AI - GEMINI & OPENAI SERVICE
-import { showToast } from './toast.js';
 
 // Các cấu hình kịch bản nhập vai (System prompts)
 export const SCENARIOS = {

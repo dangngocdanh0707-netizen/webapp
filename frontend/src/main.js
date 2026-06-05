@@ -135,6 +135,12 @@ async function initApp() {
         } else if (id.startsWith('ins-task-') && typeof window.addTaskRow === 'function') {
           e.preventDefault();
           window.addTaskRow();
+        } else if (id.startsWith('ins-map-') && typeof window.addMapRow === 'function') {
+          e.preventDefault();
+          window.addMapRow();
+        } else if (id.startsWith('ins-col-') && typeof window.saveNewCollection === 'function') {
+          e.preventDefault();
+          window.saveNewCollection();
         }
       } 
       // 2. Dành cho các ô CHỈNH SỬA dòng (Mã chứa '-edit-' hoặc 'edit-')
@@ -160,6 +166,12 @@ async function initApp() {
         } else if (id.startsWith('task-edit-') && typeof window.saveTask === 'function') {
           e.preventDefault();
           window.saveTask(rowId);
+        } else if (id.startsWith('map-edit-') && typeof window.saveMapPlace === 'function') {
+          e.preventDefault();
+          window.saveMapPlace(rowId);
+        } else if (id.startsWith('col-edit-') && typeof window.saveCollectionItem === 'function') {
+          e.preventDefault();
+          window.saveCollectionItem(rowId);
         }
       }
     }
