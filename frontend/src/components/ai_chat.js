@@ -695,17 +695,27 @@ function renderGrammarFeedbackUI(userText, aiResult) {
   }
 }
 
+// Chuẩn hóa văn bản để so khớp từ vựng một cách thông minh (bỏ ngoặc chú giải, dấu câu, khoảng trắng thừa)
+function cleanTextForMatching(str) {
+  if (!str) return "";
+  return str.toLowerCase()
+    .replace(/\s*[\(\[][^\]\)]*[\)\]]/g, "") // Loại bỏ các phần chú thích trong ngoặc đơn/ngoặc vuông như (adj), [phr], (v)...
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "") // Loại bỏ dấu câu và kí tự đặc biệt
+    .replace(/\s+/g, " ") // Thay thế nhiều dấu cách bằng 1 dấu cách
+    .trim();
+}
+
 // ---------------- GHI NHẬN TỪ VỰNG TRONG KHO ----------------
 function checkForVocabularyUsage(userText) {
   if (!vocabList || vocabList.length === 0) return;
 
-  const normalizedInput = userText.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"").trim();
+  const normalizedInput = cleanTextForMatching(userText);
   const wordsInInput = normalizedInput.split(/\s+/);
 
   const matchedWords = [];
   
   vocabList.forEach(vocab => {
-    const word = (vocab.content || "").toLowerCase().trim();
+    const word = cleanTextForMatching(vocab.content);
     if (!word) return;
 
     // Khớp từ vựng đơn hoặc cụm từ
