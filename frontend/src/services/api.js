@@ -1118,6 +1118,28 @@ export function callServer(methodName, args) {
         resolve("Thành công");
         return;
       }
+      if (methodName === "deleteGrammarDiaryRow") {
+        const [rowNumber] = args;
+        const grammarTab = mappings['grammar_diary'] || 'grammar_diaries';
+        const sheetId = await getSheetId(grammarTab, spreadsheetId);
+        await gapi.client.sheets.spreadsheets.batchUpdate({
+          spreadsheetId,
+          resource: {
+            requests: [{
+              deleteDimension: {
+                range: {
+                  sheetId,
+                  dimension: 'ROWS',
+                  startIndex: rowNumber - 1,
+                  endIndex: rowNumber
+                }
+              }
+            }]
+          }
+        });
+        resolve("Thành công");
+        return;
+      }
 
       throw new Error(`Unknown method: ${methodName}`);
     } catch (err) {

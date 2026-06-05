@@ -48,7 +48,12 @@ function renderGrammarCards() {
             <div>
               <div class="flex justify-between items-center mb-4">
                 <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-blue-50 text-blue-600 border border-blue-100">${scenario}</span>
-                <span class="text-[10px] font-bold text-slate-400 font-mono">${date}</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold text-slate-400 font-mono">${date}</span>
+                  <button onclick="event.stopPropagation(); window.deleteGrammarCard('${item.rowNumber}')" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Delete">
+                    <i class="fa-solid fa-trash text-[11px]"></i>
+                  </button>
+                </div>
               </div>
               <p class="text-xs font-bold text-rose-500 line-clamp-4 leading-relaxed mb-4 text-left">
                 <i class="fa-solid fa-circle-xmark mr-1"></i> "${userSentence}"
@@ -70,8 +75,7 @@ function renderGrammarCards() {
               </div>
             </div>
             
-            <div class="border-t border-slate-100 pt-3 flex justify-between items-center text-slate-400 hover:text-blue-600 transition">
-              <span class="text-[10px] font-bold uppercase tracking-wider">Tap to reveal correction</span>
+            <div class="border-t border-slate-100 pt-3 flex justify-end items-center transition">
               <button onclick="event.stopPropagation(); window.toggleGrammarPracticeMode('${item.rowNumber}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 cursor-pointer">
                 <i class="fa-solid fa-pen-to-square"></i> Practice
               </button>
@@ -213,6 +217,41 @@ window.checkGrammarPractice = async function(rowNumber, correctSentence) {
     }, 1500);
   }
 };
+
+window.deleteGrammarCard = function(rowNumber) {
+  if (!confirm("Bạn có chắc chắn muốn xóa bản ghi lỗi ngữ pháp này không?")) return;
+
+  const card = document.getElementById(`grammar-card-${rowNumber}`);
+  if (card) {
+    card.style.transition = 'all 0.4s ease';
+    card.style.opacity = '0';
+    card.style.transform = 'scale(0.9)';
+  }
+
+  callServer("deleteGrammarDiaryRow", [Number(rowNumber)])
+    .then(res => {
+      if (res === "Thành công") {
+        showToast("Đã xóa bản ghi lỗi ngữ pháp thành công!", "success");
+        if (typeof refreshCallback === 'function') {
+          refreshCallback(true); // silent reload
+        }
+      } else {
+        showToast("Lỗi khi xóa: " + res, "error");
+        if (card) {
+          card.style.opacity = '1';
+          card.style.transform = 'scale(1)';
+        }
+      }
+    })
+    .catch(err => {
+      showToast("Lỗi kết nối: " + (err.message || err), "error");
+      if (card) {
+        card.style.opacity = '1';
+        card.style.transform = 'scale(1)';
+      }
+    });
+};
+
 
 
 function escapeHTML(str) {
