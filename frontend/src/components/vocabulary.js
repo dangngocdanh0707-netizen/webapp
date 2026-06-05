@@ -167,7 +167,6 @@ window.filterVocabTable = function() {
 
 window.addVocabRow = function() {
   let content = document.getElementById('ins-v-content').value.trim();
-  let transcription = document.getElementById('ins-v-transcription') ? document.getElementById('ins-v-transcription').value.trim() : "";
   if (!content) {
     showToast("Nội dung từ vựng không được để trống!", "warning");
     return;
@@ -178,7 +177,7 @@ window.addVocabRow = function() {
   let newObj = {
     rowNumber: newRowNumber,
     content: content,
-    transcription: transcription,
+    transcription: "",
     category: "",
     topic: "",
     level: "",
@@ -194,13 +193,10 @@ window.addVocabRow = function() {
 
   // Clear inputs
   document.getElementById('ins-v-content').value = ""; 
-  if (document.getElementById('ins-v-transcription')) {
-    document.getElementById('ins-v-transcription').value = "";
-  }
   showToast("Đã thêm từ vựng mới thành công!", "success");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
-  callServer("insertVocabRow", [content, transcription])
+  callServer("insertVocabRow", [content, ""])
     .then(res => {
       if (res !== "Thành công") {
         rollback(res);
@@ -214,9 +210,6 @@ window.addVocabRow = function() {
     allVocabData = allVocabData.filter(v => v.rowNumber !== newRowNumber);
     buildVocabTable();
     document.getElementById('ins-v-content').value = content;
-    if (document.getElementById('ins-v-transcription')) {
-      document.getElementById('ins-v-transcription').value = transcription;
-    }
     showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
   }
 };

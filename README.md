@@ -105,6 +105,10 @@ webapp_project/ (personal_webapp/)
 * **Tự động Hoàn tác (Rollback)**: Nếu API Google Sheets trả về lỗi hoặc mất kết nối mạng, hệ thống tự động phục hồi trạng thái giao diện và mảng dữ liệu về thời điểm trước khi thao tác, hiển thị thông báo lỗi trực quan mà không bị gián đoạn trải nghiệm.
 * **Co giãn số dòng thông minh (Row Shifting on Delete)**: Do đặc thù Google Sheets đẩy các dòng phía sau lên khi xóa 1 dòng, hệ thống tự động co giãn `rowNumber` của các phần tử cục bộ để luôn đồng bộ chỉ số dòng mà không phải tải lại toàn bộ bảng tính (giảm tải 3 giây chờ).
 
+### 10. 📖 Quản lý Từ vựng (Vocabulary Dictionary) & Phát âm bản xứ
+* **Tích hợp Phiên âm (Transcription)**: Thêm cột `Transcription` ngay sau từ vựng giúp theo dõi và sửa đổi cách phát âm chuẩn IPA của từ ngay trên bảng danh sách.
+* **Tính năng Phát âm Tức thì (Speech Synthesis)**: Tích hợp nút loa phát âm ngay cạnh từ vựng trong danh sách, sử dụng Web Speech API để phát giọng đọc tiếng Anh chuẩn bản xứ trực tiếp không qua API bên thứ ba.
+
 ---
 
 ## 🛠️ Hướng dẫn thiết lập & Vận hành thực tế (3 Bước)
