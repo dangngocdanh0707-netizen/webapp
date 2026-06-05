@@ -49,10 +49,10 @@ The JSON structure must match this schema exactly:
   "corrections": "Explanation of mistakes in Vietnamese, and suggestions for improvement. If the user made no mistakes, write a simple encouraging message like 'Không có lỗi ngữ pháp! Tuyệt vời!' or leave blank.",
   "vocabUpgrades": [
     {"original": "a word or phrase in user's input that can be upgraded", "upgrade": "a better, more advanced academic/IELTS synonym or expression", "context": "explanation in Vietnamese of why this is better and how to use it"}
-  ], // list of vocabulary upgrade suggestions to sound more natural/advanced, or empty array if none.
+  ], // list of vocabulary upgrade suggestions to sound more natural/advanced. IMPORTANT: Be proactive! If the user uses very common words/phrases (like 'very big', 'really big', 'really good', 'bad', 'happy', 'sad', 'hard'), always try to suggest at least 1-2 advanced synonyms to help them sound more professional and academic.
   "collocations": [
     {"original": "an unnatural word combination in user's input", "upgrade": "the correct natural collocation", "context": "explanation in Vietnamese of the correct collocation usage"}
-  ] // list of natural English collocation suggestions to replace word-by-word translations, or empty array if none.
+  ] // list of natural English collocation suggestions to replace word-by-word translations. If you spot any unnatural combinations or word-by-word translations, list them here to help the user sound native.
 }`;
 
   if (provider === "gemini") {
