@@ -46,7 +46,8 @@ The JSON structure must match this schema exactly:
   "reply": "Your natural conversational reply to the user in English",
   "isCorrect": true, // false if there is any grammar, spelling, or styling mistake in user's latest input, true if perfectly correct.
   "correctText": "A corrected, natural version of the user's input, or empty string if it was already correct",
-  "corrections": "Explanation of mistakes in Vietnamese, and suggestions for improvement. If the user made no mistakes, write a simple encouraging message like 'Không có lỗi ngữ pháp! Tuyệt vời!' or leave blank."
+  "corrections": "Explanation of mistakes in Vietnamese, and suggestions for improvement. If the user made no mistakes, write a simple encouraging message like 'Không có lỗi ngữ pháp! Tuyệt vời!' or leave blank.",
+  "hints": ["A short natural English response suggestion", "Another different response suggestion", "A third response suggestion"] // 3 short, natural, diverse English sentence suggestions the user could say next, based on the current conversation context.
 }`;
 
   if (provider === "gemini") {
@@ -205,7 +206,8 @@ function parseJsonReponse(text) {
       reply: parsed.reply || "I'm sorry, I couldn't process that response.",
       isCorrect: typeof parsed.isCorrect === "boolean" ? parsed.isCorrect : true,
       correctText: parsed.correctText || "",
-      corrections: parsed.corrections || ""
+      corrections: parsed.corrections || "",
+      hints: Array.isArray(parsed.hints) ? parsed.hints : []
     };
   } catch (err) {
     console.error("Lỗi phân giải JSON từ AI:", err, "Raw text:", text);
@@ -214,7 +216,8 @@ function parseJsonReponse(text) {
       reply: text.substring(0, 150) + "...",
       isCorrect: true,
       correctText: "",
-      corrections: "Không thể phân tích ngữ pháp do lỗi phản hồi định dạng từ AI."
+      corrections: "Không thể phân tích ngữ pháp do lỗi phản hồi định dạng từ AI.",
+      hints: []
     };
   }
 }
@@ -314,3 +317,57 @@ or
   }
 }
 
+/**
+ * Dịch văn bản tiếng Anh sang tiếng Việt tự nhiên bằng AI
+ * @param {string} text Văn bản tiếng Anh cần dịch
+ * @param {Object} aiCreds Cấu hình AI {provider, geminiKey, openaiKey, model}
+ * @returns {Promise<string>} Chuỗi tiếng Việt được dịch
+ */
+export async function translateMessageText(text, aiCreds) {
+  const { provider, geminiKey, openaiKey, model } = aiCreds;
+  const prompt = `Translate this English text into natural Vietnamese. Respond only with the translated text, no extra formatting or explanation.\nText: "${text}"`;
+
+  if (provider === "gemini") {
+    if (!geminiKey) throw new Error("Thiếu Gemini API Key.");
+    const geminiModel = model.trim() || "gemini-2.5-flash";
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.2, maxOutputTokens: 500 }
+      })
+    });
+    if (!response.ok) throw new Error(`Gemini API Error: ${response.status}`);
+    const resData = await response.json();
+    const result = resData.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!result) throw new Error("Gemini không trả về kết quả dịch.");
+    return result.trim();
+
+  } else if (provider === "openai") {
+    if (!openaiKey) throw new Error("Thiếu OpenAI API Key.");
+    const openaiModel = model.trim() || "gpt-4o-mini";
+    const url = "https://api.openai.com/v1/chat/completions";
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${openaiKey}` },
+      body: JSON.stringify({
+        model: openaiModel,
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.2,
+        max_tokens: 500
+      })
+    });
+    if (!response.ok) throw new Error(`OpenAI API Error: ${response.status}`);
+    const resData = await response.json();
+    const result = resData.choices?.[0]?.message?.content;
+    if (!result) throw new Error("OpenAI không trả về kết quả dịch.");
+    return result.trim();
+
+  } else {
+    throw new Error("Nhà cung cấp AI không hợp lệ.");
+  }
+}

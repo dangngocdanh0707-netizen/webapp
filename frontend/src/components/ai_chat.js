@@ -1,14 +1,38 @@
 // HỢP PHẦN AI SPEAKING PARTNER - FRONTEND LOGIC
 import { getAiCredentials, callServer } from '../services/api.js';
-import { callAiApi, SCENARIOS } from '../services/ai.js';
+import { callAiApi, SCENARIOS, translateMessageText } from '../services/ai.js';
 import { showToast } from '../services/toast.js';
 
 // Khởi tạo các lời thoại chào mặc định theo tình huống
 const DEFAULT_GREETINGS = {
-  casual: "Hello there! I'm Alex. How is your day going? What are you up to today?",
-  interview: "Hello! Welcome to our interview today. I am pleased to meet you. To start off, could you please tell me a little bit about yourself?",
-  restaurant: "Good evening! Welcome to our restaurant. I will be your waiter today. Can I start you off with something to drink?",
-  travel: "Hello! Welcome to the London Grand Hotel. How can I help you today? Are you checking in?"
+  casual: "Hey! How's it going?",
+  interview: "Hi, welcome! Please, have a seat. Can you start by telling me a bit about yourself?",
+  restaurant: "Hi there! What can I get for you today?",
+  travel: "Welcome! How can I help you?"
+};
+
+// Gợi ý câu trả lời mặc định khi bắt đầu mỗi kịch bản
+const DEFAULT_GREETINGS_HINTS = {
+  casual: [
+    "It's going great! I just got back from a walk outside.",
+    "Pretty good! I've been quite busy with work lately. How about you?",
+    "Not bad! I'm just relaxing at home today."
+  ],
+  interview: [
+    "Thank you for having me! I'm really excited about this opportunity.",
+    "I'm doing well, thank you. I've been looking forward to this interview.",
+    "Hello! I'm a bit nervous but very enthusiastic about this role."
+  ],
+  restaurant: [
+    "I'd love to start with a glass of water, please.",
+    "Could I see the menu first? I'm not sure what to order yet.",
+    "Yes, I'll have a coffee to start. What do you recommend today?"
+  ],
+  travel: [
+    "Yes, I have a reservation under the name Nguyen.",
+    "I'd like to check in, please. I booked a room for two nights.",
+    "Hi! Could you help me find the nearest metro station?"
+  ]
 };
 
 let activeScenario = "casual";
@@ -18,6 +42,7 @@ let recognition = null;
 let isRecognizing = false;
 let refreshDataCallback = null;
 let isInitialized = false;
+let translationCache = {}; // Cache dịch theo index: { [msgIndex]: string }
 
 // ---------------- KHỞI TẠO MÔ-ĐUN ----------------
 export function initAiChatModule(allVocabulary, refreshCb) {
@@ -152,8 +177,12 @@ function initializeActiveScenario() {
 
   // Render các bong bóng chat
   renderAiChatBubbles();
-  
-  // Reset khung Grammar Feedback bên phải về rỗng khi đổi tình huống
+
+  // Hiển thị gợi ý câu mặc định cho kịch bản khi mới bắt đầu
+  renderResponseHints(DEFAULT_GREETINGS_HINTS[activeScenario] || []);
+
+  // Reset các trạng thái
+  translationCache = {};
   resetGrammarFeedbackUI();
 }
 
@@ -214,10 +243,21 @@ function renderAiChatBubbles() {
         <div class="flex items-start gap-1.5 max-w-[85%]">
           <div class="bg-white border border-slate-200 text-slate-800 rounded-2xl px-4 py-2.5 text-xs font-semibold shadow-2xs leading-relaxed">
             ${escapeHTML(msg.text)}
+            <div id="ai-chat-trans-${index}" class="hidden mt-2 pt-2 border-t border-slate-100">
+              <div class="ai-trans-spinner hidden flex items-center gap-1 text-slate-400 text-[10px] font-semibold">
+                <i class="fa-solid fa-spinner animate-spin text-[9px]"></i> Đang dịch...
+              </div>
+              <p class="ai-trans-text text-[11px] text-blue-700 font-semibold leading-relaxed italic hidden"></p>
+            </div>
           </div>
-          <button onclick="window.speakAiResponse('${msg.text.replace(/'/g, "\\'")}')" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer self-end mb-1">
-            <i class="fa-solid fa-volume-high text-[10px]"></i>
-          </button>
+          <div class="flex flex-col gap-1 self-end mb-1">
+            <button onclick="window.speakAiResponse('${msg.text.replace(/'/g, "\\'")}')" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer" title="Nghe phát âm">
+              <i class="fa-solid fa-volume-high text-[10px]"></i>
+            </button>
+            <button onclick="window.translateAiMessage(${index}, '${msg.text.replace(/'/g, "\\'")}')" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer" title="Xem bản dịch tiếng Việt">
+              <i class="fa-solid fa-language text-[11px]"></i>
+            </button>
+          </div>
         </div>
         <span class="text-[8px] text-blue-500 font-bold uppercase mt-1 ml-1">AI Partner</span>
       </div>
@@ -229,6 +269,101 @@ function renderAiChatBubbles() {
     historyContainer.scrollTop = historyContainer.scrollHeight;
   }, 100);
 }
+
+// ---------------- GỢI Ý CÂU TRẢ LỜI NHANH - ĐỀ XUẤT 1 ----------------
+function renderResponseHints(hints) {
+  const container = document.getElementById('ai-chat-hints-container');
+  if (!container) return;
+
+  if (!hints || hints.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = hints.map((hint, i) => {
+    const safe = hint.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#039;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `
+      <button
+        onclick="window.selectResponseHint(this)"
+        data-hint="${safe}"
+        class="text-xs font-semibold px-3 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700
+               hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-md
+               active:scale-95 transition-all duration-150 cursor-pointer leading-snug max-w-full truncate
+               animate-in fade-in slide-in-from-bottom-1 duration-300"
+        style="animation-delay:${i * 80}ms"
+        title="${safe}"
+      >
+        <i class="fa-regular fa-lightbulb text-[9px] mr-1 opacity-60"></i>${hint}
+      </button>`;
+  }).join('');
+}
+
+window.selectResponseHint = function(btn) {
+  const inputEl = document.getElementById('ai-chat-input');
+  if (inputEl && btn) {
+    const raw = btn.dataset.hint || '';
+    // Giải mã HTML entities
+    const decoded = raw
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#039;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>');
+    inputEl.value = decoded;
+    inputEl.focus();
+    inputEl.selectionStart = inputEl.selectionEnd = decoded.length;
+  }
+};
+
+// ---------------- DỊCH TIếNG VIỆT - ĐỀ XUẤT 3 ----------------
+window.translateAiMessage = async function(index, text) {
+  const container = document.getElementById(`ai-chat-trans-${index}`);
+  if (!container) return;
+
+  const spinner = container.querySelector('.ai-trans-spinner');
+  const textEl  = container.querySelector('.ai-trans-text');
+
+  // Nếu container đang hiển thị, toggle ẩn
+  if (!container.classList.contains('hidden')) {
+    container.classList.add('hidden');
+    return;
+  }
+
+  // Nếu đã có cache, hiển luôn
+  if (translationCache[index]) {
+    textEl.textContent = translationCache[index];
+    textEl.classList.remove('hidden');
+    spinner.classList.add('hidden');
+    container.classList.remove('hidden');
+    return;
+  }
+
+  // Hiển container với spinner
+  container.classList.remove('hidden');
+  spinner.classList.remove('hidden');
+  textEl.classList.add('hidden');
+
+  try {
+    const aiCreds = getAiCredentials();
+    const hasCreds = aiCreds.provider === "gemini" ? aiCreds.geminiKey : aiCreds.openaiKey;
+    if (!hasCreds) {
+      showToast("Vui lòng cấu hình API Key trong Settings trước!", "warning");
+      container.classList.add('hidden');
+      return;
+    }
+
+    const translated = await translateMessageText(text, aiCreds);
+    translationCache[index] = translated;
+
+    textEl.textContent = translated;
+    spinner.classList.add('hidden');
+    textEl.classList.remove('hidden');
+  } catch (err) {
+    console.error('[ai_chat.js] Lỗi dịch:', err);
+    showToast('Không thể dịch tin nhắn này.', 'error');
+    container.classList.add('hidden');
+  }
+};
 
 // ---------------- GỬI TIN NHẮN VÀ XỬ LÝ PHẢN HỒI AI ----------------
 window.sendAiChatMessage = async function() {
@@ -288,6 +423,9 @@ window.sendAiChatMessage = async function() {
 
     // Hiển thị phân tích lỗi ngữ pháp lên thanh bên phải
     renderGrammarFeedbackUI(userText, result);
+
+    // Hiển thị hints gợi ý câu trả lời từ AI (đỀ xuất 1)
+    renderResponseHints(result.hints || []);
 
     // Phát âm câu thoại của AI nếu bật chế độ Auto-TTS
     const autoTts = document.getElementById('ai-chat-auto-tts');
