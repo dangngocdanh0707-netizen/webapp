@@ -120,7 +120,7 @@ The JSON structure must match this schema exactly:
 {
   "reply": "Your natural conversational reply to the user in English",
   "isCorrect": true, // false if there is any grammar, spelling, or styling mistake in user's latest input, true if perfectly correct.
-  "correctText": "A corrected, natural version of the user's input, or empty string if it was already correct",
+  "correctText": "A corrected, natural version of the user's input, or empty string if it was already correct. IMPORTANT: This must be a corrected version of the user's OWN sentence, NOT your conversational reply. For example, if the user says 'not sure! just by the feelings', correctText should be 'I'm not sure! It's just based on feelings.' or similar, NOT your reply like 'That's totally fair!'",
   "corrections": "Explanation of mistakes in Vietnamese, and suggestions for improvement. If the user made no mistakes, write a simple encouraging message like 'Không có lỗi ngữ pháp! Tuyệt vời!' or leave blank.",
   "vocabUpgrades": [
     {"original": "a word or phrase in user's input that can be upgraded", "upgrade": "a better, more advanced academic/IELTS synonym or expression", "context": "explanation in Vietnamese of why this is better and how to use it"}
