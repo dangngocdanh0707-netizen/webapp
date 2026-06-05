@@ -3,35 +3,27 @@ import { getAiCredentials, callServer } from '../services/api.js';
 import { callAiApi, SCENARIOS, translateMessageText } from '../services/ai.js';
 import { showToast } from '../services/toast.js';
 
-// Khởi tạo các lời thoại chào mặc định theo tình huống
-const DEFAULT_GREETINGS = {
-  casual: "Hey! How's it going?",
-  interview: "Hi, welcome! Please, have a seat. Can you start by telling me a bit about yourself?",
-  restaurant: "Hi there! What can I get for you today?",
-  travel: "Welcome! How can I help you?"
-};
-
-// Gợi ý câu trả lời mặc định khi bắt đầu mỗi kịch bản
-const DEFAULT_GREETINGS_HINTS = {
+// Gợi ý câu mở đầu hội thoại cho người dùng khi bắt đầu mỗi kịch bản
+const DEFAULT_STARTING_HINTS = {
   casual: [
-    "It's going great! I just got back from a walk outside.",
-    "Pretty good! I've been quite busy with work lately. How about you?",
-    "Not bad! I'm just relaxing at home today."
+    "Hi Alex! How are you doing today?",
+    "Hey! Let's have a chat.",
+    "Hello! What have you been up to lately?"
   ],
   interview: [
-    "Thank you for having me! I'm really excited about this opportunity.",
-    "I'm doing well, thank you. I've been looking forward to this interview.",
-    "Hello! I'm a bit nervous but very enthusiastic about this role."
+    "Hello! I am ready for the interview.",
+    "Good morning, thank you for inviting me.",
+    "Hi! Let's start the interview."
   ],
   restaurant: [
-    "I'd love to start with a glass of water, please.",
-    "Could I see the menu first? I'm not sure what to order yet.",
-    "Yes, I'll have a coffee to start. What do you recommend today?"
+    "Hello, I'd like to order some food, please.",
+    "Hi, can I get a table for one?",
+    "Excuse me, could I see the menu?"
   ],
   travel: [
-    "Yes, I have a reservation under the name Nguyen.",
-    "I'd like to check in, please. I booked a room for two nights.",
-    "Hi! Could you help me find the nearest metro station?"
+    "Excuse me, could you help me with directions?",
+    "Hello! I'd like to check in, please.",
+    "Hi, can you tell me where the nearest station is?"
   ]
 };
 
@@ -158,23 +150,6 @@ function initializeActiveScenario() {
     selectEl.value = activeScenario;
   }
 
-  // Kiểm tra lịch sử chat, nếu rỗng thì tạo câu chào mặc định
-  if (!chatHistories[activeScenario] || chatHistories[activeScenario].length === 0) {
-    chatHistories[activeScenario] = [{
-      role: "ai",
-      text: DEFAULT_GREETINGS[activeScenario] || "Hello! Let's practice English."
-    }];
-    saveChatHistoriesToStorage();
-
-    // Tự động phát âm câu chào nếu bật Auto-TTS
-    const autoTts = document.getElementById('ai-chat-auto-tts');
-    if (autoTts && autoTts.checked) {
-      setTimeout(() => {
-        speakAiResponse(chatHistories[activeScenario][0].text);
-      }, 500);
-    }
-  }
-
   // Render các bong bóng chat
   renderAiChatBubbles();
 
@@ -189,8 +164,8 @@ function initializeActiveScenario() {
       renderResponseHints([]);
     }
   } else {
-    // Nếu chưa có tin nhắn nào, dùng câu chào mặc định
-    renderResponseHints(DEFAULT_GREETINGS_HINTS[activeScenario] || []);
+    // Nếu chưa có tin nhắn nào, dùng câu mở đầu mặc định
+    renderResponseHints(DEFAULT_STARTING_HINTS[activeScenario] || []);
   }
 
   // Reset các trạng thái
