@@ -196,7 +196,7 @@ Text: "${n}"`;if(e==="gemini"){if(!i)throw new Error("Thiếu Gemini API Key.");
               <div id="practice-zone-${e.rowNumber}" class="hidden mt-4 pt-3 border-t border-slate-100 flex flex-col gap-2" onclick="event.stopPropagation()">
                 <input type="text" id="practice-input-${e.rowNumber}" 
                        class="form-input text-xs font-semibold py-2 px-3 rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-none"
-                       placeholder="Gõ lại câu đúng tại đây..."
+                       placeholder=""
                        onkeyup="if(event.key === 'Enter') window.checkGrammarPractice('${e.rowNumber}', '${a.replace(/'/g,"\\'")}')">
                 <div class="flex justify-end gap-2">
                   <button onclick="window.toggleGrammarPracticeMode('${e.rowNumber}')" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-700 transition cursor-pointer">Hủy</button>
