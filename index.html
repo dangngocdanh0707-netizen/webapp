@@ -21,8 +21,8 @@
   <!-- Thư viện SDK Google Sheets & Auth -->
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script type="module" crossorigin src="/webapp_project/assets/index-F60_RhIU.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-D_U5zcne.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-D5cNahy5.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-aF6XmFv2.css">
 </head>
 
 <body>
@@ -1287,20 +1287,17 @@
       <div class="flex-1 overflow-y-auto pr-1 custom-scrollbar flex flex-col gap-4 text-left my-2">
         <div>
           <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">SPREADSHEET ID</label>
-          <input type="text" id="settings-spreadsheet-id" placeholder="Nhập Spreadsheet ID từ link Google Sheet của bạn" class="form-input font-mono text-xs">
-          <p class="text-[10px] text-slate-500 mt-1">Chuỗi ký tự nằm giữa <code>/d/</code> và <code>/edit</code> trong URL bảng tính của bạn.</p>
+          <input type="text" id="settings-spreadsheet-id" class="form-input font-mono text-xs">
         </div>
         
         <div>
           <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">GOOGLE API KEY</label>
-          <input type="text" id="settings-api-key" placeholder="AIzaSy..." class="form-input font-mono text-xs">
-          <p class="text-[10px] text-slate-500 mt-1">Tạo API Key trong Google Cloud Console để truy cập API.</p>
+          <input type="text" id="settings-api-key" class="form-input font-mono text-xs">
         </div>
         
         <div>
           <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">OAUTH CLIENT ID</label>
-          <input type="text" id="settings-client-id" placeholder="xxx.apps.googleusercontent.com" class="form-input font-mono text-xs">
-          <p class="text-[10px] text-slate-500 mt-1">Đăng ký Client ID dạng &quot;Web application&quot; để xác thực đăng nhập bảo mật.</p>
+          <input type="text" id="settings-client-id" class="form-input font-mono text-xs">
         </div>
 
         <div class="border-t border-slate-100/50 pt-4 mt-2">
@@ -1318,20 +1315,17 @@
             
             <div>
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">GEMINI API KEY</label>
-              <input type="password" id="settings-gemini-key" placeholder="Nhập Gemini API Key từ Google AI Studio" class="form-input font-mono text-xs">
-              <p class="text-[10px] text-slate-500 mt-1">Lấy key miễn phí tại <a href="https://aistudio.google.com/" target="_blank" class="text-blue-500 underline font-semibold">Google AI Studio</a>.</p>
+              <input type="password" id="settings-gemini-key" class="form-input font-mono text-xs">
             </div>
             
             <div>
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">OPENAI API KEY</label>
-              <input type="password" id="settings-openai-key" placeholder="sk-..." class="form-input font-mono text-xs">
-              <p class="text-[10px] text-slate-500 mt-1">Nhập API Key từ tài khoản OpenAI Developer của bạn.</p>
+              <input type="password" id="settings-openai-key" class="form-input font-mono text-xs">
             </div>
             
             <div>
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI MODEL NAME (Tên Model)</label>
-              <input type="text" id="settings-ai-model" placeholder="Mặc định: gemini-2.5-flash hoặc gpt-4o-mini" class="form-input font-mono text-xs">
-              <p class="text-[10px] text-slate-500 mt-1">Nhập model tùy chỉnh nếu muốn (ví dụ: <code>gemini-2.5-pro</code>, <code>gpt-4o</code>).</p>
+              <input type="text" id="settings-ai-model" class="form-input font-mono text-xs">
             </div>
           </div>
         </div>
