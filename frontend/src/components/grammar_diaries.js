@@ -1,5 +1,6 @@
-import { callServer } from '../services/api.js';
+import { callServer, getAiCredentials } from '../services/api.js';
 import { showToast } from '../services/toast.js';
+import { verifyPracticeSentence } from '../services/ai.js';
 
 let refreshCallback = null;
 let currentData = [];
@@ -52,10 +53,27 @@ function renderGrammarCards() {
               <p class="text-xs font-bold text-rose-500 line-clamp-4 leading-relaxed mb-4 text-left">
                 <i class="fa-solid fa-circle-xmark mr-1"></i> "${userSentence}"
               </p>
+              
+              <!-- Practice input zone (hidden by default) -->
+              <div id="practice-zone-${item.rowNumber}" class="hidden mt-4 pt-3 border-t border-slate-100 flex flex-col gap-2" onclick="event.stopPropagation()">
+                <input type="text" id="practice-input-${item.rowNumber}" 
+                       class="form-input text-xs font-semibold py-2 px-3 rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-none"
+                       placeholder="Gõ lại câu đúng tại đây..."
+                       onkeyup="if(event.key === 'Enter') window.checkGrammarPractice('${item.rowNumber}', '${correctedSentence.replace(/'/g, "\\'")}')">
+                <div class="flex justify-end gap-2">
+                  <button onclick="window.toggleGrammarPracticeMode('${item.rowNumber}')" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-700 transition cursor-pointer">Hủy</button>
+                  <button id="btn-practice-check-${item.rowNumber}" onclick="window.checkGrammarPractice('${item.rowNumber}', '${correctedSentence.replace(/'/g, "\\'")}')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-1.5 rounded-lg transition shadow-xs flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-circle-check"></i> Check
+                  </button>
+                </div>
+              </div>
             </div>
+            
             <div class="border-t border-slate-100 pt-3 flex justify-between items-center text-slate-400 hover:text-blue-600 transition">
               <span class="text-[10px] font-bold uppercase tracking-wider">Tap to reveal correction</span>
-              <i class="fa-solid fa-rotate text-xs"></i>
+              <button onclick="event.stopPropagation(); window.toggleGrammarPracticeMode('${item.rowNumber}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 cursor-pointer">
+                <i class="fa-solid fa-pen-to-square"></i> Practice
+              </button>
             </div>
           </div>
           <!-- Back side -->
@@ -94,6 +112,116 @@ window.flipGrammarCard = function(rowNumber) {
   const card = document.getElementById(`grammar-card-${rowNumber}`);
   if (card) {
     card.classList.remove('flipped');
+  }
+};
+
+// Ẩn/Hiện vùng luyện viết
+window.toggleGrammarPracticeMode = function(rowNumber) {
+  const zone = document.getElementById(`practice-zone-${rowNumber}`);
+  const input = document.getElementById(`practice-input-${rowNumber}`);
+  if (zone) {
+    if (zone.classList.contains('hidden')) {
+      zone.classList.remove('hidden');
+      if (input) {
+        setTimeout(() => input.focus(), 100);
+      }
+    } else {
+      zone.classList.add('hidden');
+      if (input) input.value = '';
+    }
+  }
+};
+
+// So khớp và kiểm tra câu luyện viết
+window.checkGrammarPractice = async function(rowNumber, correctSentence) {
+  const input = document.getElementById(`practice-input-${rowNumber}`);
+  const btn = document.getElementById(`btn-practice-check-${rowNumber}`);
+  const card = document.getElementById(`grammar-card-${rowNumber}`);
+  if (!input || !card) return;
+
+  const userText = input.value.trim();
+  if (!userText) {
+    showToast("Vui lòng nhập câu trả lời!", "warning");
+    return;
+  }
+
+  // Khóa nút Check và hiển thị spinner nếu cần gọi AI
+  const originalBtnContent = btn ? btn.innerHTML : '';
+  const setChecking = (checking) => {
+    if (btn) {
+      btn.disabled = checking;
+      if (checking) {
+        btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Checking`;
+      } else {
+        btn.innerHTML = originalBtnContent;
+      }
+    }
+  };
+
+  // Bước 1: So khớp chuỗi nhanh (Client-side String Matching)
+  const cleanStr = (str) => {
+    return str
+      .toLowerCase()
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  };
+
+  const cleanUser = cleanStr(userText);
+  const cleanCorrect = cleanStr(correctSentence);
+
+  let isMatch = (cleanUser === cleanCorrect);
+
+  if (!isMatch) {
+    // Bước 2: AI chấm điểm thông minh (AI Fallback Check)
+    setChecking(true);
+    try {
+      const aiCreds = getAiCredentials();
+      const hasCreds = aiCreds.provider === "gemini" ? aiCreds.geminiKey : aiCreds.openaiKey;
+      if (hasCreds) {
+        isMatch = await verifyPracticeSentence(userText, correctSentence, aiCreds);
+      }
+    } catch (err) {
+      console.error("AI verify practice error:", err);
+    } finally {
+      setChecking(false);
+    }
+  }
+
+  if (isMatch) {
+    // Gõ ĐÚNG: Nháy viền xanh, tự động đánh dấu đã thuộc và đồng bộ ngầm
+    input.className = "form-input text-xs font-semibold py-2 px-3 rounded-lg border border-emerald-500 bg-emerald-50 text-emerald-800 shadow-[0_0_10px_rgba(16,185,129,0.15)]";
+    showToast("Chính xác! Đã tự động đánh dấu đã thuộc.", "success");
+    
+    // Tạo hiệu ứng ẩn thẻ
+    card.style.transition = 'all 0.4s ease';
+    card.style.opacity = '0';
+    card.style.transform = 'scale(0.9)';
+
+    setTimeout(() => {
+      callServer("deleteGrammarDiaryRow", [Number(rowNumber)])
+        .then(() => {
+          if (typeof refreshCallback === 'function') {
+            refreshCallback(true); // silent reload
+          }
+        })
+        .catch(err => {
+          console.error("Failed to delete grammar record:", err);
+          // Khôi phục lại thẻ nếu lỗi
+          card.style.opacity = '1';
+          card.style.transform = 'scale(1)';
+          input.className = "form-input text-xs font-semibold py-2 px-3 rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-none";
+        });
+    }, 400);
+  } else {
+    // Gõ SAI: Nháy viền đỏ và lắc card
+    input.className = "form-input text-xs font-semibold py-2 px-3 rounded-lg border border-rose-500 bg-rose-50 text-rose-800 shadow-[0_0_10px_rgba(244,63,94,0.15)]";
+    card.classList.add('practice-state-incorrect');
+    
+    setTimeout(() => {
+      card.classList.remove('practice-state-incorrect');
+      input.className = "form-input text-xs font-semibold py-2 px-3 rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-none";
+    }, 1500);
   }
 };
 

@@ -218,3 +218,99 @@ function parseJsonReponse(text) {
     };
   }
 }
+
+/**
+ * Xác thực câu luyện tập của người dùng bằng AI
+ * @param {string} userAttempt Câu nhập của người dùng
+ * @param {string} targetSentence Câu mẫu đúng
+ * @param {Object} aiCreds Cấu hình AI {provider, geminiKey, openaiKey, model}
+ * @returns {Promise<boolean>} Trả về true nếu đúng ngữ pháp và tương đồng ý nghĩa, ngược lại false
+ */
+export async function verifyPracticeSentence(userAttempt, targetSentence, aiCreds) {
+  const { provider, geminiKey, openaiKey, model } = aiCreds;
+
+  const prompt = `User attempt: "${userAttempt}"\nTarget correct sentence: "${targetSentence}"`;
+  const systemInstruction = `You are an English language evaluator. 
+Determine if the user's sentence (User attempt) is grammatically correct in English and conveys the same core meaning as the target correct sentence.
+Be encouraging but precise. Minor styling differences or different vocabulary that is still correct and natural is acceptable.
+You MUST respond ONLY with a valid JSON object. Do not include markdown code block formatting (like \`\`\`json ... \`\`\`) in your raw response.
+Format:
+{
+  "isCorrect": true
+}
+or
+{
+  "isCorrect": false
+}`;
+
+  try {
+    if (provider === "gemini") {
+      if (!geminiKey) throw new Error("Thiếu Gemini API Key.");
+      const geminiModel = model.trim() || "gemini-2.5-flash";
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`;
+      
+      const requestBody = {
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        systemInstruction: { parts: [{ text: systemInstruction }] },
+        generationConfig: {
+          responseMimeType: "application/json",
+          temperature: 0.1,
+          maxOutputTokens: 100
+        }
+      };
+      
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody)
+      });
+      
+      if (!response.ok) throw new Error(`Gemini API Error: ${response.status}`);
+      const resData = await response.json();
+      const textResponse = resData.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!textResponse) throw new Error("Gemini không trả về phản hồi.");
+      
+      const parsed = JSON.parse(textResponse.trim().replace(/^```json\s*/i, "").replace(/\s*```$/, ""));
+      return parsed.isCorrect === true;
+      
+    } else if (provider === "openai") {
+      if (!openaiKey) throw new Error("Thiếu OpenAI API Key.");
+      const openaiModel = model.trim() || "gpt-4o-mini";
+      const url = "https://api.openai.com/v1/chat/completions";
+      
+      const requestBody = {
+        model: openaiModel,
+        messages: [
+          { role: "system", content: systemInstruction },
+          { role: "user", content: prompt }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.1,
+        max_tokens: 100
+      };
+      
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${openaiKey}`
+        },
+        body: JSON.stringify(requestBody)
+      });
+      
+      if (!response.ok) throw new Error(`OpenAI API Error: ${response.status}`);
+      const resData = await response.json();
+      const textResponse = resData.choices?.[0]?.message?.content;
+      if (!textResponse) throw new Error("OpenAI không trả về phản hồi.");
+      
+      const parsed = JSON.parse(textResponse.trim().replace(/^```json\s*/i, "").replace(/\s*```$/, ""));
+      return parsed.isCorrect === true;
+    } else {
+      throw new Error("Nhà cung cấp AI không hợp lệ.");
+    }
+  } catch (err) {
+    console.error("[ai.js] Lỗi xác thực câu luyện tập:", err);
+    return false;
+  }
+}
+
