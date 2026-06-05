@@ -364,7 +364,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
     // Tạo tiêu đề cột cho các tab mới tạo
     const headersData = [
       { range: `${mappings['cost'] || 'expenses'}!A1:D1`, values: [['Date', 'Category', 'Amount', 'Note']] },
-      { range: `${mappings['vocabulary'] || 'vocabulary'}!A1:I1`, values: [['Content', 'Category', 'Topic', 'Level', 'Meaning', 'Status', 'Next Review', 'Ease Factor', 'Interval']] },
+      { range: `${mappings['vocabulary'] || 'vocabulary'}!A1:J1`, values: [['Content', 'Transcription', 'Category', 'Topic', 'Level', 'Meaning', 'Status', 'Next Review', 'Ease Factor', 'Interval']] },
       { range: `${mappings['habit_tracker'] || 'habits'}!A1:C1`, values: [['Date', 'Habit', 'Status']] },
       { range: `${mappings['link'] || 'links'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
       { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Content', 'Category']] },
@@ -434,7 +434,7 @@ export function callServer(methodName, args) {
           spreadsheetId,
           ranges: [
             `${costTab}!A2:D`,
-            `${vocabTab}!A2:I`,
+            `${vocabTab}!A2:J`,
             `${habitTab}!A2:C`,
             `${linkTab}!A2:C`,
             `${promptTab}!A2:C`,
@@ -460,14 +460,15 @@ export function callServer(methodName, args) {
           vocabulary: getRows(valueRanges[1]).map((row, idx) => ({
             rowNumber: idx + 2,
             content: row[0] || "",
-            category: row[1] || "",
-            topic: row[2] || "",
-            level: row[3] || "",
-            meaning: row[4] || "",
-            status: row[5] || "New",
-            next_review: cleanDateValue(row[6]),
-            ease_factor: Number(row[7]) || 2.5,
-            interval: Number(row[8]) || 0
+            transcription: row[1] || "",
+            category: row[2] || "",
+            topic: row[3] || "",
+            level: row[4] || "",
+            meaning: row[5] || "",
+            status: row[6] || "New",
+            next_review: cleanDateValue(row[7]),
+            ease_factor: Number(row[8]) || 2.5,
+            interval: Number(row[9]) || 0
           })).filter(item => item.content),
 
           habit_tracker: getRows(valueRanges[2]).map((row, idx) => ({
@@ -576,24 +577,24 @@ export function callServer(methodName, args) {
 
       // 3. Nghiệp vụ TỪ VỰNG (Vocabulary & Anki SRS)
       if (methodName === "insertVocabRow") {
-        const [content] = args;
+        const [content, transcription] = args;
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${vocabTab}!A:I`,
+          range: `${vocabTab}!A:J`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[content, "", "", "", "", "New", "", 2.5, 0]] }
+          resource: { values: [[content, transcription || "", "", "", "", "", "New", "", 2.5, 0]] }
         });
         resolve("Thành công");
         return;
       }
       if (methodName === "updateVocabRow") {
-        const [rowNumber, content, category, topic, level, meaning] = args;
+        const [rowNumber, content, transcription, category, topic, level, meaning] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${vocabTab}!A${rowNumber}:E${rowNumber}`,
+          range: `${vocabTab}!A${rowNumber}:F${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[content, category, topic, level, meaning]] }
+          resource: { values: [[content, transcription, category, topic, level, meaning]] }
         });
         resolve("Thành công");
         return;
@@ -623,7 +624,7 @@ export function callServer(methodName, args) {
         const [rowNumber, finalStatus, nextReviewStr, easeFactor, interval] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${vocabTab}!F${rowNumber}:I${rowNumber}`,
+          range: `${vocabTab}!G${rowNumber}:J${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[finalStatus, formatDateDb(nextReviewStr), Number(easeFactor), Number(interval)]] }
         });

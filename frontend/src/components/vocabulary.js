@@ -110,6 +110,7 @@ export function buildVocabTable() {
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="vocab-row-${id}" class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-slate-800 text-sm v-view-${id}">${escapeHTML(item.content) || ''}</td>
+        <td class="p-4 font-mono text-slate-500 italic text-sm v-view-${id}">${escapeHTML(item.transcription) || '-'}</td>
         <td class="p-4 hidden v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(cat)}</span></td>
         <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(topic)}</span></td>
         <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(item.level) || '-'}</span></td>
@@ -118,6 +119,7 @@ export function buildVocabTable() {
         <td class="p-4 font-semibold text-xs text-slate-500 v-view-${id}">${nextReviewView}</td>
         
         <td class="p-4 pl-6 hidden v-edit-${id}"><input type="text" id="v-edit-content-${id}" class="edit-input font-bold" value="${escapeHTML(item.content)}"></td>
+        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-transcription-${id}" class="edit-input font-mono italic" value="${escapeHTML(item.transcription || '')}" placeholder="/.../"></td>
         <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-cat-${id}" class="edit-input" value="${escapeHTML(cat)}"></td>
         <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-topic-${id}" class="edit-input" value="${escapeHTML(topic)}"></td>
         <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-level-${id}" class="edit-input font-mono" value="${escapeHTML(item.level)}"></td>
@@ -139,7 +141,7 @@ export function buildVocabTable() {
   });
   
   if (tbody.children.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-400 italic">No entries match the active filters.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 italic">No entries match the active filters.</td></tr>`;
   }
 }
 
@@ -154,8 +156,11 @@ window.filterVocabTable = function() {
   buildVocabTable();
 };
 
+
+
 window.addVocabRow = function() {
   let content = document.getElementById('ins-v-content').value.trim();
+  let transcription = document.getElementById('ins-v-transcription') ? document.getElementById('ins-v-transcription').value.trim() : "";
   if (!content) {
     showToast("Nội dung từ vựng không được để trống!", "warning");
     return;
@@ -166,6 +171,7 @@ window.addVocabRow = function() {
   let newObj = {
     rowNumber: newRowNumber,
     content: content,
+    transcription: transcription,
     category: "",
     topic: "",
     level: "",
@@ -181,10 +187,13 @@ window.addVocabRow = function() {
 
   // Clear inputs
   document.getElementById('ins-v-content').value = ""; 
+  if (document.getElementById('ins-v-transcription')) {
+    document.getElementById('ins-v-transcription').value = "";
+  }
   showToast("Đã thêm từ vựng mới thành công!", "success");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
-  callServer("insertVocabRow", [content])
+  callServer("insertVocabRow", [content, transcription])
     .then(res => {
       if (res !== "Thành công") {
         rollback(res);
@@ -198,12 +207,16 @@ window.addVocabRow = function() {
     allVocabData = allVocabData.filter(v => v.rowNumber !== newRowNumber);
     buildVocabTable();
     document.getElementById('ins-v-content').value = content;
+    if (document.getElementById('ins-v-transcription')) {
+      document.getElementById('ins-v-transcription').value = transcription;
+    }
     showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
   }
 };
 
 window.saveVocab = function(id) {
   let content = document.getElementById(`v-edit-content-${id}`).value.trim(); 
+  let transcription = document.getElementById(`v-edit-transcription-${id}`) ? document.getElementById(`v-edit-transcription-${id}`).value.trim() : "";
   let cat = document.getElementById(`v-edit-cat-${id}`).value.trim();
   let topic = document.getElementById(`v-edit-topic-${id}`).value.trim(); 
   let level = document.getElementById(`v-edit-level-${id}`).value.trim(); 
@@ -220,6 +233,7 @@ window.saveVocab = function(id) {
 
   let oldObj = { ...allVocabData[idx] };
   allVocabData[idx].content = content;
+  allVocabData[idx].transcription = transcription;
   allVocabData[idx].category = cat;
   allVocabData[idx].topic = topic;
   allVocabData[idx].level = level;
@@ -230,7 +244,7 @@ window.saveVocab = function(id) {
   showToast("Đã cập nhật từ vựng thành công!", "success");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
-  callServer("updateVocabRow", [id, content, cat, topic, level, meaning])
+  callServer("updateVocabRow", [id, content, transcription, cat, topic, level, meaning])
     .then(res => {
       if (res !== "Thành công") {
         rollback(res);
