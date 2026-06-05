@@ -21,7 +21,7 @@
   <!-- Thư viện SDK Google Sheets & Auth -->
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script type="module" crossorigin src="/webapp_project/assets/index-D5cNahy5.js"></script>
+  <script type="module" crossorigin src="/webapp_project/assets/index-go2VrdR4.js"></script>
   <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-aF6XmFv2.css">
 </head>
 
@@ -1307,7 +1307,7 @@
           <div class="flex flex-col gap-3">
             <div>
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI PROVIDER (Nhà cung cấp)</label>
-              <select id="settings-ai-provider" class="form-input font-semibold text-xs">
+              <select id="settings-ai-provider" onchange="window.updateSettingsModelOptions(this.value)" class="form-input font-semibold text-xs">
                 <option value="gemini">Google Gemini</option>
                 <option value="openai">OpenAI</option>
               </select>
@@ -1324,8 +1324,8 @@
             </div>
             
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI MODEL NAME (Tên Model)</label>
-              <input type="text" id="settings-ai-model" class="form-input font-mono text-xs">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI MODEL NAME</label>
+              <select id="settings-ai-model" class="form-input font-semibold text-xs"></select>
             </div>
           </div>
         </div>
