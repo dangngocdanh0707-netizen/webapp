@@ -516,16 +516,21 @@ function resetGrammarFeedbackUI() {
   if (emptyEl) emptyEl.classList.remove('hidden');
   if (activeEl) activeEl.classList.add('hidden');
 
-  // Xóa sạch nội dung cũ của 2 khối gợi ý mới
-  const vocabBlock = document.getElementById('ai-chat-feedback-vocab-block');
-  const vocabListEl = document.getElementById('ai-chat-feedback-vocab-list');
-  if (vocabBlock) vocabBlock.classList.add('hidden');
-  if (vocabListEl) vocabListEl.innerHTML = '';
+  const userTxtEl = document.getElementById('ai-chat-feedback-user-txt');
+  if (userTxtEl) {
+    userTxtEl.innerText = '';
+    userTxtEl.className = 'text-xs font-bold p-2.5 rounded-lg border transition-all duration-200 italic';
+  }
 
-  const collocBlock = document.getElementById('ai-chat-feedback-collocation-block');
-  const collocListEl = document.getElementById('ai-chat-feedback-collocation-list');
-  if (collocBlock) collocBlock.classList.add('hidden');
-  if (collocListEl) collocListEl.innerHTML = '';
+  const correctTxtEl = document.getElementById('ai-chat-feedback-correct-txt');
+  if (correctTxtEl) {
+    correctTxtEl.innerText = '';
+  }
+
+  const explainTxtEl = document.getElementById('ai-chat-feedback-explain-txt');
+  if (explainTxtEl) {
+    explainTxtEl.innerHTML = '';
+  }
 }
 
 function renderGrammarFeedbackUI(userText, aiResult) {
@@ -544,101 +549,45 @@ function renderGrammarFeedbackUI(userText, aiResult) {
     aiResult.isCorrect = true;
   }
 
-  // 1. Cập nhật câu nói gốc của User
+  // 1. Cập nhật câu nói gốc của User và thêm class màu sắc tương ứng
   const userTxtEl = document.getElementById('ai-chat-feedback-user-txt');
-  if (userTxtEl) userTxtEl.innerText = `"${userText}"`;
-
-  // 2. Trạng thái đúng sai
-  const statusEl = document.getElementById('ai-chat-feedback-status');
-  const statusIcon = document.getElementById('ai-chat-feedback-status-icon');
-  const statusText = document.getElementById('ai-chat-feedback-status-text');
-
-  if (statusEl && statusIcon && statusText) {
-    statusEl.classList.remove('bg-emerald-50', 'text-emerald-700', 'border-emerald-100', 'bg-amber-50', 'text-amber-700', 'border-amber-100', 'border');
-    statusEl.classList.add('border');
-
+  if (userTxtEl) {
+    userTxtEl.innerText = `"${userText}"`;
+    userTxtEl.className = 'text-xs font-bold p-2.5 rounded-lg border transition-all duration-200 italic ';
     if (aiResult.isCorrect) {
-      statusEl.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-100');
-      statusIcon.className = "fa-solid fa-circle-check";
-      statusText.innerText = "Tuyệt vời! Không có lỗi.";
+      userTxtEl.className += 'border-emerald-500 bg-emerald-50 text-emerald-800 shadow-[0_0_10px_rgba(16,185,129,0.15)]';
     } else {
-      statusEl.classList.add('bg-amber-50', 'text-amber-700', 'border-amber-100');
-      statusIcon.className = "fa-solid fa-triangle-exclamation";
-      statusText.innerText = "Cần cải thiện ngữ pháp.";
+      userTxtEl.className += 'border-rose-500 bg-rose-50 text-rose-800 shadow-[0_0_10px_rgba(244,63,94,0.15)]';
     }
   }
 
-  // 3. Câu gợi ý sửa đổi
+  // 2. Câu gợi ý viết tự nhiên/phổ biến hơn (CÁCH VIẾT TỰ NHIÊN HƠN)
   const correctBlock = document.getElementById('ai-chat-feedback-correction-block');
   const correctTxtEl = document.getElementById('ai-chat-feedback-correct-txt');
   
   if (correctBlock && correctTxtEl) {
-    if (aiResult.isCorrect || !aiResult.correctText) {
-      correctBlock.classList.add('hidden');
+    correctBlock.classList.remove('hidden');
+    if (aiResult.isCorrect) {
+      correctTxtEl.innerText = aiResult.correctText || userText;
     } else {
-      correctBlock.classList.remove('hidden');
       correctTxtEl.innerText = aiResult.correctText;
     }
   }
 
-  // 4. Giải thích tiếng Việt
+  // 3. Giải thích lỗi (GIẢI THÍCH LỖI)
   const explainBlock = document.getElementById('ai-chat-feedback-explanation-block');
   const explainTxtEl = document.getElementById('ai-chat-feedback-explain-txt');
 
   if (explainBlock && explainTxtEl) {
-    if (aiResult.isCorrect || !aiResult.corrections || aiResult.corrections.trim() === "") {
-      explainBlock.classList.add('hidden');
+    explainBlock.classList.remove('hidden');
+    if (aiResult.isCorrect) {
+      explainTxtEl.innerText = "Không có";
     } else {
-      explainBlock.classList.remove('hidden');
-      explainTxtEl.innerHTML = aiResult.corrections.replace(/\n/g, "<br>");
+      explainTxtEl.innerHTML = (aiResult.corrections || "").replace(/\n/g, "<br>");
     }
   }
 
-  // 5. Nâng cấp từ vựng (Vocabulary Upgrades - Đề xuất 8)
-  const vocabBlock = document.getElementById('ai-chat-feedback-vocab-block');
-  const vocabListEl = document.getElementById('ai-chat-feedback-vocab-list');
-  if (vocabBlock && vocabListEl) {
-    const upgrades = aiResult.vocabUpgrades || [];
-    if (upgrades.length === 0) {
-      vocabBlock.classList.add('hidden');
-    } else {
-      vocabBlock.classList.remove('hidden');
-      vocabListEl.innerHTML = upgrades.map(item => `
-        <div class="flex flex-col gap-0.5 text-[11px] leading-relaxed font-semibold border-b border-dashed border-slate-200/60 pb-1.5 last:border-b-0 last:pb-0">
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <span class="text-rose-500 line-through">${escapeHTML(item.original)}</span>
-            <i class="fa-solid fa-arrow-right text-[9px] text-slate-400"></i>
-            <span class="text-emerald-600 font-bold">${escapeHTML(item.upgrade)}</span>
-          </div>
-          ${item.context ? `<p class="text-[10.5px] text-slate-500 font-medium italic mt-0.5">${escapeHTML(item.context)}</p>` : ''}
-        </div>
-      `).join('');
-    }
-  }
-
-  // 6. Collocations tự nhiên (Natural Collocations - Đề xuất 14)
-  const collocBlock = document.getElementById('ai-chat-feedback-collocation-block');
-  const collocListEl = document.getElementById('ai-chat-feedback-collocation-list');
-  if (collocBlock && collocListEl) {
-    const collocations = aiResult.collocations || [];
-    if (collocations.length === 0) {
-      collocBlock.classList.add('hidden');
-    } else {
-      collocBlock.classList.remove('hidden');
-      collocListEl.innerHTML = collocations.map(item => `
-        <div class="flex flex-col gap-0.5 text-[11px] leading-relaxed font-semibold border-b border-dashed border-slate-200/60 pb-1.5 last:border-b-0 last:pb-0">
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <span class="text-rose-500 line-through">${escapeHTML(item.original)}</span>
-            <i class="fa-solid fa-arrow-right text-[9px] text-slate-400"></i>
-            <span class="text-emerald-600 font-bold">${escapeHTML(item.upgrade)}</span>
-          </div>
-          ${item.context ? `<p class="text-[10.5px] text-slate-500 font-medium italic mt-0.5">${escapeHTML(item.context)}</p>` : ''}
-        </div>
-      `).join('');
-    }
-  }
-
-  // 5. Tự động lưu lỗi ngữ pháp vào Google Sheets nếu phát hiện lỗi
+  // 4. Tự động lưu lỗi ngữ pháp vào Google Sheets nếu phát hiện lỗi
   if (aiResult.isCorrect === false) {
     const date = new Date();
     const day = String(date.getDate()).padStart(2, '0');
@@ -668,8 +617,9 @@ function renderGrammarFeedbackUI(userText, aiResult) {
 function cleanTextForMatching(str) {
   if (!str) return "";
   return str.toLowerCase()
+    .replace(/[\u00a0\xa0\u200b\u2007\u2009\u202f\s]+/g, " ") // Thay thế tất cả khoảng trắng đặc biệt (non-breaking spaces...) thành dấu cách thường
     .replace(/\s*[\(\[][^\]\)]*[\)\]]/g, "") // Loại bỏ các phần chú thích trong ngoặc đơn/ngoặc vuông như (adj), [phr], (v)...
-    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "") // Loại bỏ dấu câu và kí tự đặc biệt
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?'"‘’“”]/g, "") // Loại bỏ dấu câu, dấu nháy đơn, nháy kép và nháy cong đặc biệt
     .replace(/\s+/g, " ") // Thay thế nhiều dấu cách bằng 1 dấu cách
     .trim();
 }
