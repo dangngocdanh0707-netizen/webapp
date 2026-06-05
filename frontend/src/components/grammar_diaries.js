@@ -220,7 +220,7 @@ window.checkGrammarPractice = async function(rowNumber, correctSentence) {
       callServer("updateGrammarDiaryStatusRow", [Number(rowNumber), true])
         .then(() => {
           if (typeof refreshCallback === 'function') {
-            refreshCallback(false); // silent reload
+            refreshCallback(true); // silent reload
           }
         })
         .catch(err => {
@@ -286,7 +286,7 @@ window.deleteGrammarCard = function(rowNumber) {
         if (res === "Thành công") {
           showToast("Đã xóa bản ghi lỗi ngữ pháp thành công!", "success");
           if (typeof refreshCallback === 'function') {
-            refreshCallback(false); // silent reload
+            refreshCallback(true); // silent reload
           }
         } else {
           showToast("Lỗi khi xóa: " + res, "error");
