@@ -271,7 +271,7 @@ The JSON structure must match this schema exactly:
               ${M(c)}
             </span>
           </td>
-          <td class="p-4 text-xs text-slate-500 max-w-[300px] break-words whitespace-normal map-view-${a}">
+          <td class="p-4 text-slate-650 max-w-[300px] break-words whitespace-normal map-view-${a}">
             ${M(d)||"-"}
           </td>
           <td class="p-4 pl-12 text-left map-view-${a}">
