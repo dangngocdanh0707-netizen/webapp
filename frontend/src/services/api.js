@@ -656,13 +656,24 @@ export function callServer(methodName, args) {
 
       // 3. Nghiệp vụ TỪ VỰNG (Vocabulary & Anki SRS)
       if (methodName === "insertVocabRow") {
-        const [content, transcription] = args;
+        const [content, transcription, category, topic, level, meaning] = args;
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
           range: `${vocabTab}!A:J`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[content, transcription || "", "", "", "", "", "New", "", 2.5, 0]] }
+          resource: { values: [[
+            content,
+            transcription || "",
+            category || "",
+            topic || "",
+            level || "",
+            meaning || "",
+            "New",
+            "",
+            2.5,
+            0
+          ]] }
         });
         resolve("Thành công");
         return;

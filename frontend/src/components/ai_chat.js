@@ -746,3 +746,59 @@ function escapeHTML(str) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
+// Thêm nhanh từ vựng mới từ giao diện AI Chat
+window.saveQuickVocabWord = function() {
+  const contentInput = document.getElementById('ai-chat-quick-vocab-word');
+  const meaningInput = document.getElementById('ai-chat-quick-vocab-meaning');
+  if (!contentInput) return;
+
+  const content = contentInput.value.trim();
+  if (!content) {
+    showToast("Nội dung từ vựng không được để trống!", "warning");
+    return;
+  }
+
+  const meaning = meaningInput ? meaningInput.value.trim() : "";
+
+  // Thêm nhanh vào danh sách "Recently Added" trong phiên này (Optimistic UI update)
+  const listEl = document.getElementById('ai-chat-quick-vocab-list');
+  if (listEl) {
+    const emptyState = listEl.querySelector('.text-slate-400');
+    if (emptyState) {
+      listEl.innerHTML = '';
+    }
+
+    const wordHtml = `
+      <div class="p-2.5 rounded-xl bg-white border border-slate-200 shadow-3xs flex flex-col gap-1 text-left animate-in fade-in slide-in-from-top-2 duration-250">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold text-slate-800">${escapeHTML(content)}</span>
+          <span class="text-[8px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 uppercase tracking-wider">Saved</span>
+        </div>
+        ${meaning ? `<p class="text-[11px] text-slate-550 font-medium leading-relaxed">${escapeHTML(meaning)}</p>` : ''}
+      </div>
+    `;
+    listEl.insertAdjacentHTML('afterbegin', wordHtml);
+  }
+
+  // Clear inputs và focus lại ô content
+  contentInput.value = "";
+  if (meaningInput) meaningInput.value = "";
+  contentInput.focus();
+
+  // Gọi API lưu xuống Google Sheets
+  callServer("insertVocabRow", [content, "", "", "", "", meaning])
+    .then(res => {
+      if (res === "Thành công") {
+        showToast(`Đã thêm từ "${content}" thành công!`, "success");
+        if (typeof refreshDataCallback === "function") {
+          refreshDataCallback(true); // silent reload
+        }
+      } else {
+        showToast("Lỗi đồng bộ Sheets: " + res, "error");
+      }
+    })
+    .catch(err => {
+      showToast("Lỗi đồng bộ Sheets: " + (err.message || err), "error");
+    });
+};
