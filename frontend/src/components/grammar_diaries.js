@@ -77,8 +77,8 @@ function renderGrammarCards() {
             </div>
           </div>
           <!-- Back side -->
-          <div class="grammar-card-back p-5 flex flex-col justify-between" onclick="event.stopPropagation()">
-            <div class="overflow-y-auto max-h-[170px] pr-1 custom-scrollbar text-left flex flex-col gap-3">
+          <div class="grammar-card-back p-5 flex flex-col justify-between">
+            <div class="overflow-y-auto max-h-[200px] pr-1 custom-scrollbar text-left flex flex-col gap-3">
               <div>
                 <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Incorrect</span>
                 <p class="text-xs font-semibold text-rose-500 line-through">${userSentence}</p>
@@ -92,13 +92,8 @@ function renderGrammarCards() {
                 <p class="text-xs text-slate-650 font-medium leading-relaxed">${explanation || "No explanation provided."}</p>
               </div>
             </div>
-            <div class="border-t border-slate-100 pt-3 flex justify-between items-center mt-2">
-              <button onclick="event.stopPropagation(); window.flipGrammarCard('${item.rowNumber}')" class="text-slate-400 hover:text-blue-600 transition text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer">
-                <i class="fa-solid fa-rotate text-xs"></i> Flip back
-              </button>
-              <button id="btn-master-grammar-${item.rowNumber}" onclick="event.stopPropagation(); window.deleteGrammarRecord('${item.rowNumber}')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-2 rounded-lg transition shadow-sm hover:shadow flex items-center gap-1.5 cursor-pointer">
-                <i class="fa-solid fa-check text-xs"></i> Mastered
-              </button>
+            <div class="border-t border-slate-100 pt-2 text-center mt-2">
+              <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Tap to flip back</span>
             </div>
           </div>
         </div>
@@ -107,13 +102,6 @@ function renderGrammarCards() {
   }).join('');
 }
 
-// Lật thẻ từ mặt sau về mặt trước
-window.flipGrammarCard = function(rowNumber) {
-  const card = document.getElementById(`grammar-card-${rowNumber}`);
-  if (card) {
-    card.classList.remove('flipped');
-  }
-};
 
 // Ẩn/Hiện vùng luyện viết
 window.toggleGrammarPracticeMode = function(rowNumber) {
@@ -225,43 +213,6 @@ window.checkGrammarPractice = async function(rowNumber, correctSentence) {
   }
 };
 
-// Đánh dấu đã nhớ và xóa khỏi danh sách
-window.deleteGrammarRecord = function(rowNumber) {
-  const card = document.getElementById(`grammar-card-${rowNumber}`);
-  const btn = document.getElementById(`btn-master-grammar-${rowNumber}`);
-  if (!card) return;
-
-  if (btn) {
-    btn.disabled = true;
-    btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Mastered`;
-  }
-
-  // Chạy hoạt ảnh ẩn thẻ một cách mượt mà (optimistic UI update)
-  card.style.transition = 'all 0.4s ease';
-  card.style.opacity = '0';
-  card.style.transform = 'scale(0.9)';
-
-  setTimeout(() => {
-    callServer("updateGrammarDiaryStatusRow", [Number(rowNumber), true])
-      .then(() => {
-        showToast("Great job! Marked as mastered.", "success");
-        if (typeof refreshCallback === 'function') {
-          refreshCallback(true);
-        }
-      })
-      .catch(err => {
-        console.error("Failed to update grammar status:", err);
-        showToast("Failed to update status: " + (err.message || err), "error");
-        // Khôi phục lại thẻ nếu lỗi
-        card.style.opacity = '1';
-        card.style.transform = 'scale(1)';
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = `<i class="fa-solid fa-check text-xs"></i> Mastered`;
-        }
-      });
-  }, 400); // 400ms transition time
-};
 
 function escapeHTML(str) {
   if (!str) return '';
