@@ -189,10 +189,10 @@ function renderAiChatBubbles() {
               </div>
             </div>
             <div class="flex flex-col gap-1 self-end mb-1">
-              <button onclick="window.speakAiResponse('${msg.text.replace(/'/g, "\\'")}')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition cursor-pointer" title="Nghe phát âm">
+              <button onclick="window.speakAiResponse('${msg.text.replace(/'/g, "\\'")}')" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer" title="Nghe phát âm">
                 <i class="fa-solid fa-volume-high text-[10px]"></i>
               </button>
-              <button onclick="window.translateAiMessage(${index}, '${msg.text.replace(/'/g, "\\'")}')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition cursor-pointer" title="Xem bản dịch tiếng Việt">
+              <button onclick="window.translateAiMessage(${index}, '${msg.text.replace(/'/g, "\\'")}')" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer" title="Xem bản dịch tiếng Việt">
                 <i class="fa-solid fa-language text-[11px]"></i>
               </button>
             </div>

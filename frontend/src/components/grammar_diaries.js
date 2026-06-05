@@ -251,8 +251,6 @@ window.handleGrammarPracticeInput = function(rowNumber, value, correctSentence) 
 };
 
 window.deleteGrammarCard = function(rowNumber) {
-  if (!confirm("Bạn có chắc chắn muốn xóa bản ghi lỗi ngữ pháp này không?")) return;
-
   const card = document.getElementById(`grammar-card-${rowNumber}`);
   if (card) {
     card.style.transition = 'all 0.4s ease';
