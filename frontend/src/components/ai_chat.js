@@ -610,7 +610,7 @@ function renderGrammarFeedbackUI(userText, aiResult) {
             <i class="fa-solid fa-arrow-right text-[9px] text-slate-400"></i>
             <span class="text-emerald-600 font-bold">${escapeHTML(item.upgrade)}</span>
           </div>
-          ${item.context ? `<p class="text-[9px] text-slate-500 font-semibold italic mt-0.5">${escapeHTML(item.context)}</p>` : ''}
+          ${item.context ? `<p class="text-[10.5px] text-slate-500 font-medium italic mt-0.5">${escapeHTML(item.context)}</p>` : ''}
         </div>
       `).join('');
     }
@@ -632,7 +632,7 @@ function renderGrammarFeedbackUI(userText, aiResult) {
             <i class="fa-solid fa-arrow-right text-[9px] text-slate-400"></i>
             <span class="text-emerald-600 font-bold">${escapeHTML(item.upgrade)}</span>
           </div>
-          ${item.context ? `<p class="text-[9px] text-slate-500 font-semibold italic mt-0.5">${escapeHTML(item.context)}</p>` : ''}
+          ${item.context ? `<p class="text-[10.5px] text-slate-500 font-medium italic mt-0.5">${escapeHTML(item.context)}</p>` : ''}
         </div>
       `).join('');
     }
