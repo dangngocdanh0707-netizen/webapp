@@ -286,7 +286,7 @@ function renderResponseHints(hints) {
       <button
         onclick="window.selectResponseHint(this)"
         data-hint="${safe}"
-        class="text-xs font-semibold px-3 py-1.5 rounded-full border border-blue-200 bg-white text-blue-700
+        class="text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-500
                hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-md
                active:scale-95 transition-all duration-150 cursor-pointer leading-snug max-w-full truncate
                animate-in fade-in slide-in-from-bottom-1 duration-300"
