@@ -56,16 +56,17 @@ function renderGrammarCards() {
               
               <!-- Practice input zone (hidden by default) -->
               <div id="practice-zone-${item.rowNumber}" class="hidden mt-4 pt-3 border-t border-slate-100 flex flex-col gap-2" onclick="event.stopPropagation()">
-                <input type="text" id="practice-input-${item.rowNumber}" 
-                       class="form-input text-xs font-semibold py-2 px-3 rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-none"
-                       placeholder=""
-                       onkeyup="if(event.key === 'Enter') window.checkGrammarPractice('${item.rowNumber}', '${correctedSentence.replace(/'/g, "\\'")}')">
-                <div class="flex justify-end gap-2">
-                  <button onclick="window.toggleGrammarPracticeMode('${item.rowNumber}')" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-700 transition cursor-pointer">Hủy</button>
-                  <button id="btn-practice-check-${item.rowNumber}" onclick="window.checkGrammarPractice('${item.rowNumber}', '${correctedSentence.replace(/'/g, "\\'")}')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-1.5 rounded-lg transition shadow-xs flex items-center gap-1 cursor-pointer">
-                    <i class="fa-solid fa-circle-check"></i> Check
-                  </button>
-                </div>
+                 <input type="text" id="practice-input-${item.rowNumber}" 
+                        data-correct="${correctedSentence}"
+                        class="form-input text-xs font-semibold py-2 px-3 rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-none"
+                        placeholder=""
+                        onkeyup="if(event.key === 'Enter') window.checkGrammarPractice('${item.rowNumber}', this.dataset.correct)">
+                 <div class="flex justify-end gap-2">
+                   <button onclick="window.toggleGrammarPracticeMode('${item.rowNumber}')" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-700 transition cursor-pointer">Hủy</button>
+                   <button id="btn-practice-check-${item.rowNumber}" data-correct="${correctedSentence}" onclick="window.checkGrammarPractice('${item.rowNumber}', this.dataset.correct)" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-1.5 rounded-lg transition shadow-xs flex items-center gap-1 cursor-pointer">
+                     <i class="fa-solid fa-circle-check"></i> Check
+                   </button>
+                 </div>
               </div>
             </div>
             
