@@ -5,7 +5,6 @@ import { showToast } from '../services/toast.js';
 
 
 let activeScenario = "casual";
-let vocabList = [];
 let chatHistories = {}; // Cấu trúc: { [scenarioKey]: [{role: 'user'|'ai', text: string}] }
 let recognition = null;
 let isRecognizing = false;
@@ -15,7 +14,6 @@ let translationCache = {}; // Cache dịch theo index: { [msgIndex]: string }
 
 // ---------------- KHỞI TẠO MÔ-ĐUN ----------------
 export function initAiChatModule(allVocabulary, refreshCb) {
-  vocabList = allVocabulary || [];
   refreshDataCallback = refreshCb;
   
   if (isInitialized) {
