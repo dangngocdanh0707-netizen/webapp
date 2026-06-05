@@ -333,17 +333,17 @@ select.form-input option {
 }
 
 .habit-checkbox:checked {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: rgba(16, 185, 129, 0.08);
   border-color: #10b981;
   transform: scale(1.08);
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
 }
 
 .habit-checkbox:checked::after {
   content: "\f00c";
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
-  color: white;
+  color: #10b981;
   font-size: 11px;
   position: absolute;
 }
