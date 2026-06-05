@@ -3,29 +3,6 @@ import { getAiCredentials, callServer } from '../services/api.js';
 import { callAiApi, SCENARIOS, translateMessageText } from '../services/ai.js';
 import { showToast } from '../services/toast.js';
 
-// Gợi ý câu mở đầu hội thoại cho người dùng khi bắt đầu mỗi kịch bản
-const DEFAULT_STARTING_HINTS = {
-  casual: [
-    "Hi Alex! How are you doing today?",
-    "Hey! Let's have a chat.",
-    "Hello! What have you been up to lately?"
-  ],
-  interview: [
-    "Hello! I am ready for the interview.",
-    "Good morning, thank you for inviting me.",
-    "Hi! Let's start the interview."
-  ],
-  restaurant: [
-    "Hello, I'd like to order some food, please.",
-    "Hi, can I get a table for one?",
-    "Excuse me, could I see the menu?"
-  ],
-  travel: [
-    "Excuse me, could you help me with directions?",
-    "Hello! I'd like to check in, please.",
-    "Hi, can you tell me where the nearest station is?"
-  ]
-};
 
 let activeScenario = "casual";
 let vocabList = [];
@@ -153,21 +130,6 @@ function initializeActiveScenario() {
   // Render các bong bóng chat
   renderAiChatBubbles();
 
-  // Hiển thị gợi ý câu trả lời phù hợp dựa trên tin nhắn cuối cùng
-  const history = chatHistories[activeScenario] || [];
-  if (history.length > 0) {
-    const lastMsg = history[history.length - 1];
-    if (lastMsg.role === "ai") {
-      renderResponseHints(lastMsg.hints || []);
-    } else {
-      // Nếu tin nhắn cuối của User (đang chờ phản hồi), không hiện gợi ý
-      renderResponseHints([]);
-    }
-  } else {
-    // Nếu chưa có tin nhắn nào, dùng câu mở đầu mặc định
-    renderResponseHints(DEFAULT_STARTING_HINTS[activeScenario] || []);
-  }
-
   // Reset các trạng thái
   translationCache = {};
   resetGrammarFeedbackUI();
@@ -257,50 +219,6 @@ function renderAiChatBubbles() {
   }, 100);
 }
 
-// ---------------- GỢI Ý CÂU TRẢ LỜI NHANH - ĐỀ XUẤT 1 ----------------
-function renderResponseHints(hints) {
-  const container = document.getElementById('ai-chat-hints-container');
-  if (!container) return;
-
-  if (!hints || hints.length === 0) {
-    container.innerHTML = '';
-    return;
-  }
-
-  container.innerHTML = hints.map((hint, i) => {
-    const safe = hint.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#039;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return `
-      <button
-        onclick="window.selectResponseHint(this)"
-        data-hint="${safe}"
-        class="text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-500
-               hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-md
-               active:scale-95 transition-all duration-150 cursor-pointer leading-snug max-w-full truncate
-               animate-in fade-in slide-in-from-bottom-1 duration-300"
-        style="animation-delay:${i * 80}ms"
-        title="${safe}"
-      >
-        <i class="fa-regular fa-lightbulb text-[9px] mr-1 opacity-60"></i>${hint}
-      </button>`;
-  }).join('');
-}
-
-window.selectResponseHint = function(btn) {
-  const inputEl = document.getElementById('ai-chat-input');
-  if (inputEl && btn) {
-    const raw = btn.dataset.hint || '';
-    // Giải mã HTML entities
-    const decoded = raw
-      .replace(/&amp;/g, '&')
-      .replace(/&quot;/g, '"')
-      .replace(/&#039;/g, "'")
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>');
-    inputEl.value = decoded;
-    inputEl.focus();
-    inputEl.selectionStart = inputEl.selectionEnd = decoded.length;
-  }
-};
 
 // ---------------- DỊCH TIếNG VIỆT - ĐỀ XUẤT 3 ----------------
 window.translateAiMessage = async function(index, text) {
@@ -389,8 +307,8 @@ window.sendAiChatMessage = async function() {
   saveChatHistoriesToStorage();
   renderAiChatBubbles();
 
-  // Xóa các gợi ý câu trả lời cũ khi đang chờ AI phản hồi
-  renderResponseHints([]);
+  // Reset UI feedback cũ khi gửi câu mới
+  resetGrammarFeedbackUI();
 
   // Hiển thị trạng thái AI đang trả lời
   const statusEl = document.getElementById('ai-chat-status');
@@ -403,20 +321,16 @@ window.sendAiChatMessage = async function() {
     // Gọi API tích hợp AI (Gemini hoặc OpenAI)
     const result = await callAiApi(userText, historyContext, aiCreds, activeScenario);
 
-    // Thêm phản hồi của AI vào lịch sử kèm theo hints được sinh ra
+    // Thêm phản hồi của AI vào lịch sử
     chatHistories[activeScenario].push({
       role: "ai",
-      text: result.reply,
-      hints: result.hints || []
+      text: result.reply
     });
     saveChatHistoriesToStorage();
     renderAiChatBubbles();
 
-    // Hiển thị phân tích lỗi ngữ pháp lên thanh bên phải
+    // Hiển thị phân tích lỗi ngữ pháp & nâng cấp câu lên thanh bên phải
     renderGrammarFeedbackUI(userText, result);
-
-    // Hiển thị hints gợi ý câu trả lời từ AI
-    renderResponseHints(result.hints || []);
 
     // Phát âm câu thoại của AI nếu bật chế độ Auto-TTS
     const autoTts = document.getElementById('ai-chat-auto-tts');
@@ -601,6 +515,17 @@ function resetGrammarFeedbackUI() {
   const activeEl = document.getElementById('ai-chat-feedback-active');
   if (emptyEl) emptyEl.classList.remove('hidden');
   if (activeEl) activeEl.classList.add('hidden');
+
+  // Xóa sạch nội dung cũ của 2 khối gợi ý mới
+  const vocabBlock = document.getElementById('ai-chat-feedback-vocab-block');
+  const vocabListEl = document.getElementById('ai-chat-feedback-vocab-list');
+  if (vocabBlock) vocabBlock.classList.add('hidden');
+  if (vocabListEl) vocabListEl.innerHTML = '';
+
+  const collocBlock = document.getElementById('ai-chat-feedback-collocation-block');
+  const collocListEl = document.getElementById('ai-chat-feedback-collocation-list');
+  if (collocBlock) collocBlock.classList.add('hidden');
+  if (collocListEl) collocListEl.innerHTML = '';
 }
 
 function renderGrammarFeedbackUI(userText, aiResult) {
@@ -666,6 +591,50 @@ function renderGrammarFeedbackUI(userText, aiResult) {
     } else {
       explainBlock.classList.remove('hidden');
       explainTxtEl.innerHTML = aiResult.corrections.replace(/\n/g, "<br>");
+    }
+  }
+
+  // 5. Nâng cấp từ vựng (Vocabulary Upgrades - Đề xuất 8)
+  const vocabBlock = document.getElementById('ai-chat-feedback-vocab-block');
+  const vocabListEl = document.getElementById('ai-chat-feedback-vocab-list');
+  if (vocabBlock && vocabListEl) {
+    const upgrades = aiResult.vocabUpgrades || [];
+    if (upgrades.length === 0) {
+      vocabBlock.classList.add('hidden');
+    } else {
+      vocabBlock.classList.remove('hidden');
+      vocabListEl.innerHTML = upgrades.map(item => `
+        <div class="flex flex-col gap-0.5 text-[11px] leading-relaxed font-semibold border-b border-dashed border-slate-200/60 pb-1.5 last:border-b-0 last:pb-0">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-rose-500 line-through">${escapeHTML(item.original)}</span>
+            <i class="fa-solid fa-arrow-right text-[9px] text-slate-400"></i>
+            <span class="text-emerald-600 font-bold">${escapeHTML(item.upgrade)}</span>
+          </div>
+          ${item.context ? `<p class="text-[9px] text-slate-500 font-semibold italic mt-0.5">${escapeHTML(item.context)}</p>` : ''}
+        </div>
+      `).join('');
+    }
+  }
+
+  // 6. Collocations tự nhiên (Natural Collocations - Đề xuất 14)
+  const collocBlock = document.getElementById('ai-chat-feedback-collocation-block');
+  const collocListEl = document.getElementById('ai-chat-feedback-collocation-list');
+  if (collocBlock && collocListEl) {
+    const collocations = aiResult.collocations || [];
+    if (collocations.length === 0) {
+      collocBlock.classList.add('hidden');
+    } else {
+      collocBlock.classList.remove('hidden');
+      collocListEl.innerHTML = collocations.map(item => `
+        <div class="flex flex-col gap-0.5 text-[11px] leading-relaxed font-semibold border-b border-dashed border-slate-200/60 pb-1.5 last:border-b-0 last:pb-0">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-rose-500 line-through">${escapeHTML(item.original)}</span>
+            <i class="fa-solid fa-arrow-right text-[9px] text-slate-400"></i>
+            <span class="text-emerald-600 font-bold">${escapeHTML(item.upgrade)}</span>
+          </div>
+          ${item.context ? `<p class="text-[9px] text-slate-500 font-semibold italic mt-0.5">${escapeHTML(item.context)}</p>` : ''}
+        </div>
+      `).join('');
     }
   }
 

@@ -47,7 +47,12 @@ The JSON structure must match this schema exactly:
   "isCorrect": true, // false if there is any grammar, spelling, or styling mistake in user's latest input, true if perfectly correct.
   "correctText": "A corrected, natural version of the user's input, or empty string if it was already correct",
   "corrections": "Explanation of mistakes in Vietnamese, and suggestions for improvement. If the user made no mistakes, write a simple encouraging message like 'Không có lỗi ngữ pháp! Tuyệt vời!' or leave blank.",
-  "hints": ["A short natural English response suggestion", "Another different response suggestion", "A third response suggestion"] // 3 short, natural, diverse English sentence suggestions the user could say next, based on the current conversation context.
+  "vocabUpgrades": [
+    {"original": "a word or phrase in user's input that can be upgraded", "upgrade": "a better, more advanced academic/IELTS synonym or expression", "context": "explanation in Vietnamese of why this is better and how to use it"}
+  ], // list of vocabulary upgrade suggestions to sound more natural/advanced, or empty array if none.
+  "collocations": [
+    {"original": "an unnatural word combination in user's input", "upgrade": "the correct natural collocation", "context": "explanation in Vietnamese of the correct collocation usage"}
+  ] // list of natural English collocation suggestions to replace word-by-word translations, or empty array if none.
 }`;
 
   if (provider === "gemini") {
@@ -207,7 +212,8 @@ function parseJsonReponse(text) {
       isCorrect: typeof parsed.isCorrect === "boolean" ? parsed.isCorrect : true,
       correctText: parsed.correctText || "",
       corrections: parsed.corrections || "",
-      hints: Array.isArray(parsed.hints) ? parsed.hints : []
+      vocabUpgrades: Array.isArray(parsed.vocabUpgrades) ? parsed.vocabUpgrades : [],
+      collocations: Array.isArray(parsed.collocations) ? parsed.collocations : []
     };
   } catch (err) {
     console.error("Lỗi phân giải JSON từ AI:", err, "Raw text:", text);
@@ -217,7 +223,8 @@ function parseJsonReponse(text) {
       isCorrect: true,
       correctText: "",
       corrections: "Không thể phân tích ngữ pháp do lỗi phản hồi định dạng từ AI.",
-      hints: []
+      vocabUpgrades: [],
+      collocations: []
     };
   }
 }
