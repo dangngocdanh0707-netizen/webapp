@@ -63,8 +63,7 @@ function getAnkiNextState(interval, easeFactor, delayDays, action, status, prevI
     }
   } else {
     const prev_interval = interval;
-    // Giới hạn delay tối đa bằng 7 ngày hoặc bằng prev_interval để tránh khoảng cách ôn tập tăng vọt khi nghỉ học lâu ngày
-    const delay = Math.min(delayDays, prev_interval, 7);
+    const delay = delayDays;
 
     if (action === "again") {
       newEase = Math.max(1.3, easeFactor - 0.2);
