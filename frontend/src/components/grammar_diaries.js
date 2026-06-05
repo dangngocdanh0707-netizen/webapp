@@ -199,14 +199,14 @@ window.checkGrammarPractice = async function(rowNumber, correctSentence) {
     card.style.transform = 'scale(0.9)';
 
     setTimeout(() => {
-      callServer("deleteGrammarDiaryRow", [Number(rowNumber)])
+      callServer("updateGrammarDiaryStatusRow", [Number(rowNumber), true])
         .then(() => {
           if (typeof refreshCallback === 'function') {
             refreshCallback(true); // silent reload
           }
         })
         .catch(err => {
-          console.error("Failed to delete grammar record:", err);
+          console.error("Failed to update grammar status:", err);
           // Khôi phục lại thẻ nếu lỗi
           card.style.opacity = '1';
           card.style.transform = 'scale(1)';
@@ -242,7 +242,7 @@ window.deleteGrammarRecord = function(rowNumber) {
   card.style.transform = 'scale(0.9)';
 
   setTimeout(() => {
-    callServer("deleteGrammarDiaryRow", [Number(rowNumber)])
+    callServer("updateGrammarDiaryStatusRow", [Number(rowNumber), true])
       .then(() => {
         showToast("Great job! Marked as mastered.", "success");
         if (typeof refreshCallback === 'function') {
@@ -250,8 +250,8 @@ window.deleteGrammarRecord = function(rowNumber) {
         }
       })
       .catch(err => {
-        console.error("Failed to delete grammar record:", err);
-        showToast("Failed to delete record: " + (err.message || err), "error");
+        console.error("Failed to update grammar status:", err);
+        showToast("Failed to update status: " + (err.message || err), "error");
         // Khôi phục lại thẻ nếu lỗi
         card.style.opacity = '1';
         card.style.transform = 'scale(1)';

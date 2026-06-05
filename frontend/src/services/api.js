@@ -438,7 +438,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['task'] || 'tasks'}!A1:C1`, values: [['Date', 'Task', 'Status']] },
       { range: `${mappings['google_map'] || 'google_maps'}!A1:E1`, values: [['place', 'city', 'category', 'address', 'status']] },
       { range: `${mappings['collections'] || 'collections'}!A1:E1`, values: [['item', 'brand', 'style', 'category', 'status']] },
-      { range: `${mappings['grammar_diary'] || 'grammar_diaries'}!A1:E1`, values: [['date', 'scenario', 'user_sentence', 'corrected_sentence', 'explanation']] }
+      { range: `${mappings['grammar_diary'] || 'grammar_diaries'}!A1:F1`, values: [['date', 'scenario', 'user_sentence', 'corrected_sentence', 'explanation', 'status']] }
     ].filter(h => {
       const rangeSheetName = h.range.split('!')[0];
       return missingTabs.some(target => (mappings[target] || target) === rangeSheetName);
@@ -510,7 +510,7 @@ export function callServer(methodName, args) {
             `${taskTab}!A2:C`,
             `${mappings['google_map']}!A2:E`,
             `${mappings['collections'] || 'collections'}!A2:E`,
-            `${grammarTab || 'grammar_diaries'}!A2:E`
+            `${grammarTab || 'grammar_diaries'}!A2:F`
           ],
           valueRenderOption: 'UNFORMATTED_VALUE'
         });
@@ -601,8 +601,9 @@ export function callServer(methodName, args) {
             scenario: row[1] || "",
             user_sentence: row[2] || "",
             corrected_sentence: row[3] || "",
-            explanation: row[4] || ""
-          })).filter(item => item.user_sentence || item.corrected_sentence)
+            explanation: row[4] || "",
+            status: row[5] === "TRUE" || row[5] === true || row[5] === "true"
+          })).filter(item => (item.user_sentence || item.corrected_sentence) && !item.status)
         });
         return;
       }
@@ -1065,32 +1066,22 @@ export function callServer(methodName, args) {
         const grammarTab = mappings['grammar_diary'] || 'grammar_diaries';
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${grammarTab}!A:E`,
+          range: `${grammarTab}!A:F`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[date, scenario, user_sentence, corrected_sentence, explanation]] }
+          resource: { values: [[date, scenario, user_sentence, corrected_sentence, explanation, "FALSE"]] }
         });
         resolve("Thành công");
         return;
       }
-      if (methodName === "deleteGrammarDiaryRow") {
-        const [rowNumber] = args;
+      if (methodName === "updateGrammarDiaryStatusRow") {
+        const [rowNumber, isChecked] = args;
         const grammarTab = mappings['grammar_diary'] || 'grammar_diaries';
-        const sheetId = await getSheetId(grammarTab, spreadsheetId);
-        await gapi.client.sheets.spreadsheets.batchUpdate({
+        await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          resource: {
-            requests: [{
-              deleteDimension: {
-                range: {
-                  sheetId,
-                  dimension: 'ROWS',
-                  startIndex: rowNumber - 1,
-                  endIndex: rowNumber
-                }
-              }
-            }]
-          }
+          range: `${grammarTab}!F${rowNumber}`,
+          valueInputOption: 'USER_ENTERED',
+          resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
         });
         resolve("Thành công");
         return;
