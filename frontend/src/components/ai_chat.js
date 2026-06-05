@@ -549,6 +549,12 @@ function renderGrammarFeedbackUI(userText, aiResult) {
     aiResult.isCorrect = true;
   }
 
+  // Nếu trong giải thích tiếng Việt của AI khẳng định câu không sai/không có lỗi, ta tự động đánh dấu là đúng
+  const cleanExplain = (aiResult.corrections || "").toLowerCase();
+  if (cleanExplain.includes("không sai") || cleanExplain.includes("không có lỗi") || cleanExplain.includes("không mắc lỗi") || cleanExplain.includes("đúng ngữ pháp") || cleanExplain.includes("chính xác")) {
+    aiResult.isCorrect = true;
+  }
+
   // 1. Cập nhật câu nói gốc của User và thêm class màu sắc tương ứng
   const userTxtEl = document.getElementById('ai-chat-feedback-user-txt');
   if (userTxtEl) {
@@ -581,7 +587,7 @@ function renderGrammarFeedbackUI(userText, aiResult) {
   if (explainBlock && explainTxtEl) {
     explainBlock.classList.remove('hidden');
     if (aiResult.isCorrect) {
-      explainTxtEl.innerText = "Không có";
+      explainTxtEl.innerText = "None";
     } else {
       explainTxtEl.innerHTML = (aiResult.corrections || "").replace(/\n/g, "<br>");
     }

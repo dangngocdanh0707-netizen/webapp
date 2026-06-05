@@ -36,23 +36,16 @@ export async function callAiApi(prompt, history, aiCreds, scenarioKey) {
   const { provider, geminiKey, openaiKey, model } = aiCreds;
   const scenario = SCENARIOS[scenarioKey] || SCENARIOS.casual;
 
-  // System instruction bổ sung yêu cầu trả về JSON định dạng chuẩn
   const finalSystemInstruction = `${scenario.systemInstruction}
 
-CRITICAL INSTRUCTION: You must analyze the user's latest message for any grammar, spelling, or vocabulary mistakes. 
+CRITICAL INSTRUCTION: You must analyze the user's latest message for any grammar or spelling mistakes. 
 You MUST respond ONLY with a valid JSON object. Do not include markdown code block formatting (like \`\`\`json ... \`\`\`) in your raw response, return only the raw JSON.
 The JSON structure must match this schema exactly:
 {
   "reply": "Your natural conversational reply to the user in English",
-  "isCorrect": true, // false if there is any grammar, spelling, or styling mistake in user's latest input, true if perfectly correct.
-  "correctText": "A corrected, natural version of the user's input, or empty string if it was already correct. IMPORTANT: This must be a corrected version of the user's OWN sentence, NOT your conversational reply. For example, if the user says 'not sure! just by the feelings', correctText should be 'I'm not sure! It's just based on feelings.' or similar, NOT your reply like 'That's totally fair!'",
-  "corrections": "Explanation of mistakes in Vietnamese, and suggestions for improvement. If the user made no mistakes, write a simple encouraging message like 'Không có lỗi ngữ pháp! Tuyệt vời!' or leave blank.",
-  "vocabUpgrades": [
-    {"original": "a word or phrase in user's input that can be upgraded", "upgrade": "a better, more advanced academic/IELTS synonym or expression", "context": "explanation in Vietnamese of why this is better and how to use it"}
-  ], // list of vocabulary upgrade suggestions to sound more natural/advanced. IMPORTANT: Be proactive! If the user uses very common words/phrases (like 'very big', 'really big', 'really good', 'bad', 'happy', 'sad', 'hard'), always try to suggest at least 1-2 advanced synonyms to help them sound more professional and academic.
-  "collocations": [
-    {"original": "an unnatural word combination in user's input", "upgrade": "the correct natural collocation", "context": "explanation in Vietnamese of the correct collocation usage"}
-  ] // list of natural English collocation suggestions to replace word-by-word translations. If you spot any unnatural combinations or word-by-word translations, list them here to help the user sound native.
+  "isCorrect": true, // Set to true if the user's sentence is grammatically correct and has no spelling mistakes, even if it is simple or could be phrased differently. Set to false ONLY if there is an actual grammatical error, typo, spelling mistake, or completely wrong word choice.
+  "correctText": "A grammatically corrected version of the user's input. If the user's input has no grammar or spelling errors, you MUST set 'isCorrect' to true and return an empty string or the exact same sentence here. Do NOT rewrite correct sentences just to suggest synonyms or advanced vocabulary.",
+  "corrections": "Explanation of actual grammar/spelling mistakes in Vietnamese. If the user made no errors, write 'Không có lỗi ngữ pháp!' or 'Không có'."
 }`;
 
   if (provider === "gemini") {
