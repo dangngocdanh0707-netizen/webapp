@@ -178,8 +178,24 @@ function renderAiChatBubbles() {
     if (isUser) {
       return `
         <div class="flex flex-col items-end animate-in fade-in slide-in-from-bottom-2 duration-200">
-          <div class="max-w-[85%] bg-slate-900 text-white rounded-2xl px-4 py-2.5 text-xs font-semibold shadow-sm leading-relaxed">
-            ${escapeHTML(msg.text)}
+          <div class="flex items-start gap-1.5 max-w-[85%] flex-row-reverse">
+            <div class="bg-slate-900 text-white rounded-2xl px-4 py-2.5 text-xs font-semibold shadow-sm leading-relaxed">
+              ${escapeHTML(msg.text)}
+              <div id="ai-chat-trans-${index}" class="hidden mt-2 pt-2 border-t border-slate-700">
+                <div class="ai-trans-spinner hidden flex items-center gap-1 text-slate-400 text-[10px] font-semibold">
+                  <i class="fa-solid fa-spinner animate-spin text-[9px]"></i> Đang dịch...
+                </div>
+                <p class="ai-trans-text text-[11px] text-slate-300 font-semibold leading-relaxed italic hidden"></p>
+              </div>
+            </div>
+            <div class="flex flex-col gap-1 self-end mb-1">
+              <button onclick="window.speakAiResponse('${msg.text.replace(/'/g, "\\'")}')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition cursor-pointer" title="Nghe phát âm">
+                <i class="fa-solid fa-volume-high text-[10px]"></i>
+              </button>
+              <button onclick="window.translateAiMessage(${index}, '${msg.text.replace(/'/g, "\\'")}')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition cursor-pointer" title="Xem bản dịch tiếng Việt">
+                <i class="fa-solid fa-language text-[11px]"></i>
+              </button>
+            </div>
           </div>
           <span class="text-[8px] text-slate-400 font-bold uppercase mt-1 mr-1">You</span>
         </div>

@@ -65,6 +65,7 @@ function renderGrammarCards() {
                         data-correct="${correctedSentence}"
                         class="form-input text-xs font-semibold py-2 px-3 rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-none"
                         placeholder=""
+                        oninput="window.handleGrammarPracticeInput('${item.rowNumber}', this.value, this.dataset.correct)"
                         onkeyup="if(event.key === 'Enter') window.checkGrammarPractice('${item.rowNumber}', this.dataset.correct)">
                  <div class="flex justify-end gap-2">
                    <button onclick="window.toggleGrammarPracticeMode('${item.rowNumber}')" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-700 transition cursor-pointer">Hủy</button>
@@ -130,7 +131,7 @@ window.checkGrammarPractice = async function(rowNumber, correctSentence) {
   const input = document.getElementById(`practice-input-${rowNumber}`);
   const btn = document.getElementById(`btn-practice-check-${rowNumber}`);
   const card = document.getElementById(`grammar-card-${rowNumber}`);
-  if (!input || !card) return;
+  if (!input || !card || input.disabled) return;
 
   const userText = input.value.trim();
   if (!userText) {
@@ -138,7 +139,9 @@ window.checkGrammarPractice = async function(rowNumber, correctSentence) {
     return;
   }
 
-  // Khóa nút Check và hiển thị spinner nếu cần gọi AI
+  // Khóa tạm thời input
+  input.disabled = true;
+
   const originalBtnContent = btn ? btn.innerHTML : '';
   const setChecking = (checking) => {
     if (btn) {
@@ -192,29 +195,58 @@ window.checkGrammarPractice = async function(rowNumber, correctSentence) {
     card.style.transform = 'scale(0.9)';
 
     setTimeout(() => {
+      // Optimistic local state update + FLIP animation
+      animateGridReflow(() => {
+        currentData = currentData.filter(item => String(item.rowNumber) !== String(rowNumber));
+        const totalCountEl = document.getElementById('grammar-total-count');
+        if (totalCountEl) {
+          totalCountEl.innerText = currentData.length;
+        }
+        renderGrammarCards();
+      });
+
       callServer("updateGrammarDiaryStatusRow", [Number(rowNumber), true])
         .then(() => {
           if (typeof refreshCallback === 'function') {
-            refreshCallback(true); // silent reload
+            refreshCallback(false); // silent reload
           }
         })
         .catch(err => {
           console.error("Failed to update grammar status:", err);
-          // Khôi phục lại thẻ nếu lỗi
-          card.style.opacity = '1';
-          card.style.transform = 'scale(1)';
-          input.className = "form-input text-xs font-semibold py-2 px-3 rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-none";
+          // Reload full state if background sync fails
+          if (typeof refreshCallback === 'function') {
+            refreshCallback(true);
+          }
         });
     }, 400);
   } else {
     // Gõ SAI: Nháy viền đỏ và lắc card
+    input.disabled = false;
     input.className = "form-input text-xs font-semibold py-2 px-3 rounded-lg border border-rose-500 bg-rose-50 text-rose-800 shadow-[0_0_10px_rgba(244,63,94,0.15)]";
     card.classList.add('practice-state-incorrect');
     
     setTimeout(() => {
       card.classList.remove('practice-state-incorrect');
       input.className = "form-input text-xs font-semibold py-2 px-3 rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-none";
+      input.focus();
     }, 1500);
+  }
+};
+
+window.handleGrammarPracticeInput = function(rowNumber, value, correctSentence) {
+  const cleanStr = (str) => {
+    return str
+      .toLowerCase()
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  };
+
+  const cleanUser = cleanStr(value);
+  const cleanCorrect = cleanStr(correctSentence);
+
+  if (cleanUser === cleanCorrect && cleanUser.length > 0) {
+    window.checkGrammarPractice(rowNumber, correctSentence);
   }
 };
 
@@ -228,31 +260,92 @@ window.deleteGrammarCard = function(rowNumber) {
     card.style.transform = 'scale(0.9)';
   }
 
-  callServer("deleteGrammarDiaryRow", [Number(rowNumber)])
-    .then(res => {
-      if (res === "Thành công") {
-        showToast("Đã xóa bản ghi lỗi ngữ pháp thành công!", "success");
-        if (typeof refreshCallback === 'function') {
-          refreshCallback(true); // silent reload
-        }
-      } else {
-        showToast("Lỗi khi xóa: " + res, "error");
-        if (card) {
-          card.style.opacity = '1';
-          card.style.transform = 'scale(1)';
-        }
+  setTimeout(() => {
+    // Optimistic local state update + FLIP animation
+    animateGridReflow(() => {
+      currentData = currentData.filter(item => String(item.rowNumber) !== String(rowNumber));
+      const totalCountEl = document.getElementById('grammar-total-count');
+      if (totalCountEl) {
+        totalCountEl.innerText = currentData.length;
       }
-    })
-    .catch(err => {
-      showToast("Lỗi kết nối: " + (err.message || err), "error");
-      if (card) {
-        card.style.opacity = '1';
-        card.style.transform = 'scale(1)';
-      }
+      renderGrammarCards();
     });
+
+    callServer("deleteGrammarDiaryRow", [Number(rowNumber)])
+      .then(res => {
+        if (res === "Thành công") {
+          showToast("Đã xóa bản ghi lỗi ngữ pháp thành công!", "success");
+          if (typeof refreshCallback === 'function') {
+            refreshCallback(false); // silent reload
+          }
+        } else {
+          showToast("Lỗi khi xóa: " + res, "error");
+          if (typeof refreshCallback === 'function') {
+            refreshCallback(true);
+          }
+        }
+      })
+      .catch(err => {
+        showToast("Lỗi kết nối: " + (err.message || err), "error");
+        if (typeof refreshCallback === 'function') {
+          refreshCallback(true);
+        }
+      });
+  }, 400);
 };
 
+// Hàm hỗ trợ hiệu ứng chuyển động mượt mà khi xếp lại lưới thẻ (FLIP animation)
+function animateGridReflow(actionFn) {
+  const gridEl = document.getElementById('grammar-cards-grid');
+  if (!gridEl) {
+    actionFn();
+    return;
+  }
 
+  // 1. First: Ghi lại vị trí ban đầu của các thẻ hiện tại
+  const cards = Array.from(gridEl.children);
+  const firstPositions = cards.map(card => {
+    return {
+      id: card.id,
+      rect: card.getBoundingClientRect()
+    };
+  });
+
+  // 2. Thực hiện cập nhật dữ liệu và render lại lưới DOM
+  actionFn();
+
+  // 3. Last: Ghi lại vị trí mới của các thẻ sau khi cập nhật
+  const newCards = Array.from(gridEl.children);
+  const lastPositions = newCards.map(card => {
+    return {
+      element: card,
+      rect: card.getBoundingClientRect()
+    };
+  });
+
+  // 4. Invert & Play: Di chuyển ngược về vị trí cũ và chạy transition
+  lastPositions.forEach(({ element, rect: lastRect }) => {
+    const cardId = element.id;
+    const firstPos = firstPositions.find(p => p.id === cardId);
+    if (!firstPos) return; // Thẻ mới được thêm hoặc không tồn tại trước đó
+
+    const deltaX = firstPos.rect.left - lastRect.left;
+    const deltaY = firstPos.rect.top - lastRect.top;
+
+    if (deltaX !== 0 || deltaY !== 0) {
+      // Invert: đặt lại vị trí tức thời mà không có transition
+      element.style.transition = 'none';
+      element.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+      // Kích hoạt repaint để trình duyệt nhận diện thay đổi style tức thì
+      element.offsetHeight;
+
+      // Play: xóa transform và kích hoạt hiệu ứng trượt mượt mà
+      element.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+      element.style.transform = '';
+    }
+  });
+}
 
 function escapeHTML(str) {
   if (!str) return '';
