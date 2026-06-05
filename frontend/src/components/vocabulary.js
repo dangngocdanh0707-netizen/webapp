@@ -112,7 +112,7 @@ export function buildVocabTable() {
         <td class="p-4 pl-6 font-semibold text-slate-800 text-sm v-view-${id}">
           <div class="flex items-center gap-2">
             <span>${escapeHTML(item.content) || ''}</span>
-            <button onclick="speakVocabById(${id})" class="text-slate-400 hover:text-blue-500 p-1 cursor-pointer transition" title="Phát âm">
+            <button onclick="speakVocabById(${id})" class="text-slate-400 hover:text-blue-500 p-1 cursor-pointer transition">
               <i class="fa-solid fa-volume-high text-xs"></i>
             </button>
           </div>
