@@ -152,7 +152,7 @@ Text: "${n}"`;if(e==="gemini"){if(!i)throw new Error("Thiếu Gemini API Key.");
               <div class="ai-trans-spinner hidden flex items-center gap-1 text-slate-400 text-[10px] font-semibold">
                 <i class="fa-solid fa-spinner animate-spin text-[9px]"></i> Đang dịch...
               </div>
-              <p class="ai-trans-text text-[11px] text-blue-700 font-semibold leading-relaxed italic hidden"></p>
+              <p class="ai-trans-text text-[11px] text-slate-500 font-semibold leading-relaxed italic hidden"></p>
             </div>
           </div>
           <div class="flex flex-col gap-1 self-end mb-1">
