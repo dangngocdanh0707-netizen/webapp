@@ -555,9 +555,9 @@ table th {
 
 .scenario-btn.active {
   border-color: transparent;
-  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   color: #ffffff;
-  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.18);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
 }
 
 .scenario-btn.active .text-slate-400 {

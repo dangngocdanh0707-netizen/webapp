@@ -67,7 +67,7 @@ window.switchPracticeSubTab = function(subTabId) {
   } else if (subTabId === 'aichat') {
     // Kích hoạt tab AI Chat
     btnSrs.className = "pb-3 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition cursor-pointer flex items-center gap-2";
-    btnAichat.className = "pb-3 px-4 font-bold text-sm border-b-2 border-indigo-600 text-indigo-600 transition cursor-pointer flex items-center gap-2";
+    btnAichat.className = "pb-3 px-4 font-bold text-sm border-b-2 border-blue-600 text-blue-600 transition cursor-pointer flex items-center gap-2";
     
     if (srsStats) srsStats.classList.add('hidden');
     srsContainer.classList.add('hidden');
@@ -198,7 +198,7 @@ function renderAiChatBubbles() {
             <i class="fa-solid fa-volume-high text-[10px]"></i>
           </button>
         </div>
-        <span class="text-[8px] text-indigo-500 font-bold uppercase mt-1 ml-1">AI Partner</span>
+        <span class="text-[8px] text-blue-500 font-bold uppercase mt-1 ml-1">AI Partner</span>
       </div>
     `;
   }).join("");
