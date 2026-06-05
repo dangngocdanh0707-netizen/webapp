@@ -109,6 +109,29 @@ function isSingleWord(item) {
   return !content.includes(" ");
 }
 
+function updateSrsCounts() {
+  let countNew = allVocabData.filter(v => {
+    let s = (v.status || '').toString().trim();
+    return s === "New" || s === "";
+  }).length;
+  let countLearning = allVocabData.filter(v => (v.status || '').toString().trim() === "Learning").length;
+  let countMastered = allVocabData.filter(v => (v.status || '').toString().trim() === "Mastered").length;
+  let countRelearning = allVocabData.filter(v => (v.status || '').toString().trim() === "Relearning").length;
+
+  const dueEl = document.getElementById('practice-count-due');
+  const newEl = document.getElementById('practice-count-new');
+  const learnEl = document.getElementById('practice-count-learning');
+  const masterEl = document.getElementById('practice-count-mastered');
+  const relearnEl = document.getElementById('practice-count-relearning');
+
+  let totalDue = reviewQueue.length + activeQueue.length;
+  if (dueEl) dueEl.innerText = totalDue;
+  if (newEl) newEl.innerText = countNew;
+  if (learnEl) learnEl.innerText = countLearning;
+  if (masterEl) masterEl.innerText = countMastered;
+  if (relearnEl) relearnEl.innerText = countRelearning;
+}
+
 export function initSrsModule(vocabData, onSync) {
   allVocabData = vocabData || [];
   onSyncNeeded = onSync;
@@ -139,22 +162,9 @@ export function initSrsModule(vocabData, onSync) {
   activeQueue = [];
   fillActiveQueue();
   
-  let countLearning = allVocabData.filter(v => {
-    let s = (v.status || '').toString().trim();
-    return s === "Learning" || s === "Relearning";
-  }).length;
-  let countMastered = allVocabData.filter(v => (v.status || '').toString().trim() === "Mastered").length;
-  
-  // Update counts
-  const dueEl = document.getElementById('practice-count-due');
-  const learnEl = document.getElementById('practice-count-learning');
-  const masterEl = document.getElementById('practice-count-mastered');
+  updateSrsCounts();
   
   let totalDue = reviewQueue.length + activeQueue.length;
-  if (dueEl) dueEl.innerText = totalDue;
-  if (learnEl) learnEl.innerText = countLearning;
-  if (masterEl) masterEl.innerText = countMastered;
-  
   const headlineEl = document.getElementById('practice-headline');
   
   if (totalDue > 0) {
@@ -227,8 +237,7 @@ window.triggerRandomVocab = function() {
     if (headlineEl) headlineEl.innerText = "🎉 All caught up!";
     if (sublineEl) sublineEl.innerText = "Excellent. You have no pending card reviews scheduled for today.";
     
-    const dueEl = document.getElementById('practice-count-due');
-    if (dueEl) dueEl.innerText = "0";
+    updateSrsCounts();
     return;
   }
   
@@ -684,21 +693,17 @@ window.logPracticeAction = function(action) {
                         String(nextReviewDate.getMonth() + 1).padStart(2, '0') + '-' + 
                         String(nextReviewDate.getDate()).padStart(2, '0');
 
+  // Cập nhật thông tin trực tiếp trên thẻ từ vựng cục bộ
+  if (currentPracticeWord.interval > 0 && (currentPracticeWord.prevInterval === undefined || currentPracticeWord.prevInterval === null)) {
+    currentPracticeWord.prevInterval = currentPracticeWord.interval;
+  }
+  currentPracticeWord.interval = finalInterval;
+  currentPracticeWord.status = finalStatus;
+  currentPracticeWord.ease_factor = finalEase;
+  currentPracticeWord.next_review = nextReviewStr;
+
   // 1. Cập nhật hàng chờ cục bộ
-  if (action === "again") {
-    // Cập nhật thông tin trực tiếp trong activeQueue để ôn lại trong phiên hiện tại
-    let wordInActive = activeQueue.find(v => v.rowNumber === rowNumber);
-    if (wordInActive) {
-      // Chỉ lưu giữ prevInterval lần đầu tiên nhấn "again" (khi interval vẫn lớn hơn 0)
-      if (wordInActive.interval > 0 && (wordInActive.prevInterval === undefined || wordInActive.prevInterval === null)) {
-        wordInActive.prevInterval = wordInActive.interval;
-      }
-      wordInActive.interval = finalInterval;
-      wordInActive.status = finalStatus;
-      wordInActive.ease_factor = finalEase;
-      wordInActive.next_review = nextReviewStr;
-    }
-  } else {
+  if (action !== "again") {
     // Nếu chọn đúng (hard/good/easy), loại bỏ thẻ khỏi activeQueue
     activeQueue = activeQueue.filter(v => v.rowNumber !== rowNumber);
     fillActiveQueue();
@@ -707,8 +712,7 @@ window.logPracticeAction = function(action) {
   let totalDue = reviewQueue.length + activeQueue.length;
 
   // 2. Cập nhật số lượng đếm trên giao diện ngay lập tức
-  const dueEl = document.getElementById('practice-count-due');
-  if (dueEl) dueEl.innerText = totalDue;
+  updateSrsCounts();
 
   // 3. Hiển thị từ tiếp theo hoặc trạng thái hoàn thành ngay lập tức
   const cardContent = document.getElementById('practice-card-content');
