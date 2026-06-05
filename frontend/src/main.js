@@ -16,6 +16,7 @@ import { initCostModule } from './components/expenses.js';
 import { initVocabModule } from './components/vocabulary.js';
 import { initSrsModule } from './components/srs.js';
 import { initAiChatModule } from './components/ai_chat.js';
+import { initGrammarDiaryModule } from './components/grammar_diary.js';
 import { initLinksModule } from './components/links.js';
 import { initPromptsModule } from './components/prompts.js';
 import { initGoalsModule } from './components/goals.js';
@@ -284,7 +285,8 @@ function loadDataFromServer() {
         goal: [],
         task: [],
         google_map: [],
-        collections: []
+        collections: [],
+        grammar_diary: []
       });
     }
   }, 4000); // 4 giây cho trải nghiệm tải mượt mà hơn
@@ -317,7 +319,8 @@ function handleScriptError(err) {
     goal: [],
     task: [],
     google_map: [],
-    collections: []
+    collections: [],
+    grammar_diary: []
   });
 }
 
@@ -332,7 +335,8 @@ function renderDashboard(data) {
     initCostModule(data.cost, loadDataFromServer);
     initVocabModule(data.vocabulary, loadDataFromServer);
     initSrsModule(data.vocabulary, loadDataFromServer);
-    initAiChatModule(data.vocabulary);
+    initAiChatModule(data.vocabulary, loadDataFromServer);
+    initGrammarDiaryModule(data.grammar_diary, loadDataFromServer);
     initLinksModule(data.link, loadDataFromServer);
     initPromptsModule(data.prompt, loadDataFromServer);
     initGoalsModule(data.goal, loadDataFromServer);

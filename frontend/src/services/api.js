@@ -227,7 +227,7 @@ async function resolveAllTabs(spreadsheetId) {
     const sheets = response.result.sheets || [];
     const existingTitles = sheets.map(s => s.properties.title);
 
-    const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections'];
+    const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections', 'grammar_diary'];
     const mappings = {};
 
     // Bước 1: Khớp trực tiếp và hỗ trợ các biến thể/tên thay thế phổ biến (ví dụ số nhiều, từ đồng nghĩa)
@@ -240,7 +240,8 @@ async function resolveAllTabs(spreadsheetId) {
       goal: ['goals', 'goal', 'mục tiêu'],
       task: ['tasks', 'task', 'công việc'],
       google_map: ['google_maps', 'google_map', 'bản đồ'],
-      collections: ['collections', 'collection', 'sưu tập', 'bộ sưu tập']
+      collections: ['collections', 'collection', 'sưu tập', 'bộ sưu tập'],
+      grammar_diary: ['grammar_diaries', 'grammar_diary', 'nhật ký ngữ pháp', 'grammar_logs']
     };
 
     targetTabs.forEach(target => {
@@ -348,6 +349,13 @@ async function resolveAllTabs(spreadsheetId) {
               bestMatch = title;
               break;
             }
+          } else if (target === 'grammar_diary') {
+            const hasUserSentence = headers.includes('user_sentence') || headers.includes('user sentence') || headers.some(h => h.includes('user_sentence') || h.includes('user sentence'));
+            const hasCorrected = headers.includes('corrected_sentence') || headers.includes('corrected sentence') || headers.some(h => h.includes('corrected_sentence') || h.includes('corrected sentence'));
+            if (hasUserSentence || hasCorrected) {
+              bestMatch = title;
+              break;
+            }
           }
         }
 
@@ -372,6 +380,7 @@ async function resolveAllTabs(spreadsheetId) {
         else if (target === 'task') mappings[target] = 'tasks';
         else if (target === 'google_map') mappings[target] = 'google_maps';
         else if (target === 'collections') mappings[target] = 'collections';
+        else if (target === 'grammar_diary') mappings[target] = 'grammar_diaries';
         else mappings[target] = target;
       }
     });
@@ -388,7 +397,8 @@ async function resolveAllTabs(spreadsheetId) {
       link: 'link',
       prompt: 'prompt',
       goal: 'goal',
-      task: 'task'
+      task: 'task',
+      grammar_diary: 'grammar_diary'
     };
   }
 }
@@ -398,7 +408,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
   const mappings = await resolveAllTabs(spreadsheetId);
   const response = await gapi.client.sheets.spreadsheets.get({ spreadsheetId });
   const existingTitles = response.result.sheets.map(s => s.properties.title);
-  const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections'];
+  const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections', 'grammar_diary'];
 
   const missingTabs = targetTabs.filter(target => {
     const mappedName = mappings[target];
@@ -427,7 +437,8 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
       { range: `${mappings['task'] || 'tasks'}!A1:C1`, values: [['Date', 'Task', 'Status']] },
       { range: `${mappings['google_map'] || 'google_maps'}!A1:E1`, values: [['place', 'city', 'category', 'address', 'status']] },
-      { range: `${mappings['collections'] || 'collections'}!A1:E1`, values: [['item', 'brand', 'style', 'category', 'status']] }
+      { range: `${mappings['collections'] || 'collections'}!A1:E1`, values: [['item', 'brand', 'style', 'category', 'status']] },
+      { range: `${mappings['grammar_diary'] || 'grammar_diaries'}!A1:E1`, values: [['date', 'scenario', 'user_sentence', 'corrected_sentence', 'explanation']] }
     ].filter(h => {
       const rangeSheetName = h.range.split('!')[0];
       return missingTabs.some(target => (mappings[target] || target) === rangeSheetName);
@@ -475,6 +486,7 @@ export function callServer(methodName, args) {
       const promptTab = mappings['prompt'];
       const goalTab = mappings['goal'];
       const taskTab = mappings['task'];
+      const grammarTab = mappings['grammar_diary'];
 
       // Hàm chuyển đổi chuỗi tiền tệ phức tạp (Ví dụ: "₫40,000" hay "40.000đ") thành số thực cực kỳ mạnh mẽ
       const parseAmount = (val) => {
@@ -497,7 +509,8 @@ export function callServer(methodName, args) {
             `${goalTab}!A2:E`,
             `${taskTab}!A2:C`,
             `${mappings['google_map']}!A2:E`,
-            `${mappings['collections'] || 'collections'}!A2:E`
+            `${mappings['collections'] || 'collections'}!A2:E`,
+            `${grammarTab || 'grammar_diaries'}!A2:E`
           ],
           valueRenderOption: 'UNFORMATTED_VALUE'
         });
@@ -580,7 +593,16 @@ export function callServer(methodName, args) {
             style: row[2] || "",
             category: row[3] || "",
             status: row[4] === "TRUE" || row[4] === true || row[4] === "true" || row[4] === "v" || row[4] === "checked"
-          })).filter(item => item.item)
+          })).filter(item => item.item),
+
+          grammar_diary: getRows(valueRanges[9]).map((row, idx) => ({
+            rowNumber: idx + 2,
+            date: cleanDateValue(row[0]),
+            scenario: row[1] || "",
+            user_sentence: row[2] || "",
+            corrected_sentence: row[3] || "",
+            explanation: row[4] || ""
+          })).filter(item => item.user_sentence || item.corrected_sentence)
         });
         return;
       }
@@ -1034,6 +1056,41 @@ export function callServer(methodName, args) {
           range: `${taskTab}!C${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
+        });
+        resolve("Thành công");
+        return;
+      }
+      if (methodName === "insertGrammarDiaryRow") {
+        const [date, scenario, user_sentence, corrected_sentence, explanation] = args;
+        const grammarTab = mappings['grammar_diary'] || 'grammar_diaries';
+        await gapi.client.sheets.spreadsheets.values.append({
+          spreadsheetId,
+          range: `${grammarTab}!A:E`,
+          valueInputOption: 'USER_ENTERED',
+          insertDataOption: 'OVERWRITE',
+          resource: { values: [[date, scenario, user_sentence, corrected_sentence, explanation]] }
+        });
+        resolve("Thành công");
+        return;
+      }
+      if (methodName === "deleteGrammarDiaryRow") {
+        const [rowNumber] = args;
+        const grammarTab = mappings['grammar_diary'] || 'grammar_diaries';
+        const sheetId = await getSheetId(grammarTab, spreadsheetId);
+        await gapi.client.sheets.spreadsheets.batchUpdate({
+          spreadsheetId,
+          resource: {
+            requests: [{
+              deleteDimension: {
+                range: {
+                  sheetId,
+                  dimension: 'ROWS',
+                  startIndex: rowNumber - 1,
+                  endIndex: rowNumber
+                }
+              }
+            }]
+          }
         });
         resolve("Thành công");
         return;

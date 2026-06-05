@@ -1,5 +1,5 @@
 // HỢP PHẦN AI SPEAKING PARTNER - FRONTEND LOGIC
-import { getAiCredentials } from '../services/api.js';
+import { getAiCredentials, callServer } from '../services/api.js';
 import { callAiApi, SCENARIOS } from '../services/ai.js';
 import { showToast } from '../services/toast.js';
 
@@ -16,10 +16,12 @@ let vocabList = [];
 let chatHistories = {}; // Cấu trúc: { [scenarioKey]: [{role: 'user'|'ai', text: string}] }
 let recognition = null;
 let isRecognizing = false;
+let refreshDataCallback = null;
 
 // ---------------- KHỞI TẠO MÔ-ĐUN ----------------
-export function initAiChatModule(allVocabulary) {
+export function initAiChatModule(allVocabulary, refreshCb) {
   vocabList = allVocabulary || [];
+  refreshDataCallback = refreshCb;
   
   // 1. Tải lịch sử chat từ localStorage
   loadChatHistoriesFromStorage();
@@ -44,37 +46,50 @@ export function initAiChatModule(allVocabulary) {
 window.switchPracticeSubTab = function(subTabId) {
   const btnSrs = document.getElementById('btn-subtab-srs');
   const btnAichat = document.getElementById('btn-subtab-aichat');
+  const btnGrammar = document.getElementById('btn-subtab-grammar');
   const srsStats = document.getElementById('practice-srs-stats');
   
   const srsContainer = document.getElementById('practice-srs-container');
   const aichatContainer = document.getElementById('practice-aichat-container');
+  const grammarContainer = document.getElementById('practice-grammar-container');
 
   if (!btnSrs || !btnAichat || !srsContainer || !aichatContainer) return;
 
+  const activeClass = "pb-3 px-4 font-bold text-sm border-b-2 border-blue-600 text-blue-600 transition cursor-pointer flex items-center gap-2";
+  const inactiveClass = "pb-3 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition cursor-pointer flex items-center gap-2";
+
+  btnSrs.className = inactiveClass;
+  btnAichat.className = inactiveClass;
+  if (btnGrammar) btnGrammar.className = inactiveClass;
+
+  if (srsStats) srsStats.classList.add('hidden');
+  srsContainer.classList.add('hidden');
+  aichatContainer.classList.add('hidden');
+  if (grammarContainer) grammarContainer.classList.add('hidden');
+
   if (subTabId === 'srs') {
-    // Kích hoạt tab SRS
-    btnSrs.className = "pb-3 px-4 font-bold text-sm border-b-2 border-blue-600 text-blue-600 transition cursor-pointer flex items-center gap-2";
-    btnAichat.className = "pb-3 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition cursor-pointer flex items-center gap-2";
-    
+    btnSrs.className = activeClass;
     if (srsStats) srsStats.classList.remove('hidden');
     srsContainer.classList.remove('hidden');
-    aichatContainer.classList.add('hidden');
     
     // Tắt nhận dạng giọng nói nếu đang bật
     if (isRecognizing && recognition) {
       recognition.stop();
     }
   } else if (subTabId === 'aichat') {
-    // Kích hoạt tab AI Chat
-    btnSrs.className = "pb-3 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition cursor-pointer flex items-center gap-2";
-    btnAichat.className = "pb-3 px-4 font-bold text-sm border-b-2 border-blue-600 text-blue-600 transition cursor-pointer flex items-center gap-2";
-    
-    if (srsStats) srsStats.classList.add('hidden');
-    srsContainer.classList.add('hidden');
+    btnAichat.className = activeClass;
     aichatContainer.classList.remove('hidden');
 
     // Chạy hội thoại của kịch bản hiện tại
     initializeActiveScenario();
+  } else if (subTabId === 'grammar') {
+    if (btnGrammar) btnGrammar.className = activeClass;
+    if (grammarContainer) grammarContainer.classList.remove('hidden');
+    
+    // Tắt nhận dạng giọng nói nếu đang bật
+    if (isRecognizing && recognition) {
+      recognition.stop();
+    }
   }
 };
 
@@ -517,6 +532,31 @@ function renderGrammarFeedbackUI(userText, aiResult) {
       explainBlock.classList.remove('hidden');
       explainTxtEl.innerHTML = aiResult.corrections.replace(/\n/g, "<br>");
     }
+  }
+
+  // 5. Tự động lưu lỗi ngữ pháp vào Google Sheets nếu phát hiện lỗi
+  if (aiResult.isCorrect === false) {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const dateStr = `${year}-${month}-${day}`;
+    
+    const scenarioTitle = SCENARIOS[activeScenario]?.title || activeScenario;
+    const userSentence = userText.trim();
+    const correctedSentence = (aiResult.correctText || "").trim();
+    const explanation = (aiResult.corrections || "").trim();
+    
+    callServer("insertGrammarDiaryRow", [dateStr, scenarioTitle, userSentence, correctedSentence, explanation])
+      .then(() => {
+        console.log("[ai_chat.js] Tự động lưu lỗi ngữ pháp vào Google Sheet thành công.");
+        if (typeof refreshDataCallback === "function") {
+          refreshDataCallback();
+        }
+      })
+      .catch(err => {
+        console.error("[ai_chat.js] Lỗi tự động lưu lỗi ngữ pháp vào Google Sheet:", err);
+      });
   }
 }
 
