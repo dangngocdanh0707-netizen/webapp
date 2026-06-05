@@ -109,7 +109,14 @@ export function buildVocabTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="vocab-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-800 text-sm v-view-${id}">${escapeHTML(item.content) || ''}</td>
+        <td class="p-4 pl-6 font-semibold text-slate-800 text-sm v-view-${id}">
+          <div class="flex items-center gap-2">
+            <span>${escapeHTML(item.content) || ''}</span>
+            <button onclick="speakVocabById(${id})" class="text-slate-400 hover:text-blue-500 p-1 cursor-pointer transition" title="Phát âm">
+              <i class="fa-solid fa-volume-high text-xs"></i>
+            </button>
+          </div>
+        </td>
         <td class="p-4 font-mono text-slate-500 italic text-sm v-view-${id}">${escapeHTML(item.transcription) || '-'}</td>
         <td class="p-4 hidden v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(cat)}</span></td>
         <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(topic)}</span></td>
@@ -304,5 +311,22 @@ window.deleteVocab = function(id) {
     allVocabData.splice(deletedIndex, 0, deletedItem);
     buildVocabTable();
     showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+  }
+};
+
+window.speakVocabById = function(id) {
+  let item = allVocabData.find(v => v.rowNumber == id);
+  if (item && item.content) {
+    try {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(item.content);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+      }
+    } catch (e) {
+      console.warn("TTS Synthesis failed:", e);
+    }
   }
 };
