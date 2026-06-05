@@ -46,11 +46,15 @@ personal_webapp/
   * Tích hợp linh hoạt **Google Gemini** (`gemini-2.5-flash`) và **OpenAI** (`gpt-4o-mini`). API Key được lưu bảo mật ở `localStorage`.
   * Hỗ trợ nhận diện giọng nói (Speech-to-Text) và tự động phát âm phản hồi (Text-to-Speech) với nhiều tốc độ, accent.
   * Phân tích và giải thích chi tiết lỗi ngữ pháp bằng tiếng Việt kèm câu sửa mẫu.
+  * **💡 Smart Response Hints**: Sau mỗi lượt AI trả lời, tự động gợi ý 3 câu trả lời tự nhiên phù hợp ngữ cảnh dưới dạng pill button. Bấm vào pill để điền nhanh vào ô chat (có thể chỉnh sửa trước khi gửi).
+  * **🌐 Dịch tức thì (Instant Translation)**: Nút 🌐 trên mỗi bong bóng AI cho phép dịch câu sang tiếng Việt tự nhiên ngay trong giao diện, có cache để không gọi API lần 2.
   * Tự động phát hiện và gửi thông báo khích lệ khi người dùng áp dụng thành công từ vựng đang học trong thẻ SRS vào hội thoại.
 * **📝 Nhật ký lỗi ngữ pháp (Grammar Error Diary)**:
   * Tự động ghi lại các câu có lỗi ngữ pháp trong quá trình chat với AI Speaking Partner và đồng bộ trực tiếp lên Google Sheets.
+  * Lưu dữ liệu vào **dòng trống đầu tiên** tìm được trong sheet (giống `insertTaskRow`), không tạo dòng mới cuối bảng, phù hợp với sheet đã chuẩn bị checkbox sẵn.
   * Hiển thị các lỗi dưới dạng thẻ học lật 3D Anki-style (Mặt trước: lỗi sai & ngày; Mặt sau: câu sửa đúng & giải thích chi tiết bằng tiếng Việt).
-  * Hỗ trợ nút **Mastered** tự động xóa thẻ ghi nhớ và xóa dòng tương ứng trên Google Sheets bằng đồng bộ hóa ngầm (Silent sync) tránh giật lag, nháy màn hình.
+  * **✍️ Chế độ Re-test (Practice)**: Bấm nút *Practice* để gõ lại câu đúng, AI tự động xác nhận đáp án, thẻ được đánh dấu **Mastered** tự động nếu nhập chính xác.
+  * Nút **Mastered** cập nhật cột `status` trên Google Sheets thành `TRUE` thay vì xóa dòng, bảo toàn toàn bộ dữ liệu lịch sử.
 * **🎓 Ôn tập Anki Spaced Repetition (SM-2)**:
   * Chế độ *Typing* luyện chính tả từ đơn và *Word Scramble* kéo thả (Drag & Drop) luyện ghép cụm từ/câu.
   * Áp dụng thuật toán SM-2 chuẩn hóa (Again, Hard, Good, Easy) với cơ chế bảo toàn tiến độ (20% Lapse Penalty) và cộng thưởng trễ hạn (Overdue Delay Bonus).
@@ -81,7 +85,7 @@ Nếu Spreadsheet trống, hệ thống sẽ **tự động khởi tạo** các 
 | **`tasks`** | Date | Task | Status | | | |
 | **`google_maps`**| place | city | category | address | status | |
 | **`collections`**| item | brand | style | category | status | |
-| **`grammar_diaries`**| date | scenario | user_sentence | corrected_sentence | explanation | |
+| **`grammar_diaries`**| date | scenario | user_sentence | corrected_sentence | explanation | **status** (checkbox — TRUE = Mastered) |
 
 ---
 
