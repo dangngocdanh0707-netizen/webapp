@@ -17,11 +17,17 @@ let chatHistories = {}; // Cấu trúc: { [scenarioKey]: [{role: 'user'|'ai', te
 let recognition = null;
 let isRecognizing = false;
 let refreshDataCallback = null;
+let isInitialized = false;
 
 // ---------------- KHỞI TẠO MÔ-ĐUN ----------------
 export function initAiChatModule(allVocabulary, refreshCb) {
   vocabList = allVocabulary || [];
   refreshDataCallback = refreshCb;
+  
+  if (isInitialized) {
+    return;
+  }
+  isInitialized = true;
   
   // 1. Tải lịch sử chat từ localStorage
   loadChatHistoriesFromStorage();
@@ -551,7 +557,7 @@ function renderGrammarFeedbackUI(userText, aiResult) {
       .then(() => {
         console.log("[ai_chat.js] Tự động lưu lỗi ngữ pháp vào Google Sheet thành công.");
         if (typeof refreshDataCallback === "function") {
-          refreshDataCallback();
+          refreshDataCallback(true);
         }
       })
       .catch(err => {

@@ -118,7 +118,7 @@ window.deleteGrammarRecord = function(rowNumber) {
       .then(() => {
         showToast("Great job! Marked as mastered.", "success");
         if (typeof refreshCallback === 'function') {
-          refreshCallback();
+          refreshCallback(true);
         }
       })
       .catch(err => {

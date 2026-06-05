@@ -257,39 +257,45 @@ function updateAuthButtonsState() {
   }
 }
 
-function loadDataFromServer() {
+function loadDataFromServer(silent = false) {
   const loading = document.getElementById('loading');
   const dashboardContent = document.getElementById('dashboard-content');
-  if (loading) loading.style.display = 'flex';
-  if (dashboardContent) dashboardContent.classList.add('hidden');
+  
+  if (!silent) {
+    if (loading) loading.style.display = 'flex';
+    if (dashboardContent) dashboardContent.classList.add('hidden');
+  }
 
   // Đặt timeout 4 giây phòng khi API bị chậm
   if (serverSyncTimeout) clearTimeout(serverSyncTimeout);
-  serverSyncTimeout = setTimeout(() => {
-    if (loading && loading.querySelector('.animate-spin')) {
-      const creds = getCredentials();
-      const needsSetup = !creds.spreadsheetId || !creds.clientId || !creds.apiKey;
-      
-      if (needsSetup) {
-        showToast("Chưa cấu hình Google Sheets API. Vui lòng nhấn Thiết lập Credentials ở góc dưới bên trái.", "warning");
-      } else {
-        showToast("Đồng bộ lâu hơn dự kiến. Vui lòng kiểm tra lại kết nối mạng.", "info");
+  
+  if (!silent) {
+    serverSyncTimeout = setTimeout(() => {
+      if (loading && loading.querySelector('.animate-spin')) {
+        const creds = getCredentials();
+        const needsSetup = !creds.spreadsheetId || !creds.clientId || !creds.apiKey;
+        
+        if (needsSetup) {
+          showToast("Chưa cấu hình Google Sheets API. Vui lòng nhấn Thiết lập Credentials ở góc dưới bên trái.", "warning");
+        } else {
+          showToast("Đồng bộ lâu hơn dự kiến. Vui lòng kiểm tra lại kết nối mạng.", "info");
+        }
+        
+        renderDashboard({
+          cost: [],
+          vocabulary: [],
+          habit_tracker: [],
+          link: [],
+          prompt: [],
+          goal: [],
+          task: [],
+          google_map: [],
+          collections: [],
+          grammar_diary: []
+        });
       }
-      
-      renderDashboard({
-        cost: [],
-        vocabulary: [],
-        habit_tracker: [],
-        link: [],
-        prompt: [],
-        goal: [],
-        task: [],
-        google_map: [],
-        collections: [],
-        grammar_diary: []
-      });
-    }
-  }, 4000); // 4 giây cho trải nghiệm tải mượt mà hơn
+    }, 4000); // 4 giây cho trải nghiệm tải mượt mà hơn
+  }
 
   callServer("getAllDashboardData", [])
     .then(data => {
