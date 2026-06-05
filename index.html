@@ -45,8 +45,8 @@
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <script type="module" crossorigin src="/webapp_project/assets/index-BQewjYFT.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-Df5YIwyX.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-dMpHg2xa.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-CpVDhyai.css">
 </head>
 
 
@@ -925,6 +925,12 @@
 
           </button>
 
+          <button id="btn-subtab-grammar" onclick="window.switchPracticeSubTab('grammar')" class="pb-3 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition cursor-pointer flex items-center gap-2">
+
+            <i class="fa-solid fa-book text-xs text-indigo-500"></i> <span>Grammar Diary</span>
+
+          </button>
+
         </div>
 
 
@@ -1280,6 +1286,42 @@
 
           </div>
 
+        </div>
+
+        <!-- Sub-Tab 3: Grammar Diary -->
+        <div id="practice-grammar-container" class="hidden">
+          <div class="max-w-6xl mx-auto py-4">
+            <!-- Stats Panel and Action header -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+              <div>
+                <h2 class="text-xl font-extrabold text-slate-800 tracking-tight">Grammar Mistake Logs</h2>
+                <p class="text-xs text-slate-500 font-semibold mt-1">Review your mistakes as flippable flashcards. Click cards to reveal correct version and explanation.</p>
+              </div>
+              <div class="glass-card px-5 py-3 min-w-[200px] flex justify-between items-center transition">
+                <div>
+                  <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Mistakes Logged</span>
+                  <p id="grammar-total-count" class="text-2xl font-black text-slate-900 mt-0.5">0</p>
+                </div>
+                <div class="bg-indigo-500/10 p-2.5 rounded-lg border border-indigo-500/10 flex items-center justify-center">
+                  <i class="fa-solid fa-triangle-exclamation text-indigo-500 text-base"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="grammar-empty-state" class="glass-card py-16 text-center max-w-xl mx-auto hidden">
+              <div class="bg-emerald-500/5 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.05)]">
+                <i class="fa-solid fa-face-smile text-emerald-500 text-2xl"></i>
+              </div>
+              <h3 class="text-base font-bold text-slate-800">Excellent! Your Grammar Diary is clean.</h3>
+              <p class="text-xs text-slate-400 font-semibold mt-1 leading-relaxed max-w-sm mx-auto">No grammar mistakes have been logged yet. Mistakes from your AI conversations will show up here automatically.</p>
+            </div>
+
+            <!-- Flashcards Grid -->
+            <div id="grammar-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <!-- Dynamically rendered flippable cards -->
+            </div>
+          </div>
         </div>
 
       </div>
