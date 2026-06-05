@@ -1306,7 +1306,7 @@
           <div class="flex flex-col gap-3">
             <div>
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI PROVIDER (Nhà cung cấp)</label>
-              <select id="settings-ai-provider" class="form-input font-semibold text-xs">
+              <select id="settings-ai-provider" onchange="window.updateSettingsModelOptions(this.value)" class="form-input font-semibold text-xs">
                 <option value="gemini">Google Gemini</option>
                 <option value="openai">OpenAI</option>
               </select>
@@ -1323,8 +1323,8 @@
             </div>
             
             <div>
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI MODEL NAME (Tên Model)</label>
-              <input type="text" id="settings-ai-model" class="form-input font-mono text-xs">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI MODEL NAME</label>
+              <select id="settings-ai-model" class="form-input font-semibold text-xs"></select>
             </div>
           </div>
         </div>

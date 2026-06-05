@@ -373,6 +373,48 @@ window.launchApp = function(tabId) {
 window.signInWithGoogle = signInWithGoogle;
 window.signOutFromGoogle = signOutFromGoogle;
 
+window.updateSettingsModelOptions = function(provider, currentModel = '') {
+  const modelSelect = document.getElementById('settings-ai-model');
+  if (!modelSelect) return;
+  
+  modelSelect.innerHTML = '';
+  
+  const models = {
+    gemini: [
+      { value: 'gemini-2.5-flash', label: 'gemini-2.5-flash (Khuyên dùng)' },
+      { value: 'gemini-2.5-pro', label: 'gemini-2.5-pro' },
+      { value: 'gemini-1.5-flash', label: 'gemini-1.5-flash' },
+      { value: 'gemini-1.5-pro', label: 'gemini-1.5-pro' }
+    ],
+    openai: [
+      { value: 'gpt-4o-mini', label: 'gpt-4o-mini (Khuyên dùng)' },
+      { value: 'gpt-4o', label: 'gpt-4o' },
+      { value: 'gpt-3.5-turbo', label: 'gpt-3.5-turbo' }
+    ]
+  };
+  
+  const providerModels = models[provider] || [];
+  providerModels.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.value;
+    opt.textContent = m.label;
+    modelSelect.appendChild(opt);
+  });
+  
+  if (currentModel && !providerModels.some(m => m.value === currentModel)) {
+    const opt = document.createElement('option');
+    opt.value = currentModel;
+    opt.textContent = `${currentModel} (Tùy chỉnh)`;
+    modelSelect.appendChild(opt);
+  }
+  
+  if (currentModel) {
+    modelSelect.value = currentModel;
+  } else if (providerModels.length > 0) {
+    modelSelect.value = providerModels[0].value;
+  }
+};
+
 // Điều khiển Settings Modal
 window.openSettingsModal = function() {
   const modal = document.getElementById('settings-modal');
@@ -386,7 +428,9 @@ window.openSettingsModal = function() {
     document.getElementById('settings-ai-provider').value = aiCreds.provider;
     document.getElementById('settings-gemini-key').value = aiCreds.geminiKey;
     document.getElementById('settings-openai-key').value = aiCreds.openaiKey;
-    document.getElementById('settings-ai-model').value = aiCreds.model;
+    
+    // Khởi tạo/cập nhật danh sách model theo provider đã lưu
+    window.updateSettingsModelOptions(aiCreds.provider, aiCreds.model);
     
     modal.classList.remove('hidden');
   }
