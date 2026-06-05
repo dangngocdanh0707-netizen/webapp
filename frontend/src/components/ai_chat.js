@@ -178,8 +178,20 @@ function initializeActiveScenario() {
   // Render các bong bóng chat
   renderAiChatBubbles();
 
-  // Hiển thị gợi ý câu mặc định cho kịch bản khi mới bắt đầu
-  renderResponseHints(DEFAULT_GREETINGS_HINTS[activeScenario] || []);
+  // Hiển thị gợi ý câu trả lời phù hợp dựa trên tin nhắn cuối cùng
+  const history = chatHistories[activeScenario] || [];
+  if (history.length > 0) {
+    const lastMsg = history[history.length - 1];
+    if (lastMsg.role === "ai") {
+      renderResponseHints(lastMsg.hints || []);
+    } else {
+      // Nếu tin nhắn cuối của User (đang chờ phản hồi), không hiện gợi ý
+      renderResponseHints([]);
+    }
+  } else {
+    // Nếu chưa có tin nhắn nào, dùng câu chào mặc định
+    renderResponseHints(DEFAULT_GREETINGS_HINTS[activeScenario] || []);
+  }
 
   // Reset các trạng thái
   translationCache = {};
@@ -402,6 +414,9 @@ window.sendAiChatMessage = async function() {
   saveChatHistoriesToStorage();
   renderAiChatBubbles();
 
+  // Xóa các gợi ý câu trả lời cũ khi đang chờ AI phản hồi
+  renderResponseHints([]);
+
   // Hiển thị trạng thái AI đang trả lời
   const statusEl = document.getElementById('ai-chat-status');
   if (statusEl) statusEl.classList.remove('hidden');
@@ -413,10 +428,11 @@ window.sendAiChatMessage = async function() {
     // Gọi API tích hợp AI (Gemini hoặc OpenAI)
     const result = await callAiApi(userText, historyContext, aiCreds, activeScenario);
 
-    // Thêm phản hồi của AI vào lịch sử
+    // Thêm phản hồi của AI vào lịch sử kèm theo hints được sinh ra
     chatHistories[activeScenario].push({
       role: "ai",
-      text: result.reply
+      text: result.reply,
+      hints: result.hints || []
     });
     saveChatHistoriesToStorage();
     renderAiChatBubbles();
@@ -424,7 +440,7 @@ window.sendAiChatMessage = async function() {
     // Hiển thị phân tích lỗi ngữ pháp lên thanh bên phải
     renderGrammarFeedbackUI(userText, result);
 
-    // Hiển thị hints gợi ý câu trả lời từ AI (đỀ xuất 1)
+    // Hiển thị hints gợi ý câu trả lời từ AI
     renderResponseHints(result.hints || []);
 
     // Phát âm câu thoại của AI nếu bật chế độ Auto-TTS
