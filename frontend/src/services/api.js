@@ -12,6 +12,7 @@ const KEY_CLIENT_ID = "GOOGLE_CLIENT_ID";
 // Biến lưu trạng thái SDK toàn cục
 let tokenClient = null;
 let gapiInitialized = false;
+let isManualLogin = false;
 let sheetIdMap = {}; // Cache tên sheet -> sheetId để xóa dòng
 let resolvedTabsCache = {}; // Cache ánh xạ tên tab tự động phân giải
 
@@ -106,10 +107,25 @@ export function initGoogleAuth() {
             gapiInitialized = true;
             console.log("[api.js] Google API Client (GAPI) đã khởi tạo.");
 
-            // Phục hồi token từ localStorage nếu có
-            const cachedToken = localStorage.getItem("GOOGLE_ACCESS_TOKEN");
-            if (cachedToken) {
-              gapi.client.setToken(JSON.parse(cachedToken));
+            // Phục hồi token từ localStorage nếu có và chưa hết hạn
+            const cachedTokenStr = localStorage.getItem("GOOGLE_ACCESS_TOKEN");
+            if (cachedTokenStr) {
+              const cachedToken = JSON.parse(cachedTokenStr);
+              // Kiểm tra xem token đã hết hạn chưa (3600 giây - trừ 5 phút dự phòng)
+              const isExpired = cachedToken.timestamp && (Date.now() - cachedToken.timestamp > (cachedToken.expires_in - 300) * 1000);
+              
+              if (isExpired) {
+                console.log("[api.js] Token đã hết hạn, đang tự động làm mới ngầm...");
+                setTimeout(() => {
+                  try {
+                    tokenClient.requestAccessToken({ prompt: 'none' });
+                  } catch (e) {
+                    console.warn("Tự động làm mới token thất bại:", e);
+                  }
+                }, 1000);
+              } else {
+                gapi.client.setToken(cachedToken);
+              }
             }
 
             // 2. Khởi tạo GIS Token Client
@@ -119,15 +135,25 @@ export function initGoogleAuth() {
               callback: (tokenResponse) => {
                 if (tokenResponse.error !== undefined) {
                   console.error("[api.js] Lỗi xác thực OAuth:", tokenResponse);
+                  if (tokenResponse.error === 'consent_required' || tokenResponse.error === 'interaction_required') {
+                    // Lỗi tự động refresh ngầm thất bại (do hết hạn session Google), không hiển thị toast lỗi
+                    localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
+                    return;
+                  }
                   showToast("Lỗi kết nối Google: " + tokenResponse.error, "error");
                   return;
                 }
                 console.log("[api.js] Nhận token thành công:", tokenResponse);
+                tokenResponse.timestamp = Date.now(); // Lưu thời gian tạo token
                 localStorage.setItem("GOOGLE_ACCESS_TOKEN", JSON.stringify(tokenResponse));
                 gapi.client.setToken(tokenResponse);
 
-                // Tải lại trang để đồng bộ mới dữ liệu qua Google Sheets
-                window.location.reload();
+                if (isManualLogin) {
+                  // Đăng nhập thủ công thì tải lại trang để nạp lại dữ liệu Sheets
+                  window.location.reload();
+                } else {
+                  console.log("[api.js] Tự động làm mới token thành công.");
+                }
               }
             });
 
@@ -154,7 +180,8 @@ export function signInWithGoogle() {
     }
     return;
   }
-  tokenClient.requestAccessToken({ prompt: 'consent' });
+  isManualLogin = true;
+  tokenClient.requestAccessToken({ prompt: '' }); // Lược bỏ việc bắt buộc duyệt quyền (prompt: 'consent' -> prompt: '')
 }
 
 // Đăng xuất và xóa token
