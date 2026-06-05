@@ -82,7 +82,7 @@
         </button>
       </div>
       <button onclick="window.openSettingsModal()" class="w-full border border-slate-200 hover:bg-slate-50 text-slate-650 font-bold text-xs px-4 py-3 rounded-xl transition duration-200 flex items-center justify-center gap-2 cursor-pointer mt-1">
-        <i class="fa-solid fa-sliders text-slate-500"></i> <span>Cấu hình API & Keys</span>
+        <i class="fa-solid fa-sliders text-slate-500"></i> <span>Setting</span>
       </button>
     </div>
 
@@ -1309,19 +1309,19 @@
           <div class="flex flex-col gap-3">
             <div>
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI PROVIDER (Nhà cung cấp)</label>
-              <select id="settings-ai-provider" class="form-input font-semibold text-xs" onchange="window.toggleAiProviderFields()">
+              <select id="settings-ai-provider" class="form-input font-semibold text-xs">
                 <option value="gemini">Google Gemini</option>
                 <option value="openai">OpenAI</option>
               </select>
             </div>
             
-            <div id="settings-gemini-key-container">
+            <div>
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">GEMINI API KEY</label>
               <input type="password" id="settings-gemini-key" placeholder="Nhập Gemini API Key từ Google AI Studio" class="form-input font-mono text-xs">
               <p class="text-[10px] text-slate-500 mt-1">Lấy key miễn phí tại <a href="https://aistudio.google.com/" target="_blank" class="text-blue-500 underline font-semibold">Google AI Studio</a>.</p>
             </div>
             
-            <div id="settings-openai-key-container" class="hidden">
+            <div>
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">OPENAI API KEY</label>
               <input type="password" id="settings-openai-key" placeholder="sk-..." class="form-input font-mono text-xs">
               <p class="text-[10px] text-slate-500 mt-1">Nhập API Key từ tài khoản OpenAI Developer của bạn.</p>

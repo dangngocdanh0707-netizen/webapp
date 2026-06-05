@@ -374,20 +374,6 @@ window.signInWithGoogle = signInWithGoogle;
 window.signOutFromGoogle = signOutFromGoogle;
 
 // Điều khiển Settings Modal
-window.toggleAiProviderFields = function() {
-  const provider = document.getElementById('settings-ai-provider').value;
-  const geminiContainer = document.getElementById('settings-gemini-key-container');
-  const openaiContainer = document.getElementById('settings-openai-key-container');
-  
-  if (provider === 'gemini') {
-    if (geminiContainer) geminiContainer.classList.remove('hidden');
-    if (openaiContainer) openaiContainer.classList.add('hidden');
-  } else {
-    if (geminiContainer) geminiContainer.classList.add('hidden');
-    if (openaiContainer) openaiContainer.classList.remove('hidden');
-  }
-};
-
 window.openSettingsModal = function() {
   const modal = document.getElementById('settings-modal');
   if (modal) {
@@ -402,7 +388,6 @@ window.openSettingsModal = function() {
     document.getElementById('settings-openai-key').value = aiCreds.openaiKey;
     document.getElementById('settings-ai-model').value = aiCreds.model;
     
-    window.toggleAiProviderFields();
     modal.classList.remove('hidden');
   }
 };
