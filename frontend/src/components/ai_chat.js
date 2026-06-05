@@ -89,15 +89,11 @@ window.setAiScenario = function(scenarioKey) {
 
   activeScenario = scenarioKey;
 
-  // Cập nhật giao diện nút kịch bản
-  const container = document.getElementById('ai-chat-scenarios');
-  if (container) {
-    container.querySelectorAll('.scenario-btn').forEach(btn => {
-      btn.classList.remove('active');
-    });
+  // Cập nhật giao diện select kịch bản
+  const selectEl = document.getElementById('ai-chat-scenario-select');
+  if (selectEl) {
+    selectEl.value = scenarioKey;
   }
-  const activeBtn = document.getElementById(`btn-scenario-${scenarioKey}`);
-  if (activeBtn) activeBtn.classList.add('active');
 
   // Khởi chạy kịch bản mới
   initializeActiveScenario();
@@ -109,6 +105,12 @@ function initializeActiveScenario() {
   // Cập nhật tiêu đề kịch bản
   const titleEl = document.getElementById('ai-chat-scenario-title');
   if (titleEl) titleEl.innerText = scenario.title;
+
+  // Sync select element
+  const selectEl = document.getElementById('ai-chat-scenario-select');
+  if (selectEl) {
+    selectEl.value = activeScenario;
+  }
 
   // Kiểm tra lịch sử chat, nếu rỗng thì tạo câu chào mặc định
   if (!chatHistories[activeScenario] || chatHistories[activeScenario].length === 0) {
