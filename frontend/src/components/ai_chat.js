@@ -518,7 +518,7 @@ function resetGrammarFeedbackUI() {
   const userTxtEl = document.getElementById('ai-chat-feedback-user-txt');
   if (userTxtEl) {
     userTxtEl.innerText = '';
-    userTxtEl.className = 'text-xs font-bold p-2.5 rounded-lg border transition-all duration-200 italic';
+    userTxtEl.className = 'text-xs font-bold p-2.5 rounded-lg border transition-all duration-200';
   }
 
   const correctTxtEl = document.getElementById('ai-chat-feedback-correct-txt');
@@ -557,8 +557,8 @@ function renderGrammarFeedbackUI(userText, aiResult) {
   // 1. Cập nhật câu nói gốc của User và thêm class màu sắc tương ứng
   const userTxtEl = document.getElementById('ai-chat-feedback-user-txt');
   if (userTxtEl) {
-    userTxtEl.innerText = `"${userText}"`;
-    userTxtEl.className = 'text-xs font-bold p-2.5 rounded-lg border transition-all duration-200 italic ';
+    userTxtEl.innerText = userText;
+    userTxtEl.className = 'text-xs font-bold p-2.5 rounded-lg border transition-all duration-200 ';
     if (aiResult.isCorrect) {
       userTxtEl.className += 'border-emerald-500 bg-emerald-50 text-emerald-800 shadow-[0_0_10px_rgba(16,185,129,0.15)]';
     } else {
