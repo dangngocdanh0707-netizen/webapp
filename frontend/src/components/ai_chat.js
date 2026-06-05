@@ -338,8 +338,7 @@ window.sendAiChatMessage = async function() {
       speakAiResponse(result.reply);
     }
 
-    // Gợi ý ghi nhận từ vựng nếu có trong kho của bạn
-    checkForVocabularyUsage(userText);
+
 
   } catch (error) {
     console.error("Lỗi chat AI:", error);
@@ -619,48 +618,7 @@ function renderGrammarFeedbackUI(userText, aiResult) {
   }
 }
 
-// Chuẩn hóa văn bản để so khớp từ vựng một cách thông minh (bỏ ngoặc chú giải, dấu câu, khoảng trắng thừa)
-function cleanTextForMatching(str) {
-  if (!str) return "";
-  return str.toLowerCase()
-    .replace(/[\u00a0\xa0\u200b\u2007\u2009\u202f\s]+/g, " ") // Thay thế tất cả khoảng trắng đặc biệt (non-breaking spaces...) thành dấu cách thường
-    .replace(/\s*[\(\[][^\]\)]*[\)\]]/g, "") // Loại bỏ các phần chú thích trong ngoặc đơn/ngoặc vuông như (adj), [phr], (v)...
-    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?'"‘’“”]/g, "") // Loại bỏ dấu câu, dấu nháy đơn, nháy kép và nháy cong đặc biệt
-    .replace(/\s+/g, " ") // Thay thế nhiều dấu cách bằng 1 dấu cách
-    .trim();
-}
 
-// ---------------- GHI NHẬN TỪ VỰNG TRONG KHO ----------------
-function checkForVocabularyUsage(userText) {
-  if (!vocabList || vocabList.length === 0) return;
-
-  const normalizedInput = cleanTextForMatching(userText);
-  const wordsInInput = normalizedInput.split(/\s+/);
-
-  const matchedWords = [];
-  
-  vocabList.forEach(vocab => {
-    const word = cleanTextForMatching(vocab.content);
-    if (!word) return;
-
-    // Khớp từ vựng đơn hoặc cụm từ
-    if (word.includes(" ")) {
-      // Cụm từ
-      if (normalizedInput.includes(word)) {
-        matchedWords.push(vocab.content);
-      }
-    } else {
-      // Từ đơn
-      if (wordsInInput.includes(word)) {
-        matchedWords.push(vocab.content);
-      }
-    }
-  });
-
-  if (matchedWords.length > 0) {
-    showToast(`✨ Tuyệt vời! Bạn đã áp dụng thành công các từ vựng đang học: "${matchedWords.join(', ')}" vào cuộc trò chuyện!`, "success");
-  }
-}
 
 // ---------------- UTILS HELPERS ----------------
 function escapeHTML(str) {
