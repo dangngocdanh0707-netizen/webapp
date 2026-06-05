@@ -60,7 +60,7 @@ var Wl=Object.defineProperty;var jl=(n,t,e)=>t in n?Wl(n,t,{enumerable:!0,config
         <td class="p-4 pl-6 font-semibold text-slate-800 text-sm v-view-${b}">
           <div class="flex items-center gap-2">
             <span>${T(c.content)||""}</span>
-            <button onclick="speakVocabById(${b})" class="text-slate-400 hover:text-blue-500 p-1 cursor-pointer transition" title="Phát âm">
+            <button onclick="speakVocabById(${b})" class="text-slate-400 hover:text-blue-500 p-1 cursor-pointer transition">
               <i class="fa-solid fa-volume-high text-xs"></i>
             </button>
           </div>
