@@ -30,6 +30,7 @@ personal_webapp/
             ├── vocabulary.js    # Module Từ điển từ vựng
             ├── srs.js           # Trình ôn tập Anki SRS
             ├── ai_chat.js       # Giao diện hội thoại & Phân tích ngữ pháp AI
+            ├── grammar_diaries.js # Nhật ký lỗi ngữ pháp & lật thẻ ôn tập
             ├── goals.js         # Theo dõi tiến độ mục tiêu
             ├── tasks.js         # Quản lý công việc
             ├── habits.js        # Đánh giá thói quen hằng ngày
@@ -46,6 +47,10 @@ personal_webapp/
   * Hỗ trợ nhận diện giọng nói (Speech-to-Text) và tự động phát âm phản hồi (Text-to-Speech) với nhiều tốc độ, accent.
   * Phân tích và giải thích chi tiết lỗi ngữ pháp bằng tiếng Việt kèm câu sửa mẫu.
   * Tự động phát hiện và gửi thông báo khích lệ khi người dùng áp dụng thành công từ vựng đang học trong thẻ SRS vào hội thoại.
+* **📝 Nhật ký lỗi ngữ pháp (Grammar Error Diary)**:
+  * Tự động ghi lại các câu có lỗi ngữ pháp trong quá trình chat với AI Speaking Partner và đồng bộ trực tiếp lên Google Sheets.
+  * Hiển thị các lỗi dưới dạng thẻ học lật 3D Anki-style (Mặt trước: lỗi sai & ngày; Mặt sau: câu sửa đúng & giải thích chi tiết bằng tiếng Việt).
+  * Hỗ trợ nút **Mastered** tự động xóa thẻ ghi nhớ và xóa dòng tương ứng trên Google Sheets bằng đồng bộ hóa ngầm (Silent sync) tránh giật lag, nháy màn hình.
 * **🎓 Ôn tập Anki Spaced Repetition (SM-2)**:
   * Chế độ *Typing* luyện chính tả từ đơn và *Word Scramble* kéo thả (Drag & Drop) luyện ghép cụm từ/câu.
   * Áp dụng thuật toán SM-2 chuẩn hóa (Again, Hard, Good, Easy) với cơ chế bảo toàn tiến độ (20% Lapse Penalty) và cộng thưởng trễ hạn (Overdue Delay Bonus).
@@ -76,6 +81,7 @@ Nếu Spreadsheet trống, hệ thống sẽ **tự động khởi tạo** các 
 | **`tasks`** | Date | Task | Status | | | |
 | **`google_maps`**| place | city | category | address | status | |
 | **`collections`**| item | brand | style | category | status | |
+| **`grammar_diaries`**| date | scenario | user_sentence | corrected_sentence | explanation | |
 
 ---
 

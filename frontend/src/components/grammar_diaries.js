@@ -46,14 +46,14 @@ function renderGrammarCards() {
           <div class="grammar-card-front p-5 flex flex-col justify-between">
             <div>
               <div class="flex justify-between items-center mb-4">
-                <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100">${scenario}</span>
+                <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-blue-50 text-blue-600 border border-blue-100">${scenario}</span>
                 <span class="text-[10px] font-bold text-slate-400 font-mono">${date}</span>
               </div>
               <p class="text-xs font-bold text-rose-500 line-clamp-4 leading-relaxed mb-4 text-left">
                 <i class="fa-solid fa-circle-xmark mr-1"></i> "${userSentence}"
               </p>
             </div>
-            <div class="border-t border-slate-100 pt-3 flex justify-between items-center text-slate-400 hover:text-indigo-600 transition">
+            <div class="border-t border-slate-100 pt-3 flex justify-between items-center text-slate-400 hover:text-blue-600 transition">
               <span class="text-[10px] font-bold uppercase tracking-wider">Tap to reveal correction</span>
               <i class="fa-solid fa-rotate text-xs"></i>
             </div>
@@ -75,10 +75,10 @@ function renderGrammarCards() {
               </div>
             </div>
             <div class="border-t border-slate-100 pt-3 flex justify-between items-center mt-2">
-              <button onclick="event.stopPropagation(); window.flipGrammarCard('${item.rowNumber}')" class="text-slate-400 hover:text-indigo-600 transition text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer">
+              <button onclick="event.stopPropagation(); window.flipGrammarCard('${item.rowNumber}')" class="text-slate-400 hover:text-blue-600 transition text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer">
                 <i class="fa-solid fa-rotate text-xs"></i> Flip back
               </button>
-              <button id="btn-master-grammar-${item.rowNumber}" onclick="event.stopPropagation(); window.deleteGrammarRecord('${item.rowNumber}')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-2 rounded-lg transition shadow-sm hover:shadow flex items-center gap-1.5 cursor-pointer">
+              <button id="btn-master-grammar-${item.rowNumber}" onclick="event.stopPropagation(); window.deleteGrammarRecord('${item.rowNumber}')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-2 rounded-lg transition shadow-sm hover:shadow flex items-center gap-1.5 cursor-pointer">
                 <i class="fa-solid fa-check text-xs"></i> Mastered
               </button>
             </div>
