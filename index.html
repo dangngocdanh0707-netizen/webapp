@@ -1,1301 +1,2559 @@
 <!DOCTYPE html>
+
 <html>
 
+
+
 <head>
+
   <base target="_top">
+
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Personal Dashboard</title>
+
   <script>
+
     // Bộ bắt lỗi sớm toàn cục
+
     window.addEventListener('error', function (e) {
+
       console.error("Early Error Caught:", e.message, "at", e.filename, "line", e.lineno);
+
     });
+
     window.addEventListener('unhandledrejection', function (e) {
+
       console.error("Early Promise Rejection:", e.reason);
+
     });
+
   </script>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap">
+
+
   
+
   <!-- Thư viện SDK Google Sheets & Auth -->
+
   <script src="https://apis.google.com/js/api.js" async defer></script>
+
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script type="module" crossorigin src="/webapp_project/assets/index-C3sHW3Os.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-FLEletUZ.css">
+
+  <script type="module" crossorigin src="/webapp_project/assets/index-CauZLgo_.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-Dle17Hto.css">
 </head>
 
+
+
 <body>
+
   <div class="ambient-glow-1"></div>
+
   <div class="ambient-glow-2"></div>
 
+
+
   <div id="custom-sidebar" class="sidebar flex flex-col shadow-2xl">
+
     <div class="p-6 border-b border-slate-100 flex items-center justify-center">
+
       <h2
+
         class="text-2xl font-black tracking-widest bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent font-sans nav-brand-text uppercase truncate text-center">
+
         DANH</h2>
+
     </div>
+
     <div id="sidebar-nav-list" class="flex-1 mt-6 px-1 flex flex-col gap-1 overflow-y-auto overflow-x-hidden">
+
       <div data-tab="home-tab" onclick="switchTab('home-tab', this)" class="nav-link active">
+
         <i class="fa-solid fa-house text-base"></i> <span>Home</span>
+
       </div>
+
       <div data-tab="cost-tab" onclick="switchTab('cost-tab', this)" class="nav-link">
+
         <i class="fa-solid fa-wallet text-base"></i> <span>Expenses</span>
+
       </div>
+
       <div data-tab="vocab-tab" onclick="switchTab('vocab-tab', this)" class="nav-link">
+
         <i class="fa-solid fa-book-open text-base"></i> <span>Vocabulary</span>
+
       </div>
+
       <div data-tab="practice-tab" onclick="switchTab('practice-tab', this)" class="nav-link">
+
         <i class="fa-solid fa-graduation-cap text-base"></i> <span>Practice English</span>
+
       </div>
+
       <div data-tab="habit-tab" onclick="switchTab('habit-tab', this)" class="nav-link">
+
         <i class="fa-solid fa-circle-check text-base"></i> <span>Habits</span>
+
       </div>
+
       <div data-tab="task-tab" onclick="switchTab('task-tab', this)" class="nav-link">
+
         <i class="fa-solid fa-list-check text-base"></i> <span>Tasks</span>
+
       </div>
+
       <div data-tab="goal-tab" onclick="switchTab('goal-tab', this)" class="nav-link">
+
         <i class="fa-solid fa-bullseye text-base"></i> <span>Goals</span>
+
       </div>
+
       <div data-tab="link-tab" onclick="switchTab('link-tab', this)" class="nav-link">
+
         <i class="fa-solid fa-link text-base"></i> <span>Links</span>
+
       </div>
+
+
 
       <div data-tab="prompt-tab" onclick="switchTab('prompt-tab', this)" class="nav-link">
+
         <i class="fa-solid fa-terminal text-base"></i> <span>Prompts</span>
+
       </div>
+
+
 
       <div data-tab="map-tab" onclick="switchTab('map-tab', this)" class="nav-link">
+
         <i class="fa-solid fa-map-location-dot text-base"></i> <span>Google Maps</span>
+
       </div>
+
+
 
       <div data-tab="collections-tab" onclick="switchTab('collections-tab', this)" class="nav-link">
+
         <i class="fa-solid fa-gem text-base text-amber-500"></i> <span>Collections</span>
+
       </div>
+
     </div>
+
     <div class="p-4 border-t border-slate-100 flex flex-col gap-2 sidebar-collapsed-hide">
+
       <div id="google-auth-section" class="flex flex-col gap-2">
+
         <button id="btn-google-login" onclick="signInWithGoogle()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-3 rounded-xl transition duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer">
+
           <i class="fa-brands fa-google text-sm"></i> <span>Connect Google Sheets</span>
+
         </button>
+
         <button id="btn-google-logout" onclick="signOutFromGoogle()" class="w-full hidden border border-slate-200 hover:bg-slate-50 text-slate-650 font-bold text-xs px-4 py-3 rounded-xl transition duration-200 flex items-center justify-center gap-2 cursor-pointer">
+
           <i class="fa-solid fa-sign-out text-sm"></i> <span>Sign out</span>
+
         </button>
+
       </div>
+
       <button onclick="window.openSettingsModal()" class="w-full border border-slate-200 hover:bg-slate-50 text-slate-650 font-bold text-xs px-4 py-3 rounded-xl transition duration-200 flex items-center justify-center gap-2 cursor-pointer mt-1">
+
         <i class="fa-solid fa-sliders text-slate-500"></i> <span>Setting</span>
+
       </button>
+
     </div>
+
+
 
     <div id="sidebar-resizer" class="resizer"></div>
+
   </div>
 
+
+
   <div id="main-layout" class="main-content">
+
     <div id="loading" class="flex flex-col items-center justify-center h-[75vh]">
+
       <div
+
         class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4 shadow-[0_0_15px_rgba(37,99,235,0.15)]">
+
       </div>
+
       <p class="text-slate-500 font-bold text-sm tracking-wide animate-pulse">Syncing core databases...</p>
+
     </div>
+
+
 
     <div id="dashboard-content" class="hidden">
 
+
+
       <!-- Home Launcher Grid Tab -->
+
       <div id="home-tab" class="tab-content active">
+
         <div class="max-w-4xl mx-auto py-8">
+
           <div class="text-center mb-12">
+
             <h1
+
               class="text-4xl font-extrabold text-slate-900 tracking-tight bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent uppercase font-sans">
+
               Dashboard Launchpad</h1>
+
           </div>
+
+
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-10 items-center justify-center py-6 px-4">
+
             <!-- App Card: Expenses -->
+
             <div onclick="launchApp('cost-tab')"
+
               class="flex flex-col items-center justify-center group cursor-pointer transition">
+
               <div
+
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
+
                 <i
+
                   class="fa-solid fa-wallet text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+
               </div>
+
               <span
+
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Expenses</span>
+
             </div>
+
+
 
             <!-- App Card: Vocabulary -->
+
             <div onclick="launchApp('vocab-tab')"
+
               class="flex flex-col items-center justify-center group cursor-pointer transition">
+
               <div
+
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
+
                 <i
+
                   class="fa-solid fa-book-open text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+
               </div>
+
               <span
+
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Vocabulary</span>
+
             </div>
+
+
 
             <!-- App Card: Practice English -->
+
             <div onclick="launchApp('practice-tab')"
+
               class="flex flex-col items-center justify-center group cursor-pointer transition">
+
               <div
+
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
+
                 <i
+
                   class="fa-solid fa-graduation-cap text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+
               </div>
+
               <span
+
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Practice
+
                 English</span>
+
             </div>
+
+
 
             <!-- App Card: Habits -->
+
             <div onclick="launchApp('habit-tab')"
+
               class="flex flex-col items-center justify-center group cursor-pointer transition">
+
               <div
+
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
+
                 <i
+
                   class="fa-solid fa-circle-check text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+
               </div>
+
               <span
+
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Habits</span>
+
             </div>
+
+
 
             <!-- App Card: Tasks -->
+
             <div onclick="launchApp('task-tab')"
+
               class="flex flex-col items-center justify-center group cursor-pointer transition">
+
               <div
+
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
+
                 <i
+
                   class="fa-solid fa-list-check text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+
               </div>
+
               <span
+
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Tasks</span>
+
             </div>
+
+
 
             <!-- App Card: Goals -->
+
             <div onclick="launchApp('goal-tab')"
+
               class="flex flex-col items-center justify-center group cursor-pointer transition">
+
               <div
+
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
+
                 <i
+
                   class="fa-solid fa-bullseye text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+
               </div>
+
               <span
+
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Goals</span>
+
             </div>
+
+
 
             <!-- App Card: Links -->
+
             <div onclick="launchApp('link-tab')"
+
               class="flex flex-col items-center justify-center group cursor-pointer transition">
+
               <div
+
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
+
                 <i
+
                   class="fa-solid fa-link text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+
               </div>
+
               <span
+
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Links</span>
+
             </div>
+
+
 
             <!-- App Card: Prompts -->
+
             <div onclick="launchApp('prompt-tab')"
+
               class="flex flex-col items-center justify-center group cursor-pointer transition">
+
               <div
+
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
+
                 <i
+
                   class="fa-solid fa-terminal text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+
               </div>
+
               <span
+
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Prompts</span>
+
             </div>
+
+
 
             <!-- App Card: Google Maps -->
+
             <div onclick="launchApp('map-tab')"
+
               class="flex flex-col items-center justify-center group cursor-pointer transition">
+
               <div
+
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
+
                 <i
+
                   class="fa-solid fa-map-location-dot text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+
               </div>
+
               <span
+
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition font-medium">Google Maps</span>
+
             </div>
+
+
 
             <!-- App Card: Collections -->
+
             <div onclick="launchApp('collections-tab')"
+
               class="flex flex-col items-center justify-center group cursor-pointer transition">
+
               <div
+
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
+
                 <i
+
                   class="fa-solid fa-gem text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+
               </div>
+
               <span
+
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition font-medium">Collections</span>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
+
 
       <div id="cost-tab" class="tab-content">
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+
           <div class="flex items-center gap-3">
+
             <button onclick="launchApp('home-tab')"
+
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+
             </button>
+
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Expenses</h1>
+
           </div>
+
           <div class="glass-card p-6 min-w-[280px] flex justify-between items-center transition">
+
             <div>
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL EXPENSES</span>
+
               <p id="total-cost" class="text-3xl font-black text-slate-900 mt-1">0đ</p>
+
             </div>
+
             <div class="bg-amber-500/10 p-3.5 rounded-xl border border-amber-500/10 flex items-center justify-center">
+
               <i class="fa-solid fa-sack-dollar text-amber-500 text-xl"></i>
+
             </div>
+
           </div>
+
         </div>
 
+
+
         <div class="glass-card p-6 mb-8">
+
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
+
               class="fa-solid fa-circle-plus text-blue-500"></i> Add New Expense Record</h4>
+
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+
             <div><label
+
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">DATE</label><input
+
                 type="date" id="ins-cost-date" class="form-input"></div>
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label>
+
               <select id="ins-cost-cat" class="form-input font-semibold">
+
                 <option value="Must have">Must have</option>
+
                 <option value="Wasted">Wasted</option>
+
                 <option value="Nice to have">Nice to have</option>
+
               </select>
+
             </div>
+
             <div><label
+
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AMOUNT</label><input
+
                 type="number" id="ins-cost-amount" class="form-input font-bold"></div>
+
             <div><label
+
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">NOTE</label><input
+
                 type="text" id="ins-cost-note" class="form-input"></div>
+
           </div>
+
           <div class="flex justify-end mt-4"><button onclick="addCostRow()"
+
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
+
                 class="fa-solid fa-floppy-disk mr-1"></i> Save Expense</button></div>
+
         </div>
+
+
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+
           <div class="glass-card p-6 flex flex-col">
+
             <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
+
                 class="fa-solid fa-chart-pie text-blue-500"></i> % Budget Allocation</h3>
+
             <div class="h-[320px] w-full flex items-center justify-center"><canvas id="pieChart"></canvas></div>
+
           </div>
+
           <div class="glass-card p-6 flex flex-col">
+
             <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
+
                 class="fa-solid fa-chart-simple text-blue-500"></i> Analytics Breakdown</h3>
+
             <div class="h-[320px] w-full"><canvas id="barChart"></canvas></div>
+
           </div>
+
         </div>
 
+
+
         <div class="glass-card overflow-hidden">
+
           <div
+
             class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+
             <div>
+
               <h3 class="font-bold text-slate-800 text-base">Transaction Log</h3>
+
             </div>
+
             <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+
               <i class="fa-solid fa-filter text-slate-400 text-xs pl-1"></i>
+
               <select id="categoryFilter" onchange="filterTableByDropdown()"
+
                 class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+
                 <option value="All">All Categories</option>
+
               </select>
+
             </div>
+
           </div>
+
           <div class="overflow-x-auto">
+
             <table class="w-full text-left border-collapse" id="table-cost">
+
               <thead>
+
                 <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+
                   <th class="p-4 pl-6 w-36">DATE</th>
+
                   <th class="p-4 w-36">CATEGORY</th>
+
                   <th class="p-4 text-right w-40">AMOUNT</th>
+
                   <th class="p-4">NOTE</th>
+
                   <th class="p-4 text-center w-36">ACTION</th>
+
                 </tr>
+
               </thead>
+
               <tbody class="text-sm text-slate-600 divide-y divide-slate-100"></tbody>
+
             </table>
+
           </div>
+
         </div>
+
       </div>
+
+
 
       <div id="vocab-tab" class="tab-content">
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+
           <div class="flex items-center gap-3">
+
             <button onclick="launchApp('home-tab')"
+
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+
             </button>
+
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Vocabulary</h1>
+
           </div>
+
           <div class="flex gap-4 w-full md:w-auto">
+
             <div class="glass-card px-5 py-4 flex-1 md:min-w-[150px] transition">
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL ITEMS</span>
+
               <p id="total-words" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
             </div>
+
             <div class="glass-card px-5 py-4 flex-1 md:min-w-[150px] transition">
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL TOPICS</span>
+
               <p id="total-topics" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
             </div>
+
           </div>
+
         </div>
+
+
 
         <div class="glass-card p-6 mb-8">
+
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
+
               class="fa-solid fa-circle-plus text-blue-500"></i> Insert Content Entry</h4>
+
           <div class="grid grid-cols-1 gap-4 items-end">
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label>
+
               <input type="text" id="ins-v-content"
+
                 class="form-input font-bold">
+
             </div>
+
           </div>
+
           <div class="flex justify-end mt-4"><button onclick="addVocabRow()"
+
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
+
                 class="fa-solid fa-floppy-disk mr-1"></i> Save Content</button></div>
+
         </div>
+
+
 
         <div class="glass-card overflow-hidden">
+
           <div
+
             class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+
             <div>
+
               <h3 class="font-bold text-slate-800 text-base">Dictionary Engine</h3>
+
             </div>
+
             <div class="flex flex-wrap items-center gap-2 bg-slate-50 sm:bg-transparent w-full sm:w-auto justify-end">
+
               <div
+
                 class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-52">
+
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
+
                 <input type="text" id="vocabSearchInput" onkeyup="filterVocabTable()" placeholder=""
+
                   class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
+
               </div>
+
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+
                 <i class="fa-solid fa-layer-group text-slate-400 text-xs pl-1"></i>
+
                 <select id="vocabCategoryFilter" onchange="filterVocabTable()"
+
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+
                   <option value="All">All Categories</option>
+
                 </select>
+
               </div>
+
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+
                 <i class="fa-solid fa-tags text-slate-400 text-xs pl-1"></i>
+
                 <select id="vocabTopicFilter" onchange="filterVocabTable()"
+
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+
                   <option value="All">All Topics</option>
+
                 </select>
+
               </div>
+
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+
                 <i class="fa-solid fa-graduation-cap text-slate-400 text-xs pl-1"></i>
+
                 <select id="vocabLevelFilter" onchange="filterVocabTable()"
+
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+
                   <option value="All">All Levels</option>
+
                 </select>
+
               </div>
+
             </div>
+
           </div>
+
           <div class="overflow-x-auto">
+
             <table class="w-full text-left border-collapse" id="table-vocab">
+
               <thead>
+
                 <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+
                   <th class="p-4 pl-6">CONTENT</th>
+
                   <th class="p-4">TRANSCRIPTION</th>
+
                   <th class="p-4 hidden">CATEGORY</th>
+
                   <th class="p-4">TOPIC</th>
+
                   <th class="p-4 w-24">LEVEL</th>
+
                   <th class="p-4">MEANING</th>
+
                   <th class="p-4 w-28">STATUS</th>
+
                   <th class="p-4 w-32">NEXT REVIEW</th>
+
                   <th class="p-4 text-center w-36">ACTION</th>
+
                 </tr>
+
               </thead>
+
               <tbody class="text-sm text-slate-650 divide-y divide-slate-100"></tbody>
+
             </table>
+
           </div>
+
         </div>
+
       </div>
 
+
+
       <div id="practice-tab" class="tab-content">
+
         <!-- Main Tab Header -->
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+
           <div class="flex items-center gap-3">
+
             <button onclick="launchApp('home-tab')"
+
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+
             </button>
+
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Practice English</h1>
+
           </div>
+
           
+
           <!-- SRS statistics counts (hidden when in AI chat subtab) -->
+
           <div id="practice-srs-stats" class="flex flex-wrap gap-4 w-full md:w-auto">
+
             <div class="glass-card px-5 py-4 flex-1 min-w-[120px] md:min-w-[150px] transition">
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">DUE FOR REVIEW</span>
+
               <p id="practice-count-due" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
             </div>
+
             <div class="glass-card px-5 py-4 flex-1 min-w-[120px] md:min-w-[150px] transition">
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">NEW</span>
+
               <p id="practice-count-new" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
             </div>
+
             <div class="glass-card px-5 py-4 flex-1 min-w-[120px] md:min-w-[150px] transition">
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">LEARNING</span>
+
               <p id="practice-count-learning" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
             </div>
+
             <div class="glass-card px-5 py-4 flex-1 min-w-[120px] md:min-w-[150px] transition">
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">MASTERED</span>
+
               <p id="practice-count-mastered" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
             </div>
+
             <div class="glass-card px-5 py-4 flex-1 min-w-[120px] md:min-w-[150px] transition">
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">RELEARNING</span>
+
               <p id="practice-count-relearning" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
             </div>
+
           </div>
+
         </div>
+
+
 
         <!-- Sub-Tabs Switcher -->
+
         <div class="flex border-b border-slate-200/60 mb-6 gap-2">
+
           <button id="btn-subtab-srs" onclick="window.switchPracticeSubTab('srs')" class="pb-3 px-4 font-bold text-sm border-b-2 border-blue-600 text-blue-600 transition cursor-pointer flex items-center gap-2">
+
             <i class="fa-solid fa-layer-group text-xs"></i> <span>Flashcards (SRS)</span>
+
           </button>
+
           <button id="btn-subtab-aichat" onclick="window.switchPracticeSubTab('aichat')" class="pb-3 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition cursor-pointer flex items-center gap-2">
+
             <i class="fa-solid fa-comments text-xs text-blue-500"></i> <span>AI Speaking Partner</span>
+
           </button>
+
         </div>
+
+
 
         <!-- Sub-Tab 1: Flashcards (SRS) -->
+
         <div id="practice-srs-container">
+
           <div class="max-w-2xl mx-auto mt-12">
+
             <div class="practice-deck-card p-6 sm:p-10 text-center relative overflow-hidden transition-all hover:shadow-2xl flex flex-col justify-between min-h-[360px] sm:min-h-[380px]">
+
               <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-sky-400 to-emerald-500"></div>
 
+
+
               <div id="practice-empty-state" class="py-12">
+
                 <div class="bg-blue-500/5 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-500/10 shadow-[0_0_15px_rgba(37,99,235,0.05)]">
+
                   <i class="fa-solid fa-graduation-cap text-blue-500 text-2xl animate-bounce"></i>
+
                 </div>
+
                 <h3 id="practice-headline" class="text-base font-bold text-slate-800">Ready to activate your mind?</h3>
+
               </div>
+
+
 
               <div id="practice-card-content" class="hidden py-6">
+
                 <div class="flex items-center justify-center gap-3 my-4">
+
                   <h2 id="practice-word-display" class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-sans">Word</h2>
+
                   <button id="btn-practice-audio" onclick="playPracticeTTS()" class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-205 text-slate-500 hover:text-blue-600 flex items-center justify-center transition shadow-2xs hover:shadow-xs cursor-pointer">
+
                     <i class="fa-solid fa-volume-high text-sm"></i>
+
                   </button>
+
                 </div>
+
+
 
                 <!-- Interactive Mode Container (Typing / Scramble) -->
+
                 <div id="practice-interactive-zone" class="my-4 max-w-xl mx-auto">
+
                   <!-- 1. Typing Mode -->
+
                   <div id="practice-mode-typing" class="hidden flex flex-col gap-3">
+
                     <input type="text" id="practice-typing-input" autocomplete="off" placeholder="" class="practice-typing-input">
+
                   </div>
+
+
 
                   <!-- 2. Word Scramble Mode -->
+
                   <div id="practice-mode-scramble" class="hidden flex flex-col gap-4">
+
                     <div id="practice-scramble-output" class="practice-interactive-box"></div>
+
                     <div id="practice-scramble-pool" class="flex flex-wrap justify-center gap-2 mt-2 min-h-[50px]"></div>
+
                   </div>
+
+
 
                   <!-- 4. Interactive Feedback & Scoring -->
+
                   <div id="practice-interactive-feedback" class="hidden mt-3 p-3 rounded-xl text-sm font-bold text-center font-sans"></div>
+
                 </div>
+
+
 
                 <div id="practice-meaning-box" class="mt-4 pt-4 border-t border-dashed border-slate-200 max-w-md mx-auto hidden opacity-0 transition-all duration-300 transform translate-y-2">
+
                   <p id="practice-meaning-display" class="text-lg font-bold text-slate-700">Ý nghĩa</p>
+
                 </div>
+
               </div>
+
+
 
               <div class="mt-6 flex flex-col justify-center items-center gap-4 border-t border-slate-100 pt-4">
+
                 <button id="btn-practice-trigger" onclick="triggerRandomVocab()" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition shadow-lg cursor-pointer flex items-center justify-center gap-2">
+
                   <i class="fa-solid fa-shuffle"></i> Get Review Card
-                </button>
-                <button id="btn-practice-reveal" onclick="revealPracticeMeaning()" class="w-full sm:w-auto hidden bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition shadow-lg cursor-pointer flex items-center justify-center gap-2">
-                  <i class="fa-solid fa-eye"></i> Reveal Meaning
+
                 </button>
 
+                <button id="btn-practice-reveal" onclick="revealPracticeMeaning()" class="w-full sm:w-auto hidden bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition shadow-lg cursor-pointer flex items-center justify-center gap-2">
+
+                  <i class="fa-solid fa-eye"></i> Reveal Meaning
+
+                </button>
+
+
+
                 <div id="practice-action-metrics" class="hidden w-full flex flex-col items-center gap-4">
+
                   <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl">
+
                     <div class="flex flex-col items-center gap-1.5">
+
                       <span id="lbl-time-again" class="text-[11px] font-bold text-slate-400 tracking-wide">&lt;10m</span>
+
                       <button onclick="logPracticeAction('again')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Again</button>
+
                     </div>
+
                     <div class="flex flex-col items-center gap-1.5">
+
                       <span id="lbl-time-hard" class="text-[11px] font-bold text-slate-400 tracking-wide">1d</span>
+
                       <button onclick="logPracticeAction('hard')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Hard</button>
+
                     </div>
+
                     <div class="flex flex-col items-center gap-1.5">
+
                       <span id="lbl-time-good" class="text-[11px] font-bold text-slate-400 tracking-wide">3d</span>
+
                       <button onclick="logPracticeAction('good')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Good</button>
+
                     </div>
+
                     <div class="flex flex-col items-center gap-1.5">
+
                       <span id="lbl-time-easy" class="text-[11px] font-bold text-slate-400 tracking-wide">7d</span>
+
                       <button onclick="logPracticeAction('easy')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Easy</button>
+
                     </div>
+
                   </div>
+
                 </div>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
+
+
 
         <!-- Sub-Tab 2: AI Speaking Partner -->
         <div id="practice-aichat-container" class="hidden">
-          <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <!-- Left panel: Scenarios & Config -->
-            <div class="lg:col-span-1 flex flex-col gap-6">
-              <!-- Scenarios Selection -->
-              <div class="glass-card p-5">
-                <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
-                  <i class="fa-solid fa-compass text-blue-500"></i> Chọn Tình Huống
-                </h3>
-                <select id="ai-chat-scenario-select" onchange="window.setAiScenario(this.value)" class="form-input text-xs font-semibold py-2 px-3 w-full cursor-pointer">
-                  <option value="casual">Casual Conversation (Tán gẫu tự do)</option>
-                  <option value="interview">Job Interview Practice (Phỏng vấn xin việc)</option>
-                  <option value="restaurant">At a Restaurant (Tại nhà hàng)</option>
-                  <option value="travel">Travel & Booking (Du lịch & Đặt phòng)</option>
-                </select>
-              </div>
+          <!-- Hidden Voice & Audio Settings -->
+          <input type="checkbox" id="ai-chat-auto-tts" class="hidden" checked>
+          <input type="hidden" id="ai-chat-tts-speed" value="1.0">
+          <select id="ai-chat-tts-voice" class="hidden">
+            <option value="default">default</option>
+          </select>
 
-              <!-- Hidden Voice & Audio Settings -->
-              <input type="checkbox" id="ai-chat-auto-tts" class="hidden" checked>
-              <input type="hidden" id="ai-chat-tts-speed" value="1.0">
-              <select id="ai-chat-tts-voice" class="hidden">
-                <option value="default">default</option>
-              </select>
-            </div>
-            <!-- Middle panel: Chat Area -->
+          <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Middle panel: Chat Area (Expanded) -->
+            <div class="lg:col-span-3 flex flex-col gap-4">
+
             <div class="lg:col-span-2 flex flex-col gap-4">
+
               <div class="glass-card p-4 flex flex-col h-[540px] justify-between relative bg-white/70 backdrop-blur-md">
+
                 <!-- Active Scenario Header Info -->
                 <div class="border-b border-slate-100 pb-2.5 mb-3 flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span id="ai-chat-scenario-title" class="font-bold text-slate-800 text-[10px] uppercase tracking-wider">Casual Conversation</span>
                   </div>
-                  <button onclick="window.clearAiChatHistory()" class="text-slate-400 hover:text-rose-500 transition cursor-pointer text-xs font-bold flex items-center gap-1">
-                    <i class="fa-solid fa-trash-can text-[10px]"></i> Xóa lịch sử
-                  </button>
+                  <div class="flex items-center gap-3">
+                    <select id="ai-chat-scenario-select" onchange="window.setAiScenario(this.value)" class="bg-slate-50 border border-slate-200 text-slate-650 font-bold text-[10px] uppercase tracking-wider rounded-lg px-2.5 py-1 focus:outline-none focus:border-blue-500 cursor-pointer">
+                      <option value="casual">Casual Conversation</option>
+                      <option value="interview">Job Interview Practice</option>
+                      <option value="restaurant">At a Restaurant</option>
+                      <option value="travel">Travel & Booking</option>
+                    </select>
+                    <button onclick="window.clearAiChatHistory()" class="text-slate-400 hover:text-rose-500 transition cursor-pointer text-xs font-bold flex items-center gap-1">
+                      <i class="fa-solid fa-trash-can text-[10px]"></i> Clear History
+                    </button>
+                  </div>
                 </div>
 
                 <!-- Chat history log -->
+
                 <div id="ai-chat-history" class="flex-1 overflow-y-auto pr-1 flex flex-col gap-3.5 mb-4 custom-scrollbar">
+
                   <!-- Dynamically populated bubbles -->
+
                 </div>
+
+
 
                 <!-- Loading / Status indicator -->
+
                 <div id="ai-chat-status" class="hidden text-[10px] font-bold text-slate-450 italic mb-2 pl-3 flex items-center gap-1.5">
+
                   <span class="flex gap-1">
+
                     <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 0ms"></span>
+
                     <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 150ms"></span>
+
                     <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 300ms"></span>
+
                   </span>
+
                   <span id="ai-chat-status-text">AI is thinking...</span>
+
                 </div>
+
+
 
                 <!-- Input area -->
+
                 <div class="flex items-center gap-2 border-t border-slate-100 pt-3">
+
                   <!-- Mic Button for STT -->
+
                   <button id="btn-ai-chat-mic" onclick="window.toggleSpeechRecognition()" class="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-blue-600 flex items-center justify-center transition shadow-2xs cursor-pointer relative group">
+
                     <i class="fa-solid fa-microphone text-base"></i>
+
                   </button>
+
+
 
                   <!-- Text input field -->
+
                   <input type="text" id="ai-chat-input"  class="form-input flex-1 font-semibold text-xs py-3 px-4 rounded-xl" autocomplete="off" onkeydown="if(event.key === 'Enter') window.sendAiChatMessage()">
 
+
+
                   <!-- Send Button -->
+
                   <button onclick="window.sendAiChatMessage()" id="btn-ai-chat-send" class="w-11 h-11 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition shadow-md cursor-pointer">
+
                     <i class="fa-solid fa-paper-plane text-sm"></i>
+
                   </button>
+
                 </div>
+
               </div>
+
             </div>
+
+
 
             <!-- Right panel: Grammar & Vocabulary Feedback -->
+
             <div class="lg:col-span-1 flex flex-col gap-6">
+
               <div class="glass-card p-5 h-[540px] flex flex-col">
+
                 <h3 class="font-bold text-slate-800 text-sm mb-4 flex items-center gap-2">
+
                   <i class="fa-solid fa-graduation-cap text-blue-500"></i> Phân Tích Ngữ Pháp
+
                 </h3>
+
                 
+
                 <!-- Feedback panel contents -->
+
                 <div id="ai-chat-feedback-container" class="flex-1 flex flex-col justify-center text-center">
+
                   <!-- Default state -->
+
                   <div id="ai-chat-feedback-empty" class="py-12">
+
                     <div class="bg-blue-50 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3.5 border border-blue-100/50">
+
                       <i class="fa-solid fa-magnifying-glass-chart text-blue-500 text-base"></i>
+
                     </div>
+
                     <p class="text-xs font-bold text-slate-700">Chưa có phân tích</p>
+
                     <p class="text-[10px] text-slate-400 mt-1 font-semibold leading-relaxed">AI sẽ sửa lỗi sai ngữ pháp và gợi ý cách diễn đạt hay hơn của bạn tại đây.</p>
+
                   </div>
+
+
 
                   <!-- Active feedback state -->
+
                   <div id="ai-chat-feedback-active" class="hidden text-left flex flex-col gap-4">
+
                     <!-- Correct/Incorrect Status -->
+
                     <div id="ai-chat-feedback-status" class="p-3 rounded-xl flex items-center gap-2 text-xs font-bold">
+
                       <i id="ai-chat-feedback-status-icon" class="fa-solid"></i>
+
                       <span id="ai-chat-feedback-status-text">Perfect sentence!</span>
+
                     </div>
+
+
 
                     <!-- Original input -->
+
                     <div>
+
                       <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">CÂU CỦA BẠN</span>
+
                       <p id="ai-chat-feedback-user-txt" class="text-xs font-bold text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-100/50 italic"></p>
+
                     </div>
+
+
 
                     <!-- Correction suggested -->
+
                     <div id="ai-chat-feedback-correction-block">
+
                       <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">AI GỢI Ý</span>
+
                       <p id="ai-chat-feedback-correct-txt" class="text-xs font-bold text-blue-700 bg-blue-50 p-2.5 rounded-lg border border-blue-100/50"></p>
+
                     </div>
+
+
 
                     <!-- Explanatory note -->
+
                     <div id="ai-chat-feedback-explanation-block">
+
                       <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">GIẢI THÍCH (VIETNAMESE)</span>
+
                       <p id="ai-chat-feedback-explain-txt" class="text-xs text-slate-650 leading-relaxed font-medium bg-white border border-slate-100 p-3 rounded-lg shadow-3xs"></p>
+
                     </div>
+
                   </div>
+
                 </div>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
+
 
       <div id="habit-tab" class="tab-content">
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+
           <div class="flex items-center gap-3">
+
             <button onclick="launchApp('home-tab')"
+
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+
             </button>
+
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Habits</h1>
+
           </div>
+
           <div class="glass-card px-6 py-4 min-w-[240px] flex items-center transition">
+
             <div>
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">PERFORMANCE</span>
+
               <p id="avg-habit-performance" class="text-3xl font-black text-slate-900 mt-1">0%</p>
+
             </div>
+
           </div>
+
         </div>
+
+
 
         <div class="grid grid-cols-1 gap-8 mb-8">
+
           <div class="glass-card p-6 flex flex-col">
+
             <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
+
                 class="fa-solid fa-chart-line text-emerald-500"></i> Discipline Consistency Curve</h3>
+
             <div class="h-[300px] w-full"><canvas id="habitLineChart"></canvas></div>
+
           </div>
+
         </div>
 
+
+
         <div class="glass-card overflow-hidden">
+
           <div
+
             class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+
             <div>
+
               <h3 class="font-bold text-slate-800 text-base">Habits Tracking Journal</h3>
+
             </div>
+
             <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+
               <i class="fa-solid fa-calendar-days text-slate-400 text-xs pl-1"></i>
+
               <select id="habitDateFilter" onchange="filterHabitTable()"
+
                 class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+
                 <option value="All">All Days</option>
+
               </select>
+
             </div>
+
           </div>
+
           <div class="overflow-x-auto">
+
             <table class="w-full text-left border-collapse" id="table-habit">
+
               <thead>
+
                 <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+
                   <th class="p-4 pl-6 w-44">DATE</th>
+
                   <th class="p-4">HABIT</th>
+
                   <th class="p-4 pl-12 text-left w-48">STATUS</th>
+
                 </tr>
+
               </thead>
+
               <tbody class="text-sm text-slate-600 divide-y divide-slate-100"></tbody>
+
             </table>
+
           </div>
+
         </div>
+
       </div>
+
+
 
       <div id="goal-tab" class="tab-content">
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+
           <div class="flex items-center gap-3">
+
             <button onclick="launchApp('home-tab')"
+
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+
             </button>
+
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Goals</h1>
+
           </div>
+
           <div class="glass-card px-5 py-4 min-w-[200px] transition">
+
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL GOALS</span>
+
             <p id="total-goals" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
           </div>
+
         </div>
+
+
 
         <div class="glass-card p-6 mb-8">
+
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
+
               class="fa-solid fa-circle-plus text-blue-500"></i> Establish New Objective</h4>
+
           <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+
             <div><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">GOAL
+
                 NAME</label><input type="text" id="ins-goal-name" class="form-input font-bold"></div>
+
             <div><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">START
+
                 DATE</label><input type="date" id="ins-goal-start" class="form-input"></div>
+
             <div><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">END
+
                 DATE</label><input type="date" id="ins-goal-end" class="form-input"></div>
+
             <div><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CURRENT
+
                 VALUE</label><input type="number" id="ins-goal-current" class="form-input font-bold" value="0"></div>
+
             <div><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TARGET
+
                 VALUE</label><input type="number" id="ins-goal-target" class="form-input font-bold"></div>
+
           </div>
+
           <div class="flex justify-end mt-4"><button onclick="addGoalRow()"
+
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
+
                 class="fa-solid fa-floppy-disk mr-1"></i> Launch Goal</button></div>
+
         </div>
 
+
+
         <div class="glass-card overflow-hidden">
+
           <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+
             <h3 class="font-bold text-slate-800 text-base">Objective Progress Monitor</h3>
+
           </div>
+
           <div class="overflow-x-auto">
+
             <table class="w-full text-left border-collapse" id="table-goal">
+
               <thead>
+
                 <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+
                   <th class="p-4 pl-6">GOAL NAME</th>
+
                   <th class="p-4 w-32">START DATE</th>
+
                   <th class="p-4 w-32">END DATE</th>
+
                   <th class="p-4 w-28">CURRENT</th>
+
                   <th class="p-4 w-28">TARGET</th>
+
                   <th class="p-4 w-1/4">PROGRESS</th>
+
                   <th class="p-4 text-center w-36">ACTION</th>
+
                 </tr>
+
               </thead>
+
               <tbody class="text-sm text-slate-600 divide-y divide-slate-100"></tbody>
+
             </table>
+
           </div>
+
         </div>
+
       </div>
+
+
 
       <div id="link-tab" class="tab-content">
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+
           <div class="flex items-center gap-3">
+
             <button onclick="launchApp('home-tab')"
+
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+
             </button>
+
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Links</h1>
+
           </div>
+
           <div class="glass-card px-5 py-4 min-w-[200px] transition">
+
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL LINKS</span>
+
             <p id="total-links" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
           </div>
+
         </div>
+
+
 
         <div class="glass-card p-6 mb-8">
+
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
+
               class="fa-solid fa-circle-plus text-blue-500"></i> Add New Link Entry</h4>
+
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+
             <div><label
+
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TITLE</label><input
+
                 type="text" id="ins-link-title" class="form-input font-bold"></div>
+
             <div><label
+
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label><input
+
                 type="text" id="ins-link-cat" class="form-input font-semibold"></div>
+
             <div><label
+
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label><input
+
                 type="text" id="ins-link-content" class="form-input"></div>
+
           </div>
+
           <div class="flex justify-end mt-4"><button onclick="addLinkRow()"
+
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
+
                 class="fa-solid fa-floppy-disk mr-1"></i> Save Link</button></div>
+
         </div>
 
+
+
         <div class="glass-card overflow-hidden">
+
           <div
+
             class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+
             <div>
+
               <h3 class="font-bold text-slate-800 text-base">Archived Links</h3>
+
             </div>
+
             <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+
               <div
+
                 class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-64">
+
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
+
                 <input type="text" id="linkSearchInput" onkeyup="filterLinkTable()" placeholder=""
+
                   class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
+
               </div>
+
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+
                 <i class="fa-solid fa-filter text-slate-400 text-xs pl-1"></i>
+
                 <select id="linkCategoryFilter" onchange="filterLinkTable()"
+
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+
                   <option value="All">All Categories</option>
+
                 </select>
+
               </div>
+
             </div>
+
           </div>
+
           <div class="overflow-x-auto">
+
             <table class="w-full text-left border-collapse" id="table-link">
+
               <thead>
+
                 <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+
                   <th class="p-4 pl-6 w-1/4">TITLE</th>
+
                   <th class="p-4 w-1/4">CATEGORY</th>
+
                   <th class="p-4 w-2/4">CONTENT</th>
+
                   <th class="p-4 text-center w-44">ACTION</th>
+
                 </tr>
+
               </thead>
+
               <tbody class="text-sm text-slate-650 divide-y divide-slate-100"></tbody>
+
             </table>
+
           </div>
+
         </div>
+
       </div>
+
+
 
       <div id="prompt-tab" class="tab-content">
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+
           <div class="flex items-center gap-3">
+
             <button onclick="launchApp('home-tab')"
+
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+
             </button>
+
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Prompts</h1>
+
           </div>
+
           <div class="glass-card px-5 py-4 min-w-[200px] transition">
+
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL PROMPTS</span>
+
             <p id="total-prompts" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
           </div>
+
         </div>
+
+
 
         <div class="glass-card p-6 mb-8">
+
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
+
               class="fa-solid fa-circle-plus text-blue-500"></i> Add New Prompt Entry</h4>
+
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+
             <div><label
+
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TITLE</label><input
+
                 type="text" id="ins-prompt-title" class="form-input font-bold"></div>
+
             <div><label
+
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label><input
+
                 type="text" id="ins-prompt-cat" class="form-input font-semibold"></div>
+
             <div><label
+
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label><input
+
                 type="text" id="ins-prompt-content" class="form-input"></div>
+
           </div>
+
           <div class="flex justify-end mt-4"><button onclick="addPromptRow()"
+
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
+
                 class="fa-solid fa-floppy-disk mr-1"></i> Save Prompt</button></div>
+
         </div>
 
+
+
         <div class="glass-card overflow-hidden">
+
           <div
+
             class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+
             <div>
+
               <h3 class="font-bold text-slate-800 text-base">Archived Prompts</h3>
+
             </div>
+
             <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+
               <div
+
                 class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-64">
+
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
+
                 <input type="text" id="promptSearchInput" onkeyup="filterPromptTable()" placeholder=""
+
                   class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
+
               </div>
+
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+
                 <i class="fa-solid fa-filter text-slate-400 text-xs pl-1"></i>
+
                 <select id="promptCategoryFilter" onchange="filterPromptTable()"
+
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+
                   <option value="All">All Categories</option>
+
                 </select>
+
               </div>
+
             </div>
+
           </div>
+
           <div class="overflow-x-auto">
+
             <table class="w-full text-left border-collapse" id="table-prompt">
+
               <thead>
+
                 <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+
                   <th class="p-4 pl-6 w-1/4">TITLE</th>
+
                   <th class="p-4 w-1/4">CATEGORY</th>
+
                   <th class="p-4 w-2/4">CONTENT</th>
+
                   <th class="p-4 text-center w-44">ACTION</th>
+
                 </tr>
+
               </thead>
+
               <tbody class="text-sm text-slate-650 divide-y divide-slate-100"></tbody>
+
             </table>
+
           </div>
+
         </div>
+
       </div>
+
+
+
+
 
 
 
       <div id="task-tab" class="tab-content">
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+
           <div class="flex items-center gap-3">
+
             <button onclick="launchApp('home-tab')"
+
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+
             </button>
+
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Tasks</h1>
+
           </div>
+
           <div class="glass-card px-5 py-4 min-w-[200px] transition">
+
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL TASKS</span>
+
             <p id="total-tasks" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
           </div>
+
         </div>
 
+
+
         <div class="glass-card p-6 mb-8">
+
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
+
               class="fa-solid fa-circle-plus text-blue-500"></i> Add New Task Entry</h4>
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+
             <div><label
+
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">DATE</label><input
+
                 type="date" id="ins-task-date" class="form-input"></div>
+
             <div><label
+
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TASK</label><input
+
                 type="text" id="ins-task-desc" class="form-input font-semibold"></div>
+
           </div>
+
           <div class="flex justify-end mt-4"><button onclick="addTaskRow()"
+
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
+
                 class="fa-solid fa-floppy-disk mr-1"></i> Save Task</button></div>
+
         </div>
+
+
 
         <div class="glass-card overflow-hidden">
+
           <div
+
             class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+
             <div>
+
               <h3 class="font-bold text-slate-800 text-base">Archived Tasks</h3>
+
             </div>
+
             <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+
               <div
+
                 class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-64">
+
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
+
                 <input type="text" id="taskSearchInput" onkeyup="filterTaskTable()" placeholder=""
+
                   class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
+
               </div>
+
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+
                 <i class="fa-solid fa-filter text-slate-400 text-xs pl-1"></i>
+
                 <select id="taskStatusFilter" onchange="filterTaskTable()"
+
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+
                   <option value="All">All Statuses</option>
+
                   <option value="Completed">Completed</option>
+
                   <option value="Pending" selected>Pending</option>
+
                 </select>
+
               </div>
+
             </div>
+
           </div>
+
           <div class="overflow-x-auto">
+
             <table class="w-full text-left border-collapse" id="table-task">
+
               <thead>
+
                 <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+
                   <th class="p-4 pl-6 w-1/4">DATE</th>
+
                   <th class="p-4 w-2/4">TASK</th>
+
                   <th class="p-4 pl-12 text-left w-1/4">STATUS</th>
+
                   <th class="p-4 text-center w-44">ACTION</th>
+
                 </tr>
+
               </thead>
+
               <tbody class="text-sm text-slate-650 divide-y divide-slate-100"></tbody>
+
             </table>
+
           </div>
+
         </div>
+
       </div>
+
+
 
       <!-- Google Maps Explorer Tab -->
+
       <div id="map-tab" class="tab-content">
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+
           <div class="flex items-center gap-3">
+
             <button onclick="launchApp('home-tab')"
+
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+
             </button>
+
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Google Maps</h1>
+
           </div>
+
           <div class="flex gap-4 w-full md:w-auto">
+
             <div class="glass-card px-5 py-4 flex-1 md:min-w-[150px] transition">
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL PLACES</span>
+
               <p id="total-map-places" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
             </div>
+
             <div class="glass-card px-5 py-4 flex-1 md:min-w-[150px] transition">
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL CATEGORIES</span>
+
               <p id="total-map-categories" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
             </div>
+
           </div>
+
         </div>
+
+
 
         <!-- Add Location Form Panel (Inline, styled like Prompts add form) -->
+
         <div class="glass-card p-6 mb-8">
+
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+
             <i class="fa-solid fa-circle-plus text-blue-500"></i> Add New Location Entry
+
           </h4>
+
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">PLACE NAME</label>
+
               <input type="text" id="ins-map-place" placeholder="" class="form-input font-bold">
+
             </div>
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CITY</label>
+
               <input type="text" id="ins-map-city" placeholder="" class="form-input font-semibold">
+
             </div>
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label>
+
               <input type="text" id="ins-map-cat" placeholder="" class="form-input">
+
             </div>
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">ADDRESS</label>
+
               <input type="text" id="ins-map-address" placeholder="" class="form-input">
+
             </div>
+
           </div>
+
           <div class="flex justify-end mt-4">
+
             <button onclick="addMapRow()"
+
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2">
+
               <i class="fa-solid fa-floppy-disk mr-1"></i> Save Location
+
             </button>
+
           </div>
+
         </div>
+
+
 
         <!-- Places Explorer Table Container (below map, matching collections ledger format) -->
+
         <div class="glass-card overflow-hidden border border-slate-100 shadow-3xs mb-8 bg-white/80 backdrop-blur-md">
+
           <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+
             <div>
+
               <h3 class="font-bold text-slate-800 text-base">Locations Ledger</h3>
+
             </div>
+
             <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
+
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-60">
+
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
+
                 <input type="text" id="mapSearchInput" onkeyup="filterMapGrid()" placeholder=""
+
                   class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
+
               </div>
+
               
+
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+
                 <i class="fa-solid fa-city text-slate-400 text-xs pl-1"></i>
+
                 <select id="mapCityFilter" onchange="filterMapGrid()"
+
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+
                   <option value="All">All Cities</option>
+
                 </select>
+
               </div>
 
+
+
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+
                 <i class="fa-solid fa-filter text-slate-400 text-xs pl-1"></i>
+
                 <select id="mapCategoryFilter" onchange="filterMapGrid()"
+
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+
                   <option value="All">All Categories</option>
+
                 </select>
+
               </div>
 
+
+
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+
                 <i class="fa-solid fa-circle-check text-slate-400 text-xs pl-1"></i>
+
                 <select id="mapCheckFilter" onchange="filterMapGrid()"
+
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+
                   <option value="All">All Statuses</option>
+
                   <option value="Unexplored">Bucket List 📍</option>
+
                   <option value="Explored">Explored 🏆</option>
+
                 </select>
+
               </div>
+
             </div>
+
           </div>
+
           <div class="overflow-x-auto">
+
             <table class="w-full text-left border-collapse" id="table-map">
+
               <thead>
+
                 <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+
                   <th class="p-4 pl-6">PLACE NAME</th>
+
                   <th class="p-4">CITY</th>
+
                   <th class="p-4">CATEGORY</th>
+
                   <th class="p-4">ADDRESS</th>
+
                   <th class="p-4 pl-12 text-left w-48">STATUS</th>
+
                   <th class="p-4 pr-6 text-center">ACTIONS</th>
+
                 </tr>
+
               </thead>
+
               <tbody id="map-places-table-body" class="divide-y divide-slate-100">
+
                 <!-- Rows Rendered Dynamically -->
+
               </tbody>
+
             </table>
+
           </div>
+
         </div>
+
       </div>
+
+
 
       <!-- Collections Tab -->
+
       <div id="collections-tab" class="tab-content">
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+
           <div class="flex items-center gap-3">
+
             <button onclick="launchApp('home-tab')"
+
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+
             </button>
+
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Asset Portfolio</h1>
+
           </div>
+
           <div class="flex gap-4 w-full md:w-auto">
+
             <div class="glass-card px-5 py-4 flex-1 md:min-w-[150px] transition">
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL ITEMS</span>
+
               <p id="total-col-items" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
             </div>
+
             <div class="glass-card px-5 py-4 flex-1 md:min-w-[150px] transition">
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL BRANDS</span>
+
               <p id="total-col-brands" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
             </div>
+
             <div class="glass-card px-5 py-4 flex-1 md:min-w-[150px] transition">
+
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL CATEGORIES</span>
+
               <p id="total-col-categories" class="text-2xl font-black text-slate-900 mt-1">0</p>
+
             </div>
+
           </div>
+
         </div>
+
+
 
         <!-- Add Collection Item Form Panel (Inline, styled like Prompts add form) -->
+
         <div id="col-add-panel" class="glass-card p-6 mb-8 transition-all duration-300">
+
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+
             <i class="fa-solid fa-circle-plus text-blue-500"></i> Add Asset to Portfolio
+
           </h4>
+
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">ITEM NAME</label>
+
               <input type="text" id="ins-col-item" placeholder="" class="form-input font-semibold">
+
             </div>
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">BRAND</label>
+
               <input type="text" id="ins-col-brand" placeholder="" class="form-input">
+
             </div>
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">STYLE</label>
+
               <input type="text" id="ins-col-style" placeholder="" class="form-input">
+
             </div>
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label>
+
               <input type="text" id="ins-col-category" placeholder="" class="form-input">
+
             </div>
+
           </div>
+
           <div class="flex justify-end mt-4">
+
             <button onclick="saveNewCollection()"
+
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2">
+
               <i class="fa-solid fa-floppy-disk mr-1"></i> Save Asset
+
             </button>
+
           </div>
+
         </div>
+
+
 
         <!-- Asset Ledger Table Container -->
+
         <div class="glass-card overflow-hidden border border-slate-100 shadow-3xs mb-8 bg-white/80 backdrop-blur-md">
+
           <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+
             <div>
+
               <h3 class="font-bold text-slate-800 text-base">Asset Ledger</h3>
+
             </div>
+
             <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
+
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-64">
+
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
+
                 <input type="text" id="collectionSearchInput" onkeyup="filterCollectionGrid()" placeholder=""
+
                   class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
-              </div>
-              
-              <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
-                <i class="fa-solid fa-copyright text-slate-400 text-xs pl-1"></i>
-                <select id="collectionBrandFilter" onchange="filterCollectionGrid()"
-                  class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
-                  <option value="All">All Brands</option>
-                </select>
+
               </div>
 
+              
+
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
-                <i class="fa-solid fa-tags text-slate-400 text-xs pl-1"></i>
-                <select id="collectionCategoryFilter" onchange="filterCollectionGrid()"
+
+                <i class="fa-solid fa-copyright text-slate-400 text-xs pl-1"></i>
+
+                <select id="collectionBrandFilter" onchange="filterCollectionGrid()"
+
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
-                  <option value="All">All Categories</option>
+
+                  <option value="All">All Brands</option>
+
                 </select>
+
               </div>
+
+
+
+              <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+
+                <i class="fa-solid fa-tags text-slate-400 text-xs pl-1"></i>
+
+                <select id="collectionCategoryFilter" onchange="filterCollectionGrid()"
+
+                  class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+
+                  <option value="All">All Categories</option>
+
+                </select>
+
+              </div>
+
             </div>
+
           </div>
+
           <div class="overflow-x-auto">
+
             <table class="w-full text-left border-collapse">
+
               <thead>
+
                 <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+
                   <th class="p-4 pl-6">ASSET ITEM</th>
+
                   <th class="p-4">BRAND</th>
+
                   <th class="p-4">STYLE</th>
+
                   <th class="p-4">CATEGORY</th>
+
                   <th class="p-4 pl-12 text-left w-48">STATUS</th>
+
                   <th class="p-4 pr-6 text-center">ACTIONS</th>
+
                 </tr>
+
               </thead>
+
               <tbody id="collections-table-body" class="divide-y divide-slate-100">
+
                 <!-- Rows Rendered Dynamically -->
+
               </tbody>
+
             </table>
+
           </div>
+
         </div>
+
       </div>
 
+
+
     </div>
+
   </div>
+
+
 
   <!-- Settings Modal (Glassmorphic) -->
+
   <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md transition-all duration-300 hidden">
+
     <div class="glass-card w-full max-w-lg mx-4 p-6 border border-white/20 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+
       <button onclick="closeSettingsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-650 transition cursor-pointer">
+
         <i class="fa-solid fa-xmark text-lg"></i>
+
       </button>
+
       
+
       <div class="flex items-center gap-3 mb-4 border-b border-slate-100/50 pb-3 flex-shrink-0">
+
         <div class="bg-blue-100/80 w-10 h-10 rounded-full flex items-center justify-center shadow-sm">
+
           <i class="fa-solid fa-sliders text-blue-600 text-base"></i>
+
         </div>
+
         <div>
+
           <h3 class="font-bold text-slate-800 text-base">Cấu hình kết nối Google Cloud</h3>
+
           <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Google Sheets & OAuth API Setup</p>
+
         </div>
+
       </div>
+
+
 
       <div class="flex-1 overflow-y-auto pr-1 custom-scrollbar flex flex-col gap-4 text-left my-2">
+
         <div>
+
           <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">SPREADSHEET ID</label>
+
           <input type="text" id="settings-spreadsheet-id" class="form-input font-mono text-xs">
+
         </div>
+
         
+
         <div>
+
           <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">GOOGLE API KEY</label>
+
           <input type="text" id="settings-api-key" class="form-input font-mono text-xs">
+
         </div>
+
         
+
         <div>
+
           <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">OAUTH CLIENT ID</label>
+
           <input type="text" id="settings-client-id" class="form-input font-mono text-xs">
+
         </div>
+
+
 
         <div class="border-t border-slate-100/50 pt-4 mt-2">
+
           <h4 class="font-bold text-slate-700 text-xs mb-3 flex items-center gap-1.5">
+
             <i class="fa-solid fa-robot text-blue-500"></i> Cấu hình AI Speaking Partner
+
           </h4>
+
           <div class="flex flex-col gap-3">
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI PROVIDER</label>
+
               <select id="settings-ai-provider" onchange="window.updateSettingsModelOptions(this.value)" class="form-input font-semibold text-xs">
+
                 <option value="gemini">Google Gemini</option>
+
                 <option value="openai">OpenAI</option>
+
               </select>
+
             </div>
+
             
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">GEMINI API KEY</label>
+
               <input type="password" id="settings-gemini-key" class="form-input font-mono text-xs">
+
             </div>
+
             
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">OPENAI API KEY</label>
+
               <input type="password" id="settings-openai-key" class="form-input font-mono text-xs">
+
             </div>
+
             
+
             <div>
+
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI MODEL NAME</label>
+
               <select id="settings-ai-model" class="form-input font-semibold text-xs"></select>
+
             </div>
+
           </div>
+
         </div>
+
         
+
         <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100/30 text-xs text-slate-650 flex gap-3">
+
           <i class="fa-solid fa-shield-halved text-blue-500 text-sm mt-0.5 animate-pulse"></i>
+
           <div>
+
             <p class="font-bold text-slate-800 mb-0.5">Bảo mật tuyệt đối:</p>
+
             <p>Toàn bộ thông tin định danh trên được lưu trữ <b>chỉ trong trình duyệt cá nhân của bạn</b> (localStorage) và được gửi trực tiếp đến API Google. Không có bất kỳ máy chủ bên thứ ba nào lưu trữ các thông tin này.</p>
+
           </div>
+
         </div>
+
       </div>
 
+
+
       <div class="flex gap-3 justify-end mt-4 border-t border-slate-100/50 pt-3 flex-shrink-0">
+
         <button onclick="closeSettingsModal()" class="border border-slate-200 hover:bg-slate-50 text-slate-650 font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer transition">Cancel</button>
+
         <button onclick="saveSettingsCredentials()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer transition flex items-center gap-1.5 shadow-md">
+
           <i class="fa-solid fa-floppy-disk"></i> Save Settings
+
         </button>
+
       </div>
+
     </div>
+
   </div>
+
+
 
+
 </body>
+
+
 
 </html>
