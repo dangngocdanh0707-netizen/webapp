@@ -1,6 +1,6 @@
 // HỢP PHẦN AI SPEAKING PARTNER - FRONTEND LOGIC
 import { getAiCredentials, callServer } from '../services/api.js';
-import { callAiApi, SCENARIOS, translateMessageText } from '../services/ai.js';
+import { callAiApi, SCENARIOS } from '../services/ai.js';
 import { showToast } from '../services/toast.js';
 
 // Khởi tạo các lời thoại chào mặc định theo tình huống
@@ -9,30 +9,6 @@ const DEFAULT_GREETINGS = {
   interview: "Hello! Welcome to our interview today. I am pleased to meet you. To start off, could you please tell me a little bit about yourself?",
   restaurant: "Good evening! Welcome to our restaurant. I will be your waiter today. Can I start you off with something to drink?",
   travel: "Hello! Welcome to the London Grand Hotel. How can I help you today? Are you checking in?"
-};
-
-// Gợi ý câu trả lời mặc định theo kịch bản khi bắt đầu hội thoại
-const DEFAULT_GREETINGS_HINTS = {
-  casual: [
-    "It's going well, thanks! I've just been relaxing at home.",
-    "Pretty good! I went for a walk this morning. How about you?",
-    "Not bad! I've been quite busy with work lately."
-  ],
-  interview: [
-    "Thank you for having me! I'm excited for this opportunity.",
-    "I'm doing well, thank you. I've been looking forward to this interview.",
-    "Hello! I'm a bit nervous but very enthusiastic about this role."
-  ],
-  restaurant: [
-    "I'd love to start with a glass of water, please.",
-    "Could I see the menu first? I'm not sure what to order yet.",
-    "Yes, I'll have a coffee to start. What do you recommend today?"
-  ],
-  travel: [
-    "Yes, I have a reservation. My name is Nguyen.",
-    "I'd like to check in, please. I booked a room for two nights.",
-    "Hi! Could you help me find the nearest metro station?"
-  ]
 };
 
 let activeScenario = "casual";
@@ -177,9 +153,6 @@ function initializeActiveScenario() {
   // Render các bong bóng chat
   renderAiChatBubbles();
   
-  // Hiển thị gợi ý câu mặc định cho kịch bản khi mới bắt đầu
-  renderResponseHints(DEFAULT_GREETINGS_HINTS[activeScenario] || []);
-  
   // Reset khung Grammar Feedback bên phải về rỗng khi đổi tình huống
   resetGrammarFeedbackUI();
 }
@@ -257,46 +230,6 @@ function renderAiChatBubbles() {
   }, 100);
 }
 
-// ---------------- GỢI Ý CÂU TRẢ LỜI NHANH (SMART RESPONSE HINTS) ----------------
-function renderResponseHints(hints) {
-  const container = document.getElementById('ai-chat-hints-container');
-  if (!container) return;
-
-  if (!hints || hints.length === 0) {
-    container.innerHTML = '';
-    return;
-  }
-
-  container.innerHTML = hints.map((hint, i) => {
-    const escaped = hint.replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-    return `
-      <button
-        onclick="window.selectResponseHint('${escaped}')"
-        class="hint-pill text-xs font-semibold px-3 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700
-               hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-md
-               transition-all duration-200 cursor-pointer text-left leading-snug max-w-[90%] truncate
-               animate-in fade-in slide-in-from-bottom-1 duration-300"
-        style="animation-delay: ${i * 80}ms"
-        title="${escaped}"
-      >
-        <i class="fa-solid fa-lightbulb text-[9px] mr-1 opacity-70"></i>${hint}
-      </button>
-    `;
-  }).join('');
-}
-
-window.selectResponseHint = function(text) {
-  const inputEl = document.getElementById('ai-chat-input');
-  if (inputEl) {
-    // Decode HTML entities nếu có
-    const decoded = text.replace(/&quot;/g, '"').replace(/&#039;/g, "'");
-    inputEl.value = decoded;
-    inputEl.focus();
-    // Đặt cursor về cuối
-    inputEl.selectionStart = inputEl.selectionEnd = decoded.length;
-  }
-};
-
 // ---------------- GỬI TIN NHẮN VÀ XỬ LÝ PHẢN HỒI AI ----------------
 window.sendAiChatMessage = async function() {
   const inputEl = document.getElementById('ai-chat-input');
@@ -355,9 +288,6 @@ window.sendAiChatMessage = async function() {
 
     // Hiển thị phân tích lỗi ngữ pháp lên thanh bên phải
     renderGrammarFeedbackUI(userText, result);
-
-    // Hiển thị hints gợi ý câu trả lời từ AI
-    renderResponseHints(result.hints || []);
 
     // Phát âm câu thoại của AI nếu bật chế độ Auto-TTS
     const autoTts = document.getElementById('ai-chat-auto-tts');
