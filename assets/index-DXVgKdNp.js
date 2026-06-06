@@ -328,10 +328,10 @@ Text: "${n}"`;if(e==="gemini"){if(!i)throw new Error("Thiếu Gemini API Key.");
           <div class="flex items-center gap-2">
             <span class="task-text-display">${S(c)}</span>
             <div class="flex items-center gap-1.5 shrink-0 ml-auto select-none">
-              <button onclick="window.toggleTaskUrgent(${r})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${u?"text-rose-500 bg-rose-50":"text-slate-300"}" title="Khẩn cấp: ${u?"Có":"Không"}">
+              <button onclick="window.toggleTaskUrgent(${r})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${u?"text-slate-700 bg-slate-100":"text-slate-300"}" title="Khẩn cấp: ${u?"Có":"Không"}">
                 <i class="fa-solid fa-bolt-lightning"></i>
               </button>
-              <button onclick="window.toggleTaskImportant(${r})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${h?"text-amber-500 bg-amber-50":"text-slate-350"}" title="Quan trọng: ${h?"Có":"Không"}">
+              <button onclick="window.toggleTaskImportant(${r})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${h?"text-slate-700 bg-slate-100":"text-slate-300"}" title="Quan trọng: ${h?"Có":"Không"}">
                 <i class="fa-solid fa-star"></i>
               </button>
             </div>
