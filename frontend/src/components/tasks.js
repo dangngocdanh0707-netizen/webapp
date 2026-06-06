@@ -47,7 +47,18 @@ export function buildTaskTable() {
 
   let displayTaskData = [...allTaskData];
   displayTaskData.sort((a, b) => {
-    return parseDateToTimestamp(b.date) - parseDateToTimestamp(a.date);
+    let dateDiff = parseDateToTimestamp(b.date) - parseDateToTimestamp(a.date);
+    if (dateDiff !== 0) return dateDiff;
+
+    const getScore = (item) => {
+      const isUrg = item.urgent === true || item.urgent === "TRUE";
+      const isImp = item.important === true || item.important === "TRUE";
+      if (isUrg && isImp) return 4;
+      if (!isUrg && isImp) return 3;
+      if (isUrg && !isImp) return 2;
+      return 1;
+    };
+    return getScore(b) - getScore(a);
   });
 
   displayTaskData.forEach(item => {

@@ -783,6 +783,22 @@ export function callServer(methodName, args) {
         resolve("Thành công");
         return;
       }
+      if (methodName === "insertHabitRow") {
+        const [date, habitName, status] = args;
+        await gapi.client.sheets.spreadsheets.values.append({
+          spreadsheetId,
+          range: `${habitTab}!A:C`,
+          valueInputOption: 'USER_ENTERED',
+          insertDataOption: 'OVERWRITE',
+          resource: { values: [[
+            date,
+            habitName,
+            status === true || status === "TRUE" ? "TRUE" : "FALSE"
+          ]] }
+        });
+        resolve("Thành công");
+        return;
+      }
       
       // 9. Nghiệp vụ BẢN ĐỒ (Google Maps Explorer)
       if (methodName === "updateMapCheckStatusRow") {
