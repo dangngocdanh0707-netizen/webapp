@@ -17,6 +17,13 @@ export function initHabitsModule(data, onSync) {
   });
   onSyncNeeded = onSync;
 
+  // Tính và hiển thị tổng số thói quen độc lập khác nhau
+  const uniqueHabits = [...new Set(allHabitData.map(h => h.habit).filter(h => h && h.trim() !== ''))];
+  const totalHabitsEl = document.getElementById('total-unique-habits');
+  if (totalHabitsEl) {
+    totalHabitsEl.innerText = uniqueHabits.length;
+  }
+
   let todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
 
   let habitDates = [...new Set(allHabitData.map(h => h.date))];
