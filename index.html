@@ -45,8 +45,8 @@
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <script type="module" crossorigin src="/webapp_project/assets/index-CMm6PJZD.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-CsxX8ZjQ.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-wddzx59f.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-CT-2x01e.css">
 </head>
 
 
@@ -1328,13 +1328,31 @@
 
 
 
+
+        <div class="glass-card p-6 mb-8">
+          <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-circle-plus text-blue-500"></i> Add New Habit Tracker
+          </h4>
+          <div class="flex flex-col sm:flex-row gap-3 items-end">
+            <div class="w-full">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Habit Name</label>
+              <input type="text" id="ins-habit-name" class="form-input font-semibold">
+            </div>
+            <button onclick="addHabitDirectly()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 whitespace-nowrap h-[42px] shrink-0">
+              <i class="fa-solid fa-plus"></i> Add Habit
+            </button>
+          </div>
+        </div>
+
+
+
         <div class="grid grid-cols-1 gap-8 mb-8">
 
           <div class="glass-card p-6 flex flex-col">
 
             <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
 
-                class="fa-solid fa-chart-line text-emerald-500"></i> Discipline Consistency Curve</h3>
+                class="fa-solid fa-chart-line text-blue-500"></i> Discipline Consistency Curve</h3>
 
             <div class="h-[300px] w-full"><canvas id="habitLineChart"></canvas></div>
 
@@ -1342,29 +1360,12 @@
 
         </div>
 
-
-
-        <div class="glass-card p-6 mb-8">
-          <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-circle-plus text-emerald-500"></i> Add New Habit Tracker
-          </h4>
-          <div class="flex flex-col sm:flex-row gap-3 items-end">
-            <div class="w-full">
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Habit Name</label>
-              <input type="text" id="ins-habit-name" class="form-input font-semibold">
-            </div>
-            <button onclick="addHabitDirectly()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 whitespace-nowrap h-[42px] shrink-0">
-              <i class="fa-solid fa-plus"></i> Add Habit
-            </button>
-          </div>
-        </div>
-
         <div class="glass-card overflow-hidden">
           <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
             <div class="flex items-center gap-3">
-              <h3 class="font-bold text-slate-800 text-base">Habits Tracking Journal</h3>
+              <h3 class="font-bold text-slate-800 text-base">Habits Tracking</h3>
               <div class="inline-flex rounded-xl p-0.5 bg-slate-100 border border-slate-200/50 shadow-2xs">
-                <button onclick="switchHabitView('grid')" id="btn-habit-view-grid" class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition bg-white text-emerald-600 shadow-2xs cursor-pointer flex items-center gap-1">
+                <button onclick="switchHabitView('grid')" id="btn-habit-view-grid" class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition bg-white text-blue-600 shadow-2xs cursor-pointer flex items-center gap-1">
                   <i class="fa-solid fa-table-cells text-[9px]"></i> WEEKLY GRID
                 </button>
                 <button onclick="switchHabitView('list')" id="btn-habit-view-list" class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition text-slate-500 hover:text-slate-700 cursor-pointer flex items-center gap-1">
