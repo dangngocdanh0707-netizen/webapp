@@ -95,7 +95,7 @@ function getLast7Days() {
     const dd = String(d.getDate()).padStart(2, '0');
     dates.push({
       dateStr: `${yyyy}-${mm}-${dd}`,
-      label: `${daysOfWeek[d.getDay()]} ${dd}/${mm}`
+      label: `${dd}/${mm}`
     });
   }
   return dates;

@@ -120,11 +120,11 @@ export function renderHabitLine(habitDates, performanceDataPerDay, onClickCallba
       rawDates: habitDates,
       datasets: [{
         data: performanceDataPerDay,
-        borderColor: '#10b981',
+        borderColor: '#2563eb',
         tension: 0.2,
         fill: true,
-        backgroundColor: 'rgba(16, 185, 129, 0.04)',
-        pointBackgroundColor: '#10b981',
+        backgroundColor: 'rgba(37, 99, 235, 0.04)',
+        pointBackgroundColor: '#2563eb',
         pointBorderColor: '#ffffff',
         pointBorderWidth: 2,
         pointRadius: 4,
@@ -147,7 +147,7 @@ export function renderHabitLine(habitDates, performanceDataPerDay, onClickCallba
         datalabels: {
           anchor: 'end',
           align: 'top',
-          color: '#10b981',
+          color: '#2563eb',
           font: { weight: 'bold', family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 },
           formatter: (v) => v + "%"
         }
