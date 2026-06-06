@@ -389,13 +389,6 @@ export function buildTaskMatrix() {
       q4List.insertAdjacentHTML('beforeend', listItemHtml);
     }
   });
-
-  // Hiển thị thông báo nếu ô ma trận trống
-  const emptyState = `<li class="p-4 text-center text-[10px] text-slate-400 italic select-none">No tasks in this quadrant</li>`;
-  if (q1List.children.length === 0) q1List.innerHTML = emptyState;
-  if (q2List.children.length === 0) q2List.innerHTML = emptyState;
-  if (q3List.children.length === 0) q3List.innerHTML = emptyState;
-  if (q4List.children.length === 0) q4List.innerHTML = emptyState;
 }
 
 window.switchTaskView = function (viewType) {
