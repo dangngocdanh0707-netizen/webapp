@@ -107,28 +107,9 @@ export function initGoogleAuth() {
             gapiInitialized = true;
             console.log("[api.js] Google API Client (GAPI) đã khởi tạo.");
 
-            // Phục hồi token từ localStorage nếu có và chưa hết hạn
-            const cachedTokenStr = localStorage.getItem("GOOGLE_ACCESS_TOKEN");
-            if (cachedTokenStr) {
-              const cachedToken = JSON.parse(cachedTokenStr);
-              // Kiểm tra xem token đã hết hạn chưa (3600 giây - trừ 5 phút dự phòng)
-              const isExpired = cachedToken.timestamp && (Date.now() - cachedToken.timestamp > (cachedToken.expires_in - 300) * 1000);
-              
-              if (isExpired) {
-                console.log("[api.js] Token đã hết hạn, đang tự động làm mới ngầm...");
-                setTimeout(() => {
-                  try {
-                    tokenClient.requestAccessToken({ prompt: 'none' });
-                  } catch (e) {
-                    console.warn("Tự động làm mới token thất bại:", e);
-                  }
-                }, 1000);
-              } else {
-                gapi.client.setToken(cachedToken);
-              }
-            }
+            let authResolved = false;
 
-            // 2. Khởi tạo GIS Token Client
+            // 2. Khởi tạo GIS Token Client trước
             tokenClient = google.accounts.oauth2.initTokenClient({
               client_id: creds.clientId,
               scope: 'https://www.googleapis.com/auth/spreadsheets',
@@ -138,9 +119,13 @@ export function initGoogleAuth() {
                   if (tokenResponse.error === 'consent_required' || tokenResponse.error === 'interaction_required') {
                     // Lỗi tự động refresh ngầm thất bại (do hết hạn session Google), không hiển thị toast lỗi
                     localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
-                    return;
+                  } else {
+                    showToast("Lỗi kết nối Google: " + tokenResponse.error, "error");
                   }
-                  showToast("Lỗi kết nối Google: " + tokenResponse.error, "error");
+                  if (!authResolved) {
+                    authResolved = true;
+                    resolve(false);
+                  }
                   return;
                 }
                 console.log("[api.js] Nhận token thành công:", tokenResponse);
@@ -153,11 +138,52 @@ export function initGoogleAuth() {
                   window.location.reload();
                 } else {
                   console.log("[api.js] Tự động làm mới token thành công.");
+                  if (!authResolved) {
+                    authResolved = true;
+                    resolve(true);
+                  }
                 }
               }
             });
 
-            resolve(true);
+            // 3. Phục hồi token từ localStorage nếu có và chưa hết hạn
+            const cachedTokenStr = localStorage.getItem("GOOGLE_ACCESS_TOKEN");
+            if (cachedTokenStr) {
+              const cachedToken = JSON.parse(cachedTokenStr);
+              // Kiểm tra xem token đã hết hạn chưa (3600 giây - trừ 5 phút dự phòng)
+              const isExpired = cachedToken.timestamp && (Date.now() - cachedToken.timestamp > (cachedToken.expires_in - 300) * 1000);
+              
+              if (isExpired) {
+                console.log("[api.js] Token đã hết hạn, đang tự động làm mới ngầm...");
+                try {
+                  // Đặt cơ chế tự hủy timeout phòng trường hợp API bị treo
+                  setTimeout(() => {
+                    if (!authResolved) {
+                      console.warn("[api.js] Hết thời gian chờ làm mới token.");
+                      authResolved = true;
+                      resolve(false);
+                    }
+                  }, 5000);
+                  
+                  tokenClient.requestAccessToken({ prompt: 'none' });
+                } catch (e) {
+                  console.warn("Tự động làm mới token thất bại:", e);
+                  if (!authResolved) {
+                    authResolved = true;
+                    resolve(false);
+                  }
+                }
+              } else {
+                gapi.client.setToken(cachedToken);
+                authResolved = true;
+                resolve(true);
+              }
+            } else {
+              // Không có token cached
+              authResolved = true;
+              resolve(false);
+            }
+
           } catch (err) {
             console.error("[api.js] Lỗi khởi tạo GAPI Client:", err);
             resolve(false);
