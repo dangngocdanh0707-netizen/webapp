@@ -146,10 +146,6 @@ export function buildVocabTable() {
       </tr>
     `);
   });
-  
-  if (tbody.children.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 italic">No entries match the active filters.</td></tr>`;
-  }
 }
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----

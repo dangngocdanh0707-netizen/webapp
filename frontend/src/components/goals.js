@@ -63,10 +63,6 @@ export function buildGoalTable() {
       </tr>
     `);
   });
-  
-  if (tbody.children.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-500 italic">No objectives scheduled. Establish one below!</td></tr>`;
-  }
 }
 
 

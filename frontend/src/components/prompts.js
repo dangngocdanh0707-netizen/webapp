@@ -75,10 +75,6 @@ export function buildPromptTable() {
       </tr>
     `);
   });
-  
-  if (tbody.children.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-500 italic">No prompts match the active filters.</td></tr>`;
-  }
 }
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----

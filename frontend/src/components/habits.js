@@ -118,10 +118,6 @@ export function buildHabitTable(filterValue) {
       </tr>
     `);
   });
-
-  if (tbody.children.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400 italic">No habits recorded for this day.</td></tr>`;
-  }
 }
 
 function recalculateHabitChartOnly() {

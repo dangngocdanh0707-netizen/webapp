@@ -156,17 +156,6 @@ export function buildCollectionsGrid() {
       `);
     }
   });
-
-
-  if (filteredData.length === 0) {
-    tableBody.innerHTML = `
-      <tr>
-        <td colspan="6" class="p-12 text-center text-slate-400 italic">
-          No items found matching the active filters. Feel free to add a new asset!
-        </td>
-      </tr>
-    `;
-  }
 }
 
 

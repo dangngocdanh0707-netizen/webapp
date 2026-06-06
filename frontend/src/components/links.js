@@ -81,12 +81,6 @@ export function buildLinkTable() {
       </tr>
     `);
   });
-  
-  if (tbody.children.length === 0) {
-    if (keyword !== "" || selectedCat !== "All") {
-      tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400 italic">No entries found matching the active filters.</td></tr>`;
-    }
-  }
 }
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----

@@ -152,16 +152,6 @@ export function buildMapGrid() {
       `);
     }
   });
- 
-  if (tableBody.children.length === 0) {
-    tableBody.innerHTML = `
-      <tr>
-        <td colspan="6" class="p-12 text-center text-slate-400 italic">
-          No adventures match the active filters. Keep exploring!
-        </td>
-      </tr>
-    `;
-  }
 }
  
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----

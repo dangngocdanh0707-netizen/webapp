@@ -128,10 +128,6 @@ export function buildTable(filterValue) {
       </tr>
     `);
   });
-
-  if (tbody.children.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 italic">No entries match the active filters.</td></tr>`;
-  }
 }
 
 
