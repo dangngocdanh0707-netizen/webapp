@@ -70,10 +70,10 @@ export function buildTaskTable() {
           <div class="flex items-center gap-2">
             <span class="task-text-display">${escapeHTML(taskText)}</span>
             <div class="flex items-center gap-1.5 shrink-0 ml-auto select-none">
-              <button onclick="window.toggleTaskUrgent(${id})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${isUrgent ? 'text-rose-500 bg-rose-50' : 'text-slate-300'}" title="Khẩn cấp: ${isUrgent ? 'Có' : 'Không'}">
+              <button onclick="window.toggleTaskUrgent(${id})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${isUrgent ? 'text-slate-700 bg-slate-100' : 'text-slate-300'}" title="Khẩn cấp: ${isUrgent ? 'Có' : 'Không'}">
                 <i class="fa-solid fa-bolt-lightning"></i>
               </button>
-              <button onclick="window.toggleTaskImportant(${id})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${isImportant ? 'text-amber-500 bg-amber-50' : 'text-slate-350'}" title="Quan trọng: ${isImportant ? 'Có' : 'Không'}">
+              <button onclick="window.toggleTaskImportant(${id})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${isImportant ? 'text-slate-700 bg-slate-100' : 'text-slate-300'}" title="Quan trọng: ${isImportant ? 'Có' : 'Không'}">
                 <i class="fa-solid fa-star"></i>
               </button>
             </div>
