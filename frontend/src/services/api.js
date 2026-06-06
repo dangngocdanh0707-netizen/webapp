@@ -545,7 +545,7 @@ export function callServer(methodName, args) {
             `${linkTab}!A2:C`,
             `${promptTab}!A2:C`,
             `${goalTab}!A2:E`,
-            `${taskTab}!A2:C`,
+            `${taskTab}!A2:E`,
             `${mappings['google_map']}!A2:E`,
             `${mappings['collections'] || 'collections'}!A2:E`,
             `${grammarTab || 'grammar_diaries'}!A2:F`,
@@ -613,7 +613,9 @@ export function callServer(methodName, args) {
             rowNumber: idx + 2,
             date: cleanDateValue(row[0]),
             task: row[1] || "",
-            status: row[2] === "TRUE" || row[2] === true || row[2] === "true"
+            urgent: row[2] === "TRUE" || row[2] === true || row[2] === "true" || row[2] === "v" || row[2] === "checked",
+            important: row[3] === "TRUE" || row[3] === true || row[3] === "true" || row[3] === "v" || row[3] === "checked",
+            status: row[4] === "TRUE" || row[4] === true || row[4] === "true" || row[4] === "v" || row[4] === "checked"
           })).filter(item => item.task),
           
           google_map: getRows(valueRanges[7]).map((row, idx) => ({
@@ -1043,24 +1045,36 @@ export function callServer(methodName, args) {
 
       // 8. Nghiệp vụ VIỆC CẦN LÀM (Tasks)
       if (methodName === "insertTaskRow") {
-        const [date, taskDesc, status] = args;
+        const [date, taskDesc, urgent, important, status] = args;
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${taskTab}!A:C`,
+          range: `${taskTab}!A:E`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[date, taskDesc, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
+          resource: { values: [[
+            date,
+            taskDesc,
+            urgent === true || urgent === "TRUE" ? "TRUE" : "FALSE",
+            important === true || important === "TRUE" ? "TRUE" : "FALSE",
+            status === true || status === "TRUE" ? "TRUE" : "FALSE"
+          ]] }
         });
         resolve("Thành công");
         return;
       }
       if (methodName === "updateTaskRow") {
-        const [rowNumber, date, taskDesc, status] = args;
+        const [rowNumber, date, taskDesc, urgent, important, status] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${taskTab}!A${rowNumber}:C${rowNumber}`,
+          range: `${taskTab}!A${rowNumber}:E${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[date, taskDesc, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
+          resource: { values: [[
+            date,
+            taskDesc,
+            urgent === true || urgent === "TRUE" ? "TRUE" : "FALSE",
+            important === true || important === "TRUE" ? "TRUE" : "FALSE",
+            status === true || status === "TRUE" ? "TRUE" : "FALSE"
+          ]] }
         });
         resolve("Thành công");
         return;
@@ -1090,9 +1104,31 @@ export function callServer(methodName, args) {
         const [rowNumber, isChecked] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${taskTab}!C${rowNumber}`,
+          range: `${taskTab}!E${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
+        });
+        resolve("Thành công");
+        return;
+      }
+      if (methodName === "updateTaskUrgentRow") {
+        const [rowNumber, isUrgent] = args;
+        await gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${taskTab}!C${rowNumber}`,
+          valueInputOption: 'USER_ENTERED',
+          resource: { values: [[isUrgent ? "TRUE" : "FALSE"]] }
+        });
+        resolve("Thành công");
+        return;
+      }
+      if (methodName === "updateTaskImportantRow") {
+        const [rowNumber, isImportant] = args;
+        await gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${taskTab}!D${rowNumber}`,
+          valueInputOption: 'USER_ENTERED',
+          resource: { values: [[isImportant ? "TRUE" : "FALSE"]] }
         });
         resolve("Thành công");
         return;

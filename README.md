@@ -83,7 +83,7 @@ Nếu Spreadsheet trống, hệ thống sẽ **tự động khởi tạo** các 
 | **`links`** | Title | Category | Content | | | |
 | **`prompts`** | Title | Content | Category | | | |
 | **`goals`** | Goal Name | Start Date | End Date | Current Value | Target Value | |
-| **`tasks`** | Date | Task | Status | | | |
+| **`tasks`** | Date | Task | urgent | important | status | |
 | **`google_maps`**| place | city | category | address | status | |
 | **`collections`**| item | brand | style | category | status | |
 | **`grammar_diaries`**| date | scenario | user_sentence | corrected_sentence | explanation | **status** (checkbox — TRUE = Mastered) |
