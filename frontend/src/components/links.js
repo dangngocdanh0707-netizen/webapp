@@ -3,16 +3,10 @@ import { showToast } from '../services/toast.js';
 
 let allLinkData = [];
 let onSyncNeeded = null;
-let clearSearchTimeout = null;
 
 export function initLinksModule(data, onSync) {
   allLinkData = data || [];
   onSyncNeeded = onSync;
-  
-  if (clearSearchTimeout) {
-    clearTimeout(clearSearchTimeout);
-    clearSearchTimeout = null;
-  }
   
   const totalLinksEl = document.getElementById('total-links');
   if (totalLinksEl) totalLinksEl.innerText = allLinkData.length;
@@ -68,7 +62,7 @@ export function buildLinkTable() {
       <tr id="link-row-${id}" class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-slate-800 text-sm link-view-${id}">${escapeHTML(titleText) || '-'}</td>
         <td class="p-4 link-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold">${escapeHTML(catText) || '-'}</span></td>
-        <td class="p-4 text-slate-650 link-view-${id}">${contentDisplay}</td>
+        <td class="p-4 text-xs text-slate-650 link-view-${id}">${contentDisplay}</td>
         
         <td class="p-4 pl-6 hidden link-edit-${id}"><input type="text" id="link-edit-title-${id}" class="edit-input font-bold" value="${escapeHTML(titleText)}"></td>
         <td class="p-4 hidden link-edit-${id}"><input type="text" id="link-edit-cat-${id}" class="edit-input font-semibold" value="${escapeHTML(catText)}"></td>
@@ -99,19 +93,6 @@ export function buildLinkTable() {
 
 window.filterLinkTable = function() {
   buildLinkTable();
-  
-  const searchInput = document.getElementById('linkSearchInput');
-  if (clearSearchTimeout) {
-    clearTimeout(clearSearchTimeout);
-    clearSearchTimeout = null;
-  }
-  
-  if (searchInput && searchInput.value.trim() !== "") {
-    clearSearchTimeout = setTimeout(() => {
-      searchInput.value = "";
-      buildLinkTable();
-    }, 10000);
-  }
 };
 
 window.copyLinkText = function(id, text) {

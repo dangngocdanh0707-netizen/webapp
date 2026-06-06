@@ -121,7 +121,7 @@ export function buildVocabTable() {
         <td class="p-4 hidden v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(cat)}</span></td>
         <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(topic)}</span></td>
         <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(item.level) || '-'}</span></td>
-        <td class="p-4 text-slate-650 v-view-${id}">${escapeHTML(item.meaning) || ''}</td>
+        <td class="p-4 text-xs text-slate-650 v-view-${id}">${escapeHTML(item.meaning) || ''}</td>
         <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${statusBadgeStyle}">${escapeHTML(statusStr)}</span></td>
         <td class="p-4 font-semibold text-xs text-slate-500 v-view-${id}">${nextReviewView}</td>
         

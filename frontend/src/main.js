@@ -178,7 +178,7 @@ async function initApp() {
     }
   });
   
-  // Tự động làm sạch ô tìm kiếm sau 10 giây không tương tác
+  // Tự động làm sạch ô tìm kiếm sau 15 giây không tương tác
   const searchTimeoutMap = new Map();
   document.addEventListener('input', (e) => {
     const target = e.target;
@@ -195,7 +195,7 @@ async function initApp() {
         return;
       }
       
-      // Thiết lập timeout mới sau 10 giây (10000ms)
+      // Thiết lập timeout mới sau 15 giây (15000ms)
       const timeoutId = setTimeout(() => {
         if (target.value !== '') {
           target.value = '';
@@ -219,7 +219,7 @@ async function initApp() {
           }
         }
         searchTimeoutMap.delete(inputId);
-      }, 10000);
+      }, 15000);
       
       searchTimeoutMap.set(inputId, timeoutId);
     }

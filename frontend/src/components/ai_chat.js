@@ -1,5 +1,5 @@
 // HỢP PHẦN AI SPEAKING PARTNER - FRONTEND LOGIC
-import { getAiCredentials, callServer } from '../services/api.js';
+import { getAiCredentials, callServer, escapeHTML } from '../services/api.js';
 import { callAiApi, SCENARIOS, translateMessageText } from '../services/ai.js';
 import { showToast } from '../services/toast.js';
 
@@ -602,7 +602,7 @@ function renderGrammarFeedbackUI(userText, aiResult) {
     if (aiResult.isCorrect) {
       explainTxtEl.innerText = "None";
     } else {
-      explainTxtEl.innerHTML = (aiResult.corrections || "").replace(/\n/g, "<br>");
+      explainTxtEl.innerHTML = escapeHTML(aiResult.corrections || "").replace(/\n/g, "<br>");
     }
   }
 
@@ -635,15 +635,6 @@ function renderGrammarFeedbackUI(userText, aiResult) {
 
 
 // ---------------- UTILS HELPERS ----------------
-function escapeHTML(str) {
-  if (!str) return "";
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
 
 // Thêm nhanh từ vựng mới từ giao diện AI Chat
 window.saveQuickVocabWord = function() {

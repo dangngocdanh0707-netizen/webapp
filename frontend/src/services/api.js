@@ -1023,35 +1023,13 @@ export function callServer(methodName, args) {
       // 8. Nghiệp vụ VIỆC CẦN LÀM (Tasks)
       if (methodName === "insertTaskRow") {
         const [date, taskDesc, status] = args;
-        
-        // Tải toàn bộ dữ liệu A2:C hiện tại để tìm dòng thực sự trống (cột B trống)
-        const response = await gapi.client.sheets.spreadsheets.values.get({
+        await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${taskTab}!A2:C`
-        });
-        const rows = response.result.values || [];
-        
-        // Tìm dòng đầu tiên mà mô tả công việc (cột B - index 1) bị trống
-        let emptyRowIndex = -1;
-        for (let i = 0; i < rows.length; i++) {
-          const row = rows[i];
-          const taskContent = row[1] || "";
-          if (!taskContent.trim()) {
-            emptyRowIndex = i;
-            break;
-          }
-        }
-        
-        // Dòng thực tế = index + 2 (do bỏ qua dòng tiêu đề A1). Nếu không tìm thấy dòng trống nào, thêm vào cuối.
-        const rowNumber = emptyRowIndex !== -1 ? emptyRowIndex + 2 : rows.length + 2;
-        
-        await gapi.client.sheets.spreadsheets.values.update({
-          spreadsheetId,
-          range: `${taskTab}!A${rowNumber}:B${rowNumber}`,
+          range: `${taskTab}!A:C`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[date, taskDesc]] }
+          insertDataOption: 'OVERWRITE',
+          resource: { values: [[date, taskDesc, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
         });
-        
         resolve("Thành công");
         return;
       }
@@ -1101,34 +1079,13 @@ export function callServer(methodName, args) {
       if (methodName === "insertGrammarDiaryRow") {
         const [date, scenario, user_sentence, corrected_sentence, explanation] = args;
         const grammarTab = mappings['grammar_diary'] || 'grammar_diaries';
-
-        // Tải toàn bộ cột A2:E để tìm dòng thực sự trống (cột A trống)
-        const response = await gapi.client.sheets.spreadsheets.values.get({
+        await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${grammarTab}!A2:E`
-        });
-        const rows = response.result.values || [];
-
-        // Tìm dòng đầu tiên mà cột A (date) bị trống
-        let emptyRowIndex = -1;
-        for (let i = 0; i < rows.length; i++) {
-          const cellA = (rows[i][0] || "").toString().trim();
-          if (!cellA) {
-            emptyRowIndex = i;
-            break;
-          }
-        }
-
-        // Dòng thực tế = index + 2 (bỏ qua hàng tiêu đề). Nếu không tìm thấy → thêm cuối
-        const rowNumber = emptyRowIndex !== -1 ? emptyRowIndex + 2 : rows.length + 2;
-
-        await gapi.client.sheets.spreadsheets.values.update({
-          spreadsheetId,
-          range: `${grammarTab}!A${rowNumber}:E${rowNumber}`,
+          range: `${grammarTab}!A:F`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[date, scenario, user_sentence, corrected_sentence, explanation]] }
+          insertDataOption: 'OVERWRITE',
+          resource: { values: [[date, scenario, user_sentence, corrected_sentence, explanation, "FALSE"]] }
         });
-
         resolve("Thành công");
         return;
       }

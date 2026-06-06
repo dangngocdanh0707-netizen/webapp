@@ -31,7 +31,7 @@ export function buildGoalTable() {
         <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${escapeHTML(item.start_date)}</td>
         <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${id}">${escapeHTML(item.end_date)}</td>
         <td class="p-4 font-bold text-slate-800 text-sm goal-view-${id}">${cur.toLocaleString()}</td>
-        <td class="p-4 font-semibold text-slate-450 text-sm goal-view-${id}">${tar.toLocaleString()}</td>
+        <td class="p-4 font-semibold text-slate-500 text-sm goal-view-${id}">${tar.toLocaleString()}</td>
         <td class="p-4 goal-view-${id}">
           <div class="flex items-center gap-3.5">
             <div class="w-full bg-slate-100/80 h-2 rounded-full overflow-hidden border border-slate-200/40">
