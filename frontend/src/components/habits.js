@@ -369,7 +369,7 @@ window.toggleHabitCell = function (rowNumber, dateStr, habitName, checkboxEl) {
           rollback("Server rejected save");
         } else {
           if (onSyncNeeded) {
-            onSyncNeeded();
+            onSyncNeeded(true);
           }
         }
       })
@@ -433,7 +433,7 @@ window.addHabitDirectly = function () {
         rollback("Server rejected save");
       } else {
         if (onSyncNeeded) {
-          onSyncNeeded();
+          onSyncNeeded(true);
         }
       }
     })
