@@ -66,6 +66,13 @@ personal_webapp/
 * **🗺️ Google Maps Explorer**:
   * Quản lý địa điểm thám hiểm kèm nút tìm kiếm nhanh trên Google.
   * Cột Address được đồng bộ kiểu chữ (`text-slate-650`) với cột Meaning của trang Vocabulary nhằm tối ưu hóa thẩm mỹ giao diện.
+* **📋 Quản lý Công việc & Ma trận Eisenhower (Tasks & Eisenhower Matrix)**:
+  * Tích hợp 5 cột dữ liệu (`Date`, `Task`, `urgent`, `important`, `status`) đồng bộ thời gian thực lên Google Sheets.
+  * Chế độ xem kép (Dual View): Dễ dàng chuyển đổi giữa dạng Danh sách (List View) truyền thống và dạng lưới Ma trận 2x2 (Eisenhower Quadrants) bao gồm Do First, Schedule, Delegate, và Eliminate.
+  * Tương tác thông minh: Hỗ trợ nút click nhanh ⚡/⭐ để thay đổi mức độ khẩn cấp/quan trọng với tông màu trung tính sạch sẽ (`text-slate-700 bg-slate-100`). Khi bấm nút sửa trên ma trận, hệ thống tự động chuyển về view danh sách và cuộn mượt mà (Scroll into view) để chỉnh sửa.
+  * Cân đối cột tối ưu: Thanh nhập mô tả công việc được nới rộng tối đa để căn lề hai ô checkbox sang bên phải, tạo bố cục đồng đều với nút Save Task bên dưới. Cải tiến cấu trúc dòng sửa để ngăn chặn hiện tượng méo lệch cột khi kích hoạt chỉnh sửa.
+* **✨ Tối giản hóa giao diện trống (Minimal Blank State)**:
+  * Loại bỏ hoàn toàn các dòng văn bản thông báo trống (như "No tasks...", "No entries...", "No habits...") trên toàn bộ các trang (Thói quen, Công việc, Từ vựng, Chi tiêu, Mục tiêu, Bản đồ, Bộ sưu tập). Khi không có dữ liệu, danh sách và bảng biểu sẽ hiển thị trống hoàn toàn mang lại trải nghiệm UI sạch sẽ và hiện đại nhất.
 * **🛡️ Bảo mật & An toàn**:
   * Sử dụng bộ lọc `escapeHTML` ở tất cả các đầu ra để ngăn chặn tấn công XSS.
 
