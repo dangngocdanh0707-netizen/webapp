@@ -13,7 +13,7 @@ let isInitialized = false;
 let translationCache = {}; // Cache dịch theo index: { [msgIndex]: string }
 
 // ---------------- KHỞI TẠO MÔ-ĐUN ----------------
-export function initAiChatModule(allVocabulary, refreshCb) {
+export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
   refreshDataCallback = refreshCb;
   
   if (isInitialized) {
@@ -21,8 +21,29 @@ export function initAiChatModule(allVocabulary, refreshCb) {
   }
   isInitialized = true;
   
-  // 1. Tải lịch sử chat từ localStorage
-  loadChatHistoriesFromStorage();
+  // 1. Tải lịch sử chat: ưu tiên Google Sheets, nếu trống thì khôi phục từ localStorage
+  if (initialChatHistory && Array.isArray(initialChatHistory) && initialChatHistory.length > 0) {
+    chatHistories = {};
+    initialChatHistory.forEach(item => {
+      const scenarioTitle = item.scenario;
+      let matchedKey = Object.keys(SCENARIOS).find(key => 
+        SCENARIOS[key].title === scenarioTitle || key === scenarioTitle
+      );
+      if (!matchedKey) {
+        matchedKey = "casual";
+      }
+      if (!chatHistories[matchedKey]) {
+        chatHistories[matchedKey] = [];
+      }
+      chatHistories[matchedKey].push({
+        role: item.role,
+        text: item.text
+      });
+    });
+    saveChatHistoriesToStorage();
+  } else {
+    loadChatHistoriesFromStorage();
+  }
 
   // 2. Cài đặt các giọng đọc Speech Synthesis (TTS)
   setupTtsVoiceSelector();
@@ -321,6 +342,17 @@ window.sendAiChatMessage = async function() {
   saveChatHistoriesToStorage();
   renderAiChatBubbles();
 
+  // Đồng bộ tin nhắn user lên Google Sheets
+  const dateObj = new Date();
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const year = dateObj.getFullYear();
+  const dateStr = `${year}-${month}-${day}`;
+  const scenarioTitle = SCENARIOS[activeScenario]?.title || activeScenario;
+
+  callServer("insertChatHistoryRow", [dateStr, scenarioTitle, "user", userText])
+    .catch(err => console.error("[ai_chat.js] Lỗi lưu tin nhắn user vào Google Sheet:", err));
+
   // Reset UI feedback cũ khi gửi câu mới
   resetGrammarFeedbackUI();
 
@@ -342,6 +374,10 @@ window.sendAiChatMessage = async function() {
     });
     saveChatHistoriesToStorage();
     renderAiChatBubbles();
+
+    // Đồng bộ tin nhắn AI lên Google Sheets
+    callServer("insertChatHistoryRow", [dateStr, scenarioTitle, "ai", result.reply])
+      .catch(err => console.error("[ai_chat.js] Lỗi lưu phản hồi AI vào Google Sheet:", err));
 
     // Hiển thị phân tích lỗi ngữ pháp & nâng cấp câu lên thanh bên phải
     renderGrammarFeedbackUI(userText, result);

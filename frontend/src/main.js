@@ -291,7 +291,8 @@ function loadDataFromServer(silent = false) {
           task: [],
           google_map: [],
           collections: [],
-          grammar_diary: []
+          grammar_diary: [],
+          chat_history: []
         });
       }
     }, 4000); // 4 giây cho trải nghiệm tải mượt mà hơn
@@ -326,7 +327,8 @@ function handleScriptError(err) {
     task: [],
     google_map: [],
     collections: [],
-    grammar_diary: []
+    grammar_diary: [],
+    chat_history: []
   });
 }
 
@@ -341,7 +343,7 @@ function renderDashboard(data) {
     initCostModule(data.cost, loadDataFromServer);
     initVocabModule(data.vocabulary, loadDataFromServer);
     initSrsModule(data.vocabulary, loadDataFromServer);
-    initAiChatModule(data.vocabulary, loadDataFromServer);
+    initAiChatModule(data.vocabulary, data.chat_history, loadDataFromServer);
     initGrammarDiaryModule(data.grammar_diary, loadDataFromServer);
     initLinksModule(data.link, loadDataFromServer);
     initPromptsModule(data.prompt, loadDataFromServer);

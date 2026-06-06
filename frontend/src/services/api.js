@@ -253,7 +253,7 @@ async function resolveAllTabs(spreadsheetId) {
     const sheets = response.result.sheets || [];
     const existingTitles = sheets.map(s => s.properties.title);
 
-    const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections', 'grammar_diary'];
+    const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections', 'grammar_diary', 'chat_history'];
     const mappings = {};
 
     // Bước 1: Khớp trực tiếp và hỗ trợ các biến thể/tên thay thế phổ biến (ví dụ số nhiều, từ đồng nghĩa)
@@ -267,7 +267,8 @@ async function resolveAllTabs(spreadsheetId) {
       task: ['tasks', 'task', 'công việc'],
       google_map: ['google_maps', 'google_map', 'bản đồ'],
       collections: ['collections', 'collection', 'sưu tập', 'bộ sưu tập'],
-      grammar_diary: ['grammar_diaries', 'grammar_diary', 'nhật ký ngữ pháp', 'grammar_logs']
+      grammar_diary: ['grammar_diaries', 'grammar_diary', 'nhật ký ngữ pháp', 'grammar_logs'],
+      chat_history: ['chat_histories']
     };
 
     targetTabs.forEach(target => {
@@ -382,6 +383,13 @@ async function resolveAllTabs(spreadsheetId) {
               bestMatch = title;
               break;
             }
+          } else if (target === 'chat_history') {
+            const hasScenario = headers.includes('scenario') || headers.includes('kịch bản') || headers.some(h => h.includes('scenario'));
+            const hasRole = headers.includes('role') || headers.includes('vai trò') || headers.some(h => h.includes('role'));
+            if (hasScenario && hasRole) {
+              bestMatch = title;
+              break;
+            }
           }
         }
 
@@ -407,6 +415,7 @@ async function resolveAllTabs(spreadsheetId) {
         else if (target === 'google_map') mappings[target] = 'google_maps';
         else if (target === 'collections') mappings[target] = 'collections';
         else if (target === 'grammar_diary') mappings[target] = 'grammar_diaries';
+        else if (target === 'chat_history') mappings[target] = 'chat_histories';
         else mappings[target] = target;
       }
     });
@@ -424,7 +433,8 @@ async function resolveAllTabs(spreadsheetId) {
       prompt: 'prompt',
       goal: 'goal',
       task: 'task',
-      grammar_diary: 'grammar_diary'
+      grammar_diary: 'grammar_diary',
+      chat_history: 'chat_history'
     };
   }
 }
@@ -434,7 +444,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
   const mappings = await resolveAllTabs(spreadsheetId);
   const response = await gapi.client.sheets.spreadsheets.get({ spreadsheetId });
   const existingTitles = response.result.sheets.map(s => s.properties.title);
-  const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections', 'grammar_diary'];
+  const targetTabs = ['cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections', 'grammar_diary', 'chat_history'];
 
   const missingTabs = targetTabs.filter(target => {
     const mappedName = mappings[target];
@@ -464,7 +474,8 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['task'] || 'tasks'}!A1:C1`, values: [['Date', 'Task', 'Status']] },
       { range: `${mappings['google_map'] || 'google_maps'}!A1:E1`, values: [['place', 'city', 'category', 'address', 'status']] },
       { range: `${mappings['collections'] || 'collections'}!A1:E1`, values: [['item', 'brand', 'style', 'category', 'status']] },
-      { range: `${mappings['grammar_diary'] || 'grammar_diaries'}!A1:F1`, values: [['date', 'scenario', 'user_sentence', 'corrected_sentence', 'explanation', 'status']] }
+      { range: `${mappings['grammar_diary'] || 'grammar_diaries'}!A1:F1`, values: [['date', 'scenario', 'user_sentence', 'corrected_sentence', 'explanation', 'status']] },
+      { range: `${mappings['chat_history'] || 'chat_histories'}!A1:D1`, values: [['date', 'scenario', 'role', 'content']] }
     ].filter(h => {
       const rangeSheetName = h.range.split('!')[0];
       return missingTabs.some(target => (mappings[target] || target) === rangeSheetName);
@@ -513,6 +524,7 @@ export function callServer(methodName, args) {
       const goalTab = mappings['goal'];
       const taskTab = mappings['task'];
       const grammarTab = mappings['grammar_diary'];
+      const chatTab = mappings['chat_history'];
 
       // Hàm chuyển đổi chuỗi tiền tệ phức tạp (Ví dụ: "₫40,000" hay "40.000đ") thành số thực cực kỳ mạnh mẽ
       const parseAmount = (val) => {
@@ -536,7 +548,8 @@ export function callServer(methodName, args) {
             `${taskTab}!A2:C`,
             `${mappings['google_map']}!A2:E`,
             `${mappings['collections'] || 'collections'}!A2:E`,
-            `${grammarTab || 'grammar_diaries'}!A2:F`
+            `${grammarTab || 'grammar_diaries'}!A2:F`,
+            `${chatTab || 'chat_histories'}!A2:D`
           ],
           valueRenderOption: 'UNFORMATTED_VALUE'
         });
@@ -629,7 +642,15 @@ export function callServer(methodName, args) {
             corrected_sentence: row[3] || "",
             explanation: row[4] || "",
             status: row[5] === "TRUE" || row[5] === true || row[5] === "true"
-          })).filter(item => (item.user_sentence || item.corrected_sentence) && !item.status)
+          })).filter(item => (item.user_sentence || item.corrected_sentence) && !item.status),
+
+          chat_history: getRows(valueRanges[10]).map((row, idx) => ({
+            rowNumber: idx + 2,
+            date: cleanDateValue(row[0]),
+            scenario: row[1] || "",
+            role: row[2] || "",
+            text: row[3] || ""
+          })).filter(item => item.scenario && item.role && item.text)
         });
         return;
       }
@@ -1119,6 +1140,19 @@ export function callServer(methodName, args) {
               }
             }]
           }
+        });
+        resolve("Thành công");
+        return;
+      }
+      if (methodName === "insertChatHistoryRow") {
+        const [date, scenario, role, content] = args;
+        const chatTab = mappings['chat_history'] || 'chat_histories';
+        await gapi.client.sheets.spreadsheets.values.append({
+          spreadsheetId,
+          range: `${chatTab}!A:D`,
+          valueInputOption: 'USER_ENTERED',
+          insertDataOption: 'OVERWRITE',
+          resource: { values: [[date, scenario, role, content]] }
         });
         resolve("Thành công");
         return;
