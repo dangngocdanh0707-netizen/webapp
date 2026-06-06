@@ -21,9 +21,12 @@ export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
   }
   isInitialized = true;
   
-  // 1. Tải lịch sử chat: ưu tiên Google Sheets, nếu trống thì khôi phục từ localStorage
-  if (initialChatHistory && Array.isArray(initialChatHistory) && initialChatHistory.length > 0) {
-    chatHistories = {};
+  // Xóa cache cũ nếu có
+  localStorage.removeItem("AI_CHAT_HISTORIES_V1");
+
+  // 1. Tải lịch sử chat từ Google Sheets
+  chatHistories = {};
+  if (initialChatHistory && Array.isArray(initialChatHistory)) {
     initialChatHistory.forEach(item => {
       const scenarioTitle = item.scenario;
       let matchedKey = Object.keys(SCENARIOS).find(key => 
@@ -40,9 +43,6 @@ export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
         text: item.text
       });
     });
-    saveChatHistoriesToStorage();
-  } else {
-    loadChatHistoriesFromStorage();
   }
 
   // 2. Cài đặt các giọng đọc Speech Synthesis (TTS)
@@ -154,32 +154,8 @@ function initializeActiveScenario() {
   resetGrammarFeedbackUI();
 }
 
-// ---------------- QUẢN LÝ DỮ LIỆU LOCALSTORAGE ----------------
-function loadChatHistoriesFromStorage() {
-  try {
-    const stored = localStorage.getItem("AI_CHAT_HISTORIES_V1");
-    if (stored) {
-      chatHistories = JSON.parse(stored);
-    } else {
-      chatHistories = {};
-    }
-  } catch (e) {
-    console.warn("Lỗi load chat history từ localstorage:", e);
-    chatHistories = {};
-  }
-}
-
-function saveChatHistoriesToStorage() {
-  try {
-    localStorage.setItem("AI_CHAT_HISTORIES_V1", JSON.stringify(chatHistories));
-  } catch (e) {
-    console.error("Lỗi lưu chat history vào localstorage:", e);
-  }
-}
-
 window.clearAiChatHistory = function() {
   chatHistories[activeScenario] = [];
-  saveChatHistoriesToStorage();
   initializeActiveScenario();
 };
 
@@ -339,7 +315,6 @@ window.sendAiChatMessage = async function() {
     role: "user",
     text: userText
   });
-  saveChatHistoriesToStorage();
   renderAiChatBubbles();
 
   // Đồng bộ tin nhắn user lên Google Sheets
@@ -372,7 +347,6 @@ window.sendAiChatMessage = async function() {
       role: "ai",
       text: result.reply
     });
-    saveChatHistoriesToStorage();
     renderAiChatBubbles();
 
     // Đồng bộ tin nhắn AI lên Google Sheets
@@ -395,7 +369,6 @@ window.sendAiChatMessage = async function() {
     showToast(error.message || "Lỗi giao tiếp với AI.", "error");
     // Xóa tin nhắn vừa lỗi khỏi giao diện để tránh kẹt lịch sử
     chatHistories[activeScenario].pop();
-    saveChatHistoriesToStorage();
     renderAiChatBubbles();
   } finally {
     // Mở khóa ô input
