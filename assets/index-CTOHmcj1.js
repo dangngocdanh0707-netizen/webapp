@@ -323,9 +323,17 @@ Text: "${n}"`;if(e==="gemini"){if(!i)throw new Error("Thiếu Gemini API Key.");
       </tr>
     `)}),n.children.length===0&&(n.innerHTML='<tr><td colspan="7" class="p-8 text-center text-slate-500 italic">No objectives scheduled. Establish one below!</td></tr>'))}window.toggleGoalEdit=function(n,t){document.querySelectorAll(`.goal-view-${n}`).forEach(e=>t?e.classList.add("hidden"):e.classList.remove("hidden")),document.querySelectorAll(`.goal-edit-${n}`).forEach(e=>t?e.classList.remove("hidden"):e.classList.add("hidden"))};window.addGoalRow=function(){let n=document.getElementById("ins-goal-name").value.trim(),t=document.getElementById("ins-goal-start").value,e=we(t),i=document.getElementById("ins-goal-end").value,s=we(i),o=document.getElementById("ins-goal-current").value,a=document.getElementById("ins-goal-target").value;if(!n||!a){T("Vui lòng nhập Tên mục tiêu và Chỉ tiêu cần đạt!","warning");return}let r=Math.max(...dt.map(d=>d.rowNumber),1)+1,l={rowNumber:r,goal_name:n,start_date:e,end_date:s,current_value:Number(o),target_value:Number(a)};dt.push(l),fn(),document.getElementById("ins-goal-name").value="",document.getElementById("ins-goal-end").value="",document.getElementById("ins-goal-current").value="0",document.getElementById("ins-goal-target").value="",F("insertGoalRow",[n,e,s,o,a]).then(d=>{d!=="Thành công"&&c(d)}).catch(d=>{c(d.message)});function c(d){dt=dt.filter(u=>u.rowNumber!==r),fn(),document.getElementById("ins-goal-name").value=n,document.getElementById("ins-goal-end").value=i,document.getElementById("ins-goal-current").value=o,document.getElementById("ins-goal-target").value=a,T("Lỗi đồng bộ: "+d+". Đã khôi phục trạng thái cũ.","error")}};window.saveGoal=function(n){let t=document.getElementById(`goal-edit-name-${n}`).value.trim(),e=document.getElementById(`goal-edit-start-${n}`).value,i=we(e),s=document.getElementById(`goal-edit-end-${n}`).value,o=we(s),a=document.getElementById(`goal-edit-current-${n}`).value,r=document.getElementById(`goal-edit-target-${n}`).value,l=dt.findIndex(u=>u.rowNumber==n);if(l===-1)return;let c={...dt[l]};dt[l].goal_name=t,dt[l].start_date=i,dt[l].end_date=o,dt[l].current_value=Number(a),dt[l].target_value=Number(r),window.toggleGoalEdit(n,!1),fn(),T("Đã cập nhật mục tiêu thành công!","success"),F("updateGoalRow",[n,t,i,o,a,r]).then(u=>{u!=="Thành công"&&d(u)}).catch(u=>{d(u.message)});function d(u){l!==-1&&(dt[l]=c),fn(),window.toggleGoalEdit(n,!0),T("Lỗi cập nhật: "+u+". Đã khôi phục trạng thái cũ.","error")}};window.deleteGoal=function(n){let t=dt.findIndex(o=>o.rowNumber==n);if(t===-1)return;let e=dt[t],i=t;dt.splice(t,1),dt.forEach(o=>{o.rowNumber>n&&o.rowNumber--}),fn(),T("Đã xóa mục tiêu thành công!","success"),F("deleteGoalRow",[n]).then(o=>{o!=="Thành công"&&s(o)}).catch(o=>{s(o.message)});function s(o){dt.forEach(a=>{a.rowNumber>=n&&a.rowNumber++}),dt.splice(i,0,e),fn(),T("Lỗi xóa: "+o+". Đã khôi phục trạng thái cũ.","error")}};let j=[];function Jg(n,t){j=(n||[]).map(o=>({...o,urgent:o.urgent===!0||o.urgent==="TRUE",important:o.important===!0||o.important==="TRUE",status:o.status===!0||o.status==="TRUE"}));const e=document.getElementById("total-tasks");e&&(e.innerText=j.length);const i=document.getElementById("ins-task-date");if(i){const o=new Date,a=o.getFullYear(),r=String(o.getMonth()+1).padStart(2,"0"),l=String(o.getDate()).padStart(2,"0");i.value=`${a}-${r}-${l}`}const s=document.getElementById("task-matrix-view-container")&&!document.getElementById("task-matrix-view-container").classList.contains("hidden");At(),s&&Zo()}function At(){const n=document.querySelector("#table-task tbody");if(!n)return;n.innerHTML="";const t=document.getElementById("taskSearchInput"),e=document.getElementById("taskStatusFilter");let i=t?t.value.toLowerCase().trim():"",s=e?e.value:"All",o=[...j];o.sort((a,r)=>yt(r.date)-yt(a.date)),o.forEach(a=>{let r=a.rowNumber,l=a.date||"-",c=a.task||"",d=a.status===!0||a.status==="TRUE"||a.status==="v"||a.status==="checked",u=a.urgent===!0||a.urgent==="TRUE",h=a.important===!0||a.important==="TRUE";s==="Completed"&&!d||s==="Pending"&&d||i!==""&&!c.toLowerCase().includes(i)&&!l.toLowerCase().includes(i)||n.insertAdjacentHTML("beforeend",`
       <tr id="task-row-${r}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-xs text-slate-500 task-view-${r}">${S(l)}</td>
-        <td class="p-4 font-semibold text-slate-800 text-sm task-view-${r} ${d?"text-slate-400 font-medium":""}">
-          <div class="flex items-center gap-2">
+        <!-- Column 1: Date -->
+        <td class="p-4 pl-6 font-semibold text-xs text-slate-500">
+          <span class="task-view-${r}">${S(l)}</span>
+          <div class="hidden task-edit-${r}">
+            <input type="date" id="task-edit-date-${r}" class="edit-input w-full" value="${oi(l)}">
+          </div>
+        </td>
+
+        <!-- Column 2: Task details -->
+        <td class="p-4 font-semibold text-slate-800 text-sm">
+          <div class="task-view-${r} flex items-center gap-2 ${d?"text-slate-400 font-medium":""}">
             <span class="task-text-display">${S(c)}</span>
             <div class="flex items-center gap-1.5 shrink-0 ml-auto select-none">
               <button onclick="window.toggleTaskUrgent(${r})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${u?"text-slate-700 bg-slate-100":"text-slate-300"}" title="Khẩn cấp: ${u?"Có":"Không"}">
@@ -336,17 +344,7 @@ Text: "${n}"`;if(e==="gemini"){if(!i)throw new Error("Thiếu Gemini API Key.");
               </button>
             </div>
           </div>
-        </td>
-        <td class="p-4 pl-12 text-left">
-          <label class="inline-flex items-center gap-3 cursor-pointer select-none">
-            <input type="checkbox" id="task-chk-${r}" class="habit-checkbox shrink-0" ${d?"checked":""} onchange="toggleTaskStatusDirectly(${r}, this)">
-            <span id="task-lbl-${r}" class="text-xs font-semibold tracking-wide ${d?"text-emerald-600":"text-slate-400"}">${d?"Completed":"Pending"}</span>
-          </label>
-        </td>
-        
-        <td class="p-4 pl-6 hidden task-edit-${r}"><input type="date" id="task-edit-date-${r}" class="edit-input" value="${oi(l)}"></td>
-        <td class="p-4 hidden task-edit-${r}">
-          <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+          <div class="hidden task-edit-${r} flex flex-col sm:flex-row gap-3 items-start sm:items-center">
             <input type="text" id="task-edit-desc-${r}" class="edit-input font-bold w-full" value="${S(c)}">
             <div class="flex items-center gap-3 shrink-0 select-none pb-1">
               <label class="inline-flex items-center gap-1.5 cursor-pointer">
@@ -360,7 +358,16 @@ Text: "${n}"`;if(e==="gemini"){if(!i)throw new Error("Thiếu Gemini API Key.");
             </div>
           </div>
         </td>
+
+        <!-- Column 3: Status -->
+        <td class="p-4 pl-12 text-left">
+          <label class="inline-flex items-center gap-3 cursor-pointer select-none">
+            <input type="checkbox" id="task-chk-${r}" class="habit-checkbox shrink-0" ${d?"checked":""} onchange="toggleTaskStatusDirectly(${r}, this)">
+            <span id="task-lbl-${r}" class="text-xs font-semibold tracking-wide ${d?"text-emerald-600":"text-slate-400"}">${d?"Completed":"Pending"}</span>
+          </label>
+        </td>
         
+        <!-- Column 4: Action -->
         <td class="p-4 text-center">
           <div class="task-view-${r} flex justify-center gap-2">
             <button onclick="toggleTaskEdit(${r}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></button>
