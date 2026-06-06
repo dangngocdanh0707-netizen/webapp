@@ -49,6 +49,7 @@ personal_webapp/
   * **🛡️ Bộ lọc tối ưu hóa & Safeguard**: Prompt của AI được tối ưu hóa để loại bỏ gợi ý từ vựng nâng cấp gây hiểu nhầm. Frontend bổ sung bộ lọc tự động nhận diện câu đúng (`isCorrect = true`) nếu giải thích tiếng Việt của AI chứa các từ khóa khẳng định câu của người dùng *"không sai"*, *"không có lỗi"*.
   * **💡 Smart Response Hints**: Sau mỗi lượt AI trả lời, tự động gợi ý 3 câu trả lời tự nhiên phù hợp ngữ cảnh dưới dạng pill button. Bấm vào pill để điền nhanh vào ô chat (có thể chỉnh sửa trước khi gửi).
   * **🌐 Dịch tức thì (Instant Translation)**: Nút 🌐 trên mỗi bong bóng AI cho phép dịch câu sang tiếng Việt tự nhiên ngay trong giao diện, có cache để không gọi API lần 2.
+  * **💾 Đồng bộ Lịch sử Trò chuyện (Chat History Sync)**: Tự động lưu trữ và đồng bộ hóa hai chiều lịch sử chat với đối tác AI lên Google Sheets tại tab `chat_histories`. Tự động tải lịch sử chat cũ khi mở ứng dụng và phân loại theo từng kịch bản hội thoại để người dùng dễ dàng xem lại.
 * **📝 Nhật ký lỗi ngữ pháp (Grammar Error Diary)**:
   * Tự động ghi lại các câu có lỗi ngữ pháp trong quá trình chat với AI Speaking Partner và đồng bộ trực tiếp lên Google Sheets.
   * Lưu dữ liệu vào **dòng trống đầu tiên** tìm được trong sheet (giống `insertTaskRow`), không tạo dòng mới cuối bảng, phù hợp với sheet đã chuẩn bị checkbox sẵn.
@@ -86,6 +87,7 @@ Nếu Spreadsheet trống, hệ thống sẽ **tự động khởi tạo** các 
 | **`google_maps`**| place | city | category | address | status | |
 | **`collections`**| item | brand | style | category | status | |
 | **`grammar_diaries`**| date | scenario | user_sentence | corrected_sentence | explanation | **status** (checkbox — TRUE = Mastered) |
+| **`chat_histories`**| date | scenario | role | content | | |
 
 ---
 

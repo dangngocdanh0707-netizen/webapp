@@ -317,16 +317,13 @@ window.sendAiChatMessage = async function() {
   });
   renderAiChatBubbles();
 
-  // Đồng bộ tin nhắn user lên Google Sheets
+  // Định nghĩa ngày giờ và kịch bản hội thoại để dùng chung cho việc lưu trữ
   const dateObj = new Date();
   const day = String(dateObj.getDate()).padStart(2, '0');
   const month = String(dateObj.getMonth() + 1).padStart(2, '0');
   const year = dateObj.getFullYear();
   const dateStr = `${year}-${month}-${day}`;
   const scenarioTitle = SCENARIOS[activeScenario]?.title || activeScenario;
-
-  callServer("insertChatHistoryRow", [dateStr, scenarioTitle, "user", userText])
-    .catch(err => console.error("[ai_chat.js] Lỗi lưu tin nhắn user vào Google Sheet:", err));
 
   // Reset UI feedback cũ khi gửi câu mới
   resetGrammarFeedbackUI();
@@ -349,9 +346,10 @@ window.sendAiChatMessage = async function() {
     });
     renderAiChatBubbles();
 
-    // Đồng bộ tin nhắn AI lên Google Sheets
-    callServer("insertChatHistoryRow", [dateStr, scenarioTitle, "ai", result.reply])
-      .catch(err => console.error("[ai_chat.js] Lỗi lưu phản hồi AI vào Google Sheet:", err));
+    // Đồng bộ tin nhắn (User và AI) tuần tự lên Google Sheets sau khi AI phản hồi thành công
+    callServer("insertChatHistoryRow", [dateStr, scenarioTitle, "user", userText])
+      .then(() => callServer("insertChatHistoryRow", [dateStr, scenarioTitle, "ai", result.reply]))
+      .catch(err => console.error("[ai_chat.js] Lỗi lưu lịch sử chat vào Google Sheet:", err));
 
     // Hiển thị phân tích lỗi ngữ pháp & nâng cấp câu lên thanh bên phải
     renderGrammarFeedbackUI(userText, result);
