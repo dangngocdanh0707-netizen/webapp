@@ -135,17 +135,17 @@ function updateSrsCounts() {
 export function initSrsModule(vocabData, onSync) {
   allVocabData = vocabData || [];
   onSyncNeeded = onSync;
-  
+
   let today = new Date();
   today.setHours(0, 0, 0, 0);
   let todayTs = today.getTime();
-  
+
   // 1. Lọc tất cả thẻ cũ cần ôn tập (due cards) hoặc thẻ đang học lại (Relearning)
   let dueCards = allVocabData.filter(v => {
     let nr = v.next_review ? v.next_review.toString().trim() : "";
     let status = (v.status || "").toString().trim();
     if (status === "New" || nr === "") return false;
-    
+
     let nrTs = parseDateToTimestamp(nr);
     return nrTs <= todayTs || status === "Relearning";
   });
@@ -161,12 +161,12 @@ export function initSrsModule(vocabData, onSync) {
   reviewQueue = [...dueCards, ...newCards];
   activeQueue = [];
   fillActiveQueue();
-  
+
   updateSrsCounts();
-  
+
   let totalDue = reviewQueue.length + activeQueue.length;
   const headlineEl = document.getElementById('practice-headline');
-  
+
   if (totalDue > 0) {
     if (headlineEl) headlineEl.innerText = `You have ${totalDue} items due for today!`;
   } else {
@@ -192,16 +192,16 @@ function speakWord(word) {
 function showInteractiveFeedback(isCorrect, message) {
   const fbEl = document.getElementById('practice-interactive-feedback');
   if (!fbEl) return;
-  
+
   if (isCorrect === null || !message || message.trim() === "") {
     fbEl.classList.add('hidden');
     fbEl.innerText = "";
     return;
   }
-  
+
   fbEl.innerText = message;
   fbEl.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-700', 'bg-rose-50', 'text-rose-700', 'bg-blue-50', 'text-blue-700');
-  
+
   if (isCorrect === true) {
     fbEl.classList.add('bg-emerald-50', 'text-emerald-700');
   } else if (isCorrect === false) {
@@ -217,13 +217,13 @@ function highlightSrsButton(scoreOrSuccess) {
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
-window.playPracticeTTS = function() {
+window.playPracticeTTS = function () {
   if (currentPracticeWord && currentPracticeWord.content) {
     speakWord(currentPracticeWord.content);
   }
 };
 
-window.triggerRandomVocab = function() {
+window.triggerRandomVocab = function () {
   fillActiveQueue();
   let totalDue = reviewQueue.length + activeQueue.length;
   if (totalDue === 0) {
@@ -231,51 +231,51 @@ window.triggerRandomVocab = function() {
     const cardContent = document.getElementById('practice-card-content');
     if (cardContent) cardContent.classList.add('hidden');
     if (emptyState) emptyState.classList.remove('hidden');
-    
+
     const headlineEl = document.getElementById('practice-headline');
     const sublineEl = document.getElementById('practice-subline');
     if (headlineEl) headlineEl.innerText = "🎉 All caught up!";
     if (sublineEl) sublineEl.innerText = "Excellent. You have no pending card reviews scheduled for today.";
-    
+
     updateSrsCounts();
     return;
   }
-  
+
   if (activeQueue.length === 0) {
     showToast("Hộp từ vựng ôn tập của bạn đã trống! Hãy thêm từ mới hoặc quay lại vào ngày mai nhé.", "info");
     return;
   }
-  
+
   const emptyState = document.getElementById('practice-empty-state');
   const cardContent = document.getElementById('practice-card-content');
   if (emptyState) emptyState.classList.add('hidden');
   if (cardContent) cardContent.classList.remove('hidden');
-  
+
   const meaningBox = document.getElementById('practice-meaning-box');
   if (meaningBox) {
     meaningBox.classList.add('hidden');
     meaningBox.classList.add('opacity-0', 'translate-y-2');
     meaningBox.classList.remove('opacity-100', 'translate-y-0');
   }
-  
+
   const randomIndex = Math.floor(Math.random() * activeQueue.length);
   currentPracticeWord = activeQueue[randomIndex];
-  
+
   const wordContent = currentPracticeWord.content || 'Untitled';
-  
+
   const wordDisplay = document.getElementById('practice-word-display');
   const meaningDisplay = document.getElementById('practice-meaning-display');
-  
+
   if (meaningDisplay) meaningDisplay.innerText = currentPracticeWord.meaning || 'No translation attached.';
-  
+
   // Hide all mode containers first
   document.getElementById('practice-mode-typing').classList.add('hidden');
   document.getElementById('practice-mode-scramble').classList.add('hidden');
-  
+
   const feedbackEl = document.getElementById('practice-interactive-feedback');
   if (feedbackEl) feedbackEl.classList.add('hidden');
   showInteractiveFeedback(null, "");
-  
+
   // Reset highlight buttons
   const srsButtons = document.querySelectorAll('#practice-action-metrics button');
   srsButtons.forEach(btn => btn.classList.remove('ring-4', 'ring-blue-500', 'border-blue-500', 'bg-blue-50'));
@@ -288,17 +288,17 @@ window.triggerRandomVocab = function() {
       inputEl.placeholder = "";
       inputEl.disabled = false;
       inputEl.className = "practice-typing-input";
-      inputEl.onkeydown = function(e) {
+      inputEl.onkeydown = function (e) {
         if (e.key === "Enter") {
           e.preventDefault();
           checkTypingAnswer();
         }
       };
-      inputEl.oninput = function() {
+      inputEl.oninput = function () {
         const userAns = inputEl.value;
         const targetAns = currentPracticeWord.content || "";
         const clean = (str) => str.toLowerCase()
-          .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"")
+          .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
           .replace(/\s+/g, " ")
           .trim();
         if (clean(userAns) === clean(targetAns)) {
@@ -319,12 +319,12 @@ window.triggerRandomVocab = function() {
       .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "")
       .split(/\s+/)
       .filter(w => w.trim() !== "");
-      
+
     let shuffled = [...rawWords].sort(() => Math.random() - 0.5);
     if (shuffled.length > 1 && shuffled.join(" ") === rawWords.join(" ")) {
       shuffled = [...rawWords].sort(() => Math.random() - 0.5);
     }
-    
+
     scrambleTiles = shuffled.map((word, idx) => ({
       id: `tile-${idx}`,
       word: word,
@@ -333,17 +333,17 @@ window.triggerRandomVocab = function() {
     scrambleUserOrder = [];
     updateScrambleUI();
   }
-  
+
   // Display meaning as the prompt, fallback to standard hint if meaning is empty
   if (currentPracticeWord.meaning && currentPracticeWord.meaning.trim() !== "") {
     if (wordDisplay) wordDisplay.innerText = currentPracticeWord.meaning;
   } else {
     if (wordDisplay) wordDisplay.innerText = isSingleWord(currentPracticeWord) ? "Listen & Write..." : "Listen & Arrange...";
   }
-  
+
   // Auto play TTS triggers automatically on card loading
   speakWord(wordContent);
-  
+
   // Calculate Dynamic Anki Days
   let currentInterval = Number(currentPracticeWord.interval) || 0;
   let currentEase = Number(currentPracticeWord.ease_factor) || 2.5;
@@ -382,11 +382,11 @@ window.triggerRandomVocab = function() {
   if (lblHard) lblHard.innerText = formatAnkiTime(currentPracticeWord.nextStates.hard.interval);
   if (lblGood) lblGood.innerText = formatAnkiTime(currentPracticeWord.nextStates.good.interval);
   if (lblEasy) lblEasy.innerText = formatAnkiTime(currentPracticeWord.nextStates.easy.interval);
-  
+
   const btnTrigger = document.getElementById('btn-practice-trigger');
   const btnReveal = document.getElementById('btn-practice-reveal');
   const actionMetrics = document.getElementById('practice-action-metrics');
-  
+
   if (btnTrigger) btnTrigger.classList.add('hidden');
   if (btnReveal) btnReveal.classList.remove('hidden');
   if (actionMetrics) actionMetrics.classList.add('hidden');
@@ -394,18 +394,18 @@ window.triggerRandomVocab = function() {
 
 let draggedTileId = null;
 
-window.onScrambleDragStart = function(event, tileId) {
+window.onScrambleDragStart = function (event, tileId) {
   draggedTileId = tileId;
   event.dataTransfer.effectAllowed = 'move';
   event.target.classList.add('opacity-40');
 };
 
-window.onScrambleDragOver = function(event) {
+window.onScrambleDragOver = function (event) {
   event.preventDefault();
   event.dataTransfer.dropEffect = 'move';
 };
 
-window.onScrambleDrop = function(event, targetTileId) {
+window.onScrambleDrop = function (event, targetTileId) {
   event.preventDefault();
   if (!draggedTileId || draggedTileId === targetTileId) return;
 
@@ -420,15 +420,15 @@ window.onScrambleDrop = function(event, targetTileId) {
     if (currentPracticeWord) {
       const targetText = currentPracticeWord.content || "";
       const clean = (str) => str.toLowerCase()
-        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"")
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
         .replace(/\s+/g, " ")
         .trim();
-      
+
       const userSentence = scrambleUserOrder.map(id => {
         const t = scrambleTiles.find(x => x.id === id);
         return t ? t.word : "";
       }).join(" ");
-      
+
       if (clean(userSentence) === clean(targetText)) {
         checkScrambleAnswer();
       }
@@ -436,12 +436,12 @@ window.onScrambleDrop = function(event, targetTileId) {
   }
 };
 
-window.onScrambleDragEnd = function(event) {
+window.onScrambleDragEnd = function (event) {
   event.target.classList.remove('opacity-40');
   draggedTileId = null;
 };
 
-window.shiftScrambleTile = function(tileId, direction) {
+window.shiftScrambleTile = function (tileId, direction) {
   const index = scrambleUserOrder.indexOf(tileId);
   if (index === -1) return;
 
@@ -457,15 +457,15 @@ window.shiftScrambleTile = function(tileId, direction) {
   if (currentPracticeWord) {
     const targetText = currentPracticeWord.content || "";
     const clean = (str) => str.toLowerCase()
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"")
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
       .replace(/\s+/g, " ")
       .trim();
-    
+
     const userSentence = scrambleUserOrder.map(id => {
       const t = scrambleTiles.find(x => x.id === id);
       return t ? t.word : "";
     }).join(" ");
-    
+
     if (clean(userSentence) === clean(targetText)) {
       checkScrambleAnswer();
     }
@@ -483,7 +483,7 @@ function updateScrambleUI() {
     outputContainer.innerHTML = scrambleUserOrder.map(tileId => {
       const tile = scrambleTiles.find(t => t.id === tileId);
       if (!tile) return "";
-      
+
       return `
         <button draggable="true"
           ondragstart="onScrambleDragStart(event, '${tile.id}')"
@@ -517,7 +517,7 @@ function updateScrambleUI() {
   }).join("");
 }
 
-window.selectScrambleTile = function(tileId) {
+window.selectScrambleTile = function (tileId) {
   const tile = scrambleTiles.find(t => t.id === tileId);
   if (!tile || tile.selected) return;
 
@@ -528,22 +528,22 @@ window.selectScrambleTile = function(tileId) {
   if (currentPracticeWord) {
     const targetText = currentPracticeWord.content || "";
     const clean = (str) => str.toLowerCase()
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"")
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
       .replace(/\s+/g, " ")
       .trim();
-    
+
     const userSentence = scrambleUserOrder.map(id => {
       const t = scrambleTiles.find(x => x.id === id);
       return t ? t.word : "";
     }).join(" ");
-    
+
     if (clean(userSentence) === clean(targetText)) {
       checkScrambleAnswer();
     }
   }
 };
 
-window.deselectScrambleTile = function(tileId) {
+window.deselectScrambleTile = function (tileId) {
   const tile = scrambleTiles.find(t => t.id === tileId);
   if (!tile || !tile.selected) return;
 
@@ -552,33 +552,33 @@ window.deselectScrambleTile = function(tileId) {
   updateScrambleUI();
 };
 
-window.resetScramble = function() {
+window.resetScramble = function () {
   scrambleTiles.forEach(tile => {
     tile.selected = false;
   });
   scrambleUserOrder = [];
   updateScrambleUI();
-  
+
   const feedbackEl = document.getElementById('practice-interactive-feedback');
   if (feedbackEl) feedbackEl.classList.add('hidden');
 };
 
-window.checkScrambleAnswer = function() {
+window.checkScrambleAnswer = function () {
   if (!currentPracticeWord) return;
   const targetText = currentPracticeWord.content || "";
-  
+
   const clean = (str) => str.toLowerCase()
-    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"")
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
     .replace(/\s+/g, " ")
     .trim();
-  
+
   const userSentence = scrambleUserOrder.map(tileId => {
     const tile = scrambleTiles.find(t => t.id === tileId);
     return tile ? tile.word : "";
   }).join(" ");
-  
+
   const isCorrect = clean(userSentence) === clean(targetText);
-  
+
   if (isCorrect) {
     const outputContainer = document.getElementById('practice-scramble-output');
     if (outputContainer) {
@@ -596,27 +596,27 @@ window.checkScrambleAnswer = function() {
       }, 1000);
     }
   }
-  
+
   revealPracticeMeaning();
   highlightSrsButton(isCorrect);
 };
 
-window.checkTypingAnswer = function() {
+window.checkTypingAnswer = function () {
   if (!currentPracticeWord) return;
   const inputEl = document.getElementById('practice-typing-input');
   if (!inputEl) return;
-  
+
   const userAns = inputEl.value.trim();
   const targetAns = currentPracticeWord.content || "";
-  
+
   // Clean punctuation and normalize spacing for robust checking
   const clean = (str) => str.toLowerCase()
-    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"")
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
     .replace(/\s+/g, " ")
     .trim();
 
   const isCorrect = clean(userAns) === clean(targetAns);
-  
+
   if (isCorrect) {
     inputEl.className = "practice-typing-input practice-state-correct";
     inputEl.disabled = true;
@@ -628,22 +628,22 @@ window.checkTypingAnswer = function() {
       inputEl.classList.remove('practice-state-incorrect');
     }, 1000);
   }
-  
+
   revealPracticeMeaning();
   highlightSrsButton(isCorrect);
 };
 
-window.revealPracticeMeaning = function() {
+window.revealPracticeMeaning = function () {
   const meaningBox = document.getElementById('practice-meaning-box');
   if (meaningBox) {
     meaningBox.classList.add('hidden');
   }
-  
+
   const poolContainer = document.getElementById('practice-scramble-pool');
   if (poolContainer) poolContainer.classList.add('hidden');
-  
+
   // Do NOT change wordDisplay to English content anymore, keep it as the Vietnamese meaning
-  
+
   if (currentPracticeWord) {
     // Reveal correct answer inside interactive containers if not already correct
     if (isSingleWord(currentPracticeWord)) {
@@ -664,19 +664,19 @@ window.revealPracticeMeaning = function() {
       }
     }
   }
-  
+
   const btnReveal = document.getElementById('btn-practice-reveal');
   const actionMetrics = document.getElementById('practice-action-metrics');
   if (btnReveal) btnReveal.classList.add('hidden');
   if (actionMetrics) actionMetrics.classList.remove('hidden');
-  
+
   // Play native TTS pronunciation when revealing answer
   if (currentPracticeWord) {
     speakWord(currentPracticeWord.content || "");
   }
 };
 
-window.logPracticeAction = function(action) {
+window.logPracticeAction = function (action) {
   if (!currentPracticeWord || !currentPracticeWord.nextStates) return;
 
   let rowNumber = currentPracticeWord.rowNumber;
@@ -689,9 +689,9 @@ window.logPracticeAction = function(action) {
   const nextReviewDate = new Date();
   nextReviewDate.setHours(0, 0, 0, 0);
   nextReviewDate.setDate(nextReviewDate.getDate() + finalInterval);
-  const nextReviewStr = nextReviewDate.getFullYear() + '-' + 
-                        String(nextReviewDate.getMonth() + 1).padStart(2, '0') + '-' + 
-                        String(nextReviewDate.getDate()).padStart(2, '0');
+  const nextReviewStr = nextReviewDate.getFullYear() + '-' +
+    String(nextReviewDate.getMonth() + 1).padStart(2, '0') + '-' +
+    String(nextReviewDate.getDate()).padStart(2, '0');
 
   // Cập nhật thông tin trực tiếp trên thẻ từ vựng cục bộ
   if (currentPracticeWord.interval > 0 && (currentPracticeWord.prevInterval === undefined || currentPracticeWord.prevInterval === null)) {
@@ -724,7 +724,7 @@ window.logPracticeAction = function(action) {
   } else {
     if (cardContent) cardContent.classList.add('hidden');
     if (emptyState) emptyState.classList.remove('hidden');
-    
+
     const headlineEl = document.getElementById('practice-headline');
     const sublineEl = document.getElementById('practice-subline');
     if (headlineEl) headlineEl.innerText = "🎉 All caught up!";
@@ -747,7 +747,7 @@ window.logPracticeAction = function(action) {
     });
 };
 
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
   const practiceTab = document.getElementById('practice-tab');
   if (!practiceTab || !practiceTab.classList.contains('active')) return;
 
@@ -762,13 +762,13 @@ document.addEventListener('keydown', function(e) {
   if (e.key === "Enter") {
     const scrambleMode = document.getElementById('practice-mode-scramble');
     const actionMetrics = document.getElementById('practice-action-metrics');
-    
+
     if (scrambleMode && !scrambleMode.classList.contains('hidden') && actionMetrics && actionMetrics.classList.contains('hidden')) {
       e.preventDefault();
       checkScrambleAnswer();
       return;
     }
-    
+
     const btnReveal = document.getElementById('btn-practice-reveal');
     if (btnReveal && !btnReveal.classList.contains('hidden')) {
       e.preventDefault();

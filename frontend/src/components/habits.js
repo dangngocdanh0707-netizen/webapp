@@ -7,7 +7,7 @@ let onSyncNeeded = null;
 
 export function initHabitsModule(data, onSync) {
   let today = new Date();
-  today.setHours(0,0,0,0);
+  today.setHours(0, 0, 0, 0);
   const todayTimestamp = today.getTime();
 
   allHabitData = (data || []).filter(item => {
@@ -26,7 +26,7 @@ export function initHabitsModule(data, onSync) {
   let todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
 
   let habitDates = [...new Set(allHabitData.map(h => h.date))];
-  
+
   habitDates.sort((a, b) => {
     return parseDateToTimestamp(a) - parseDateToTimestamp(b);
   });
@@ -43,7 +43,7 @@ export function initHabitsModule(data, onSync) {
 
     let defaultSelectVal = sortedHabitDatesForFilter[0] || todayStr;
     dateSelect.value = defaultSelectVal;
-    
+
     // Mặc định khởi chạy giao diện xem lưới và xem danh sách
     buildHabitGrid();
     buildHabitTable(defaultSelectVal);
@@ -57,7 +57,7 @@ export function initHabitsModule(data, onSync) {
 
   let performanceDataPerDay = [];
   let totalPerformanceSum = 0;
-  
+
   let activeDates = [...habitDates];
   activeDates.sort((a, b) => parseDateToTimestamp(a) - parseDateToTimestamp(b));
 
@@ -296,11 +296,11 @@ window.toggleHabitStatusDirectly = function (rowNumber, checkboxEl) {
       allHabitData[idx].status = oldStatus;
     }
     checkboxEl.checked = oldStatus;
-    
+
     let isDone = oldStatus === true || oldStatus === "TRUE" || oldStatus === "√" || oldStatus === "checked";
     labelEl.innerText = isDone ? "Completed" : "Pending";
     labelEl.className = isDone ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
-    
+
     recalculateHabitChartOnly();
     buildHabitGrid();
     showToast("Sync error: " + errorMessage, "error");
