@@ -65,9 +65,17 @@ export function buildTaskTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="task-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-xs text-slate-500 task-view-${id}">${escapeHTML(dateStr)}</td>
-        <td class="p-4 font-semibold text-slate-800 text-sm task-view-${id} ${isDone ? 'text-slate-400 font-medium' : ''}">
-          <div class="flex items-center gap-2">
+        <!-- Column 1: Date -->
+        <td class="p-4 pl-6 font-semibold text-xs text-slate-500">
+          <span class="task-view-${id}">${escapeHTML(dateStr)}</span>
+          <div class="hidden task-edit-${id}">
+            <input type="date" id="task-edit-date-${id}" class="edit-input w-full" value="${formatDateInput(dateStr)}">
+          </div>
+        </td>
+
+        <!-- Column 2: Task details -->
+        <td class="p-4 font-semibold text-slate-800 text-sm">
+          <div class="task-view-${id} flex items-center gap-2 ${isDone ? 'text-slate-400 font-medium' : ''}">
             <span class="task-text-display">${escapeHTML(taskText)}</span>
             <div class="flex items-center gap-1.5 shrink-0 ml-auto select-none">
               <button onclick="window.toggleTaskUrgent(${id})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${isUrgent ? 'text-slate-700 bg-slate-100' : 'text-slate-300'}" title="Khẩn cấp: ${isUrgent ? 'Có' : 'Không'}">
@@ -78,17 +86,7 @@ export function buildTaskTable() {
               </button>
             </div>
           </div>
-        </td>
-        <td class="p-4 pl-12 text-left">
-          <label class="inline-flex items-center gap-3 cursor-pointer select-none">
-            <input type="checkbox" id="task-chk-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="toggleTaskStatusDirectly(${id}, this)">
-            <span id="task-lbl-${id}" class="text-xs font-semibold tracking-wide ${isDone ? 'text-emerald-600' : 'text-slate-400'}">${isDone ? 'Completed' : 'Pending'}</span>
-          </label>
-        </td>
-        
-        <td class="p-4 pl-6 hidden task-edit-${id}"><input type="date" id="task-edit-date-${id}" class="edit-input" value="${formatDateInput(dateStr)}"></td>
-        <td class="p-4 hidden task-edit-${id}">
-          <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+          <div class="hidden task-edit-${id} flex flex-col sm:flex-row gap-3 items-start sm:items-center">
             <input type="text" id="task-edit-desc-${id}" class="edit-input font-bold w-full" value="${escapeHTML(taskText)}">
             <div class="flex items-center gap-3 shrink-0 select-none pb-1">
               <label class="inline-flex items-center gap-1.5 cursor-pointer">
@@ -102,7 +100,16 @@ export function buildTaskTable() {
             </div>
           </div>
         </td>
+
+        <!-- Column 3: Status -->
+        <td class="p-4 pl-12 text-left">
+          <label class="inline-flex items-center gap-3 cursor-pointer select-none">
+            <input type="checkbox" id="task-chk-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="toggleTaskStatusDirectly(${id}, this)">
+            <span id="task-lbl-${id}" class="text-xs font-semibold tracking-wide ${isDone ? 'text-emerald-600' : 'text-slate-400'}">${isDone ? 'Completed' : 'Pending'}</span>
+          </label>
+        </td>
         
+        <!-- Column 4: Action -->
         <td class="p-4 text-center">
           <div class="task-view-${id} flex justify-center gap-2">
             <button onclick="toggleTaskEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></button>
