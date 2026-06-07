@@ -534,19 +534,14 @@
 
                 type="number" id="ins-cost-amount" class="form-input font-bold"></div>
 
-            <div><label
-
+            <div class="flex items-end gap-3">
+              <div class="flex-1"><label
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">NOTE</label><input
-
                 type="text" id="ins-cost-note" class="form-input"></div>
+              <button onclick="addCostRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+            </div>
 
           </div>
-
-          <div class="flex justify-end mt-4"><button onclick="addCostRow()"
-
-              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
-
-                class="fa-solid fa-floppy-disk mr-1"></i> Save</button></div>
 
         </div>
 
@@ -690,23 +685,15 @@
 
           <div class="grid grid-cols-1 gap-4 items-end">
 
-            <div>
-
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label>
-
-              <input type="text" id="ins-v-content"
-
-                class="form-input font-bold">
-
+            <div class="flex items-end gap-3">
+              <div class="flex-1">
+                <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label>
+                <input type="text" id="ins-v-content" class="form-input font-bold">
+              </div>
+              <button onclick="addVocabRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
             </div>
 
           </div>
-
-          <div class="flex justify-end mt-4"><button onclick="addVocabRow()"
-
-              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
-
-                class="fa-solid fa-floppy-disk mr-1"></i> Save</button></div>
 
         </div>
 
@@ -1466,17 +1453,12 @@
 
                 VALUE</label><input type="number" id="ins-goal-current" class="form-input font-bold" value="0"></div>
 
-            <div><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TARGET
-
-                VALUE</label><input type="number" id="ins-goal-target" class="form-input font-bold"></div>
+            <div class="flex items-end gap-3">
+              <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TARGET VALUE</label><input type="number" id="ins-goal-target" class="form-input font-bold"></div>
+              <button onclick="addGoalRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+            </div>
 
           </div>
-
-          <div class="flex justify-end mt-4"><button onclick="addGoalRow()"
-
-              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
-
-                class="fa-solid fa-floppy-disk mr-1"></i> Save</button></div>
 
         </div>
 
@@ -1578,19 +1560,12 @@
 
                 type="text" id="ins-link-cat" class="form-input font-semibold"></div>
 
-            <div><label
-
-                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label><input
-
-                type="text" id="ins-link-content" class="form-input"></div>
+            <div class="flex items-end gap-3">
+              <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label><input type="text" id="ins-link-content" class="form-input"></div>
+              <button onclick="addLinkRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+            </div>
 
           </div>
-
-          <div class="flex justify-end mt-4"><button onclick="addLinkRow()"
-
-              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
-
-                class="fa-solid fa-floppy-disk mr-1"></i> Save</button></div>
 
         </div>
 
@@ -1722,19 +1697,12 @@
 
                 type="text" id="ins-prompt-cat" class="form-input font-semibold"></div>
 
-            <div><label
-
-                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label><input
-
-                type="text" id="ins-prompt-content" class="form-input"></div>
+            <div class="flex items-end gap-3">
+              <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label><input type="text" id="ins-prompt-content" class="form-input"></div>
+              <button onclick="addPromptRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+            </div>
 
           </div>
-
-          <div class="flex justify-end mt-4"><button onclick="addPromptRow()"
-
-              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
-
-                class="fa-solid fa-floppy-disk mr-1"></i> Save</button></div>
 
         </div>
 
@@ -1864,7 +1832,7 @@
 
                 type="date" id="ins-task-date" class="form-input"></div>
 
-            <div class="md:col-span-7"><label
+            <div class="md:col-span-6"><label
 
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TASK</label><input
 
@@ -1896,13 +1864,11 @@
 
             </div>
 
+            <div class="md:col-span-1 flex items-end pb-px">
+              <button onclick="addTaskRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 w-full justify-center h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+            </div>
+
           </div>
-
-          <div class="flex justify-end mt-4"><button onclick="addTaskRow()"
-
-              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
-
-                class="fa-solid fa-floppy-disk mr-1"></i> Save</button></div>
 
         </div>
 
@@ -2137,25 +2103,13 @@
 
             </div>
 
-            <div>
-
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">ADDRESS</label>
-
-              <input type="text" id="ins-map-address" placeholder="" class="form-input">
-
+            <div class="flex items-end gap-3">
+              <div class="flex-1">
+                <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">ADDRESS</label>
+                <input type="text" id="ins-map-address" placeholder="" class="form-input">
+              </div>
+              <button onclick="addMapRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
             </div>
-
-          </div>
-
-          <div class="flex justify-end mt-4">
-
-            <button onclick="addMapRow()"
-
-              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2">
-
-              <i class="fa-solid fa-floppy-disk mr-1"></i> Save
-
-            </button>
 
           </div>
 
@@ -2371,25 +2325,13 @@
 
             </div>
 
-            <div>
-
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label>
-
-              <input type="text" id="ins-col-category" placeholder="" class="form-input">
-
+            <div class="flex items-end gap-3">
+              <div class="flex-1">
+                <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label>
+                <input type="text" id="ins-col-category" placeholder="" class="form-input">
+              </div>
+              <button onclick="saveNewCollection()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
             </div>
-
-          </div>
-
-          <div class="flex justify-end mt-4">
-
-            <button onclick="saveNewCollection()"
-
-              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2">
-
-              <i class="fa-solid fa-floppy-disk mr-1"></i> Save
-
-            </button>
 
           </div>
 
