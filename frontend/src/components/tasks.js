@@ -382,7 +382,7 @@ export function buildTaskMatrix() {
           <input type="checkbox" class="habit-checkbox mt-0.5 shrink-0 cursor-pointer" ${isDone ? 'checked' : ''} onchange="toggleTaskStatusDirectly(${id}, this)">
           <span class="text-xs font-semibold text-slate-700 leading-snug ${isDone ? 'line-through text-slate-400 font-medium' : ''}">
             ${escapeHTML(taskText)}
-            <span class="text-[9px] font-bold text-slate-400 ml-1 block sm:inline">(${formatDateInput(dateStr)})</span>
+            <span class="text-[9px] font-bold text-slate-400 ml-1 block sm:inline">${formatDateInput(dateStr)}</span>
           </span>
         </label>
         <div class="flex items-center gap-1.5 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 shrink-0 select-none">
