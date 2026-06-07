@@ -45,8 +45,8 @@
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <script type="module" crossorigin src="/webapp_project/assets/index-BljmOcsY.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-YIRAGizp.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-Bvk3rK1a.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-DPl1voGm.css">
 </head>
 
 
@@ -1787,36 +1787,31 @@
 
               class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+          <div class="flex flex-col md:flex-row items-end gap-4">
 
-            <div class="md:col-span-2"><label
-
+            <div class="shrink-0 w-36"><label
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">DATE</label><input
-
                 type="date" id="ins-task-date" class="form-input"></div>
 
-            <div class="md:col-span-6"><label
-
+            <div class="flex-1"><label
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TASK</label><input
-
                 type="text" id="ins-task-desc" class="form-input font-semibold"></div>
 
-            <div class="md:col-span-4 flex items-end gap-4">
-              <div class="flex-1">
-                <label class="text-[10px] font-bold text-slate-400 block mb-1.5 uppercase tracking-wider">PRIORITY</label>
-                <div class="flex items-center gap-5 h-[42px] select-none">
-                  <label class="inline-flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" id="ins-task-urgent" class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer">
-                    <span class="text-xs font-bold text-slate-700">Urgent ⚡</span>
-                  </label>
-                  <label class="inline-flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" id="ins-task-important" class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer">
-                    <span class="text-xs font-bold text-slate-700">Important ⭐</span>
-                  </label>
-                </div>
+            <div class="shrink-0">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1.5 uppercase tracking-wider">PRIORITY</label>
+              <div class="flex items-center gap-5 h-[42px] select-none">
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="ins-task-urgent" class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer">
+                  <span class="text-xs font-bold text-slate-700">Urgent ⚡</span>
+                </label>
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="ins-task-important" class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer">
+                  <span class="text-xs font-bold text-slate-700">Important ⭐</span>
+                </label>
               </div>
-              <button onclick="addTaskRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
             </div>
+
+            <button onclick="addTaskRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
 
           </div>
 
