@@ -385,7 +385,7 @@ Text: "${n}"`;if(e==="gemini"){if(!i)throw new Error("Thiếu Gemini API Key.");
           <input type="checkbox" class="habit-checkbox mt-0.5 shrink-0 cursor-pointer" ${f?"checked":""} onchange="toggleTaskStatusDirectly(${d}, this)">
           <span class="text-xs font-semibold text-slate-700 leading-snug ${f?"line-through text-slate-400 font-medium":""}">
             ${T(h)}
-            <span class="text-[9px] font-bold text-slate-400 ml-1 block sm:inline">(${li(u)})</span>
+            <span class="text-[9px] font-bold text-slate-400 ml-1 block sm:inline">${li(u)}</span>
           </span>
         </label>
         <div class="flex items-center gap-1.5 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 shrink-0 select-none">

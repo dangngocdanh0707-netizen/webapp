@@ -45,7 +45,7 @@
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <script type="module" crossorigin src="/webapp_project/assets/index-wddzx59f.js"></script>
+  <script type="module" crossorigin src="/webapp_project/assets/index-CHWGj0wh.js"></script>
   <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-CT-2x01e.css">
 </head>
 
@@ -503,7 +503,7 @@
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
 
-              class="fa-solid fa-circle-plus text-blue-500"></i> Add New Expense Record</h4>
+              class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
 
@@ -547,7 +547,7 @@
 
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
 
-                class="fa-solid fa-floppy-disk mr-1"></i> Save Expense</button></div>
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button></div>
 
         </div>
 
@@ -587,7 +587,7 @@
 
             <div>
 
-              <h3 class="font-bold text-slate-800 text-base">Transaction Log</h3>
+              <h3 class="font-bold text-slate-800 text-base">All</h3>
 
             </div>
 
@@ -687,7 +687,7 @@
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
 
-              class="fa-solid fa-circle-plus text-blue-500"></i> Insert Content Entry</h4>
+              class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
           <div class="grid grid-cols-1 gap-4 items-end">
 
@@ -707,7 +707,7 @@
 
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
 
-                class="fa-solid fa-floppy-disk mr-1"></i> Save Content</button></div>
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button></div>
 
         </div>
 
@@ -721,7 +721,7 @@
 
             <div>
 
-              <h3 class="font-bold text-slate-800 text-base">Dictionary Engine</h3>
+              <h3 class="font-bold text-slate-800 text-base">All</h3>
 
             </div>
 
@@ -1331,7 +1331,7 @@
 
         <div class="glass-card p-6 mb-8">
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-circle-plus text-blue-500"></i> Add New Habit Tracker
+            <i class="fa-solid fa-circle-plus text-blue-500"></i> Add New
           </h4>
           <div class="flex flex-col sm:flex-row gap-3 items-end">
             <div class="w-full">
@@ -1339,7 +1339,7 @@
               <input type="text" id="ins-habit-name" class="form-input font-semibold">
             </div>
             <button onclick="addHabitDirectly()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 whitespace-nowrap h-[42px] shrink-0">
-              <i class="fa-solid fa-plus"></i> Add Habit
+              <i class="fa-solid fa-floppy-disk mr-1"></i> Save
             </button>
           </div>
         </div>
@@ -1363,13 +1363,13 @@
         <div class="glass-card overflow-hidden">
           <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
             <div class="flex items-center gap-3">
-              <h3 class="font-bold text-slate-800 text-base">Habits Tracking</h3>
+              <h3 class="font-bold text-slate-800 text-base">All</h3>
               <div class="inline-flex rounded-xl p-0.5 bg-slate-100 border border-slate-200/50 shadow-2xs">
-                <button onclick="switchHabitView('grid')" id="btn-habit-view-grid" class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition bg-white text-blue-600 shadow-2xs cursor-pointer flex items-center gap-1">
-                  <i class="fa-solid fa-table-cells text-[9px]"></i> WEEKLY GRID
-                </button>
-                <button onclick="switchHabitView('list')" id="btn-habit-view-list" class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition text-slate-500 hover:text-slate-700 cursor-pointer flex items-center gap-1">
+                <button onclick="switchHabitView('list')" id="btn-habit-view-list" class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition bg-white text-blue-600 shadow-2xs cursor-pointer flex items-center gap-1">
                   <i class="fa-solid fa-list text-[9px]"></i> JOURNAL LIST
+                </button>
+                <button onclick="switchHabitView('grid')" id="btn-habit-view-grid" class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition text-slate-500 hover:text-slate-700 cursor-pointer flex items-center gap-1">
+                  <i class="fa-solid fa-table-cells text-[9px]"></i> WEEKLY GRID
                 </button>
               </div>
             </div>
@@ -1381,27 +1381,27 @@
             </div>
           </div>
 
-          <!-- Weekly Grid View Container -->
-          <div id="habit-grid-view-container" class="overflow-x-auto">
-            <table class="w-full text-left border-collapse" id="table-habit-grid">
-              <thead>
-                <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
-                  <th class="p-4 pl-6">HABIT</th>
-                  <!-- Past 7 days headers will be rendered dynamically by JavaScript -->
-                </tr>
-              </thead>
-              <tbody class="text-sm text-slate-600 divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-
           <!-- Journal List View Container -->
-          <div id="habit-list-view-container" class="hidden overflow-x-auto">
+          <div id="habit-list-view-container" class="overflow-x-auto">
             <table class="w-full text-left border-collapse" id="table-habit">
               <thead>
                 <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
                   <th class="p-4 pl-6 w-44">DATE</th>
                   <th class="p-4">HABIT</th>
                   <th class="p-4 pl-12 text-left w-48">STATUS</th>
+                </tr>
+              </thead>
+              <tbody class="text-sm text-slate-600 divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+
+          <!-- Weekly Grid View Container -->
+          <div id="habit-grid-view-container" class="hidden overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="table-habit-grid">
+              <thead>
+                <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+                  <th class="p-4 pl-6">HABIT</th>
+                  <!-- Past 7 days headers will be rendered dynamically by JavaScript -->
                 </tr>
               </thead>
               <tbody class="text-sm text-slate-600 divide-y divide-slate-100"></tbody>
@@ -1447,7 +1447,7 @@
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
 
-              class="fa-solid fa-circle-plus text-blue-500"></i> Establish New Objective</h4>
+              class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
           <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
 
@@ -1477,7 +1477,7 @@
 
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
 
-                class="fa-solid fa-floppy-disk mr-1"></i> Launch Goal</button></div>
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button></div>
 
         </div>
 
@@ -1487,7 +1487,7 @@
 
           <div class="p-6 border-b border-slate-100 bg-slate-50/50">
 
-            <h3 class="font-bold text-slate-800 text-base">Objective Progress Monitor</h3>
+            <h3 class="font-bold text-slate-800 text-base">All</h3>
 
           </div>
 
@@ -1563,7 +1563,7 @@
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
 
-              class="fa-solid fa-circle-plus text-blue-500"></i> Add New Link Entry</h4>
+              class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
 
@@ -1591,7 +1591,7 @@
 
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
 
-                class="fa-solid fa-floppy-disk mr-1"></i> Save Link</button></div>
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button></div>
 
         </div>
 
@@ -1605,7 +1605,7 @@
 
             <div>
 
-              <h3 class="font-bold text-slate-800 text-base">Archived Links</h3>
+              <h3 class="font-bold text-slate-800 text-base">All</h3>
 
             </div>
 
@@ -1707,7 +1707,7 @@
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
 
-              class="fa-solid fa-circle-plus text-blue-500"></i> Add New Prompt Entry</h4>
+              class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
 
@@ -1735,7 +1735,7 @@
 
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
 
-                class="fa-solid fa-floppy-disk mr-1"></i> Save Prompt</button></div>
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button></div>
 
         </div>
 
@@ -1749,7 +1749,7 @@
 
             <div>
 
-              <h3 class="font-bold text-slate-800 text-base">Archived Prompts</h3>
+              <h3 class="font-bold text-slate-800 text-base">All</h3>
 
             </div>
 
@@ -1855,7 +1855,7 @@
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
 
-              class="fa-solid fa-circle-plus text-blue-500"></i> Add New Task Entry</h4>
+              class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
           <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
 
@@ -1903,7 +1903,7 @@
 
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2"><i
 
-                class="fa-solid fa-floppy-disk mr-1"></i> Save Task</button></div>
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button></div>
 
         </div>
 
@@ -1917,7 +1917,7 @@
 
             <div class="flex items-center gap-3">
 
-              <h3 class="font-bold text-slate-800 text-base">Archived Tasks</h3>
+              <h3 class="font-bold text-slate-800 text-base">All</h3>
 
               <div class="inline-flex rounded-xl p-0.5 bg-slate-100 border border-slate-200/50 shadow-2xs">
 
@@ -2108,7 +2108,7 @@
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
 
-            <i class="fa-solid fa-circle-plus text-blue-500"></i> Add New Location Entry
+            <i class="fa-solid fa-circle-plus text-blue-500"></i> Add New
 
           </h4>
 
@@ -2154,7 +2154,7 @@
 
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2">
 
-              <i class="fa-solid fa-floppy-disk mr-1"></i> Save Location
+              <i class="fa-solid fa-floppy-disk mr-1"></i> Save
 
             </button>
 
@@ -2172,7 +2172,7 @@
 
             <div>
 
-              <h3 class="font-bold text-slate-800 text-base">Locations Ledger</h3>
+              <h3 class="font-bold text-slate-800 text-base">All</h3>
 
             </div>
 
@@ -2342,7 +2342,7 @@
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
 
-            <i class="fa-solid fa-circle-plus text-blue-500"></i> Add Asset to Portfolio
+            <i class="fa-solid fa-circle-plus text-blue-500"></i> Add New
 
           </h4>
 
@@ -2388,7 +2388,7 @@
 
               class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2">
 
-              <i class="fa-solid fa-floppy-disk mr-1"></i> Save Asset
+              <i class="fa-solid fa-floppy-disk mr-1"></i> Save
 
             </button>
 
@@ -2406,7 +2406,7 @@
 
             <div>
 
-              <h3 class="font-bold text-slate-800 text-base">Asset Ledger</h3>
+              <h3 class="font-bold text-slate-800 text-base">All</h3>
 
             </div>
 
