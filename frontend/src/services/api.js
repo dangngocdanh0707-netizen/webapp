@@ -222,7 +222,6 @@ export function signOutFromGoogle() {
   }
   localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
   resolvedTabsCache = {}; // Xóa cache ánh xạ tab
-  localStorage.setItem("TOAST_PENDING", JSON.stringify({ message: "Đã ngắt kết nối Google Sheets thành công!", type: "success" }));
   window.location.reload();
 }
 

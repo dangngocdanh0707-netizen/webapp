@@ -48,9 +48,6 @@ window.onerror = function (message, source, lineno, colno, error) {
 
 // Khởi chạy ứng dụng
 async function initApp() {
-  // Dọn dẹp toast chờ cũ
-  localStorage.removeItem("TOAST_PENDING");
-
   initSortableSidebar();
   initResizeSidebar();
   initFloatingAssistant(loadDataFromServer);
@@ -492,6 +489,5 @@ window.saveSettingsCredentials = function() {
   saveCredentials(spreadsheetId, apiKey, clientId);
   saveAiCredentials(aiProvider, aiGeminiKey, aiOpenaiKey, aiModel);
   
-  localStorage.setItem("TOAST_PENDING", JSON.stringify({ message: "Đã lưu thông số cấu hình thành công! Đang tải lại dữ liệu...", type: "success" }));
   window.location.reload();
 };

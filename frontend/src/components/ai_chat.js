@@ -13,15 +13,7 @@ let translationCache = {}; // Cache dịch theo index: { [msgIndex]: string }
 export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
   refreshDataCallback = refreshCb;
 
-  if (isInitialized) {
-    return;
-  }
-  isInitialized = true;
-
-  // Xóa cache cũ nếu có
-  localStorage.removeItem("AI_CHAT_HISTORIES_V1");
-
-  // 1. Tải lịch sử chat từ Google Sheets
+  // 1. Tải lịch sử chat từ Google Sheets (luôn chạy để cập nhật dữ liệu mới)
   chatHistories = {};
   if (initialChatHistory && Array.isArray(initialChatHistory)) {
     initialChatHistory.forEach(item => {
@@ -41,6 +33,22 @@ export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
       });
     });
   }
+
+  if (isInitialized) {
+    // Nếu tab hiện tại đang active là AI chat, cập nhật lại bong bóng chat trên giao diện
+    const activeTab = document.querySelector('.tab-content.active');
+    if (activeTab && activeTab.id === 'practice-tab') {
+      const aichatContainer = document.getElementById('practice-aichat-container');
+      if (aichatContainer && !aichatContainer.classList.contains('hidden')) {
+        renderAiChatBubbles();
+      }
+    }
+    return;
+  }
+  isInitialized = true;
+
+  // Xóa cache cũ nếu có
+  localStorage.removeItem("AI_CHAT_HISTORIES_V1");
 
   // 2. Cài đặt các giọng đọc Speech Synthesis (TTS)
   setupTtsVoiceSelector();
