@@ -62,10 +62,31 @@ export function initCostModule(data, onSync) {
 function renderCostGraphics() {
   const monthFilterSelect = document.getElementById('monthFilter');
   const monthFilterVal = monthFilterSelect ? monthFilterSelect.value : "All";
+  const dayFilterSelect = document.getElementById('dayFilter');
+  const dayFilterVal = dayFilterSelect ? dayFilterSelect.value : "All";
+
+  // Calculate local today and yesterday strings (yyyy-MM-dd)
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  const yyyyYest = yesterday.getFullYear();
+  const mmYest = String(yesterday.getMonth() + 1).padStart(2, '0');
+  const ddYest = String(yesterday.getDate()).padStart(2, '0');
+  const yesterdayStr = `${yyyyYest}-${mmYest}-${ddYest}`;
 
   let filteredData = allCostData;
   if (monthFilterVal !== "All") {
-    filteredData = allCostData.filter(item => item.date && item.date.startsWith(monthFilterVal));
+    filteredData = filteredData.filter(item => item.date && item.date.startsWith(monthFilterVal));
+  }
+  if (dayFilterVal === "Today") {
+    filteredData = filteredData.filter(item => item.date === todayStr);
+  } else if (dayFilterVal === "Yesterday") {
+    filteredData = filteredData.filter(item => item.date === yesterdayStr);
   }
 
   let categories = {};
@@ -136,7 +157,7 @@ function populateCostCategories() {
   });
 }
 
-// Refactored buildTable to apply both category and month filters and preserve <td> layout integrity
+// Refactored buildTable to apply both category, month, and day filters and preserve <td> layout integrity
 export function buildTable() {
   const tbody = document.querySelector('#table-cost tbody');
   if (!tbody) return;
@@ -144,6 +165,21 @@ export function buildTable() {
 
   const categoryFilterVal = document.getElementById('categoryFilter') ? document.getElementById('categoryFilter').value : "All";
   const monthFilterVal = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : "All";
+  const dayFilterVal = document.getElementById('dayFilter') ? document.getElementById('dayFilter').value : "All";
+
+  // Calculate local today and yesterday strings (yyyy-MM-dd)
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  const yyyyYest = yesterday.getFullYear();
+  const mmYest = String(yesterday.getMonth() + 1).padStart(2, '0');
+  const ddYest = String(yesterday.getDate()).padStart(2, '0');
+  const yesterdayStr = `${yyyyYest}-${mmYest}-${ddYest}`;
 
   let displayCostData = [...allCostData];
   displayCostData.sort((a, b) => {
@@ -154,6 +190,8 @@ export function buildTable() {
     let cat = item.category || "Uncategorized";
     if (categoryFilterVal !== "All" && cat !== categoryFilterVal) return;
     if (monthFilterVal !== "All" && (!item.date || !item.date.startsWith(monthFilterVal))) return;
+    if (dayFilterVal === "Today" && item.date !== todayStr) return;
+    if (dayFilterVal === "Yesterday" && item.date !== yesterdayStr) return;
 
     let amount = parseFloat(item.amount.toString().replace(/[^\d]/g, '') || 0);
     let id = item.rowNumber;
@@ -225,7 +263,20 @@ window.cancelEditMode = function (id) {
   document.querySelectorAll(`.edit-mode-${id}`).forEach(el => el.classList.add('hidden'));
 };
 
-window.filterTableByDropdown = function () {
+window.filterTableByDropdown = function (triggerId) {
+  if (triggerId === 'monthFilter') {
+    const monthVal = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : 'All';
+    if (monthVal !== 'All') {
+      const dayFilter = document.getElementById('dayFilter');
+      if (dayFilter) dayFilter.value = 'All';
+    }
+  } else if (triggerId === 'dayFilter') {
+    const dayVal = document.getElementById('dayFilter') ? document.getElementById('dayFilter').value : 'All';
+    if (dayVal !== 'All') {
+      const monthFilter = document.getElementById('monthFilter');
+      if (monthFilter) monthFilter.value = 'All';
+    }
+  }
   buildTable();
   renderCostGraphics();
 };

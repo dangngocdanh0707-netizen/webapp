@@ -168,6 +168,11 @@ export function buildHabitTable(filterValue) {
     if (tsA !== tsB) {
       return tsB - tsA;
     }
+    let isDoneA = a.status === true || a.status === "TRUE" || a.status === "√" || a.status === "checked";
+    let isDoneB = b.status === true || b.status === "TRUE" || b.status === "√" || b.status === "checked";
+    if (isDoneA !== isDoneB) {
+      return isDoneA ? 1 : -1;
+    }
     return a.rowNumber - b.rowNumber;
   });
 
@@ -263,11 +268,7 @@ window.switchHabitView = function (viewType) {
 
 window.toggleHabitStatusDirectly = function (rowNumber, checkboxEl) {
   let isChecked = checkboxEl.checked;
-  let labelEl = document.getElementById(`habit-lbl-${rowNumber}`);
-
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
-  labelEl.innerText = isChecked ? "Completed" : "Pending";
-  labelEl.className = isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
+  const dateSelect = document.getElementById('habitDateFilter');
 
   let idx = allHabitData.findIndex(h => h.rowNumber == rowNumber);
   let oldStatus = false;
@@ -278,6 +279,7 @@ window.toggleHabitStatusDirectly = function (rowNumber, checkboxEl) {
 
   recalculateHabitChartOnly();
   buildHabitGrid();
+  if (dateSelect) buildHabitTable(dateSelect.value);
   showToast(isChecked ? "Completed habit!" : "Marked habit as pending", "success");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
@@ -295,14 +297,9 @@ window.toggleHabitStatusDirectly = function (rowNumber, checkboxEl) {
     if (idx !== -1) {
       allHabitData[idx].status = oldStatus;
     }
-    checkboxEl.checked = oldStatus;
-
-    let isDone = oldStatus === true || oldStatus === "TRUE" || oldStatus === "√" || oldStatus === "checked";
-    labelEl.innerText = isDone ? "Completed" : "Pending";
-    labelEl.className = isDone ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
-
     recalculateHabitChartOnly();
     buildHabitGrid();
+    if (dateSelect) buildHabitTable(dateSelect.value);
     showToast("Sync error: " + errorMessage, "error");
   }
 };
