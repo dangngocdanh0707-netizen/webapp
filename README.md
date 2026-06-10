@@ -50,6 +50,11 @@ personal_webapp/
   * **💡 Smart Response Hints**: Sau mỗi lượt AI trả lời, tự động gợi ý 3 câu trả lời tự nhiên phù hợp ngữ cảnh dưới dạng pill button. Bấm vào pill để điền nhanh vào ô chat (có thể chỉnh sửa trước khi gửi).
   * **🌐 Dịch tức thì (Instant Translation)**: Nút 🌐 trên mỗi bong bóng AI cho phép dịch câu sang tiếng Việt tự nhiên ngay trong giao diện, có cache để không gọi API lần 2.
   * **💾 Đồng bộ Lịch sử Trò chuyện (Chat History Sync)**: Tự động lưu trữ và đồng bộ hóa hai chiều lịch sử chat với đối tác AI lên Google Sheets tại tab `chat_histories`. Tự động tải lịch sử chat cũ khi mở ứng dụng và phân loại theo từng kịch bản hội thoại để người dùng dễ dàng xem lại.
+* **💬 Trợ lý ảo Toàn cục (AI Assistant "DANH")**:
+  * **⚡ Gọi nhanh siêu tốc**: Nhấn phím **`A`** (hoặc `a`) từ bất kỳ vị trí nào (khi không ở ô nhập liệu) để đóng/mở nhanh khung chat bong bóng nổi của trợ lý **DANH**.
+  * **🗺️ Điều hướng thông minh & Xử lý cục bộ**: Tự động nhận diện lệnh chuyển trang cục bộ (Local Redirection) bằng từ khóa để chuyển nhanh sang các tab khác mà không tốn API tokens.
+  * **🔍 Tìm kiếm và mở nhanh liên kết**: Nhận diện thông minh nhu cầu mở các liên kết trong kho lưu trữ của bạn (ví dụ: *"Mở link Google Sheet"*). AI sẽ tìm kiếm khớp với các tiêu đề liên kết trong kho lưu trữ cục bộ của bạn, trả về chỉ mục (`index`) và tự động mở URL trên tab mới (`window.open`). **Bảo mật tuyệt đối**: Không bao giờ gửi URL thô của bạn lên máy chủ AI.
+  * **⏱️ Tin nhắn tự hủy (5-Minute Self-Destruction)**: Các tin nhắn trò chuyện với AI sẽ tự động xóa mượt mà khỏi giao diện và bộ nhớ đệm `assistantHistory` sau 5 phút để giữ an toàn dữ liệu cá nhân và bảo mật thông tin màn hình.
 * **📝 Nhật ký lỗi ngữ pháp (Grammar Error Diary)**:
   * Tự động ghi lại các câu có lỗi ngữ pháp trong quá trình chat với AI Speaking Partner và đồng bộ trực tiếp lên Google Sheets.
   * Lưu dữ liệu vào **dòng trống đầu tiên** tìm được trong sheet (giống `insertTaskRow`), không tạo dòng mới cuối bảng, phù hợp với sheet đã chuẩn bị checkbox sẵn.
