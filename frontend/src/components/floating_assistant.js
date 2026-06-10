@@ -1,6 +1,5 @@
-import { getAiCredentials, escapeHTML, callServer } from '../services/api.js';
+import { getAiCredentials, escapeHTML } from '../services/api.js';
 import { callAiNavigatorApi } from '../services/ai.js';
-import { showToast } from '../services/toast.js';
 
 let assistantHistory = [];
 let recognition = null;
@@ -208,59 +207,6 @@ async function sendAssistantMessage() {
           window.switchTab(targetTab);
         }
       }
-    } 
-    // B. Ý định thêm chi tiêu
-    else if (intent.action === 'add_expense' && intent.data) {
-      const { amount, category, note, date } = intent.data;
-      const targetDate = date || today;
-      const targetCat = category || "Must have";
-      
-      appendMessage('ai', `Đang lưu chi tiêu: ${Number(amount).toLocaleString()}đ vào danh mục "${targetCat}"...`);
-      
-      callServer("insertCostRow", [targetDate, targetCat, Number(amount) || 0, note || ""])
-        .then(() => {
-          appendMessage('ai', `✅ Đã đồng bộ chi tiêu lên Google Sheets thành công!`);
-          showToast("Đã lưu chi tiêu!", "success");
-          if (typeof reloadDataCallback === 'function') reloadDataCallback(true);
-        })
-        .catch(err => {
-          appendMessage('ai', `❌ Lỗi đồng bộ chi tiêu: ${err.message || err}`);
-        });
-    }
-    // C. Ý định thêm công việc
-    else if (intent.action === 'add_task' && intent.data) {
-      const { task, urgent, important, date } = intent.data;
-      const targetDate = date || today;
-      const isUrgent = urgent ? "TRUE" : "FALSE";
-      const isImportant = important ? "TRUE" : "FALSE";
-
-      appendMessage('ai', `Đang lưu công việc: "${task}"...`);
-      
-      callServer("insertTaskRow", [targetDate, task, isUrgent, isImportant, "FALSE"])
-        .then(() => {
-          appendMessage('ai', `✅ Đã đồng bộ công việc lên Google Sheets thành công!`);
-          showToast("Đã lưu công việc!", "success");
-          if (typeof reloadDataCallback === 'function') reloadDataCallback(true);
-        })
-        .catch(err => {
-          appendMessage('ai', `❌ Lỗi đồng bộ công việc: ${err.message || err}`);
-        });
-    }
-    // D. Ý định thêm từ vựng
-    else if (intent.action === 'add_vocab' && intent.data) {
-      const { content, meaning, transcription, category, topic, level } = intent.data;
-      
-      appendMessage('ai', `Đang thêm từ mới: "${content}"...`);
-      
-      callServer("insertVocabRow", [content, transcription || "", category || "", topic || "", level || "New", meaning || ""])
-        .then(() => {
-          appendMessage('ai', `✅ Đã đồng bộ từ mới "${content}" lên sổ từ vựng thành công!`);
-          showToast("Đã lưu từ vựng!", "success");
-          if (typeof reloadDataCallback === 'function') reloadDataCallback(true);
-        })
-        .catch(err => {
-          appendMessage('ai', `❌ Lỗi đồng bộ từ vựng: ${err.message || err}`);
-        });
     }
 
   } catch (error) {
