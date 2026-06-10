@@ -198,8 +198,8 @@ async function sendAssistantMessage() {
   inputEl.value = "";
 
   // 1. Thêm tin nhắn của User vào giao diện chat
-  appendMessage('user', userText);
-  assistantHistory.push({ role: 'user', text: userText });
+  const userMsgId = appendMessage('user', userText);
+  assistantHistory.push({ id: userMsgId, role: 'user', text: userText });
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -213,8 +213,8 @@ async function sendAssistantMessage() {
     const localReply = `Đã chuyển hướng bạn tới trang "${tabName}" thành công!`;
     
     setTimeout(() => {
-      appendMessage('ai', localReply);
-      assistantHistory.push({ role: 'ai', text: localReply });
+      const localReplyId = appendMessage('ai', localReply);
+      assistantHistory.push({ id: localReplyId, role: 'ai', text: localReply });
     }, 150);
     return;
   }
@@ -243,8 +243,8 @@ async function sendAssistantMessage() {
     removeLoadingIndicator(loadingId);
 
     // Hiển thị phản hồi từ AI
-    appendMessage('ai', result.reply);
-    assistantHistory.push({ role: 'ai', text: result.reply });
+    const aiReplyId = appendMessage('ai', result.reply);
+    assistantHistory.push({ id: aiReplyId, role: 'ai', text: result.reply });
 
     const intent = result.intent || { action: "none" };
 
@@ -277,18 +277,19 @@ async function sendAssistantMessage() {
 
 function appendMessage(role, text) {
   const historyContainer = document.getElementById('floating-assistant-history');
-  if (!historyContainer) return;
+  if (!historyContainer) return null;
 
+  const msgId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
   const isUser = role === 'user';
   const bubbleHtml = isUser ? `
-    <div class="flex flex-col items-end gap-1 animate-in fade-in slide-in-from-bottom-2 duration-200">
+    <div id="${msgId}" class="flex flex-col items-end gap-1 animate-in fade-in slide-in-from-bottom-2 duration-200">
       <div class="bg-slate-900 text-white rounded-2xl px-3 py-2 text-xs font-semibold shadow-sm leading-relaxed max-w-[85%]">
         ${escapeHTML(text)}
       </div>
       <span class="text-[8px] text-slate-400 font-bold uppercase mr-1">Bạn</span>
     </div>
   ` : `
-    <div class="flex flex-col items-start gap-1 animate-in fade-in slide-in-from-bottom-2 duration-200">
+    <div id="${msgId}" class="flex flex-col items-start gap-1 animate-in fade-in slide-in-from-bottom-2 duration-200">
       <div class="bg-white border border-slate-200 text-slate-800 rounded-2xl px-3 py-2 text-xs font-semibold shadow-2xs leading-relaxed max-w-[85%]">
         ${escapeHTML(text)}
       </div>
@@ -298,6 +299,24 @@ function appendMessage(role, text) {
 
   historyContainer.insertAdjacentHTML('beforeend', bubbleHtml);
   historyContainer.scrollTop = historyContainer.scrollHeight;
+
+  // Set timeout to delete the message after 5 minutes (300000 ms)
+  setTimeout(() => {
+    const element = document.getElementById(msgId);
+    if (element) {
+      element.classList.add('transition-all', 'duration-500', 'opacity-0', 'scale-95');
+      setTimeout(() => {
+        element.remove();
+        if (historyContainer.children.length === 0) {
+          renderInitialGreeting();
+        }
+      }, 500);
+    }
+    // Also remove from assistantHistory memory
+    assistantHistory = assistantHistory.filter(msg => msg.id !== msgId);
+  }, 5 * 60 * 1000);
+
+  return msgId;
 }
 
 function appendLoadingIndicator() {
