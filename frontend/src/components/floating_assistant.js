@@ -163,56 +163,7 @@ async function sendAssistantMessage() {
 
   const today = new Date().toISOString().split('T')[0];
 
-  // 2. Kiểm tra các câu lệnh nhanh cục bộ (Local Bypass Shortcuts)
-  
-  // A. Lệnh thêm công việc nhanh: "/t [Nội dung công việc]"
-  if (userText.startsWith('/t ')) {
-    const taskDesc = userText.substring(3).trim();
-    if (!taskDesc) {
-      appendMessage('ai', "Nội dung công việc không được để trống! Cú pháp: /t [Nội dung]");
-      return;
-    }
-    appendMessage('ai', `Đang ghi nhận công việc: "${taskDesc}"...`);
-    callServer("insertTaskRow", [today, taskDesc, "FALSE", "FALSE", "FALSE"])
-      .then(() => {
-        appendMessage('ai', `✅ Đã lưu thành công công việc: "${taskDesc}" vào Google Sheets!`);
-        showToast("Đã thêm công việc nhanh!", "success");
-        if (typeof reloadDataCallback === 'function') reloadDataCallback(true);
-      })
-      .catch(err => {
-        appendMessage('ai', `❌ Lỗi lưu công việc: ${err.message || err}`);
-      });
-    return;
-  }
-
-  // B. Lệnh thêm chi tiêu nhanh: "/c [Số tiền] [Ghi chú]"
-  if (userText.startsWith('/c ')) {
-    const match = userText.match(/^\/c\s+(\d+k?|\d+)\s+(.+)/i);
-    if (!match) {
-      appendMessage('ai', "Cú pháp chi tiêu không đúng! Ví dụ: /c 50k ăn trưa hoặc /c 30000 gửi xe");
-      return;
-    }
-    let amtStr = match[1].toLowerCase();
-    let amt = parseFloat(amtStr);
-    if (amtStr.endsWith('k')) {
-      amt = amt * 1000;
-    }
-    const note = match[2].trim();
-
-    appendMessage('ai', `Đang ghi nhận chi tiêu: ${amt.toLocaleString()}đ cho "${note}"...`);
-    callServer("insertCostRow", [today, "Must have", amt, note])
-      .then(() => {
-        appendMessage('ai', `✅ Đã lưu thành công chi tiêu: ${amt.toLocaleString()}đ - "${note}" vào Google Sheets!`);
-        showToast("Đã thêm chi tiêu nhanh!", "success");
-        if (typeof reloadDataCallback === 'function') reloadDataCallback(true);
-      })
-      .catch(err => {
-        appendMessage('ai', `❌ Lỗi lưu chi tiêu: ${err.message || err}`);
-      });
-    return;
-  }
-
-  // 3. Kiểm tra các câu lệnh chuyển trang cục bộ (Local Navigation Filter)
+  // 2. Kiểm tra các câu lệnh chuyển trang cục bộ (Local Navigation Filter)
   const matchedTab = matchLocalTab(userText);
   if (matchedTab) {
     if (typeof window.switchTab === 'function') {
@@ -228,7 +179,7 @@ async function sendAssistantMessage() {
     return;
   }
 
-  // 4. Nếu không khớp cục bộ, gọi AI để phân tích ý định (AI Agentic Action Parser)
+  // 3. Nếu không khớp cục bộ, gọi AI để phân tích ý định (AI Agentic Action Parser)
   const aiCreds = getAiCredentials();
   const hasCreds = aiCreds.provider === "gemini" ? aiCreds.geminiKey : aiCreds.openaiKey;
 
