@@ -1,6 +1,7 @@
 import { getAiCredentials, escapeHTML } from '../services/api.js';
 import { callAiNavigatorApi } from '../services/ai.js';
 import { getAllLinks } from './links.js';
+import { createSpeechRecognizer } from '../services/speech.js';
 
 let assistantHistory = [];
 let recognition = null;
@@ -346,42 +347,31 @@ function removeLoadingIndicator(id) {
 
 // Tích hợp STT Nhận diện giọng nói cho trợ lý ảo
 function setupAssistantSpeechRecognition(micBtn, inputEl) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    console.log("[floating_assistant.js] Trình duyệt không hỗ trợ Web Speech API.");
-    return;
-  }
+  recognition = createSpeechRecognizer({
+    lang: "vi-VN",
+    onStart: () => {
+      isRecognizing = true;
+      clearInactivityTimer(); // Hủy đếm ngược khi đang thu âm giọng nói
+      micBtn.className = "w-9 h-9 rounded-lg bg-red-100 border border-red-200 text-red-600 hover:bg-red-200 flex items-center justify-center transition animate-pulse cursor-pointer";
+      micBtn.innerHTML = `<i class="fa-solid fa-microphone-lines text-xs"></i>`;
+    },
+    onResult: (transcript) => {
+      inputEl.value = transcript;
+      sendAssistantMessage();
+    },
+    onError: () => {
+      isRecognizing = false;
+      resetMicButtonUI(micBtn);
+      resetInactivityTimer(); // Chạy lại đếm ngược
+    },
+    onEnd: () => {
+      isRecognizing = false;
+      resetMicButtonUI(micBtn);
+      resetInactivityTimer(); // Chạy lại đếm ngược
+    }
+  });
 
-  recognition = new SpeechRecognition();
-  recognition.continuous = false;
-  recognition.interimResults = false;
-  recognition.lang = "vi-VN";
-
-  recognition.onstart = function() {
-    isRecognizing = true;
-    clearInactivityTimer(); // Hủy đếm ngược khi đang thu âm giọng nói
-    micBtn.className = "w-9 h-9 rounded-lg bg-red-100 border border-red-200 text-red-600 hover:bg-red-200 flex items-center justify-center transition animate-pulse cursor-pointer";
-    micBtn.innerHTML = `<i class="fa-solid fa-microphone-lines text-xs"></i>`;
-  };
-
-  recognition.onresult = function(event) {
-    const transcript = event.results[0][0].transcript;
-    inputEl.value = transcript;
-    sendAssistantMessage();
-  };
-
-  recognition.onerror = function(event) {
-    console.error("STT Assistant Error:", event.error);
-    isRecognizing = false;
-    resetMicButtonUI(micBtn);
-    resetInactivityTimer(); // Chạy lại đếm ngược
-  };
-
-  recognition.onend = function() {
-    isRecognizing = false;
-    resetMicButtonUI(micBtn);
-    resetInactivityTimer(); // Chạy lại đếm ngược
-  };
+  if (!recognition) return;
 
   micBtn.addEventListener('click', () => {
     if (isRecognizing) {

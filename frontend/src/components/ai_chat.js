@@ -2,6 +2,7 @@
 import { getAiCredentials, callServer, escapeHTML } from '../services/api.js';
 import { callAiApi, SCENARIOS, translateMessageText } from '../services/ai.js';
 import { showToast } from '../services/toast.js';
+import { createSpeechRecognizer } from '../services/speech.js';
 
 
 let activeScenario = "casual";
@@ -379,47 +380,28 @@ window.sendAiChatMessage = async function() {
 
 // ---------------- NHẬN DIỆN GIỌNG NÓI (STT) ----------------
 function setupSpeechRecognition() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    console.log("[ai_chat.js] Trình duyệt không hỗ trợ Web Speech Recognition API.");
-    return;
-  }
-
-  recognition = new SpeechRecognition();
-  recognition.continuous = false; // Tự dừng khi người dùng ngắt câu
-  recognition.interimResults = false; // Không lấy kết quả tạm thời
-  recognition.lang = "en-US"; // Ngôn ngữ Tiếng Anh
-
-  recognition.onstart = function() {
-    isRecognizing = true;
-    updateMicButtonUI(true);
-  };
-
-  recognition.onresult = function(event) {
-    const transcript = event.results[0][0].transcript;
-    const inputEl = document.getElementById('ai-chat-input');
-    if (inputEl) {
-      inputEl.value = transcript;
-      // Tự động gửi tin nhắn sau khi nói xong
-      window.sendAiChatMessage();
+  recognition = createSpeechRecognizer({
+    lang: "en-US",
+    onStart: () => {
+      isRecognizing = true;
+      updateMicButtonUI(true);
+    },
+    onResult: (transcript) => {
+      const inputEl = document.getElementById('ai-chat-input');
+      if (inputEl) {
+        inputEl.value = transcript;
+        window.sendAiChatMessage();
+      }
+    },
+    onError: () => {
+      isRecognizing = false;
+      updateMicButtonUI(false);
+    },
+    onEnd: () => {
+      isRecognizing = false;
+      updateMicButtonUI(false);
     }
-  };
-
-  recognition.onerror = function(event) {
-    console.error("Speech Recognition Error:", event.error);
-    if (event.error === 'not-allowed') {
-      showToast("Không được phép truy cập micro. Hãy cấp quyền trong trình duyệt.", "warning");
-    } else {
-      showToast("Lỗi nhận dạng giọng nói: " + event.error, "error");
-    }
-    isRecognizing = false;
-    updateMicButtonUI(false);
-  };
-
-  recognition.onend = function() {
-    isRecognizing = false;
-    updateMicButtonUI(false);
-  };
+  });
 }
 
 window.toggleSpeechRecognition = function() {
