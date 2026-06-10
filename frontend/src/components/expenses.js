@@ -1,6 +1,5 @@
 import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp } from '../services/api.js';
 import { renderExpensePie, renderExpenseBar } from './charts.js';
-import { showToast } from '../services/toast.js';
 
 
 let allCostData = [];
@@ -42,10 +41,10 @@ export function initCostModule(data, onSync) {
     amountInput.addEventListener('input', (e) => {
       let cursorPosition = e.target.selectionStart;
       let originalLength = e.target.value.length;
-      
+
       let formatted = formatNumberString(e.target.value);
       e.target.value = formatted;
-      
+
       let newLength = formatted.length;
       let lengthDiff = newLength - originalLength;
       e.target.setSelectionRange(cursorPosition + lengthDiff, cursorPosition + lengthDiff);
@@ -247,10 +246,10 @@ window.enterEditMode = function (id) {
     editAmountInput.addEventListener('input', (e) => {
       let cursorPosition = e.target.selectionStart;
       let originalLength = e.target.value.length;
-      
+
       let formatted = formatNumberString(e.target.value);
       e.target.value = formatted;
-      
+
       let newLength = formatted.length;
       let lengthDiff = newLength - originalLength;
       e.target.setSelectionRange(cursorPosition + lengthDiff, cursorPosition + lengthDiff);
@@ -290,7 +289,7 @@ window.addCostRow = function () {
   let note = document.getElementById('ins-cost-note').value;
 
   if (!date || !amount) {
-    showToast("Vui lòng điền đầy đủ Ngày và Số tiền chi tiêu!", "warning");
+    console.warn("Vui lòng điền đầy đủ Ngày và Số tiền chi tiêu!");
     return;
   }
 
@@ -303,7 +302,7 @@ window.addCostRow = function () {
     amount: amount,
     note: note
   };
-  
+
   allCostData.push(newObj);
 
   // Update month filter dropdown and preserve current month filter selection
@@ -341,7 +340,7 @@ window.addCostRow = function () {
     }
     buildTable();
     renderCostGraphics();
-    
+
     document.getElementById('ins-cost-amount').value = formatNumberString(amount.toString());
     document.getElementById('ins-cost-note').value = note;
     console.error("Lỗi đồng bộ chi tiêu: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
@@ -377,7 +376,7 @@ window.saveRow = function (id) {
   window.cancelEditMode(id);
   buildTable();
   renderCostGraphics();
-  showToast("Đã cập nhật khoản chi tiêu thành công!", "success");
+  console.log("Đã cập nhật khoản chi tiêu thành công!");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateCostRow", [id, date, cat, amount, note])
@@ -415,7 +414,7 @@ window.deleteRow = function (id) {
   let deletedIndex = idx;
 
   allCostData.splice(idx, 1);
-  
+
   // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
   allCostData.forEach(item => {
     if (item.rowNumber > id) {
@@ -432,7 +431,7 @@ window.deleteRow = function (id) {
 
   buildTable();
   renderCostGraphics();
-  showToast("Đã xóa khoản chi tiêu thành công!", "success");
+  console.log("Đã xóa khoản chi tiêu thành công!");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteCostRow", [id])
@@ -452,7 +451,7 @@ window.deleteRow = function (id) {
         item.rowNumber++;
       }
     });
-    
+
     allCostData.splice(deletedIndex, 0, deletedItem);
     populateCostMonths();
     if (document.getElementById('monthFilter')) {

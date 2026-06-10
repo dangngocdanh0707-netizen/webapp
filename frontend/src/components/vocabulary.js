@@ -1,5 +1,4 @@
 import { callServer, escapeHTML } from '../services/api.js';
-import { showToast } from '../services/toast.js';
 
 let allVocabData = [];
 let onSyncNeeded = null;
@@ -164,7 +163,6 @@ window.filterVocabTable = function() {
 window.addVocabRow = function() {
   let content = document.getElementById('ins-v-content').value.trim();
   if (!content) {
-    showToast("Nội dung từ vựng không được để trống!", "warning");
     return;
   }
   
@@ -205,7 +203,7 @@ window.addVocabRow = function() {
     allVocabData = allVocabData.filter(v => v.rowNumber !== newRowNumber);
     buildVocabTable();
     document.getElementById('ins-v-content').value = content;
-    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi đồng bộ: " + errorMessage);
   }
 };
 
@@ -218,7 +216,6 @@ window.saveVocab = function(id) {
   let meaning = document.getElementById(`v-edit-mean-${id}`).value.trim();
   
   if (!content) {
-    showToast("Nội dung từ vựng không được để trống!", "warning");
     return;
   } 
   
@@ -236,7 +233,6 @@ window.saveVocab = function(id) {
 
   window.toggleVocabEdit(id, false);
   buildVocabTable();
-  showToast("Đã cập nhật từ vựng thành công!", "success");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateVocabRow", [id, content, transcription, cat, topic, level, meaning])
@@ -255,7 +251,7 @@ window.saveVocab = function(id) {
     }
     buildVocabTable();
     window.toggleVocabEdit(id, true);
-    showToast("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi cập nhật: " + errorMessage);
   }
 };
 
@@ -277,7 +273,6 @@ window.deleteVocab = function(id) {
   });
 
   buildVocabTable();
-  showToast("Đã xóa từ vựng thành công!", "success");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteVocabRow", [id])
@@ -298,7 +293,7 @@ window.deleteVocab = function(id) {
     });
     allVocabData.splice(deletedIndex, 0, deletedItem);
     buildVocabTable();
-    showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi xóa: " + errorMessage);
   }
 };
 

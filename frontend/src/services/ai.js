@@ -73,7 +73,7 @@ async function callGeminiAPI(prompt, history, apiKey, model, systemInstruction) 
 
   // Định dạng lịch sử hội thoại cho Gemini
   const contents = [];
-  
+
   // Thêm lịch sử (giới hạn 10 câu gần nhất để tiết kiệm token và giữ hiệu năng)
   const recentHistory = history.slice(-10);
   recentHistory.forEach(msg => {
@@ -117,7 +117,7 @@ async function callGeminiAPI(prompt, history, apiKey, model, systemInstruction) 
 
   const resData = await response.json();
   const textResponse = resData.candidates?.[0]?.content?.parts?.[0]?.text;
-  
+
   if (!textResponse) {
     throw new Error("Gemini không trả về phản hồi hợp lệ.");
   }
@@ -196,9 +196,9 @@ function parseJsonReponse(text) {
     if (cleanedText.startsWith("```")) {
       cleanedText = cleanedText.replace(/^```json\s*/i, "").replace(/\s*```$/, "");
     }
-    
+
     const parsed = JSON.parse(cleanedText);
-    
+
     // Đảm bảo có đầy đủ các trường cần thiết
     return {
       reply: parsed.reply || "I'm sorry, I couldn't process that response.",
@@ -251,7 +251,7 @@ or
       if (!geminiKey) throw new Error("Thiếu Gemini API Key.");
       const geminiModel = model.trim() || "gemini-2.5-flash";
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`;
-      
+
       const requestBody = {
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         systemInstruction: { parts: [{ text: systemInstruction }] },
@@ -261,26 +261,26 @@ or
           maxOutputTokens: 100
         }
       };
-      
+
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody)
       });
-      
+
       if (!response.ok) throw new Error(`Gemini API Error: ${response.status}`);
       const resData = await response.json();
       const textResponse = resData.candidates?.[0]?.content?.parts?.[0]?.text;
       if (!textResponse) throw new Error("Gemini không trả về phản hồi.");
-      
+
       const parsed = JSON.parse(textResponse.trim().replace(/^```json\s*/i, "").replace(/\s*```$/, ""));
       return parsed.isCorrect === true;
-      
+
     } else if (provider === "openai") {
       if (!openaiKey) throw new Error("Thiếu OpenAI API Key.");
       const openaiModel = model.trim() || "gpt-4o-mini";
       const url = "https://api.openai.com/v1/chat/completions";
-      
+
       const requestBody = {
         model: openaiModel,
         messages: [
@@ -291,7 +291,7 @@ or
         temperature: 0.1,
         max_tokens: 100
       };
-      
+
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -300,12 +300,12 @@ or
         },
         body: JSON.stringify(requestBody)
       });
-      
+
       if (!response.ok) throw new Error(`OpenAI API Error: ${response.status}`);
       const resData = await response.json();
       const textResponse = resData.choices?.[0]?.message?.content;
       if (!textResponse) throw new Error("OpenAI không trả về phản hồi.");
-      
+
       const parsed = JSON.parse(textResponse.trim().replace(/^```json\s*/i, "").replace(/\s*```$/, ""));
       return parsed.isCorrect === true;
     } else {

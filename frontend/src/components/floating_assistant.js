@@ -1,11 +1,8 @@
 import { getAiCredentials, escapeHTML } from '../services/api.js';
 import { callAiNavigatorApi } from '../services/ai.js';
 import { getAllLinks } from './links.js';
-import { createSpeechRecognizer } from '../services/speech.js';
 
 let assistantHistory = [];
-let recognition = null;
-let isRecognizing = false;
 let isInitialized = false;
 let reloadDataCallback = null;
 let inactivityTimer = null;
@@ -14,9 +11,6 @@ function resetInactivityTimer() {
   if (inactivityTimer) {
     clearTimeout(inactivityTimer);
   }
-  
-  // Không tự động đóng khi đang nhận diện giọng nói (STT active)
-  if (isRecognizing) return;
 
   inactivityTimer = setTimeout(() => {
     const pane = document.getElementById('floating-assistant-pane');
@@ -64,15 +58,15 @@ function removeVietnameseTones(str) {
   str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
   str = str.replace(/Ý|Ỵ|Ỷ|Ỹ/g, "Y");
   str = str.replace(/Đ/g, "D");
-  str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); 
-  str = str.replace(/\u02C6|\u0306|\u031B/g, ""); 
+  str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, "");
+  str = str.replace(/\u02C6|\u0306|\u031B/g, "");
   return str;
 }
 
 // Bộ lọc từ khóa cục bộ để chuyển hướng tức thì (Không tốn token)
 function matchLocalTab(text) {
   const normalized = removeVietnameseTones(text.toLowerCase().trim());
-  
+
   if (/\b(chi tieu|tien|expense|vi|chi phi|cost|ngan sach)\b/.test(normalized)) {
     return 'cost-tab';
   }
@@ -109,7 +103,7 @@ function matchLocalTab(text) {
   if (/\b(trang chu|home|launchpad|launcher|quay lai|back)\b/.test(normalized)) {
     return 'home-tab';
   }
-  
+
   return null;
 }
 
@@ -124,7 +118,6 @@ export function initFloatingAssistant(reloadDataCb) {
   const closeBtn = document.getElementById('floating-assistant-close');
   const sendBtn = document.getElementById('floating-assistant-send');
   const inputEl = document.getElementById('floating-assistant-input');
-  const micBtn = document.getElementById('floating-assistant-mic');
 
   if (!bubble || !pane || !closeBtn || !sendBtn || !inputEl) {
     console.warn("[floating_assistant.js] Thiếu các thẻ HTML cần thiết.");
@@ -132,7 +125,7 @@ export function initFloatingAssistant(reloadDataCb) {
   }
 
   // Khai báo hàm toggle toàn cục để gọi từ bên ngoài (phím tắt)
-  window.toggleFloatingAssistant = function() {
+  window.toggleFloatingAssistant = function () {
     pane.classList.toggle('hidden');
     pane.classList.toggle('active');
     if (!pane.classList.contains('hidden')) {
@@ -165,9 +158,6 @@ export function initFloatingAssistant(reloadDataCb) {
   pane.addEventListener('click', resetInactivityTimer);
   inputEl.addEventListener('input', resetInactivityTimer);
   inputEl.addEventListener('focus', resetInactivityTimer);
-
-  // Khởi tạo Speech Recognition (STT)
-  setupAssistantSpeechRecognition(micBtn, inputEl);
 }
 
 function renderInitialGreeting() {
@@ -212,7 +202,7 @@ async function sendAssistantMessage() {
     }
     const tabName = tabNamesMap[matchedTab];
     const localReply = `Đã chuyển hướng bạn tới trang "${tabName}" thành công!`;
-    
+
     setTimeout(() => {
       const localReplyId = appendMessage('ai', localReply);
       assistantHistory.push({ id: localReplyId, role: 'ai', text: localReply });
@@ -343,49 +333,4 @@ function removeLoadingIndicator(id) {
   if (indicator) {
     indicator.remove();
   }
-}
-
-// Tích hợp STT Nhận diện giọng nói cho trợ lý ảo
-function setupAssistantSpeechRecognition(micBtn, inputEl) {
-  recognition = createSpeechRecognizer({
-    lang: "vi-VN",
-    onStart: () => {
-      isRecognizing = true;
-      clearInactivityTimer(); // Hủy đếm ngược khi đang thu âm giọng nói
-      micBtn.className = "w-9 h-9 rounded-lg bg-red-100 border border-red-200 text-red-600 hover:bg-red-200 flex items-center justify-center transition animate-pulse cursor-pointer";
-      micBtn.innerHTML = `<i class="fa-solid fa-microphone-lines text-xs"></i>`;
-    },
-    onResult: (transcript) => {
-      inputEl.value = transcript;
-      sendAssistantMessage();
-    },
-    onError: () => {
-      isRecognizing = false;
-      resetMicButtonUI(micBtn);
-      resetInactivityTimer(); // Chạy lại đếm ngược
-    },
-    onEnd: () => {
-      isRecognizing = false;
-      resetMicButtonUI(micBtn);
-      resetInactivityTimer(); // Chạy lại đếm ngược
-    }
-  });
-
-  if (!recognition) return;
-
-  micBtn.addEventListener('click', () => {
-    if (isRecognizing) {
-      recognition.stop();
-    } else {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-      recognition.start();
-    }
-  });
-}
-
-function resetMicButtonUI(micBtn) {
-  micBtn.className = "w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition cursor-pointer";
-  micBtn.innerHTML = `<i class="fa-solid fa-microphone text-xs"></i>`;
 }

@@ -1,5 +1,4 @@
 import { callServer, escapeHTML } from '../services/api.js';
-import { showToast } from '../services/toast.js';
 
 let allLinkData = [];
 let onSyncNeeded = null;
@@ -109,7 +108,7 @@ window.addLinkRow = function() {
   let cat = document.getElementById('ins-link-cat').value.trim();
   let content = document.getElementById('ins-link-content').value.trim();
   if (!title || !content) {
-    showToast("Vui lòng điền cả Tiêu đề và Nội dung liên kết!", "warning");
+    console.warn("Vui lòng điền cả Tiêu đề và Nội dung liên kết!");
     return;
   }
   
@@ -147,7 +146,7 @@ window.addLinkRow = function() {
     document.getElementById('ins-link-title').value = title;
     document.getElementById('ins-link-cat').value = cat;
     document.getElementById('ins-link-content').value = content;
-    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
@@ -167,7 +166,7 @@ window.saveLink = function(id) {
 
   window.toggleLinkEdit(id, false);
   buildLinkTable();
-  showToast("Đã cập nhật liên kết thành công!", "success");
+  console.log("Đã cập nhật liên kết thành công!");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateLinkRow", [id, title, cat, content])
@@ -186,7 +185,7 @@ window.saveLink = function(id) {
     }
     buildLinkTable();
     window.toggleLinkEdit(id, true);
-    showToast("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
@@ -208,7 +207,7 @@ window.deleteLink = function(id) {
   });
 
   buildLinkTable();
-  showToast("Đã xóa liên kết thành công!", "success");
+  console.log("Đã xóa liên kết thành công!");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteLinkRow", [id])
@@ -229,7 +228,7 @@ window.deleteLink = function(id) {
     });
     allLinkData.splice(deletedIndex, 0, deletedItem);
     buildLinkTable();
-    showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 

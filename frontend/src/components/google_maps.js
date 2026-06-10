@@ -1,5 +1,4 @@
 import { callServer, escapeHTML } from '../services/api.js';
-import { showToast } from '../services/toast.js';
 
 let allMapData = [];
 let onSyncNeeded = null;
@@ -174,7 +173,7 @@ window.addMapRow = function() {
   const address = addressInput ? addressInput.value.trim() : "";
  
   if (!place || !city) {
-    showToast("Vui lòng nhập Tên địa điểm và Thành phố!", "warning");
+    console.warn("Vui lòng nhập Tên địa điểm và Thành phố!");
     return;
   }
  
@@ -216,7 +215,7 @@ window.addMapRow = function() {
     cityInput.value = city;
     if (catInput) catInput.value = category;
     if (addressInput) addressInput.value = address;
-    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
  
@@ -237,7 +236,7 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
     allMapData[idx].status = isChecked;
   }
 
-  showToast(isChecked ? "Đã check-in chinh phục địa điểm này! 🎉" : "Đã hủy thám hiểm địa điểm", "success");
+  console.log(isChecked ? "Đã check-in chinh phục địa điểm này! 🎉" : "Đã hủy thám hiểm địa điểm");
   buildMapGrid();
  
   // 2. Gửi yêu cầu ngầm lên Google Sheets
@@ -262,7 +261,7 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
       labelEl.className = isExplored ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
     }
     buildMapGrid();
-    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
  
@@ -284,7 +283,7 @@ window.deleteMapPlace = function(id) {
   });
 
   buildMapGrid();
-  showToast("Đã xóa địa điểm thành công!", "success");
+  console.log("Đã xóa địa điểm thành công!");
  
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteMapRow", [id])
@@ -306,7 +305,7 @@ window.deleteMapPlace = function(id) {
     });
     allMapData.splice(deletedIndex, 0, deletedItem);
     buildMapGrid();
-    showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
@@ -322,7 +321,7 @@ window.saveMapPlace = function(id) {
   const address = document.getElementById(`map-edit-address-${id}`).value.trim();
  
   if (!place || !city) {
-    showToast("Vui lòng nhập Tên địa điểm và Thành phố!", "warning");
+    console.warn("Vui lòng nhập Tên địa điểm và Thành phố!");
     return;
   }
  
@@ -338,7 +337,7 @@ window.saveMapPlace = function(id) {
 
   window.toggleMapEdit(id, false);
   buildMapGrid();
-  showToast("Đã cập nhật địa điểm thành công! 🎉", "success");
+  console.log("Đã cập nhật địa điểm thành công! 🎉");
  
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateMapRow", [id, place, city, category, address])
@@ -357,6 +356,6 @@ window.saveMapPlace = function(id) {
     }
     buildMapGrid();
     window.toggleMapEdit(id, true);
-    showToast("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };

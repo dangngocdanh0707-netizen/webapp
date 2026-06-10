@@ -1,5 +1,4 @@
 import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp } from '../services/api.js';
-import { showToast } from '../services/toast.js';
 
 let allTaskData = [];
 let onSyncNeeded = null;
@@ -166,7 +165,7 @@ window.toggleTaskStatusDirectly = function (rowNumber, checkboxEl) {
     allTaskData[idx].status = isChecked;
   }
 
-  showToast(isChecked ? "Đã đánh dấu hoàn thành công việc!" : "Đã đặt công việc thành Chưa hoàn thành", "success");
+  console.log(isChecked ? "Đã đánh dấu hoàn thành công việc!" : "Đã đặt công việc thành Chưa hoàn thành");
   buildTaskTable();
 
   // 2. Gửi yêu cầu ngầm lên Google Sheets
@@ -188,7 +187,7 @@ window.toggleTaskStatusDirectly = function (rowNumber, checkboxEl) {
     labelEl.innerText = oldStatus ? "Completed" : "Pending";
     labelEl.className = oldStatus ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
     buildTaskTable();
-    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
@@ -200,7 +199,7 @@ window.addTaskRow = function () {
   let importantVal = document.getElementById('ins-task-important') ? document.getElementById('ins-task-important').checked : false;
 
   if (!date || !desc) {
-    showToast("Vui lòng điền cả Ngày và Mô tả công việc!", "warning");
+    console.warn("Vui lòng điền cả Ngày và Mô tả công việc!");
     return;
   }
 
@@ -239,7 +238,7 @@ window.addTaskRow = function () {
     document.getElementById('ins-task-desc').value = desc;
     if (document.getElementById('ins-task-urgent')) document.getElementById('ins-task-urgent').checked = urgentVal;
     if (document.getElementById('ins-task-important')) document.getElementById('ins-task-important').checked = importantVal;
-    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
@@ -253,7 +252,7 @@ window.saveTask = function (id) {
   let importantVal = document.getElementById(`task-edit-important-${id}`) ? document.getElementById(`task-edit-important-${id}`).checked : false;
 
   if (!date || !desc) {
-    showToast("Vui lòng điền cả Ngày và Mô tả công việc!", "warning");
+    console.warn("Vui lòng điền cả Ngày và Mô tả công việc!");
     return;
   }
 
@@ -270,7 +269,7 @@ window.saveTask = function (id) {
 
   window.toggleTaskEdit(id, false);
   buildTaskTable();
-  showToast("Đã cập nhật công việc thành công!", "success");
+  console.log("Đã cập nhật công việc thành công!");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateTaskRow", [id, date, desc, urgentVal, importantVal, statusVal])
@@ -289,7 +288,7 @@ window.saveTask = function (id) {
     }
     buildTaskTable();
     window.toggleTaskEdit(id, true);
-    showToast("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
@@ -311,7 +310,7 @@ window.deleteTask = function (id) {
   });
 
   buildTaskTable();
-  showToast("Đã xóa công việc thành công!", "success");
+  console.log("Đã xóa công việc thành công!");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteTaskRow", [id])
@@ -333,7 +332,7 @@ window.deleteTask = function (id) {
     });
     allTaskData.splice(deletedIndex, 0, deletedItem);
     buildTaskTable();
-    showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
@@ -440,7 +439,7 @@ window.toggleTaskUrgent = function (rowNumber) {
   // 1. Cập nhật giao diện lập tức (Optimistic Update)
   allTaskData[idx].urgent = isChecked;
   buildTaskTable();
-  showToast(isChecked ? "Đã đánh dấu Khẩn cấp! ⚡" : "Đã bỏ đánh dấu Khẩn cấp", "success");
+  console.log(isChecked ? "Đã đánh dấu Khẩn cấp! ⚡" : "Đã bỏ đánh dấu Khẩn cấp");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateTaskUrgentRow", [rowNumber, isChecked])
@@ -456,7 +455,7 @@ window.toggleTaskUrgent = function (rowNumber) {
   function rollback(errorMessage) {
     allTaskData[idx].urgent = oldUrgent;
     buildTaskTable();
-    showToast("Lỗi đồng bộ: " + errorMessage, "error");
+    console.error("Lỗi đồng bộ: " + errorMessage);
   }
 };
 
@@ -470,7 +469,7 @@ window.toggleTaskImportant = function (rowNumber) {
   // 1. Cập nhật giao diện lập tức (Optimistic Update)
   allTaskData[idx].important = isChecked;
   buildTaskTable();
-  showToast(isChecked ? "Đã đánh dấu Quan trọng! ⭐" : "Đã bỏ đánh dấu Quan trọng", "success");
+  console.log(isChecked ? "Đã đánh dấu Quan trọng! ⭐" : "Đã bỏ đánh dấu Quan trọng");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateTaskImportantRow", [rowNumber, isChecked])
@@ -486,7 +485,7 @@ window.toggleTaskImportant = function (rowNumber) {
   function rollback(errorMessage) {
     allTaskData[idx].important = oldImportant;
     buildTaskTable();
-    showToast("Lỗi đồng bộ: " + errorMessage, "error");
+    console.error("Lỗi đồng bộ: " + errorMessage);
   }
 };
 

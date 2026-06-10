@@ -1,8 +1,6 @@
 // DỊCH VỤ ĐỒNG BỘ DỮ LIỆU - API & LOCAL STORAGE SERVICE
 // Lớp cơ sở dữ liệu kết nối an toàn trực tiếp với Google Sheets API v4
 
-import { showToast } from './toast.js';
-
 
 // Cấu hình phím lưu trữ trong localStorage
 const KEY_SPREADSHEET_ID = "GOOGLE_SPREADSHEET_ID";
@@ -120,7 +118,7 @@ export function initGoogleAuth() {
                     // Lỗi tự động refresh ngầm thất bại (do hết hạn session Google), không hiển thị toast lỗi
                     localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
                   } else {
-                    showToast("Lỗi kết nối Google: " + tokenResponse.error, "error");
+                    console.error("Lỗi kết nối Google:", tokenResponse.error);
                   }
                   if (!authResolved) {
                     authResolved = true;
@@ -200,7 +198,6 @@ export function initGoogleAuth() {
 // Thực hiện đăng nhập Google OAuth
 export function signInWithGoogle() {
   if (!tokenClient) {
-    showToast("Vui lòng cấu hình đầy đủ API Key, Client ID và Spreadsheet ID trước!", "warning");
     if (typeof window.openSettingsModal === 'function') {
       window.openSettingsModal();
     }

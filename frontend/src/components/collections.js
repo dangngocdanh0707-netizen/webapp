@@ -1,5 +1,4 @@
 import { callServer, escapeHTML } from '../services/api.js';
-import { showToast } from '../services/toast.js';
 
 let allCollectionData = [];
 let onSyncNeeded = null;
@@ -179,7 +178,7 @@ window.saveNewCollection = function() {
   const category = catInput ? catInput.value.trim() : "General";
 
   if (!item || !brand) {
-    showToast("Please fill in Name and Brand!", "warning");
+    console.warn("Please fill in Name and Brand!");
     return;
   }
 
@@ -221,7 +220,7 @@ window.saveNewCollection = function() {
     brandInput.value = brand;
     if (styleInput) styleInput.value = style;
     if (catInput) catInput.value = category;
-    showToast("Add failed: " + errorMessage + ". Reverted changes.", "error");
+    console.error("Add failed: " + errorMessage + ". Reverted changes.");
   }
 };
 
@@ -243,7 +242,7 @@ window.deleteCollectionItem = function(id) {
   });
 
   buildCollectionsGrid();
-  showToast("Asset successfully deleted from collection!", "success");
+  console.log("Asset successfully deleted from collection!");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteCollectionRow", [id])
@@ -265,7 +264,7 @@ window.deleteCollectionItem = function(id) {
     });
     allCollectionData.splice(deletedIndex, 0, deletedItem);
     buildCollectionsGrid();
-    showToast("Delete failed: " + errorMessage + ". Reverted changes.", "error");
+    console.error("Delete failed: " + errorMessage + ". Reverted changes.");
   }
 };
 
@@ -281,7 +280,7 @@ window.saveCollectionItem = function(id) {
   const category = document.getElementById(`col-edit-cat-${id}`).value.trim();
 
   if (!item || !brand) {
-    showToast("Please fill in Name and Brand!", "warning");
+    console.warn("Please fill in Name and Brand!");
     return;
   }
 
@@ -297,7 +296,7 @@ window.saveCollectionItem = function(id) {
 
   window.toggleCollectionEdit(id, false);
   buildCollectionsGrid();
-  showToast("Asset successfully updated! 🎉", "success");
+  console.log("Asset successfully updated! 🎉");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateCollectionRow", [id, item, brand, style, category])
@@ -316,7 +315,7 @@ window.saveCollectionItem = function(id) {
     }
     buildCollectionsGrid();
     window.toggleCollectionEdit(id, true);
-    showToast("Update failed: " + errorMessage + ". Reverted changes.", "error");
+    console.error("Update failed: " + errorMessage + ". Reverted changes.");
   }
 };
 
@@ -337,7 +336,7 @@ window.toggleCollectionStatusDirectly = function(rowNumber, checkboxEl) {
     allCollectionData[idx].status = isChecked;
   }
 
-  showToast(isChecked ? "Asset status updated successfully! 🎉" : "Asset status reverted successfully", "success");
+  console.log(isChecked ? "Asset status updated successfully! 🎉" : "Asset status reverted successfully");
   buildCollectionsGrid();
  
   // 2. Gửi yêu cầu ngầm lên Google Sheets
@@ -361,6 +360,6 @@ window.toggleCollectionStatusDirectly = function(rowNumber, checkboxEl) {
       labelEl.className = oldStatus ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
     }
     buildCollectionsGrid();
-    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };

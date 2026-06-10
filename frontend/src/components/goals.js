@@ -1,5 +1,4 @@
 import { callServer, escapeHTML, formatDateInput, formatDateDb } from '../services/api.js';
-import { showToast } from '../services/toast.js';
 
 let allGoalData = [];
 let onSyncNeeded = null;
@@ -83,7 +82,7 @@ window.addGoalRow = function() {
   let target = document.getElementById('ins-goal-target').value;
   
   if (!name || !target) {
-    showToast("Vui lòng nhập Tên mục tiêu và Chỉ tiêu cần đạt!", "warning");
+    console.warn("Vui lòng nhập Tên mục tiêu và Chỉ tiêu cần đạt!");
     return;
   }
   
@@ -125,7 +124,7 @@ window.addGoalRow = function() {
     document.getElementById('ins-goal-end').value = endVal;
     document.getElementById('ins-goal-current').value = current;
     document.getElementById('ins-goal-target').value = target;
-    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
@@ -151,7 +150,7 @@ window.saveGoal = function(id) {
 
   window.toggleGoalEdit(id, false);
   buildGoalTable();
-  showToast("Đã cập nhật mục tiêu thành công!", "success");
+  console.log("Đã cập nhật mục tiêu thành công!");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateGoalRow", [id, name, start, end, current, target])
@@ -170,7 +169,7 @@ window.saveGoal = function(id) {
     }
     buildGoalTable();
     window.toggleGoalEdit(id, true);
-    showToast("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
@@ -192,7 +191,7 @@ window.deleteGoal = function(id) {
   });
 
   buildGoalTable();
-  showToast("Đã xóa mục tiêu thành công!", "success");
+  console.log("Đã xóa mục tiêu thành công!");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteGoalRow", [id])
@@ -214,6 +213,6 @@ window.deleteGoal = function(id) {
     });
     allGoalData.splice(deletedIndex, 0, deletedItem);
     buildGoalTable();
-    showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };

@@ -1,14 +1,10 @@
 // HỢP PHẦN AI SPEAKING PARTNER - FRONTEND LOGIC
 import { getAiCredentials, callServer, escapeHTML } from '../services/api.js';
 import { callAiApi, SCENARIOS, translateMessageText } from '../services/ai.js';
-import { showToast } from '../services/toast.js';
-import { createSpeechRecognizer } from '../services/speech.js';
 
 
 let activeScenario = "casual";
 let chatHistories = {}; // Cấu trúc: { [scenarioKey]: [{role: 'user'|'ai', text: string}] }
-let recognition = null;
-let isRecognizing = false;
 let refreshDataCallback = null;
 let isInitialized = false;
 let translationCache = {}; // Cache dịch theo index: { [msgIndex]: string }
@@ -16,12 +12,12 @@ let translationCache = {}; // Cache dịch theo index: { [msgIndex]: string }
 // ---------------- KHỞI TẠO MÔ-ĐUN ----------------
 export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
   refreshDataCallback = refreshCb;
-  
+
   if (isInitialized) {
     return;
   }
   isInitialized = true;
-  
+
   // Xóa cache cũ nếu có
   localStorage.removeItem("AI_CHAT_HISTORIES_V1");
 
@@ -30,7 +26,7 @@ export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
   if (initialChatHistory && Array.isArray(initialChatHistory)) {
     initialChatHistory.forEach(item => {
       const scenarioTitle = item.scenario;
-      let matchedKey = Object.keys(SCENARIOS).find(key => 
+      let matchedKey = Object.keys(SCENARIOS).find(key =>
         SCENARIOS[key].title === scenarioTitle || key === scenarioTitle
       );
       if (!matchedKey) {
@@ -49,9 +45,6 @@ export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
   // 2. Cài đặt các giọng đọc Speech Synthesis (TTS)
   setupTtsVoiceSelector();
 
-  // 3. Khởi tạo Speech Recognition (STT) nếu trình duyệt hỗ trợ
-  setupSpeechRecognition();
-
   // 4. Nếu tab hiện tại đang active là AI chat, khởi chạy kịch bản mặc định
   const activeTab = document.querySelector('.tab-content.active');
   if (activeTab && activeTab.id === 'practice-tab') {
@@ -63,12 +56,12 @@ export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
 }
 
 // ---------------- PHÂN TÁCH SUB-TAB (SRS vs AI Chat) ----------------
-window.switchPracticeSubTab = function(subTabId) {
+window.switchPracticeSubTab = function (subTabId) {
   const btnSrs = document.getElementById('btn-subtab-srs');
   const btnAichat = document.getElementById('btn-subtab-aichat');
   const btnGrammar = document.getElementById('btn-subtab-grammar');
   const srsStats = document.getElementById('practice-srs-stats');
-  
+
   const srsContainer = document.getElementById('practice-srs-container');
   const aichatContainer = document.getElementById('practice-aichat-container');
   const grammarContainer = document.getElementById('practice-grammar-container');
@@ -91,11 +84,6 @@ window.switchPracticeSubTab = function(subTabId) {
     btnSrs.className = activeClass;
     if (srsStats) srsStats.classList.remove('hidden');
     srsContainer.classList.remove('hidden');
-    
-    // Tắt nhận dạng giọng nói nếu đang bật
-    if (isRecognizing && recognition) {
-      recognition.stop();
-    }
   } else if (subTabId === 'aichat') {
     btnAichat.className = activeClass;
     aichatContainer.classList.remove('hidden');
@@ -105,22 +93,12 @@ window.switchPracticeSubTab = function(subTabId) {
   } else if (subTabId === 'grammar') {
     if (btnGrammar) btnGrammar.className = activeClass;
     if (grammarContainer) grammarContainer.classList.remove('hidden');
-    
-    // Tắt nhận dạng giọng nói nếu đang bật
-    if (isRecognizing && recognition) {
-      recognition.stop();
-    }
   }
 };
 
 // ---------------- KHỞI TẠO VÀ CHUYỂN KỊCH BẢN (SCENARIOS) ----------------
-window.setAiScenario = function(scenarioKey) {
+window.setAiScenario = function (scenarioKey) {
   if (!SCENARIOS[scenarioKey]) return;
-
-  // Tắt nhận dạng giọng nói nếu đang bật khi đổi tình huống
-  if (isRecognizing && recognition) {
-    recognition.stop();
-  }
 
   activeScenario = scenarioKey;
 
@@ -136,7 +114,7 @@ window.setAiScenario = function(scenarioKey) {
 
 function initializeActiveScenario() {
   const scenario = SCENARIOS[activeScenario];
-  
+
   // Cập nhật tiêu đề kịch bản
   const titleEl = document.getElementById('ai-chat-scenario-title');
   if (titleEl) titleEl.innerText = scenario.title;
@@ -155,7 +133,7 @@ function initializeActiveScenario() {
   resetGrammarFeedbackUI();
 }
 
-window.clearAiChatHistory = function() {
+window.clearAiChatHistory = function () {
   chatHistories[activeScenario] = [];
   initializeActiveScenario();
 };
@@ -166,10 +144,10 @@ function renderAiChatBubbles() {
   if (!historyContainer) return;
 
   const history = chatHistories[activeScenario] || [];
-  
+
   historyContainer.innerHTML = history.map((msg, index) => {
     const isUser = msg.role === "user";
-    
+
     // Bubble cho người dùng
     if (isUser) {
       return `
@@ -197,7 +175,7 @@ function renderAiChatBubbles() {
         </div>
       `;
     }
-    
+
     // Bubble cho AI
     return `
       <div class="flex flex-col items-start animate-in fade-in slide-in-from-bottom-2 duration-200">
@@ -233,12 +211,12 @@ function renderAiChatBubbles() {
 
 
 // ---------------- DỊCH TIếNG VIỆT - ĐỀ XUẤT 3 ----------------
-window.translateAiMessage = async function(index, text) {
+window.translateAiMessage = async function (index, text) {
   const container = document.getElementById(`ai-chat-trans-${index}`);
   if (!container) return;
 
   const spinner = container.querySelector('.ai-trans-spinner');
-  const textEl  = container.querySelector('.ai-trans-text');
+  const textEl = container.querySelector('.ai-trans-text');
 
   // Nếu container đang hiển thị, toggle ẩn
   if (!container.classList.contains('hidden')) {
@@ -264,7 +242,7 @@ window.translateAiMessage = async function(index, text) {
     const aiCreds = getAiCredentials();
     const hasCreds = aiCreds.provider === "gemini" ? aiCreds.geminiKey : aiCreds.openaiKey;
     if (!hasCreds) {
-      showToast("Vui lòng cấu hình API Key trong Settings trước!", "warning");
+      console.warn("Vui lòng cấu hình API Key trong Settings trước!");
       container.classList.add('hidden');
       return;
     }
@@ -277,13 +255,13 @@ window.translateAiMessage = async function(index, text) {
     textEl.classList.remove('hidden');
   } catch (err) {
     console.error('[ai_chat.js] Lỗi dịch:', err);
-    showToast('Không thể dịch tin nhắn này.', 'error');
+    console.error('Không thể dịch tin nhắn này.');
     container.classList.add('hidden');
   }
 };
 
 // ---------------- GỬI TIN NHẮN VÀ XỬ LÝ PHẢN HỒI AI ----------------
-window.sendAiChatMessage = async function() {
+window.sendAiChatMessage = async function () {
   const inputEl = document.getElementById('ai-chat-input');
   if (!inputEl) return;
 
@@ -294,7 +272,7 @@ window.sendAiChatMessage = async function() {
   const aiCreds = getAiCredentials();
   const hasCreds = aiCreds.provider === "gemini" ? aiCreds.geminiKey : aiCreds.openaiKey;
   if (!hasCreds) {
-    showToast("Vui lòng cấu hình API Key trong Settings trước!", "warning");
+    console.warn("Vui lòng cấu hình API Key trong Settings trước!");
     if (typeof window.openSettingsModal === 'function') {
       window.openSettingsModal();
     }
@@ -304,7 +282,7 @@ window.sendAiChatMessage = async function() {
   // Xóa trống ô input và khóa tạm thời để tránh bấm đúp
   inputEl.value = "";
   inputEl.disabled = true;
-  
+
   const btnSend = document.getElementById('btn-ai-chat-send');
   if (btnSend) btnSend.disabled = true;
 
@@ -365,7 +343,7 @@ window.sendAiChatMessage = async function() {
 
   } catch (error) {
     console.error("Lỗi chat AI:", error);
-    showToast(error.message || "Lỗi giao tiếp với AI.", "error");
+    console.error(error.message || "Lỗi giao tiếp với AI.");
     // Xóa tin nhắn vừa lỗi khỏi giao diện để tránh kẹt lịch sử
     chatHistories[activeScenario].pop();
     renderAiChatBubbles();
@@ -377,62 +355,6 @@ window.sendAiChatMessage = async function() {
     inputEl.focus();
   }
 };
-
-// ---------------- NHẬN DIỆN GIỌNG NÓI (STT) ----------------
-function setupSpeechRecognition() {
-  recognition = createSpeechRecognizer({
-    lang: "en-US",
-    onStart: () => {
-      isRecognizing = true;
-      updateMicButtonUI(true);
-    },
-    onResult: (transcript) => {
-      const inputEl = document.getElementById('ai-chat-input');
-      if (inputEl) {
-        inputEl.value = transcript;
-        window.sendAiChatMessage();
-      }
-    },
-    onError: () => {
-      isRecognizing = false;
-      updateMicButtonUI(false);
-    },
-    onEnd: () => {
-      isRecognizing = false;
-      updateMicButtonUI(false);
-    }
-  });
-}
-
-window.toggleSpeechRecognition = function() {
-  if (!recognition) {
-    showToast("Trình duyệt này không hỗ trợ micro nói. Vui lòng dùng Chrome, Safari hoặc Edge và nhập văn bản.", "info");
-    return;
-  }
-
-  if (isRecognizing) {
-    recognition.stop();
-  } else {
-    // Đảm bảo dừng mọi phát âm đang đọc để micro nghe rõ hơn
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-    recognition.start();
-  }
-};
-
-function updateMicButtonUI(active) {
-  const micBtn = document.getElementById('btn-ai-chat-mic');
-  if (!micBtn) return;
-
-  if (active) {
-    micBtn.className = "w-11 h-11 rounded-xl bg-red-100 border border-red-200 text-red-600 hover:bg-red-200 flex items-center justify-center transition shadow-xs animate-pulse cursor-pointer relative group";
-    micBtn.innerHTML = `<i class="fa-solid fa-microphone-lines text-base"></i>`;
-  } else {
-    micBtn.className = "w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-blue-600 flex items-center justify-center transition shadow-2xs cursor-pointer relative group";
-    micBtn.innerHTML = `<i class="fa-solid fa-microphone text-base"></i>`;
-  }
-}
 
 // ---------------- PHÁT ÂM LỜI THOẠI AI (TTS) ----------------
 function setupTtsVoiceSelector() {
@@ -446,24 +368,24 @@ function setupTtsVoiceSelector() {
     if (!voiceSelect) return;
 
     const voices = window.speechSynthesis.getVoices();
-    
+
     // Lọc các giọng Tiếng Anh (en)
     const enVoices = voices.filter(v => v.lang.startsWith('en'));
-    
+
     // Reset dropdown
     voiceSelect.innerHTML = `<option value="default">Mặc định hệ thống</option>`;
-    
+
     enVoices.forEach(voice => {
       const option = document.createElement('option');
       option.value = voice.voiceURI;
-      
+
       // Đặt nhãn ngắn gọn dễ nhìn
       let accent = "US";
       if (voice.lang.includes("GB") || voice.lang.includes("UK")) accent = "UK";
       else if (voice.lang.includes("AU")) accent = "AU";
       else if (voice.lang.includes("CA")) accent = "CA";
       else if (voice.lang.includes("IN")) accent = "IN";
-      
+
       option.innerText = `${voice.name} (${accent})`;
       voiceSelect.appendChild(option);
     });
@@ -476,7 +398,7 @@ function setupTtsVoiceSelector() {
   }
 }
 
-window.speakAiResponse = function(text) {
+window.speakAiResponse = function (text) {
   if (!('speechSynthesis' in window)) return;
 
   try {
@@ -538,15 +460,15 @@ function resetGrammarFeedbackUI() {
 function renderGrammarFeedbackUI(userText, aiResult) {
   const emptyEl = document.getElementById('ai-chat-feedback-empty');
   const activeEl = document.getElementById('ai-chat-feedback-active');
-  
+
   if (!emptyEl || !activeEl) return;
 
   emptyEl.classList.add('hidden');
   activeEl.classList.remove('hidden');
 
   // Tự động kiểm tra chéo: nếu câu gợi ý sửa giống hệt câu gốc thì xem như câu gốc đã chính xác (isCorrect = true)
-  const cleanUser = userText.trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"");
-  const cleanCorrect = (aiResult.correctText || "").trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g,"");
+  const cleanUser = userText.trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "");
+  const cleanCorrect = (aiResult.correctText || "").trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "");
   if (cleanUser === cleanCorrect || !aiResult.correctText || aiResult.correctText.trim() === "") {
     aiResult.isCorrect = true;
   }
@@ -572,7 +494,7 @@ function renderGrammarFeedbackUI(userText, aiResult) {
   // 2. Câu gợi ý viết tự nhiên/phổ biến hơn (CÁCH VIẾT TỰ NHIÊN HƠN)
   const correctBlock = document.getElementById('ai-chat-feedback-correction-block');
   const correctTxtEl = document.getElementById('ai-chat-feedback-correct-txt');
-  
+
   if (correctBlock && correctTxtEl) {
     correctBlock.classList.remove('hidden');
     if (aiResult.isCorrect) {
@@ -602,12 +524,12 @@ function renderGrammarFeedbackUI(userText, aiResult) {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     const dateStr = `${year}-${month}-${day}`;
-    
+
     const scenarioTitle = SCENARIOS[activeScenario]?.title || activeScenario;
     const userSentence = userText.trim();
     const correctedSentence = (aiResult.correctText || "").trim();
     const explanation = (aiResult.corrections || "").trim();
-    
+
     callServer("insertGrammarDiaryRow", [dateStr, scenarioTitle, userSentence, correctedSentence, explanation])
       .then(() => {
         console.log("[ai_chat.js] Tự động lưu lỗi ngữ pháp vào Google Sheet thành công.");
@@ -626,13 +548,13 @@ function renderGrammarFeedbackUI(userText, aiResult) {
 // ---------------- UTILS HELPERS ----------------
 
 // Thêm nhanh từ vựng mới từ giao diện AI Chat
-window.saveQuickVocabWord = function() {
+window.saveQuickVocabWord = function () {
   const contentInput = document.getElementById('ai-chat-quick-vocab-word');
   if (!contentInput) return;
 
   const content = contentInput.value.trim();
   if (!content) {
-    showToast("Nội dung từ vựng không được để trống!", "warning");
+    console.warn("Nội dung từ vựng không được để trống!");
     return;
   }
 
@@ -644,15 +566,15 @@ window.saveQuickVocabWord = function() {
   callServer("insertVocabRow", [content, "", "", "", "", ""])
     .then(res => {
       if (res === "Thành công") {
-        showToast(`Đã thêm từ "${content}" thành công!`, "success");
+        console.log(`Đã thêm từ "${content}" thành công!`);
         if (typeof refreshDataCallback === "function") {
           refreshDataCallback(true); // silent reload
         }
       } else {
-        showToast("Lỗi đồng bộ Sheets: " + res, "error");
+        console.error("Lỗi đồng bộ Sheets: " + res);
       }
     })
     .catch(err => {
-      showToast("Lỗi đồng bộ Sheets: " + (err.message || err), "error");
+      console.error("Lỗi đồng bộ Sheets: " + (err.message || err));
     });
 };

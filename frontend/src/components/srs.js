@@ -1,5 +1,4 @@
 import { callServer, parseDateToTimestamp, escapeHTML } from '../services/api.js';
-import { showToast } from '../services/toast.js';
 
 let reviewQueue = [];
 let activeQueue = [];
@@ -242,7 +241,7 @@ window.triggerRandomVocab = function () {
   }
 
   if (activeQueue.length === 0) {
-    showToast("Hộp từ vựng ôn tập của bạn đã trống! Hãy thêm từ mới hoặc quay lại vào ngày mai nhé.", "info");
+    console.info("Hộp từ vựng ôn tập của bạn đã trống! Hãy thêm từ mới hoặc quay lại vào ngày mai nhé.");
     return;
   }
 
@@ -743,7 +742,7 @@ window.logPracticeAction = function (action) {
     })
     .catch(err => {
       console.error("Background sync failed for row " + rowNumber, err);
-      showToast("Lỗi đồng bộ ôn tập: " + err.message, "error");
+      console.error("Lỗi đồng bộ ôn tập: " + err.message);
     });
 };
 

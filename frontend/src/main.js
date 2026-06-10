@@ -10,7 +10,6 @@ import {
   saveAiCredentials
 } from './services/api.js';
 
-import { showToast } from './services/toast.js';
 import { initSortableSidebar, initResizeSidebar } from './components/sidebar.js';
 import { initCostModule } from './components/expenses.js';
 import { initVocabModule } from './components/vocabulary.js';
@@ -49,17 +48,8 @@ window.onerror = function (message, source, lineno, colno, error) {
 
 // Khởi chạy ứng dụng
 async function initApp() {
-  // Hiển thị toast chờ nếu có sau khi tải lại trang
-  const pendingToast = localStorage.getItem("TOAST_PENDING");
-  if (pendingToast) {
-    try {
-      const { message, type } = JSON.parse(pendingToast);
-      showToast(message, type);
-    } catch (e) {
-      console.warn(e);
-    }
-    localStorage.removeItem("TOAST_PENDING");
-  }
+  // Dọn dẹp toast chờ cũ
+  localStorage.removeItem("TOAST_PENDING");
 
   initSortableSidebar();
   initResizeSidebar();
@@ -297,9 +287,9 @@ function loadDataFromServer(silent = false) {
         const needsSetup = !creds.spreadsheetId || !creds.clientId || !creds.apiKey;
         
         if (needsSetup) {
-          showToast("Chưa cấu hình Google Sheets API. Vui lòng nhấn Thiết lập Credentials ở góc dưới bên trái.", "warning");
+          console.warn("Chưa cấu hình Google Sheets API. Vui lòng nhấn Thiết lập Credentials ở góc dưới bên trái.");
         } else {
-          showToast("Đồng bộ lâu hơn dự kiến. Vui lòng kiểm tra lại kết nối mạng.", "info");
+          console.info("Đồng bộ lâu hơn dự kiến. Vui lòng kiểm tra lại kết nối mạng.");
         }
         
         renderDashboard({
@@ -333,9 +323,6 @@ function loadDataFromServer(silent = false) {
 function handleScriptError(err) {
   console.error("Sync Failure:", err);
   let errMsg = err.message || err.toString();
-  
-  // Hiển thị thông báo qua Toast thay vì chặn toàn màn hình
-  showToast("Đồng bộ thất bại: " + errMsg, "error");
   
   // Tự động chuyển qua hiển thị giao diện chính với dữ liệu trống để người dùng có thể tự do bấm Connect Google Sheets trong Sidebar
   renderDashboard({
@@ -499,7 +486,6 @@ window.saveSettingsCredentials = function() {
   const aiModel = document.getElementById('settings-ai-model').value;
   
   if (!spreadsheetId.trim() || !apiKey.trim() || !clientId.trim()) {
-    showToast("Vui lòng điền đầy đủ cả 3 cấu hình Google!", "warning");
     return;
   }
   

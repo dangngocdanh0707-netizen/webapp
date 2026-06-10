@@ -1,6 +1,5 @@
 import { callServer, escapeHTML, parseDateToTimestamp, formatDateView } from '../services/api.js';
 import { renderHabitLine, updateHabitChartData } from './charts.js';
-import { showToast } from '../services/toast.js';
 
 let allHabitData = [];
 let onSyncNeeded = null;
@@ -280,7 +279,7 @@ window.toggleHabitStatusDirectly = function (rowNumber, checkboxEl) {
   recalculateHabitChartOnly();
   buildHabitGrid();
   if (dateSelect) buildHabitTable(dateSelect.value);
-  showToast(isChecked ? "Completed habit!" : "Marked habit as pending", "success");
+  console.log(isChecked ? "Completed habit!" : "Marked habit as pending");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateHabitStatusRow", [rowNumber, isChecked])
@@ -300,7 +299,7 @@ window.toggleHabitStatusDirectly = function (rowNumber, checkboxEl) {
     recalculateHabitChartOnly();
     buildHabitGrid();
     if (dateSelect) buildHabitTable(dateSelect.value);
-    showToast("Sync error: " + errorMessage, "error");
+    console.error("Sync error: " + errorMessage);
   }
 };
 
@@ -320,7 +319,7 @@ window.toggleHabitCell = function (rowNumber, dateStr, habitName, checkboxEl) {
     const dateSelect = document.getElementById('habitDateFilter');
     if (dateSelect) buildHabitTable(dateSelect.value);
 
-    showToast(isChecked ? "Completed habit!" : "Marked habit as pending", "success");
+    console.log(isChecked ? "Completed habit!" : "Marked habit as pending");
 
     callServer("updateHabitStatusRow", [rowNumber, isChecked])
       .then(res => {
@@ -340,7 +339,7 @@ window.toggleHabitCell = function (rowNumber, dateStr, habitName, checkboxEl) {
       recalculateHabitChartOnly();
       buildHabitGrid();
       if (dateSelect) buildHabitTable(dateSelect.value);
-      showToast("Sync error: " + errorMessage, "error");
+      console.error("Sync error: " + errorMessage);
     }
   } else {
     // Tạo dòng mới
@@ -358,7 +357,7 @@ window.toggleHabitCell = function (rowNumber, dateStr, habitName, checkboxEl) {
     const dateSelect = document.getElementById('habitDateFilter');
     if (dateSelect) buildHabitTable(dateSelect.value);
 
-    showToast("Completed habit!", "success");
+    console.log("Completed habit!");
 
     callServer("insertHabitRow", [dateStr, habitName, isChecked])
       .then(res => {
@@ -379,7 +378,7 @@ window.toggleHabitCell = function (rowNumber, dateStr, habitName, checkboxEl) {
       recalculateHabitChartOnly();
       buildHabitGrid();
       if (dateSelect) buildHabitTable(dateSelect.value);
-      showToast("Sync error: " + errorMessage, "error");
+      console.error("Sync error: " + errorMessage);
     }
   }
 };
@@ -389,7 +388,7 @@ window.addHabitDirectly = function () {
   if (!nameInput) return;
   const habitName = nameInput.value.trim();
   if (!habitName) {
-    showToast("Please enter a habit name!", "warning");
+    console.warn("Please enter a habit name!");
     return;
   }
 
@@ -402,7 +401,7 @@ window.addHabitDirectly = function () {
   // Kiểm tra xem thói quen này đã tồn tại trong ngày chưa
   const exists = allHabitData.some(h => h.habit.toLowerCase() === habitName.toLowerCase() && h.date === dateStr);
   if (exists) {
-    showToast("This habit is already tracked for today!", "warning");
+    console.warn("This habit is already tracked for today!");
     return;
   }
 
@@ -422,7 +421,7 @@ window.addHabitDirectly = function () {
   const dateSelect = document.getElementById('habitDateFilter');
   if (dateSelect) buildHabitTable(dateSelect.value);
 
-  showToast("Habit added successfully!", "success");
+  console.log("Habit added successfully!");
 
   callServer("insertHabitRow", [dateStr, habitName, false])
     .then(res => {
@@ -443,6 +442,6 @@ window.addHabitDirectly = function () {
     recalculateHabitChartOnly();
     buildHabitGrid();
     if (dateSelect) buildHabitTable(dateSelect.value);
-    showToast("Sync error: " + errorMessage, "error");
+    console.error("Sync error: " + errorMessage);
   }
 };

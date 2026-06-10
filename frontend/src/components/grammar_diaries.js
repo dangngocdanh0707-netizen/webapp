@@ -1,5 +1,4 @@
 import { callServer, getAiCredentials, escapeHTML } from '../services/api.js';
-import { showToast } from '../services/toast.js';
 import { verifyPracticeSentence } from '../services/ai.js';
 
 let refreshCallback = null;
@@ -147,7 +146,7 @@ window.checkGrammarPractice = async function(rowNumber, correctSentence) {
 
   const userText = input.value.trim();
   if (!userText) {
-    showToast("Vui lòng nhập câu trả lời!", "warning");
+    console.warn("Vui lòng nhập câu trả lời!");
     return;
   }
 
@@ -199,7 +198,7 @@ window.checkGrammarPractice = async function(rowNumber, correctSentence) {
   if (isMatch) {
     // Gõ ĐÚNG: Nháy viền xanh, tự động đánh dấu đã thuộc và đồng bộ ngầm
     input.className = "form-input text-xs font-semibold py-2 px-3 rounded-lg border border-emerald-500 bg-emerald-50 text-emerald-800 shadow-[0_0_10px_rgba(16,185,129,0.15)] w-full";
-    showToast("Chính xác! Đã tự động đánh dấu đã thuộc.", "success");
+    console.log("Chính xác! Đã tự động đánh dấu đã thuộc.");
     
     // Tạo hiệu ứng ẩn thẻ
     card.style.transition = 'all 0.4s ease';
@@ -284,19 +283,19 @@ window.deleteGrammarCard = function(rowNumber) {
     callServer("deleteGrammarDiaryRow", [Number(rowNumber)])
       .then(res => {
         if (res === "Thành công") {
-          showToast("Đã xóa bản ghi lỗi ngữ pháp thành công!", "success");
+          console.log("Đã xóa bản ghi lỗi ngữ pháp thành công!");
           if (typeof refreshCallback === 'function') {
             refreshCallback(true); // silent reload
           }
         } else {
-          showToast("Lỗi khi xóa: " + res, "error");
+          console.error("Lỗi khi xóa: " + res);
           if (typeof refreshCallback === 'function') {
             refreshCallback(true);
           }
         }
       })
       .catch(err => {
-        showToast("Lỗi kết nối: " + (err.message || err), "error");
+        console.error("Lỗi kết nối: " + (err.message || err));
         if (typeof refreshCallback === 'function') {
           refreshCallback(true);
         }

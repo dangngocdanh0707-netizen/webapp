@@ -1,5 +1,4 @@
 import { callServer, escapeHTML } from '../services/api.js';
-import { showToast } from '../services/toast.js';
 
 let allPromptData = [];
 let onSyncNeeded = null;
@@ -108,7 +107,7 @@ window.addPromptRow = function() {
   let category = document.getElementById('ins-prompt-cat').value.trim();
   
   if (!title || !content) {
-    showToast("Vui lòng điền cả Tiêu đề và Nội dung Prompt!", "warning");
+    console.warn("Vui lòng điền cả Tiêu đề và Nội dung Prompt!");
     return;
   }
   
@@ -145,7 +144,7 @@ window.addPromptRow = function() {
     document.getElementById('ins-prompt-title').value = title;
     document.getElementById('ins-prompt-content').value = content;
     document.getElementById('ins-prompt-cat').value = category;
-    showToast("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
@@ -165,7 +164,7 @@ window.savePrompt = function(id) {
 
   window.togglePromptEdit(id, false);
   buildPromptTable();
-  showToast("Đã cập nhật mẫu Prompt thành công!", "success");
+  console.log("Đã cập nhật mẫu Prompt thành công!");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updatePromptRow", [id, title, content, category])
@@ -184,7 +183,7 @@ window.savePrompt = function(id) {
     }
     buildPromptTable();
     window.togglePromptEdit(id, true);
-    showToast("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
@@ -206,7 +205,7 @@ window.deletePrompt = function(id) {
   });
 
   buildPromptTable();
-  showToast("Đã xóa mẫu Prompt thành công!", "success");
+  console.log("Đã xóa mẫu Prompt thành công!");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deletePromptRow", [id])
@@ -228,6 +227,6 @@ window.deletePrompt = function(id) {
     });
     allPromptData.splice(deletedIndex, 0, deletedItem);
     buildPromptTable();
-    showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
