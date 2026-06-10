@@ -34,10 +34,11 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap">
 
 
-  
+
 
   <!-- Thư viện SDK Google Sheets & Auth -->
 
@@ -45,8 +46,8 @@
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <script type="module" crossorigin src="/webapp_project/assets/index-BKuKYGeF.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-BaqozL3O.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-B7Jirdm4.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-pQSYJe1m.css">
 </head>
 
 
@@ -64,7 +65,6 @@
     <div class="p-6 border-b border-slate-100 flex items-center justify-center">
 
       <h2
-
         class="text-2xl font-black tracking-widest bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent font-sans nav-brand-text uppercase truncate text-center">
 
         DANH</h2>
@@ -151,13 +151,15 @@
 
       <div id="google-auth-section" class="flex flex-col gap-2">
 
-        <button id="btn-google-login" onclick="signInWithGoogle()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-3 rounded-xl transition duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer">
+        <button id="btn-google-login" onclick="signInWithGoogle()"
+          class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-3 rounded-xl transition duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer">
 
           <i class="fa-brands fa-google text-sm"></i> <span>Connect Google Sheets</span>
 
         </button>
 
-        <button id="btn-google-logout" onclick="signOutFromGoogle()" class="w-full hidden border border-slate-200 hover:bg-slate-50 text-slate-650 font-bold text-xs px-4 py-3 rounded-xl transition duration-200 flex items-center justify-center gap-2 cursor-pointer">
+        <button id="btn-google-logout" onclick="signOutFromGoogle()"
+          class="w-full hidden border border-slate-200 hover:bg-slate-50 text-slate-650 font-bold text-xs px-4 py-3 rounded-xl transition duration-200 flex items-center justify-center gap-2 cursor-pointer">
 
           <i class="fa-solid fa-sign-out text-sm"></i> <span>Sign out</span>
 
@@ -165,7 +167,8 @@
 
       </div>
 
-      <button onclick="window.openSettingsModal()" class="w-full border border-slate-200 hover:bg-slate-50 text-slate-650 font-bold text-xs px-4 py-3 rounded-xl transition duration-200 flex items-center justify-center gap-2 cursor-pointer mt-1">
+      <button onclick="window.openSettingsModal()"
+        class="w-full border border-slate-200 hover:bg-slate-50 text-slate-650 font-bold text-xs px-4 py-3 rounded-xl transition duration-200 flex items-center justify-center gap-2 cursor-pointer mt-1">
 
         <i class="fa-solid fa-sliders text-slate-500"></i> <span>Setting</span>
 
@@ -186,7 +189,6 @@
     <div id="loading" class="flex flex-col items-center justify-center h-[75vh]">
 
       <div
-
         class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4 shadow-[0_0_15px_rgba(37,99,235,0.15)]">
 
       </div>
@@ -210,7 +212,6 @@
           <div class="text-center mb-12">
 
             <h1
-
               class="text-4xl font-extrabold text-slate-900 tracking-tight bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent uppercase font-sans">
 
               Dashboard Launchpad</h1>
@@ -224,21 +225,17 @@
             <!-- App Card: Expenses -->
 
             <div onclick="launchApp('cost-tab')"
-
               class="flex flex-col items-center justify-center group cursor-pointer transition">
 
               <div
-
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
 
                 <i
-
                   class="fa-solid fa-wallet text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
 
               </div>
 
               <span
-
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Expenses</span>
 
             </div>
@@ -248,21 +245,17 @@
             <!-- App Card: Vocabulary -->
 
             <div onclick="launchApp('vocab-tab')"
-
               class="flex flex-col items-center justify-center group cursor-pointer transition">
 
               <div
-
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
 
                 <i
-
                   class="fa-solid fa-book-open text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
 
               </div>
 
               <span
-
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Vocabulary</span>
 
             </div>
@@ -272,21 +265,17 @@
             <!-- App Card: Practice English -->
 
             <div onclick="launchApp('practice-tab')"
-
               class="flex flex-col items-center justify-center group cursor-pointer transition">
 
               <div
-
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
 
                 <i
-
                   class="fa-solid fa-graduation-cap text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
 
               </div>
 
               <span
-
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Practice
 
                 English</span>
@@ -298,21 +287,17 @@
             <!-- App Card: Habits -->
 
             <div onclick="launchApp('habit-tab')"
-
               class="flex flex-col items-center justify-center group cursor-pointer transition">
 
               <div
-
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
 
                 <i
-
                   class="fa-solid fa-circle-check text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
 
               </div>
 
               <span
-
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Habits</span>
 
             </div>
@@ -322,21 +307,17 @@
             <!-- App Card: Tasks -->
 
             <div onclick="launchApp('task-tab')"
-
               class="flex flex-col items-center justify-center group cursor-pointer transition">
 
               <div
-
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
 
                 <i
-
                   class="fa-solid fa-list-check text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
 
               </div>
 
               <span
-
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Tasks</span>
 
             </div>
@@ -346,21 +327,17 @@
             <!-- App Card: Goals -->
 
             <div onclick="launchApp('goal-tab')"
-
               class="flex flex-col items-center justify-center group cursor-pointer transition">
 
               <div
-
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
 
                 <i
-
                   class="fa-solid fa-bullseye text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
 
               </div>
 
               <span
-
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Goals</span>
 
             </div>
@@ -370,21 +347,17 @@
             <!-- App Card: Links -->
 
             <div onclick="launchApp('link-tab')"
-
               class="flex flex-col items-center justify-center group cursor-pointer transition">
 
               <div
-
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
 
                 <i
-
                   class="fa-solid fa-link text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
 
               </div>
 
               <span
-
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Links</span>
 
             </div>
@@ -394,21 +367,17 @@
             <!-- App Card: Prompts -->
 
             <div onclick="launchApp('prompt-tab')"
-
               class="flex flex-col items-center justify-center group cursor-pointer transition">
 
               <div
-
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
 
                 <i
-
                   class="fa-solid fa-terminal text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
 
               </div>
 
               <span
-
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition">Prompts</span>
 
             </div>
@@ -418,22 +387,19 @@
             <!-- App Card: Google Maps -->
 
             <div onclick="launchApp('map-tab')"
-
               class="flex flex-col items-center justify-center group cursor-pointer transition">
 
               <div
-
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
 
                 <i
-
                   class="fa-solid fa-map-location-dot text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
 
               </div>
 
               <span
-
-                class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition font-medium">Google Maps</span>
+                class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition font-medium">Google
+                Maps</span>
 
             </div>
 
@@ -442,21 +408,17 @@
             <!-- App Card: Collections -->
 
             <div onclick="launchApp('collections-tab')"
-
               class="flex flex-col items-center justify-center group cursor-pointer transition">
 
               <div
-
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
 
                 <i
-
                   class="fa-solid fa-gem text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
 
               </div>
 
               <span
-
                 class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition font-medium">Collections</span>
 
             </div>
@@ -476,7 +438,6 @@
           <div class="flex items-center gap-3">
 
             <button onclick="launchApp('home-tab')"
-
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
 
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
@@ -502,7 +463,6 @@
         <div class="glass-card p-6 mb-8">
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
-
               class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
           <div class="flex flex-col md:flex-row items-end gap-4">
@@ -528,7 +488,9 @@
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">NOTE</label><input
                 type="text" id="ins-cost-note" class="form-input"></div>
 
-            <button onclick="addCostRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+            <button onclick="addCostRow()"
+              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
 
           </div>
 
@@ -542,7 +504,6 @@
           <div class="glass-card p-6 flex flex-col">
 
             <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
-
                 class="fa-solid fa-chart-pie text-blue-500"></i> % Budget Allocation</h3>
 
             <div class="h-[320px] w-full flex items-center justify-center"><canvas id="pieChart"></canvas></div>
@@ -552,7 +513,6 @@
           <div class="glass-card p-6 flex flex-col">
 
             <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
-
                 class="fa-solid fa-chart-simple text-blue-500"></i> Analytics Breakdown</h3>
 
             <div class="h-[320px] w-full"><canvas id="barChart"></canvas></div>
@@ -566,7 +526,6 @@
         <div class="glass-card overflow-hidden">
 
           <div
-
             class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
 
             <div>
@@ -644,7 +603,6 @@
           <div class="flex items-center gap-3">
 
             <button onclick="launchApp('home-tab')"
-
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
 
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
@@ -682,7 +640,6 @@
         <div class="glass-card p-6 mb-8">
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
-
               class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
           <div class="grid grid-cols-1 gap-4 items-end">
@@ -692,7 +649,9 @@
                 <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label>
                 <input type="text" id="ins-v-content" class="form-input font-bold">
               </div>
-              <button onclick="addVocabRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+              <button onclick="addVocabRow()"
+                class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i
+                  class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
             </div>
 
           </div>
@@ -704,7 +663,6 @@
         <div class="glass-card overflow-hidden">
 
           <div
-
             class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
 
             <div>
@@ -716,13 +674,11 @@
             <div class="flex flex-wrap items-center gap-2 bg-slate-50 sm:bg-transparent w-full sm:w-auto justify-end">
 
               <div
-
                 class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-52">
 
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
 
                 <input type="text" id="vocabSearchInput" onkeyup="filterVocabTable()" placeholder=""
-
                   class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
 
               </div>
@@ -732,7 +688,6 @@
                 <i class="fa-solid fa-layer-group text-slate-400 text-xs pl-1"></i>
 
                 <select id="vocabCategoryFilter" onchange="filterVocabTable()"
-
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
 
                   <option value="All">All Categories</option>
@@ -746,7 +701,6 @@
                 <i class="fa-solid fa-tags text-slate-400 text-xs pl-1"></i>
 
                 <select id="vocabTopicFilter" onchange="filterVocabTable()"
-
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
 
                   <option value="All">All Topics</option>
@@ -760,7 +714,6 @@
                 <i class="fa-solid fa-graduation-cap text-slate-400 text-xs pl-1"></i>
 
                 <select id="vocabLevelFilter" onchange="filterVocabTable()"
-
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
 
                   <option value="All">All Levels</option>
@@ -824,7 +777,6 @@
           <div class="flex items-center gap-3">
 
             <button onclick="launchApp('home-tab')"
-
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
 
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
@@ -835,7 +787,7 @@
 
           </div>
 
-          
+
 
           <!-- SRS statistics counts (hidden when in AI chat subtab) -->
 
@@ -891,19 +843,22 @@
 
         <div class="flex border-b border-slate-200/60 mb-6 gap-2">
 
-          <button id="btn-subtab-srs" onclick="window.switchPracticeSubTab('srs')" class="pb-3 px-4 font-bold text-sm border-b-2 border-blue-600 text-blue-600 transition cursor-pointer flex items-center gap-2">
+          <button id="btn-subtab-srs" onclick="window.switchPracticeSubTab('srs')"
+            class="pb-3 px-4 font-bold text-sm border-b-2 border-blue-600 text-blue-600 transition cursor-pointer flex items-center gap-2">
 
             <i class="fa-solid fa-layer-group text-xs"></i> <span>Flashcards</span>
 
           </button>
 
-          <button id="btn-subtab-aichat" onclick="window.switchPracticeSubTab('aichat')" class="pb-3 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition cursor-pointer flex items-center gap-2">
+          <button id="btn-subtab-aichat" onclick="window.switchPracticeSubTab('aichat')"
+            class="pb-3 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition cursor-pointer flex items-center gap-2">
 
             <i class="fa-solid fa-comments text-xs text-blue-500"></i> <span>AI Speaking Partner</span>
 
           </button>
 
-          <button id="btn-subtab-grammar" onclick="window.switchPracticeSubTab('grammar')" class="pb-3 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition cursor-pointer flex items-center gap-2">
+          <button id="btn-subtab-grammar" onclick="window.switchPracticeSubTab('grammar')"
+            class="pb-3 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition cursor-pointer flex items-center gap-2">
 
             <i class="fa-solid fa-book text-xs text-blue-500"></i> <span>Grammar Diary</span>
 
@@ -919,15 +874,19 @@
 
           <div class="max-w-2xl mx-auto mt-12">
 
-            <div class="practice-deck-card p-6 sm:p-10 text-center relative overflow-hidden transition-all hover:shadow-2xl flex flex-col justify-between min-h-[360px] sm:min-h-[380px]">
+            <div
+              class="practice-deck-card p-6 sm:p-10 text-center relative overflow-hidden transition-all hover:shadow-2xl flex flex-col justify-between min-h-[360px] sm:min-h-[380px]">
 
-              <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-sky-400 to-emerald-500"></div>
+              <div
+                class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-sky-400 to-emerald-500">
+              </div>
 
 
 
               <div id="practice-empty-state" class="py-12">
 
-                <div class="bg-blue-500/5 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-500/10 shadow-[0_0_15px_rgba(37,99,235,0.05)]">
+                <div
+                  class="bg-blue-500/5 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-500/10 shadow-[0_0_15px_rgba(37,99,235,0.05)]">
 
                   <i class="fa-solid fa-graduation-cap text-blue-500 text-2xl"></i>
 
@@ -943,9 +902,11 @@
 
                 <div class="flex items-center justify-center gap-3 my-4">
 
-                  <h2 id="practice-word-display" class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-sans">Word</h2>
+                  <h2 id="practice-word-display"
+                    class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-sans">Word</h2>
 
-                  <button id="btn-practice-audio" onclick="playPracticeTTS()" class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-205 text-slate-500 hover:text-blue-600 flex items-center justify-center transition shadow-2xs hover:shadow-xs cursor-pointer">
+                  <button id="btn-practice-audio" onclick="playPracticeTTS()"
+                    class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-205 text-slate-500 hover:text-blue-600 flex items-center justify-center transition shadow-2xs hover:shadow-xs cursor-pointer">
 
                     <i class="fa-solid fa-volume-high text-sm"></i>
 
@@ -963,7 +924,8 @@
 
                   <div id="practice-mode-typing" class="hidden flex flex-col gap-3">
 
-                    <input type="text" id="practice-typing-input" autocomplete="off" placeholder="" class="practice-typing-input">
+                    <input type="text" id="practice-typing-input" autocomplete="off" placeholder=""
+                      class="practice-typing-input">
 
                   </div>
 
@@ -975,7 +937,8 @@
 
                     <div id="practice-scramble-output" class="practice-interactive-box"></div>
 
-                    <div id="practice-scramble-pool" class="flex flex-wrap justify-center gap-2 mt-2 min-h-[50px]"></div>
+                    <div id="practice-scramble-pool" class="flex flex-wrap justify-center gap-2 mt-2 min-h-[50px]">
+                    </div>
 
                   </div>
 
@@ -983,13 +946,15 @@
 
                   <!-- 4. Interactive Feedback & Scoring -->
 
-                  <div id="practice-interactive-feedback" class="hidden mt-3 p-3 rounded-xl text-sm font-bold text-center font-sans"></div>
+                  <div id="practice-interactive-feedback"
+                    class="hidden mt-3 p-3 rounded-xl text-sm font-bold text-center font-sans"></div>
 
                 </div>
 
 
 
-                <div id="practice-meaning-box" class="mt-4 pt-4 border-t border-dashed border-slate-200 max-w-md mx-auto hidden opacity-0 transition-all duration-300 transform translate-y-2">
+                <div id="practice-meaning-box"
+                  class="mt-4 pt-4 border-t border-dashed border-slate-200 max-w-md mx-auto hidden opacity-0 transition-all duration-300 transform translate-y-2">
 
                   <p id="practice-meaning-display" class="text-lg font-bold text-slate-700">Ý nghĩa</p>
 
@@ -1001,13 +966,15 @@
 
               <div class="mt-6 flex flex-col justify-center items-center gap-4 border-t border-slate-100 pt-4">
 
-                <button id="btn-practice-trigger" onclick="triggerRandomVocab()" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition shadow-lg cursor-pointer flex items-center justify-center gap-2">
+                <button id="btn-practice-trigger" onclick="triggerRandomVocab()"
+                  class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition shadow-lg cursor-pointer flex items-center justify-center gap-2">
 
                   <i class="fa-solid fa-shuffle"></i> Get Review Card
 
                 </button>
 
-                <button id="btn-practice-reveal" onclick="revealPracticeMeaning()" class="w-full sm:w-auto hidden bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition shadow-lg cursor-pointer flex items-center justify-center gap-2">
+                <button id="btn-practice-reveal" onclick="revealPracticeMeaning()"
+                  class="w-full sm:w-auto hidden bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition shadow-lg cursor-pointer flex items-center justify-center gap-2">
 
                   <i class="fa-solid fa-eye"></i> Reveal Meaning
 
@@ -1021,9 +988,11 @@
 
                     <div class="flex flex-col items-center gap-1.5">
 
-                      <span id="lbl-time-again" class="text-[11px] font-bold text-slate-400 tracking-wide">&lt;10m</span>
+                      <span id="lbl-time-again"
+                        class="text-[11px] font-bold text-slate-400 tracking-wide">&lt;10m</span>
 
-                      <button onclick="logPracticeAction('again')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Again</button>
+                      <button onclick="logPracticeAction('again')"
+                        class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Again</button>
 
                     </div>
 
@@ -1031,7 +1000,8 @@
 
                       <span id="lbl-time-hard" class="text-[11px] font-bold text-slate-400 tracking-wide">1d</span>
 
-                      <button onclick="logPracticeAction('hard')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Hard</button>
+                      <button onclick="logPracticeAction('hard')"
+                        class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Hard</button>
 
                     </div>
 
@@ -1039,7 +1009,8 @@
 
                       <span id="lbl-time-good" class="text-[11px] font-bold text-slate-400 tracking-wide">3d</span>
 
-                      <button onclick="logPracticeAction('good')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Good</button>
+                      <button onclick="logPracticeAction('good')"
+                        class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Good</button>
 
                     </div>
 
@@ -1047,7 +1018,8 @@
 
                       <span id="lbl-time-easy" class="text-[11px] font-bold text-slate-400 tracking-wide">7d</span>
 
-                      <button onclick="logPracticeAction('easy')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Easy</button>
+                      <button onclick="logPracticeAction('easy')"
+                        class="w-full bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-xs py-3 rounded-xl border border-slate-200 transition shadow-2xs cursor-pointer text-center">Easy</button>
 
                     </div>
 
@@ -1087,28 +1059,31 @@
                 <div class="border-b border-slate-100 pb-2.5 mb-3 flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span id="ai-chat-scenario-title" class="font-bold text-slate-800 text-[10px] uppercase tracking-wider">Casual Conversation</span>
+                    <span id="ai-chat-scenario-title"
+                      class="font-bold text-slate-800 text-[10px] uppercase tracking-wider">Casual Conversation</span>
                   </div>
                   <div class="flex items-center gap-3">
-                    <input type="text" id="ai-chat-quick-vocab-word" 
-                           class="bg-white border border-slate-200 text-slate-700 text-[10px] font-semibold rounded-lg px-2.5 py-1 focus:outline-none focus:border-blue-500 w-60 sm:w-72" 
-                           placeholder="" 
-                           onkeydown="if(event.key === 'Enter') window.saveQuickVocabWord()">
+                    <input type="text" id="ai-chat-quick-vocab-word"
+                      class="bg-white border border-slate-200 text-slate-700 text-[10px] font-semibold rounded-lg px-2.5 py-1 focus:outline-none focus:border-blue-500 w-60 sm:w-72"
+                      placeholder="" onkeydown="if(event.key === 'Enter') window.saveQuickVocabWord()">
 
-                    <select id="ai-chat-scenario-select" onchange="window.setAiScenario(this.value)" class="bg-slate-50 border border-slate-200 text-slate-650 font-bold text-[10px] uppercase tracking-wider rounded-lg px-2.5 py-1 focus:outline-none focus:border-blue-500 cursor-pointer">
+                    <select id="ai-chat-scenario-select" onchange="window.setAiScenario(this.value)"
+                      class="bg-slate-50 border border-slate-200 text-slate-650 font-bold text-[10px] uppercase tracking-wider rounded-lg px-2.5 py-1 focus:outline-none focus:border-blue-500 cursor-pointer">
                       <option value="casual">Casual Conversation</option>
                       <option value="interview">Job Interview Practice</option>
                       <option value="restaurant">At a Restaurant</option>
                       <option value="travel">Travel & Booking</option>
                     </select>
-                    <button onclick="window.clearAiChatHistory()" class="text-slate-400 hover:text-rose-500 transition cursor-pointer text-xs font-bold flex items-center gap-1">
+                    <button onclick="window.clearAiChatHistory()"
+                      class="text-slate-400 hover:text-rose-500 transition cursor-pointer text-xs font-bold flex items-center gap-1">
                       <i class="fa-solid fa-trash-can text-[10px]"></i> Clear History
                     </button>
                   </div>
                 </div>
                 <!-- Chat history log -->
 
-                <div id="ai-chat-history" class="flex-1 overflow-y-auto pr-1 flex flex-col gap-3.5 mb-4 custom-scrollbar">
+                <div id="ai-chat-history"
+                  class="flex-1 overflow-y-auto pr-1 flex flex-col gap-3.5 mb-4 custom-scrollbar">
 
                   <!-- Dynamically populated bubbles -->
 
@@ -1118,15 +1093,19 @@
 
                 <!-- Loading / Status indicator -->
 
-                <div id="ai-chat-status" class="hidden text-[10px] font-bold text-slate-450 italic mb-2 pl-3 flex items-center gap-1.5">
+                <div id="ai-chat-status"
+                  class="hidden text-[10px] font-bold text-slate-450 italic mb-2 pl-3 flex items-center gap-1.5">
 
                   <span class="flex gap-1">
 
-                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 0ms"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce"
+                      style="animation-delay: 0ms"></span>
 
-                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 150ms"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce"
+                      style="animation-delay: 150ms"></span>
 
-                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 300ms"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce"
+                      style="animation-delay: 300ms"></span>
 
                   </span>
 
@@ -1141,25 +1120,18 @@
 
                 <div class="flex items-center gap-2 border-t border-slate-100 pt-3">
 
-                  <!-- Mic Button for STT -->
-
-                  <button id="btn-ai-chat-mic" onclick="window.toggleSpeechRecognition()" class="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-blue-600 flex items-center justify-center transition shadow-2xs cursor-pointer relative group">
-
-                    <i class="fa-solid fa-microphone text-base"></i>
-
-                  </button>
-
-
-
                   <!-- Text input field -->
 
-                  <input type="text" id="ai-chat-input"  class="form-input flex-1 font-semibold text-xs py-3 px-4 rounded-xl" autocomplete="off" onkeydown="if(event.key === 'Enter') window.sendAiChatMessage()">
+                  <input type="text" id="ai-chat-input"
+                    class="form-input flex-1 font-semibold text-xs py-3 px-4 rounded-xl" autocomplete="off"
+                    onkeydown="if(event.key === 'Enter') window.sendAiChatMessage()">
 
 
 
                   <!-- Send Button -->
 
-                  <button onclick="window.sendAiChatMessage()" id="btn-ai-chat-send" class="w-11 h-11 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition shadow-md cursor-pointer">
+                  <button onclick="window.sendAiChatMessage()" id="btn-ai-chat-send"
+                    class="w-11 h-11 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition shadow-md cursor-pointer">
 
                     <i class="fa-solid fa-paper-plane text-sm"></i>
 
@@ -1185,7 +1157,7 @@
 
                 </h3>
 
-                
+
 
                 <!-- Feedback panel contents -->
 
@@ -1195,7 +1167,8 @@
 
                   <div id="ai-chat-feedback-empty" class="py-12">
 
-                    <div class="bg-blue-50 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3.5 border border-blue-100/50">
+                    <div
+                      class="bg-blue-50 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3.5 border border-blue-100/50">
 
                       <i class="fa-solid fa-magnifying-glass-chart text-blue-500 text-base"></i>
 
@@ -1213,20 +1186,28 @@
 
                     <!-- Original input -->
                     <div>
-                      <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">YOUR SENTENCE</span>
-                      <p id="ai-chat-feedback-user-txt" class="text-xs font-bold p-2.5 rounded-lg border transition-all duration-200"></p>
+                      <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">YOUR
+                        SENTENCE</span>
+                      <p id="ai-chat-feedback-user-txt"
+                        class="text-xs font-bold p-2.5 rounded-lg border transition-all duration-200"></p>
                     </div>
 
                     <!-- Correction suggested -->
                     <div id="ai-chat-feedback-correction-block">
-                      <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">NATURAL SUGGESTION</span>
-                      <p id="ai-chat-feedback-correct-txt" class="text-xs font-bold text-blue-700 bg-blue-50 p-2.5 rounded-lg border border-blue-100/50"></p>
+                      <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">NATURAL
+                        SUGGESTION</span>
+                      <p id="ai-chat-feedback-correct-txt"
+                        class="text-xs font-bold text-blue-700 bg-blue-50 p-2.5 rounded-lg border border-blue-100/50">
+                      </p>
                     </div>
 
                     <!-- Explanatory note -->
                     <div id="ai-chat-feedback-explanation-block">
-                      <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">EXPLANATION</span>
-                      <p id="ai-chat-feedback-explain-txt" class="text-xs text-slate-650 leading-relaxed font-medium bg-white border border-slate-100 p-3 rounded-lg shadow-3xs"></p>
+                      <span
+                        class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">EXPLANATION</span>
+                      <p id="ai-chat-feedback-explain-txt"
+                        class="text-xs text-slate-650 leading-relaxed font-medium bg-white border border-slate-100 p-3 rounded-lg shadow-3xs">
+                      </p>
                     </div>
 
                   </div>
@@ -1257,7 +1238,8 @@
 
             <!-- Empty State -->
             <div id="grammar-empty-state" class="glass-card py-16 text-center max-w-xl mx-auto hidden">
-              <div class="bg-emerald-500/5 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.05)]">
+              <div
+                class="bg-emerald-500/5 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.05)]">
                 <i class="fa-solid fa-face-smile text-emerald-500 text-2xl"></i>
               </div>
               <h3 class="text-base font-bold text-slate-800">Excellent! Your Grammar Diary is clean.</h3>
@@ -1281,7 +1263,6 @@
           <div class="flex items-center gap-3">
 
             <button onclick="launchApp('home-tab')"
-
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
 
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
@@ -1326,7 +1307,8 @@
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Habit Name</label>
               <input type="text" id="ins-habit-name" class="form-input font-semibold">
             </div>
-            <button onclick="addHabitDirectly()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 whitespace-nowrap h-[42px] shrink-0">
+            <button onclick="addHabitDirectly()"
+              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 whitespace-nowrap h-[42px] shrink-0">
               <i class="fa-solid fa-floppy-disk mr-1"></i> Save
             </button>
           </div>
@@ -1339,7 +1321,6 @@
           <div class="glass-card p-6 flex flex-col">
 
             <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
-
                 class="fa-solid fa-chart-line text-blue-500"></i> Discipline Consistency Curve</h3>
 
             <div class="h-[300px] w-full"><canvas id="habitLineChart"></canvas></div>
@@ -1349,21 +1330,26 @@
         </div>
 
         <div class="glass-card overflow-hidden">
-          <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+          <div
+            class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
             <div class="flex items-center gap-3">
               <h3 class="font-bold text-slate-800 text-base">All</h3>
               <div class="inline-flex rounded-xl p-0.5 bg-slate-100 border border-slate-200/50 shadow-2xs">
-                <button onclick="switchHabitView('list')" id="btn-habit-view-list" class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition bg-white text-blue-600 shadow-2xs cursor-pointer flex items-center gap-1">
+                <button onclick="switchHabitView('list')" id="btn-habit-view-list"
+                  class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition bg-white text-blue-600 shadow-2xs cursor-pointer flex items-center gap-1">
                   <i class="fa-solid fa-list text-[9px]"></i> TODAY
                 </button>
-                <button onclick="switchHabitView('grid')" id="btn-habit-view-grid" class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition text-slate-500 hover:text-slate-700 cursor-pointer flex items-center gap-1">
+                <button onclick="switchHabitView('grid')" id="btn-habit-view-grid"
+                  class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition text-slate-500 hover:text-slate-700 cursor-pointer flex items-center gap-1">
                   <i class="fa-solid fa-table-cells text-[9px]"></i> WEEKLY
                 </button>
               </div>
             </div>
-            <div id="habit-list-filter-wrapper" class="hidden flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+            <div id="habit-list-filter-wrapper"
+              class="hidden flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
               <i class="fa-solid fa-calendar-days text-slate-400 text-xs pl-1"></i>
-              <select id="habitDateFilter" onchange="filterHabitTable()" class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
+              <select id="habitDateFilter" onchange="filterHabitTable()"
+                class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
                 <option value="All">All Days</option>
               </select>
             </div>
@@ -1408,7 +1394,6 @@
           <div class="flex items-center gap-3">
 
             <button onclick="launchApp('home-tab')"
-
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
 
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
@@ -1434,22 +1419,33 @@
         <div class="glass-card p-6 mb-8">
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
-
               class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
           <div class="flex flex-col md:flex-row items-end gap-4">
 
-            <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">GOAL NAME</label><input type="text" id="ins-goal-name" class="form-input font-bold"></div>
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">GOAL NAME</label><input
+                type="text" id="ins-goal-name" class="form-input font-bold"></div>
 
-            <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">START DATE</label><input type="date" id="ins-goal-start" class="form-input"></div>
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">START
+                DATE</label><input type="date" id="ins-goal-start" class="form-input"></div>
 
-            <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">END DATE</label><input type="date" id="ins-goal-end" class="form-input"></div>
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">END DATE</label><input
+                type="date" id="ins-goal-end" class="form-input"></div>
 
-            <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CURRENT</label><input type="number" id="ins-goal-current" class="form-input font-bold" value="0"></div>
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CURRENT</label><input
+                type="number" id="ins-goal-current" class="form-input font-bold" value="0"></div>
 
-            <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TARGET</label><input type="number" id="ins-goal-target" class="form-input font-bold"></div>
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TARGET</label><input
+                type="number" id="ins-goal-target" class="form-input font-bold"></div>
 
-            <button onclick="addGoalRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+            <button onclick="addGoalRow()"
+              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
 
           </div>
 
@@ -1510,7 +1506,6 @@
           <div class="flex items-center gap-3">
 
             <button onclick="launchApp('home-tab')"
-
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
 
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
@@ -1536,18 +1531,25 @@
         <div class="glass-card p-6 mb-8">
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
-
               class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
           <div class="flex flex-col md:flex-row items-end gap-4">
 
-            <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TITLE</label><input type="text" id="ins-link-title" class="form-input font-bold"></div>
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TITLE</label><input
+                type="text" id="ins-link-title" class="form-input font-bold"></div>
 
-            <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label><input type="text" id="ins-link-cat" class="form-input font-semibold"></div>
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label><input
+                type="text" id="ins-link-cat" class="form-input font-semibold"></div>
 
-            <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label><input type="text" id="ins-link-content" class="form-input"></div>
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label><input
+                type="text" id="ins-link-content" class="form-input"></div>
 
-            <button onclick="addLinkRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+            <button onclick="addLinkRow()"
+              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
 
           </div>
 
@@ -1558,7 +1560,6 @@
         <div class="glass-card overflow-hidden">
 
           <div
-
             class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
 
             <div>
@@ -1570,13 +1571,11 @@
             <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
 
               <div
-
                 class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-64">
 
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
 
                 <input type="text" id="linkSearchInput" onkeyup="filterLinkTable()" placeholder=""
-
                   class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
 
               </div>
@@ -1586,7 +1585,6 @@
                 <i class="fa-solid fa-filter text-slate-400 text-xs pl-1"></i>
 
                 <select id="linkCategoryFilter" onchange="filterLinkTable()"
-
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
 
                   <option value="All">All Categories</option>
@@ -1638,7 +1636,6 @@
           <div class="flex items-center gap-3">
 
             <button onclick="launchApp('home-tab')"
-
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
 
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
@@ -1664,18 +1661,25 @@
         <div class="glass-card p-6 mb-8">
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
-
               class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
           <div class="flex flex-col md:flex-row items-end gap-4">
 
-            <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TITLE</label><input type="text" id="ins-prompt-title" class="form-input font-bold"></div>
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TITLE</label><input
+                type="text" id="ins-prompt-title" class="form-input font-bold"></div>
 
-            <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label><input type="text" id="ins-prompt-cat" class="form-input font-semibold"></div>
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label><input
+                type="text" id="ins-prompt-cat" class="form-input font-semibold"></div>
 
-            <div class="flex-1"><label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label><input type="text" id="ins-prompt-content" class="form-input"></div>
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CONTENT</label><input
+                type="text" id="ins-prompt-content" class="form-input"></div>
 
-            <button onclick="addPromptRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+            <button onclick="addPromptRow()"
+              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
 
           </div>
 
@@ -1686,7 +1690,6 @@
         <div class="glass-card overflow-hidden">
 
           <div
-
             class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
 
             <div>
@@ -1698,13 +1701,11 @@
             <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
 
               <div
-
                 class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-64">
 
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
 
                 <input type="text" id="promptSearchInput" onkeyup="filterPromptTable()" placeholder=""
-
                   class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
 
               </div>
@@ -1714,7 +1715,6 @@
                 <i class="fa-solid fa-filter text-slate-400 text-xs pl-1"></i>
 
                 <select id="promptCategoryFilter" onchange="filterPromptTable()"
-
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
 
                   <option value="All">All Categories</option>
@@ -1770,7 +1770,6 @@
           <div class="flex items-center gap-3">
 
             <button onclick="launchApp('home-tab')"
-
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
 
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
@@ -1796,7 +1795,6 @@
         <div class="glass-card p-6 mb-8">
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
-
               class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
           <div class="flex flex-col md:flex-row items-end gap-4">
@@ -1813,17 +1811,21 @@
               <label class="text-[10px] font-bold text-slate-400 block mb-1.5 uppercase tracking-wider">PRIORITY</label>
               <div class="flex items-center gap-5 h-[42px] select-none">
                 <label class="inline-flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="ins-task-urgent" class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer">
+                  <input type="checkbox" id="ins-task-urgent"
+                    class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer">
                   <span class="text-xs font-bold text-slate-700">Urgent ⚡</span>
                 </label>
                 <label class="inline-flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="ins-task-important" class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer">
+                  <input type="checkbox" id="ins-task-important"
+                    class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer">
                   <span class="text-xs font-bold text-slate-700">Important ⭐</span>
                 </label>
               </div>
             </div>
 
-            <button onclick="addTaskRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+            <button onclick="addTaskRow()"
+              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
 
           </div>
 
@@ -1834,7 +1836,6 @@
         <div class="glass-card overflow-hidden">
 
           <div
-
             class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
 
             <div class="flex items-center gap-3">
@@ -1843,13 +1844,15 @@
 
               <div class="inline-flex rounded-xl p-0.5 bg-slate-100 border border-slate-200/50 shadow-2xs">
 
-                <button onclick="switchTaskView('list')" id="btn-task-view-list" class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition bg-white text-blue-600 shadow-2xs cursor-pointer flex items-center gap-1">
+                <button onclick="switchTaskView('list')" id="btn-task-view-list"
+                  class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition bg-white text-blue-600 shadow-2xs cursor-pointer flex items-center gap-1">
 
                   <i class="fa-solid fa-list text-[9px]"></i> LIST
 
                 </button>
 
-                <button onclick="switchTaskView('matrix')" id="btn-task-view-matrix" class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition text-slate-500 hover:text-slate-700 cursor-pointer flex items-center gap-1">
+                <button onclick="switchTaskView('matrix')" id="btn-task-view-matrix"
+                  class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition text-slate-500 hover:text-slate-700 cursor-pointer flex items-center gap-1">
 
                   <i class="fa-solid fa-grip text-[9px]"></i> EISENHOWER
 
@@ -1862,13 +1865,11 @@
             <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
 
               <div
-
                 class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-64">
 
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
 
                 <input type="text" id="taskSearchInput" onkeyup="filterTaskTable()" placeholder=""
-
                   class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
 
               </div>
@@ -1878,7 +1879,6 @@
                 <i class="fa-solid fa-filter text-slate-400 text-xs pl-1"></i>
 
                 <select id="taskStatusFilter" onchange="filterTaskTable()"
-
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
 
                   <option value="All">All Statuses</option>
@@ -1922,52 +1922,65 @@
           </div>
 
           <!-- Eisenhower Matrix Container -->
-          <div id="task-matrix-view-container" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-50/30 border-t border-slate-100">
+          <div id="task-matrix-view-container"
+            class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-50/30 border-t border-slate-100">
 
             <!-- Q1: Urgent & Important -->
-            <div class="glass-card p-5 border-l-4 border-slate-400 bg-white/80 shadow-2xs flex flex-col min-h-[220px] transition duration-200">
+            <div
+              class="glass-card p-5 border-l-4 border-slate-400 bg-white/80 shadow-2xs flex flex-col min-h-[220px] transition duration-200">
               <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
                 <h4 class="font-extrabold text-slate-700 text-xs tracking-wider uppercase flex items-center gap-1.5">
                   <span class="w-2 h-2 rounded-full bg-slate-400 animate-pulse"></span>
                   Q1. Do First
                 </h4>
-                <span class="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Urgent & Important</span>
+                <span
+                  class="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Urgent
+                  & Important</span>
               </div>
               <ul id="matrix-q1-list" class="flex flex-col gap-2 overflow-y-auto max-h-[250px] pr-1"></ul>
             </div>
 
             <!-- Q2: Not Urgent but Important -->
-            <div class="glass-card p-5 border-l-4 border-slate-400 bg-white/80 shadow-2xs flex flex-col min-h-[220px] transition duration-200">
+            <div
+              class="glass-card p-5 border-l-4 border-slate-400 bg-white/80 shadow-2xs flex flex-col min-h-[220px] transition duration-200">
               <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
                 <h4 class="font-extrabold text-slate-700 text-xs tracking-wider uppercase flex items-center gap-1.5">
                   <span class="w-2 h-2 rounded-full bg-slate-400"></span>
                   Q2. Schedule
                 </h4>
-                <span class="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Important & Not Urgent</span>
+                <span
+                  class="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Important
+                  & Not Urgent</span>
               </div>
               <ul id="matrix-q2-list" class="flex flex-col gap-2 overflow-y-auto max-h-[250px] pr-1"></ul>
             </div>
 
             <!-- Q3: Urgent but Not Important -->
-            <div class="glass-card p-5 border-l-4 border-slate-400 bg-white/80 shadow-2xs flex flex-col min-h-[220px] transition duration-200">
+            <div
+              class="glass-card p-5 border-l-4 border-slate-400 bg-white/80 shadow-2xs flex flex-col min-h-[220px] transition duration-200">
               <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
                 <h4 class="font-extrabold text-slate-700 text-xs tracking-wider uppercase flex items-center gap-1.5">
                   <span class="w-2 h-2 rounded-full bg-slate-400"></span>
                   Q3. Delegate
                 </h4>
-                <span class="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Urgent & Not Important</span>
+                <span
+                  class="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Urgent
+                  & Not Important</span>
               </div>
               <ul id="matrix-q3-list" class="flex flex-col gap-2 overflow-y-auto max-h-[250px] pr-1"></ul>
             </div>
 
             <!-- Q4: Not Urgent & Not Important -->
-            <div class="glass-card p-5 border-l-4 border-slate-400 bg-white/80 shadow-2xs flex flex-col min-h-[220px] transition duration-200">
+            <div
+              class="glass-card p-5 border-l-4 border-slate-400 bg-white/80 shadow-2xs flex flex-col min-h-[220px] transition duration-200">
               <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
                 <h4 class="font-extrabold text-slate-700 text-xs tracking-wider uppercase flex items-center gap-1.5">
                   <span class="w-2 h-2 rounded-full bg-slate-400"></span>
                   Q4. Eliminate
                 </h4>
-                <span class="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Not Urgent & Not Important</span>
+                <span
+                  class="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Not
+                  Urgent & Not Important</span>
               </div>
               <ul id="matrix-q4-list" class="flex flex-col gap-2 overflow-y-auto max-h-[250px] pr-1"></ul>
             </div>
@@ -1989,7 +2002,6 @@
           <div class="flex items-center gap-3">
 
             <button onclick="launchApp('home-tab')"
-
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
 
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
@@ -2056,7 +2068,9 @@
               <input type="text" id="ins-map-address" class="form-input">
             </div>
 
-            <button onclick="addMapRow()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+            <button onclick="addMapRow()"
+              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
 
           </div>
 
@@ -2068,7 +2082,8 @@
 
         <div class="glass-card overflow-hidden border border-slate-100 shadow-3xs mb-8 bg-white/80 backdrop-blur-md">
 
-          <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+          <div
+            class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
 
             <div>
 
@@ -2078,24 +2093,23 @@
 
             <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
 
-              <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-60">
+              <div
+                class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-60">
 
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
 
                 <input type="text" id="mapSearchInput" onkeyup="filterMapGrid()" placeholder=""
-
                   class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
 
               </div>
 
-              
+
 
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
 
                 <i class="fa-solid fa-city text-slate-400 text-xs pl-1"></i>
 
                 <select id="mapCityFilter" onchange="filterMapGrid()"
-
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
 
                   <option value="All">All Cities</option>
@@ -2111,7 +2125,6 @@
                 <i class="fa-solid fa-filter text-slate-400 text-xs pl-1"></i>
 
                 <select id="mapCategoryFilter" onchange="filterMapGrid()"
-
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
 
                   <option value="All">All Categories</option>
@@ -2127,7 +2140,6 @@
                 <i class="fa-solid fa-circle-check text-slate-400 text-xs pl-1"></i>
 
                 <select id="mapCheckFilter" onchange="filterMapGrid()"
-
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
 
                   <option value="All">All Statuses</option>
@@ -2193,7 +2205,6 @@
           <div class="flex items-center gap-3">
 
             <button onclick="launchApp('home-tab')"
-
               class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
 
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
@@ -2268,7 +2279,9 @@
               <input type="text" id="ins-col-category" class="form-input">
             </div>
 
-            <button onclick="saveNewCollection()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+            <button onclick="saveNewCollection()"
+              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
 
           </div>
 
@@ -2280,7 +2293,8 @@
 
         <div class="glass-card overflow-hidden border border-slate-100 shadow-3xs mb-8 bg-white/80 backdrop-blur-md">
 
-          <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+          <div
+            class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
 
             <div>
 
@@ -2290,24 +2304,23 @@
 
             <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
 
-              <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-64">
+              <div
+                class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-64">
 
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
 
                 <input type="text" id="collectionSearchInput" onkeyup="filterCollectionGrid()" placeholder=""
-
                   class="text-xs font-semibold text-slate-600 bg-transparent outline-none w-full placeholder-slate-400">
 
               </div>
 
-              
+
 
               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
 
                 <i class="fa-solid fa-copyright text-slate-400 text-xs pl-1"></i>
 
                 <select id="collectionBrandFilter" onchange="filterCollectionGrid()"
-
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
 
                   <option value="All">All Brands</option>
@@ -2323,7 +2336,6 @@
                 <i class="fa-solid fa-tags text-slate-400 text-xs pl-1"></i>
 
                 <select id="collectionCategoryFilter" onchange="filterCollectionGrid()"
-
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none">
 
                   <option value="All">All Categories</option>
@@ -2384,17 +2396,20 @@
 
   <!-- Settings Modal (Glassmorphic) -->
 
-  <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md transition-all duration-300 hidden">
+  <div id="settings-modal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md transition-all duration-300 hidden">
 
-    <div class="glass-card w-full max-w-lg mx-4 p-6 border border-white/20 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+    <div
+      class="glass-card w-full max-w-lg mx-4 p-6 border border-white/20 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
 
-      <button onclick="closeSettingsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-650 transition cursor-pointer">
+      <button onclick="closeSettingsModal()"
+        class="absolute top-4 right-4 text-slate-400 hover:text-slate-650 transition cursor-pointer">
 
         <i class="fa-solid fa-xmark text-lg"></i>
 
       </button>
 
-      
+
 
       <div class="flex items-center gap-3 mb-4 border-b border-slate-100/50 pb-3 flex-shrink-0">
 
@@ -2426,7 +2441,7 @@
 
         </div>
 
-        
+
 
         <div>
 
@@ -2436,11 +2451,12 @@
 
         </div>
 
-        
+
 
         <div>
 
-          <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">OAUTH CLIENT ID</label>
+          <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">OAUTH CLIENT
+            ID</label>
 
           <input type="text" id="settings-client-id" class="form-input font-mono text-xs">
 
@@ -2460,9 +2476,11 @@
 
             <div>
 
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI PROVIDER</label>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI
+                PROVIDER</label>
 
-              <select id="settings-ai-provider" onchange="window.updateSettingsModelOptions(this.value)" class="form-input font-semibold text-xs">
+              <select id="settings-ai-provider" onchange="window.updateSettingsModelOptions(this.value)"
+                class="form-input font-semibold text-xs">
 
                 <option value="gemini">Google Gemini</option>
 
@@ -2472,31 +2490,34 @@
 
             </div>
 
-            
+
 
             <div>
 
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">GEMINI API KEY</label>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">GEMINI API
+                KEY</label>
 
               <input type="password" id="settings-gemini-key" class="form-input font-mono text-xs">
 
             </div>
 
-            
+
 
             <div>
 
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">OPENAI API KEY</label>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">OPENAI API
+                KEY</label>
 
               <input type="password" id="settings-openai-key" class="form-input font-mono text-xs">
 
             </div>
 
-            
+
 
             <div>
 
-              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI MODEL NAME</label>
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AI MODEL
+                NAME</label>
 
               <select id="settings-ai-model" class="form-input font-semibold text-xs"></select>
 
@@ -2506,7 +2527,7 @@
 
         </div>
 
-        
+
 
         <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100/30 text-xs text-slate-650 flex gap-3">
 
@@ -2516,7 +2537,9 @@
 
             <p class="font-bold text-slate-800 mb-0.5">Bảo mật tuyệt đối:</p>
 
-            <p>Toàn bộ thông tin định danh trên được lưu trữ <b>chỉ trong trình duyệt cá nhân của bạn</b> (localStorage) và được gửi trực tiếp đến API Google. Không có bất kỳ máy chủ bên thứ ba nào lưu trữ các thông tin này.</p>
+            <p>Toàn bộ thông tin định danh trên được lưu trữ <b>chỉ trong trình duyệt cá nhân của bạn</b> (localStorage)
+              và được gửi trực tiếp đến API Google. Không có bất kỳ máy chủ bên thứ ba nào lưu trữ các thông tin này.
+            </p>
 
           </div>
 
@@ -2528,9 +2551,11 @@
 
       <div class="flex gap-3 justify-end mt-4 border-t border-slate-100/50 pt-3 flex-shrink-0">
 
-        <button onclick="closeSettingsModal()" class="border border-slate-200 hover:bg-slate-50 text-slate-650 font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer transition">Cancel</button>
+        <button onclick="closeSettingsModal()"
+          class="border border-slate-200 hover:bg-slate-50 text-slate-650 font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer transition">Cancel</button>
 
-        <button onclick="saveSettingsCredentials()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer transition flex items-center gap-1.5 shadow-md">
+        <button onclick="saveSettingsCredentials()"
+          class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer transition flex items-center gap-1.5 shadow-md">
 
           <i class="fa-solid fa-floppy-disk"></i> Save Settings
 
@@ -2543,12 +2568,15 @@
   </div>
 
   <!-- Trợ lý Bong Bóng Nổi Toàn Cục (AI Navigator Assistant) -->
-  <div id="floating-assistant-bubble" class="floating-bubble flex items-center justify-center shadow-2xl transition duration-300" title="Trợ lý điều hướng AI">
+  <div id="floating-assistant-bubble"
+    class="floating-bubble flex items-center justify-center shadow-2xl transition duration-300"
+    title="Trợ lý điều hướng AI">
     <i class="fa-solid fa-robot text-lg text-white"></i>
   </div>
 
   <div id="floating-assistant-pane" class="floating-pane hidden flex flex-col shadow-2xl glass-card overflow-hidden">
-    <div class="floating-pane-header flex justify-between items-center px-4 py-3 bg-white text-slate-800 border-b border-slate-100 flex-shrink-0">
+    <div
+      class="floating-pane-header flex justify-between items-center px-4 py-3 bg-white text-slate-800 border-b border-slate-100 flex-shrink-0">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-compass text-blue-500 text-sm"></i>
         <span class="text-xs font-bold uppercase tracking-wider">DANH</span>
@@ -2557,17 +2585,19 @@
         <i class="fa-solid fa-xmark text-sm"></i>
       </button>
     </div>
-    
-    <div id="floating-assistant-history" class="flex-1 p-4 overflow-y-auto flex flex-col gap-3 custom-scrollbar text-xs">
+
+    <div id="floating-assistant-history"
+      class="flex-1 p-4 overflow-y-auto flex flex-col gap-3 custom-scrollbar text-xs">
       <!-- Được tải tự động qua javascript -->
     </div>
-    
+
     <div class="p-3 border-t border-slate-100/50 bg-slate-50/50 flex items-center gap-2 flex-shrink-0">
-      <button id="floating-assistant-mic" class="w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition cursor-pointer" title="Nói câu lệnh">
-        <i class="fa-solid fa-microphone text-xs"></i>
-      </button>
-      <input type="text" id="floating-assistant-input" placeholder="" class="flex-1 text-xs border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-500 bg-white" autocomplete="off">
-      <button id="floating-assistant-send" class="w-9 h-9 rounded-lg bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition cursor-pointer shadow-xs" title="Gửi câu lệnh">
+      <input type="text" id="floating-assistant-input" placeholder=""
+        class="flex-1 text-xs border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-blue-500 bg-white"
+        autocomplete="off">
+      <button id="floating-assistant-send"
+        class="w-9 h-9 rounded-lg bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition cursor-pointer shadow-xs"
+        title="Gửi câu lệnh">
         <i class="fa-solid fa-paper-plane text-xs"></i>
       </button>
     </div>
