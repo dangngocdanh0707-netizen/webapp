@@ -21,8 +21,7 @@ personal_webapp/
         ├── styles/main.css      # Cấu hình CSS chính & giao diện Glassmorphism
         ├── services/
         │   ├── api.js           # Xử lý CRUD Google Sheets & Local Storage
-        │   ├── ai.js            # Client kết nối Gemini / OpenAI
-        │   └── toast.js         # Hệ thống thông báo toast
+        │   └── ai.js            # Client kết nối Gemini / OpenAI
         └── components/          # Các module nghiệp vụ UI
             ├── sidebar.js       # Co giãn/điều phối Sidebar
             ├── charts.js        # Vẽ biểu đồ thống kê (Chart.js)
@@ -44,7 +43,7 @@ personal_webapp/
 
 * **🤖 Trợ lý hội thoại AI (Speaking Partner)**: 
   * Tích hợp linh hoạt **Google Gemini** (`gemini-2.5-flash`) và **OpenAI** (`gpt-4o-mini`). API Key được lưu bảo mật ở `localStorage`.
-  * Hỗ trợ nhận diện giọng nói (Speech-to-Text) và tự động phát âm phản hồi (Text-to-Speech) với nhiều tốc độ, accent.
+  * Hỗ trợ tự động phát âm phản hồi (Text-to-Speech) với nhiều tốc độ, accent.
   * **📊 Grammar Analysis UI Redesign**: Tái cấu trúc thanh phản hồi bên phải gọn gàng, tự động tô màu hộp chứa câu viết (màu xanh lá pastel nếu đúng ngữ pháp, màu đỏ pastel nếu sai ngữ pháp), hiển thị câu đề xuất dưới nhãn `NATURAL SUGGESTION` và giải thích dưới nhãn `EXPLANATION`.
   * **🛡️ Bộ lọc tối ưu hóa & Safeguard**: Prompt của AI được tối ưu hóa để loại bỏ gợi ý từ vựng nâng cấp gây hiểu nhầm. Frontend bổ sung bộ lọc tự động nhận diện câu đúng (`isCorrect = true`) nếu giải thích tiếng Việt của AI chứa các từ khóa khẳng định câu của người dùng *"không sai"*, *"không có lỗi"*.
   * **💡 Smart Response Hints**: Sau mỗi lượt AI trả lời, tự động gợi ý 3 câu trả lời tự nhiên phù hợp ngữ cảnh dưới dạng pill button. Bấm vào pill để điền nhanh vào ô chat (có thể chỉnh sửa trước khi gửi).
@@ -79,7 +78,9 @@ personal_webapp/
 * **✨ Tối giản hóa giao diện trống (Minimal Blank State)**:
   * Loại bỏ hoàn toàn các dòng văn bản thông báo trống (như "No tasks...", "No entries...", "No habits...") trên toàn bộ các trang (Thói quen, Công việc, Từ vựng, Chi tiêu, Mục tiêu, Bản đồ, Bộ sưu tập). Khi không có dữ liệu, danh sách và bảng biểu sẽ hiển thị trống hoàn toàn mang lại trải nghiệm UI sạch sẽ và hiện đại nhất.
 * **🛡️ Bảo mật & An toàn**:
-  * Sử dụng bộ lọc `escapeHTML` ở tất cả các đầu ra để ngăn chặn tấn công XSS.
+  * Sử dụng bộ lọc `escapeHTML` ở các đầu ra HTML tĩnh để ngăn chặn tấn công XSS.
+  * Sử dụng giải pháp **HTML5 Dataset Pattern** (`data-*`) khi truyền tham số động cho các trình xử lý sự kiện inline (`onclick`, `onchange`) để loại bỏ hoàn toàn lỗ hổng DOM-based XSS và lỗi cú pháp khi dữ liệu chứa dấu nháy.
+  * Tích hợp cơ chế bảo vệ chống lỗ hổng **Tabnabbing** bằng cách thêm thuộc tính `rel="noopener noreferrer"` cho tất cả các liên kết ngoài và cấu hình an toàn cho lệnh `window.open` trong Trợ lý ảo.
 
 ---
 
