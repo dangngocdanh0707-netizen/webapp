@@ -55,7 +55,7 @@ export function buildLinkTable() {
 
     let id = item.rowNumber;
     let isLink = contentText.startsWith('http');
-    let contentDisplay = isLink ? `<a href="${escapeHTML(item.content)}" target="_blank" class="text-blue-600 hover:underline font-semibold flex items-center gap-1.5 transition"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> Access Link</a>` : escapeHTML(contentText);
+    let contentDisplay = isLink ? `<a href="${escapeHTML(item.content)}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold flex items-center gap-1.5 transition"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> Access Link</a>` : escapeHTML(contentText);
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="link-row-${id}" class="hover:bg-slate-900/5 transition">

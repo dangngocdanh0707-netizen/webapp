@@ -254,7 +254,7 @@ async function sendAssistantMessage() {
       if (!isNaN(index) && links[index]) {
         const url = (links[index].content || "").trim();
         if (url.startsWith('http')) {
-          window.open(url, '_blank');
+          window.open(url, '_blank', 'noopener,noreferrer');
         }
       }
     }

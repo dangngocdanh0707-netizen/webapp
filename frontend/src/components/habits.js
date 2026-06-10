@@ -136,13 +136,20 @@ export function buildHabitGrid() {
         const isDone = record.status === true || record.status === "TRUE" || record.status === "√" || record.status === "checked";
         rowHtml += `
           <td class="p-4 text-center">
-            <input type="checkbox" class="habit-checkbox mx-auto cursor-pointer" ${isDone ? 'checked' : ''} onchange="window.toggleHabitCell(${record.rowNumber}, '${day.dateStr}', '${escapeHTML(habitName).replace(/'/g, "\\'")}', this)">
+            <input type="checkbox" class="habit-checkbox mx-auto cursor-pointer" ${isDone ? 'checked' : ''} 
+              data-row="${record.rowNumber}" 
+              data-date="${day.dateStr}" 
+              data-habit="${escapeHTML(habitName)}" 
+              onchange="window.toggleHabitCell(Number(this.dataset.row), this.dataset.date, this.dataset.habit, this)">
           </td>
         `;
       } else {
         rowHtml += `
           <td class="p-4 text-center">
-            <input type="checkbox" class="habit-checkbox mx-auto cursor-pointer" onchange="window.toggleHabitCell(null, '${day.dateStr}', '${escapeHTML(habitName).replace(/'/g, "\\'")}', this)">
+            <input type="checkbox" class="habit-checkbox mx-auto cursor-pointer" 
+              data-date="${day.dateStr}" 
+              data-habit="${escapeHTML(habitName)}" 
+              onchange="window.toggleHabitCell(null, this.dataset.date, this.dataset.habit, this)">
           </td>
         `;
       }

@@ -127,7 +127,7 @@ export function buildCollectionsGrid() {
 
           <td class="p-4 pr-6 text-center">
             <div class="col-view-${id} flex items-center justify-center gap-2">
-              <a href="${searchUrl}" target="_blank" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Explore">
+              <a href="${searchUrl}" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Explore">
                 <i class="fa-solid fa-magnifying-glass text-sm"></i>
               </a>
               <button onclick="toggleCollectionEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Edit">
