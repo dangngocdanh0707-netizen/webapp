@@ -91,7 +91,10 @@ function matchLocalTab(text) {
     return 'goal-tab';
   }
   if (/\b(lien ket|link|website)\b/.test(normalized)) {
-    return 'link-tab';
+    const isSimpleTabSwitch = /^(go to|open|mo|di toi|toi|xem|trang|page)?\s*(lien ket|link|website)s?$/i.test(normalized);
+    if (isSimpleTabSwitch) {
+      return 'link-tab';
+    }
   }
   if (/\b(prompt|terminal|lenh mau)\b/.test(normalized)) {
     return 'prompt-tab';
