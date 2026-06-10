@@ -210,7 +210,7 @@ async function sendAssistantMessage() {
       window.switchTab(matchedTab);
     }
     const tabName = tabNamesMap[matchedTab];
-    const localReply = `Đã chuyển hướng bạn tới trang "${tabName}" thành công! (Xử lý cục bộ)`;
+    const localReply = `Đã chuyển hướng bạn tới trang "${tabName}" thành công!`;
     
     setTimeout(() => {
       appendMessage('ai', localReply);
