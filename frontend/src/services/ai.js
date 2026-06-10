@@ -379,24 +379,24 @@ export async function translateMessageText(text, aiCreds) {
  * @param {Object} aiCreds Cấu hình AI {provider, geminiKey, openaiKey, model}
  * @returns {Promise<Object>} Trả về { reply: string, intent: { action: string, target: string } }
  */
-export async function callAiNavigatorApi(prompt, history, aiCreds) {
+export async function callAiNavigatorApi(prompt, history, aiCreds, links = []) {
   const { provider, geminiKey, openaiKey, model } = aiCreds;
 
-  const systemInstruction = `You are the AI Navigator Assistant for a Personal Life OS dashboard.
-Your only job is to direct the user to the correct page/tab based on their request.
-Analyze the user's latest message (in English or Vietnamese) and determine if they want to navigate to a tab.
+  let systemInstruction = `You are the AI Assistant named DANH for a Personal Life OS dashboard.
+Your job is to direct the user to the correct page/tab or help them find and open their saved links.
+Analyze the user's latest message (in English or Vietnamese) and determine their intent.
 
 You MUST respond ONLY with a valid JSON object. Do not include markdown code block formatting (like \`\`\`json ... \`\`\`) in your raw response.
 The JSON structure must match this schema exactly:
 {
-  "reply": "Your friendly conversational response to the user in Vietnamese or English confirming the navigation.",
+  "reply": "Your friendly conversational response to the user in Vietnamese confirming the action.",
   "intent": {
-    "action": "switch_tab" | "none",
-    "target": "tab-id-here" // Set to the target tab ID if action is "switch_tab", or "" if action is "none".
+    "action": "switch_tab" | "open_link" | "none",
+    "target": "target-value-here" // Tab ID (if action is "switch_tab"), the link Index number as a string (if action is "open_link"), or "" if "none".
   }
 }
 
-Valid tab IDs are:
+Valid tab IDs for "switch_tab" are:
 - 'home-tab' (Trang chủ/Launchpad)
 - 'cost-tab' (Chi tiêu/Expenses)
 - 'vocab-tab' (Từ vựng/Vocabulary)
@@ -407,9 +407,23 @@ Valid tab IDs are:
 - 'link-tab' (Liên kết/Links)
 - 'prompt-tab' (Mẫu prompt/Prompts)
 - 'map-tab' (Bản đồ/Google Maps)
-- 'collections-tab' (Bộ sưu tập/Collections)
+- 'collections-tab' (Bộ sưu tập/Collections)`;
 
-If the user is just saying hello, asking a general question, or the request is ambiguous, set "action" to "none" and "target" to "". Keep your reply friendly and concise.`;
+  if (links && links.length > 0) {
+    systemInstruction += `
+
+Here are the user's saved links (Index: Title - Category):
+${links.map(l => `${l.index}: ${l.title} (${l.category})`).join('\n')}
+
+If the user is looking for, asking for, or trying to open a specific link from the saved links above:
+1. Identify the best matching link (case-insensitive, partial matching allowed).
+2. Set "action" to "open_link" and "target" to the matching link's INDEX number as a string (e.g., "0", "1", "2").
+3. In your "reply", write a friendly message in Vietnamese telling them you found the link and are opening it.`;
+  }
+
+  systemInstruction += `
+
+If the user is just saying hello, asking a general question, or the request is ambiguous, set "action" to "none" and "target" to "". Keep your reply friendly, concise, and in Vietnamese.`;
 
   if (provider === "gemini") {
     if (!geminiKey) throw new Error("Thiếu Gemini API Key.");

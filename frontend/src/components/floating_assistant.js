@@ -1,5 +1,6 @@
 import { getAiCredentials, escapeHTML } from '../services/api.js';
 import { callAiNavigatorApi } from '../services/ai.js';
+import { getAllLinks } from './links.js';
 
 let assistantHistory = [];
 let recognition = null;
@@ -227,7 +228,15 @@ async function sendAssistantMessage() {
   const loadingId = appendLoadingIndicator();
 
   try {
-    const result = await callAiNavigatorApi(userText, assistantHistory.slice(-5), aiCreds);
+    const links = typeof getAllLinks === 'function' ? getAllLinks() : [];
+    // Only pass title and category with index to save tokens & ensure privacy
+    const optimizedLinks = links.map((l, idx) => ({
+      index: idx,
+      title: l.title,
+      category: l.category
+    }));
+
+    const result = await callAiNavigatorApi(userText, assistantHistory.slice(-5), aiCreds, optimizedLinks);
     removeLoadingIndicator(loadingId);
 
     // Hiển thị phản hồi từ AI
@@ -242,6 +251,16 @@ async function sendAssistantMessage() {
       if (tabNamesMap[targetTab]) {
         if (typeof window.switchTab === 'function') {
           window.switchTab(targetTab);
+        }
+      }
+    }
+    // B. Ý định mở liên kết
+    else if (intent.action === 'open_link' && intent.target !== undefined && intent.target !== null && intent.target !== "") {
+      const index = parseInt(intent.target, 10);
+      if (!isNaN(index) && links[index]) {
+        const url = (links[index].content || "").trim();
+        if (url.startsWith('http')) {
+          window.open(url, '_blank');
         }
       }
     }

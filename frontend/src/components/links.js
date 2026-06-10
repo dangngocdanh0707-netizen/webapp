@@ -232,3 +232,7 @@ window.deleteLink = function(id) {
     showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
   }
 };
+
+export function getAllLinks() {
+  return allLinkData;
+}
