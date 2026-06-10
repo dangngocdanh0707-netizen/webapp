@@ -24,6 +24,7 @@ import { initTasksModule } from './components/tasks.js';
 import { initHabitsModule } from './components/habits.js';
 import { initMapModule } from './components/google_maps.js';
 import { initCollectionsModule } from './components/collections.js';
+import { initFloatingAssistant } from './components/floating_assistant.js';
 
 let serverSyncTimeout = null;
 
@@ -62,6 +63,7 @@ async function initApp() {
 
   initSortableSidebar();
   initResizeSidebar();
+  initFloatingAssistant();
 
   // Lắng nghe phím tắt 'H' để quay về Home (trừ lúc nhập liệu)
   document.addEventListener('keydown', (e) => {

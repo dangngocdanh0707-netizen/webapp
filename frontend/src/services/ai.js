@@ -371,3 +371,156 @@ export async function translateMessageText(text, aiCreds) {
     throw new Error("Nhà cung cấp AI không hợp lệ.");
   }
 }
+
+/**
+ * Gọi API AI điều hướng (AI Navigator) để chuyển tab
+ * @param {string} prompt Câu lệnh hoặc câu chat của người dùng
+ * @param {Array} history Lịch sử trò chuyện [{role: 'user'|'ai', text: '...'}]
+ * @param {Object} aiCreds Cấu hình AI {provider, geminiKey, openaiKey, model}
+ * @returns {Promise<Object>} Trả về { reply: string, intent: { action: string, target: string } }
+ */
+export async function callAiNavigatorApi(prompt, history, aiCreds) {
+  const { provider, geminiKey, openaiKey, model } = aiCreds;
+
+  const systemInstruction = `You are the AI Navigator Assistant for a Personal Life OS dashboard.
+Your only job is to direct the user to the correct page/tab based on their request.
+Analyze the user's latest message (in English or Vietnamese) and determine if they want to navigate to a tab.
+
+You MUST respond ONLY with a valid JSON object. Do not include markdown code block formatting (like \`\`\`json ... \`\`\`) in your raw response.
+The JSON structure must match this schema exactly:
+{
+  "reply": "Your friendly conversational response to the user in Vietnamese or English confirming the navigation.",
+  "intent": {
+    "action": "switch_tab", // Set to "switch_tab" if navigating, or "none" if it's general chitchat or unclear.
+    "target": "tab-id-here" // Set to the target tab ID if action is "switch_tab", or "" if action is "none".
+  }
+}
+
+Valid tab IDs are:
+- 'home-tab' (Trang chủ/Launchpad)
+- 'cost-tab' (Chi tiêu/Expenses)
+- 'vocab-tab' (Từ vựng/Vocabulary)
+- 'practice-tab' (Ôn tập/Practice English / Anki SRS / Grammar Error Diary)
+- 'habit-tab' (Thói quen/Habits)
+- 'task-tab' (Công việc/Tasks)
+- 'goal-tab' (Mục tiêu/Goals)
+- 'link-tab' (Liên kết/Links)
+- 'prompt-tab' (Mẫu prompt/Prompts)
+- 'map-tab' (Bản đồ/Google Maps)
+- 'collections-tab' (Bộ sưu tập/Collections)
+
+If the user is just saying hello, asking a general question, or the request is ambiguous, set "action" to "none" and "target" to "". Keep your reply friendly and concise.`;
+
+  if (provider === "gemini") {
+    if (!geminiKey) throw new Error("Thiếu Gemini API Key.");
+    const geminiModel = model.trim() || "gemini-2.5-flash";
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`;
+
+    const contents = [];
+    const recentHistory = history.slice(-6);
+    recentHistory.forEach(msg => {
+      contents.push({
+        role: msg.role === "user" ? "user" : "model",
+        parts: [{ text: msg.text }]
+      });
+    });
+    contents.push({
+      role: "user",
+      parts: [{ text: prompt }]
+    });
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: contents,
+        systemInstruction: { parts: [{ text: systemInstruction }] },
+        generationConfig: {
+          responseMimeType: "application/json",
+          temperature: 0.3,
+          maxOutputTokens: 300
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(`Gemini API Error: ${errData.error?.message || response.status}`);
+    }
+
+    const resData = await response.json();
+    const resultText = resData.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!resultText) throw new Error("Gemini không trả về kết quả.");
+    return parseNavigatorJsonResponse(resultText);
+
+  } else if (provider === "openai") {
+    if (!openaiKey) throw new Error("Thiếu OpenAI API Key.");
+    const openaiModel = model.trim() || "gpt-4o-mini";
+    const url = "https://api.openai.com/v1/chat/completions";
+
+    const messages = [{ role: "system", content: systemInstruction }];
+    const recentHistory = history.slice(-6);
+    recentHistory.forEach(msg => {
+      messages.push({
+        role: msg.role === "user" ? "user" : "assistant",
+        content: msg.text
+      });
+    });
+    messages.push({ role: "user", content: prompt });
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${openaiKey}`
+      },
+      body: JSON.stringify({
+        model: openaiModel,
+        messages: messages,
+        response_format: { type: "json_object" },
+        temperature: 0.3,
+        max_tokens: 300
+      })
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(`OpenAI API Error: ${errData.error?.message || response.status}`);
+    }
+
+    const resData = await response.json();
+    const resultText = resData.choices?.[0]?.message?.content;
+    if (!resultText) throw new Error("OpenAI không trả về kết quả.");
+    return parseNavigatorJsonResponse(resultText);
+
+  } else {
+    throw new Error("Nhà cung cấp AI không hợp lệ.");
+  }
+}
+
+/**
+ * Phân giải kết quả JSON của AI Navigator
+ */
+function parseNavigatorJsonResponse(text) {
+  try {
+    let cleanedText = text.trim();
+    if (cleanedText.startsWith("```")) {
+      cleanedText = cleanedText.replace(/^```json\s*/i, "").replace(/\s*```$/, "");
+    }
+    const parsed = JSON.parse(cleanedText);
+    return {
+      reply: parsed.reply || "Đang thực hiện chuyển trang...",
+      intent: {
+        action: parsed.intent?.action || "none",
+        target: parsed.intent?.target || ""
+      }
+    };
+  } catch (err) {
+    console.error("Lỗi parse JSON Navigator:", err, text);
+    return {
+      reply: text.substring(0, 100) + "...",
+      intent: { action: "none", target: "" }
+    };
+  }
+}
+
