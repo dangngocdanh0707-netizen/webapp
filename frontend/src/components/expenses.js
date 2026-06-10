@@ -6,6 +6,16 @@ import { showToast } from '../services/toast.js';
 let allCostData = [];
 let onSyncNeeded = null;
 
+// Utility function to format numbers with dot as thousands separator
+function formatNumberString(val) {
+  if (val === undefined || val === null) return '';
+  // Remove all non-digit characters
+  let cleaned = val.toString().replace(/[^\d]/g, '');
+  if (!cleaned) return '';
+  // Format with dots as thousands separators
+  return parseInt(cleaned, 10).toLocaleString('vi-VN');
+}
+
 export function initCostModule(data, onSync) {
   allCostData = data || [];
   onSyncNeeded = onSync;
@@ -20,19 +30,46 @@ export function initCostModule(data, onSync) {
     dateInput.value = `${yyyy}-${mm}-${dd}`;
   }
 
+  // POPULATE MONTHS IN FILTER DROPDOWN
+  populateCostMonths();
+
+  // POPULATE CATEGORIES IN FILTER DROPDOWN
+  populateCostCategories();
+
+  // Setup auto-formatting event listener on new cost amount input
+  const amountInput = document.getElementById('ins-cost-amount');
+  if (amountInput) {
+    amountInput.addEventListener('input', (e) => {
+      let cursorPosition = e.target.selectionStart;
+      let originalLength = e.target.value.length;
+      
+      let formatted = formatNumberString(e.target.value);
+      e.target.value = formatted;
+      
+      let newLength = formatted.length;
+      let lengthDiff = newLength - originalLength;
+      e.target.setSelectionRange(cursorPosition + lengthDiff, cursorPosition + lengthDiff);
+    });
+  }
+
   // RENDER GRAPHICS
   renderCostGraphics();
 
   // RENDER TABLE
-  buildTable("All");
-
-  // POPULATE CATEGORIES IN FILTER DROPDOWN
-  populateCostCategories();
+  buildTable();
 }
 
 function renderCostGraphics() {
+  const monthFilterSelect = document.getElementById('monthFilter');
+  const monthFilterVal = monthFilterSelect ? monthFilterSelect.value : "All";
+
+  let filteredData = allCostData;
+  if (monthFilterVal !== "All") {
+    filteredData = allCostData.filter(item => item.date && item.date.startsWith(monthFilterVal));
+  }
+
   let categories = {};
-  allCostData.forEach(item => {
+  filteredData.forEach(item => {
     let rawAmount = item.amount !== undefined && item.amount !== null ? item.amount : 0;
     let amount = parseFloat(rawAmount.toString().replace(/[^\d]/g, '') || 0);
     let cat = item.category || "Uncategorized";
@@ -51,7 +88,7 @@ function renderCostGraphics() {
     const filterSelect = document.getElementById('categoryFilter');
     if (filterSelect) {
       filterSelect.value = clickedLabel;
-      buildTable(clickedLabel);
+      buildTable();
     }
   });
 
@@ -64,8 +101,27 @@ function renderCostGraphics() {
     const filterSelect = document.getElementById('categoryFilter');
     if (filterSelect) {
       filterSelect.value = clickedLabel;
-      buildTable(clickedLabel);
+      buildTable();
     }
+  });
+}
+
+function populateCostMonths() {
+  const monthSelect = document.getElementById('monthFilter');
+  if (!monthSelect) return;
+
+  const months = new Set();
+  allCostData.forEach(item => {
+    if (item.date && item.date.length >= 7) {
+      months.add(item.date.substring(0, 7)); // yyyy-MM
+    }
+  });
+
+  const sortedMonths = Array.from(months).sort((a, b) => b.localeCompare(a));
+
+  monthSelect.innerHTML = '<option value="All">All Months</option>';
+  sortedMonths.forEach(m => {
+    monthSelect.insertAdjacentHTML('beforeend', `<option value="${m}">${m}</option>`);
   });
 }
 
@@ -80,10 +136,14 @@ function populateCostCategories() {
   });
 }
 
-export function buildTable(filterValue) {
+// Refactored buildTable to apply both category and month filters and preserve <td> layout integrity
+export function buildTable() {
   const tbody = document.querySelector('#table-cost tbody');
   if (!tbody) return;
   tbody.innerHTML = "";
+
+  const categoryFilterVal = document.getElementById('categoryFilter') ? document.getElementById('categoryFilter').value : "All";
+  const monthFilterVal = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : "All";
 
   let displayCostData = [...allCostData];
   displayCostData.sort((a, b) => {
@@ -92,30 +152,36 @@ export function buildTable(filterValue) {
 
   displayCostData.forEach(item => {
     let cat = item.category || "Uncategorized";
-    if (filterValue !== "All" && cat !== filterValue) return;
+    if (categoryFilterVal !== "All" && cat !== categoryFilterVal) return;
+    if (monthFilterVal !== "All" && (!item.date || !item.date.startsWith(monthFilterVal))) return;
 
     let amount = parseFloat(item.amount.toString().replace(/[^\d]/g, '') || 0);
     let id = item.rowNumber;
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-xs text-slate-500 view-mode-${id}">${escapeHTML(item.date)}</td>
-        <td class="p-4 view-mode-${id}"><span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold">${escapeHTML(cat)}</span></td>
-        <td class="p-4 text-right font-bold text-slate-900 view-mode-${id}">${amount.toLocaleString('vi-VN')}đ</td>
-        <td class="p-4 text-xs text-slate-650 view-mode-${id}">${escapeHTML(item.note) || '-'}</td>
-        
-        <td class="p-4 pl-6 hidden edit-mode-${id}"><input type="date" id="edit-date-${id}" class="edit-input" value="${formatDateInput(item.date)}"></td>
-        <td class="p-4 hidden edit-mode-${id}">
-          <select id="edit-cat-${id}" class="edit-input font-bold">
+        <td class="p-4 pl-6 font-semibold text-xs text-slate-500 w-36">
+          <span class="view-mode-${id}">${escapeHTML(item.date)}</span>
+          <input type="date" id="edit-date-${id}" class="edit-input edit-mode-${id} hidden w-full" value="${formatDateInput(item.date)}">
+        </td>
+        <td class="p-4 w-36">
+          <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-mode-${id}">${escapeHTML(cat)}</span>
+          <select id="edit-cat-${id}" class="edit-input font-bold edit-mode-${id} hidden w-full">
             <option value="Must have" ${cat == 'Must have' ? 'selected' : ''}>Must have</option>
             <option value="Wasted" ${cat == 'Wasted' ? 'selected' : ''}>Wasted</option>
             <option value="Nice to have" ${cat == 'Nice to have' ? 'selected' : ''}>Nice to have</option>
           </select>
         </td>
-        <td class="p-4 hidden edit-mode-${id}"><input type="number" id="edit-amount-${id}" class="edit-input text-right font-bold" value="${amount}"></td>
-        <td class="p-4 hidden edit-mode-${id}"><input type="text" id="edit-note-${id}" class="edit-input" value="${escapeHTML(item.note)}"></td>
+        <td class="p-4 text-right font-bold text-slate-900 w-40">
+          <span class="view-mode-${id}">${amount.toLocaleString('vi-VN')}đ</span>
+          <input type="text" id="edit-amount-${id}" class="edit-input text-right font-bold edit-mode-${id} hidden w-full" value="${amount}">
+        </td>
+        <td class="p-4">
+          <span class="view-mode-${id} text-xs text-slate-650">${escapeHTML(item.note) || '-'}</span>
+          <input type="text" id="edit-note-${id}" class="edit-input edit-mode-${id} hidden w-full" value="${escapeHTML(item.note)}">
+        </td>
         
-        <td class="p-4 text-center">
+        <td class="p-4 text-center w-36">
           <div class="view-mode-${id} flex justify-center gap-2">
             <button onclick="enterEditMode(${id})" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="deleteRow(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
@@ -136,6 +202,22 @@ export function buildTable(filterValue) {
 window.enterEditMode = function (id) {
   document.querySelectorAll(`.view-mode-${id}`).forEach(el => el.classList.add('hidden'));
   document.querySelectorAll(`.edit-mode-${id}`).forEach(el => el.classList.remove('hidden'));
+
+  const editAmountInput = document.getElementById(`edit-amount-${id}`);
+  if (editAmountInput) {
+    editAmountInput.value = formatNumberString(editAmountInput.value);
+    editAmountInput.addEventListener('input', (e) => {
+      let cursorPosition = e.target.selectionStart;
+      let originalLength = e.target.value.length;
+      
+      let formatted = formatNumberString(e.target.value);
+      e.target.value = formatted;
+      
+      let newLength = formatted.length;
+      let lengthDiff = newLength - originalLength;
+      e.target.setSelectionRange(cursorPosition + lengthDiff, cursorPosition + lengthDiff);
+    });
+  }
 };
 
 window.cancelEditMode = function (id) {
@@ -144,17 +226,16 @@ window.cancelEditMode = function (id) {
 };
 
 window.filterTableByDropdown = function () {
-  const filterSelect = document.getElementById('categoryFilter');
-  if (filterSelect) {
-    buildTable(filterSelect.value);
-  }
+  buildTable();
+  renderCostGraphics();
 };
 
 window.addCostRow = function () {
   let dateVal = document.getElementById('ins-cost-date').value;
   let date = formatDateDb(dateVal);
   let cat = document.getElementById('ins-cost-cat').value;
-  let amount = document.getElementById('ins-cost-amount').value;
+  let amountRaw = document.getElementById('ins-cost-amount').value;
+  let amount = parseInt(amountRaw.replace(/[^\d]/g, ''), 10) || 0;
   let note = document.getElementById('ins-cost-note').value;
 
   if (!date || !amount) {
@@ -168,12 +249,21 @@ window.addCostRow = function () {
     rowNumber: newRowNumber,
     date: date,
     category: cat,
-    amount: Number(amount),
+    amount: amount,
     note: note
   };
   
   allCostData.push(newObj);
-  buildTable("All");
+
+  // Update month filter dropdown and preserve current month filter selection
+  const currentMonthFilter = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : "All";
+  populateCostMonths();
+  if (document.getElementById('monthFilter')) {
+    const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
+    document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
+  }
+
+  buildTable();
   renderCostGraphics();
 
   // Clear inputs
@@ -193,12 +283,17 @@ window.addCostRow = function () {
 
   function rollback(errorMessage) {
     allCostData = allCostData.filter(c => c.rowNumber !== newRowNumber);
-    buildTable("All");
+    populateCostMonths();
+    if (document.getElementById('monthFilter')) {
+      const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
+      document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
+    }
+    buildTable();
     renderCostGraphics();
     
-    document.getElementById('ins-cost-amount').value = amount;
+    document.getElementById('ins-cost-amount').value = formatNumberString(amount.toString());
     document.getElementById('ins-cost-note').value = note;
-    showToast("Lỗi đồng bộ chi tiêu: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi đồng bộ chi tiêu: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
@@ -206,7 +301,8 @@ window.saveRow = function (id) {
   let dateVal = document.getElementById(`edit-date-${id}`).value;
   let date = formatDateDb(dateVal);
   let cat = document.getElementById(`edit-cat-${id}`).value;
-  let amount = document.getElementById(`edit-amount-${id}`).value;
+  let amountRaw = document.getElementById(`edit-amount-${id}`).value;
+  let amount = parseInt(amountRaw.replace(/[^\d]/g, ''), 10) || 0;
   let note = document.getElementById(`edit-note-${id}`).value;
 
   // 1. Cập nhật giao diện lập tức (Optimistic Update)
@@ -216,11 +312,19 @@ window.saveRow = function (id) {
   let oldObj = { ...allCostData[idx] };
   allCostData[idx].date = date;
   allCostData[idx].category = cat;
-  allCostData[idx].amount = Number(amount);
+  allCostData[idx].amount = amount;
   allCostData[idx].note = note;
 
+  // Store current selection of filters
+  const currentMonthFilter = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : "All";
+  populateCostMonths();
+  if (document.getElementById('monthFilter')) {
+    const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
+    document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
+  }
+
   window.cancelEditMode(id);
-  buildTable("All");
+  buildTable();
   renderCostGraphics();
   showToast("Đã cập nhật khoản chi tiêu thành công!", "success");
 
@@ -239,10 +343,15 @@ window.saveRow = function (id) {
     if (idx !== -1) {
       allCostData[idx] = oldObj;
     }
-    buildTable("All");
+    populateCostMonths();
+    if (document.getElementById('monthFilter')) {
+      const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
+      document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
+    }
+    buildTable();
     renderCostGraphics();
     window.enterEditMode(id);
-    showToast("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
@@ -263,7 +372,14 @@ window.deleteRow = function (id) {
     }
   });
 
-  buildTable("All");
+  const currentMonthFilter = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : "All";
+  populateCostMonths();
+  if (document.getElementById('monthFilter')) {
+    const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
+    document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
+  }
+
+  buildTable();
   renderCostGraphics();
   showToast("Đã xóa khoản chi tiêu thành công!", "success");
 
@@ -287,8 +403,13 @@ window.deleteRow = function (id) {
     });
     
     allCostData.splice(deletedIndex, 0, deletedItem);
-    buildTable("All");
+    populateCostMonths();
+    if (document.getElementById('monthFilter')) {
+      const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
+      document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
+    }
+    buildTable();
     renderCostGraphics();
-    showToast("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.", "error");
+    console.error("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
