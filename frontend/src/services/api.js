@@ -469,7 +469,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['vocabulary'] || 'vocabulary'}!A1:J1`, values: [['Content', 'Transcription', 'Category', 'Topic', 'Level', 'Meaning', 'Status', 'Next Review', 'Ease Factor', 'Interval']] },
       { range: `${mappings['habit_tracker'] || 'habits'}!A1:C1`, values: [['Date', 'Habit', 'Status']] },
       { range: `${mappings['link'] || 'links'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
-      { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Content', 'Category']] },
+      { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
       { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
       { range: `${mappings['task'] || 'tasks'}!A1:C1`, values: [['Date', 'Task', 'Status']] },
       { range: `${mappings['google_map'] || 'google_maps'}!A1:E1`, values: [['place', 'city', 'category', 'address', 'status']] },
@@ -589,15 +589,15 @@ export function callServer(methodName, args) {
           link: getRows(valueRanges[3]).map((row, idx) => ({
             rowNumber: idx + 2,
             title: row[0] || "",
-            content: row[1] || "",
-            category: row[2] || ""
+            category: row[1] || "",
+            content: row[2] || ""
           })).filter(item => item.title),
 
           prompt: getRows(valueRanges[4]).map((row, idx) => ({
             rowNumber: idx + 2,
             title: row[0] || "",
-            content: row[1] || "",
-            category: row[2] || ""
+            category: row[1] || "",
+            content: row[2] || ""
           })).filter(item => item.title),
 
           goal: getRows(valueRanges[5]).map((row, idx) => ({
@@ -929,7 +929,7 @@ export function callServer(methodName, args) {
           range: `${linkTab}!A:C`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[title, content, category]] }
+          resource: { values: [[title, category, content]] }
         });
         resolve("Thành công");
         return;
@@ -940,7 +940,7 @@ export function callServer(methodName, args) {
           spreadsheetId,
           range: `${linkTab}!A${rowNumber}:C${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[title, content, category]] }
+          resource: { values: [[title, category, content]] }
         });
         resolve("Thành công");
         return;
@@ -975,7 +975,7 @@ export function callServer(methodName, args) {
           range: `${promptTab}!A:C`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[title, content, category]] }
+          resource: { values: [[title, category, content]] }
         });
         resolve("Thành công");
         return;
@@ -986,7 +986,7 @@ export function callServer(methodName, args) {
           spreadsheetId,
           range: `${promptTab}!A${rowNumber}:C${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[title, content, category]] }
+          resource: { values: [[title, category, content]] }
         });
         resolve("Thành công");
         return;
