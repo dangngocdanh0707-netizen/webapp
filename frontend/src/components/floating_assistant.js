@@ -172,7 +172,7 @@ function renderInitialGreeting() {
   historyContainer.innerHTML = `
     <div class="flex flex-col items-start gap-1">
       <div class="bg-white border border-slate-200 text-slate-800 rounded-2xl px-3 py-2 text-xs font-semibold shadow-2xs leading-relaxed max-w-[85%]">
-        Xin chào! Tôi có thể giúp gì cho bạn hôm nay ^^
+        Xin chào
       </div>
       <span class="text-[8px] text-blue-500 font-bold uppercase ml-1">Trợ Lý</span>
     </div>
