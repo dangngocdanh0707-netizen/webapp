@@ -240,7 +240,7 @@ window.switchHabitView = function (viewType) {
 
   if (!gridContainer || !listContainer || !filterWrapper || !btnGrid || !btnList) return;
 
-  const activeBtnClass = "px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition bg-white text-emerald-600 shadow-2xs cursor-pointer flex items-center gap-1";
+  const activeBtnClass = "px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition bg-white text-blue-600 shadow-2xs cursor-pointer flex items-center gap-1";
   const inactiveBtnClass = "px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition text-slate-500 hover:text-slate-700 cursor-pointer flex items-center gap-1";
 
   if (viewType === 'grid') {
