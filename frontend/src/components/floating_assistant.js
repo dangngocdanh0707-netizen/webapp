@@ -6,6 +6,31 @@ let recognition = null;
 let isRecognizing = false;
 let isInitialized = false;
 let reloadDataCallback = null;
+let inactivityTimer = null;
+
+function resetInactivityTimer() {
+  if (inactivityTimer) {
+    clearTimeout(inactivityTimer);
+  }
+  
+  // Không tự động đóng khi đang nhận diện giọng nói (STT active)
+  if (isRecognizing) return;
+
+  inactivityTimer = setTimeout(() => {
+    const pane = document.getElementById('floating-assistant-pane');
+    if (pane && !pane.classList.contains('hidden')) {
+      pane.classList.add('hidden');
+      pane.classList.remove('active');
+    }
+  }, 10000); // 10 giây
+}
+
+function clearInactivityTimer() {
+  if (inactivityTimer) {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = null;
+  }
+}
 
 const tabNamesMap = {
   'home-tab': 'Trang chủ Launchpad',
@@ -108,6 +133,9 @@ export function initFloatingAssistant(reloadDataCb) {
     if (!pane.classList.contains('hidden')) {
       inputEl.focus();
       renderInitialGreeting();
+      resetInactivityTimer(); // Đếm ngược tự động đóng khi mở
+    } else {
+      clearInactivityTimer(); // Hủy đếm ngược khi đóng
     }
   };
 
@@ -117,6 +145,7 @@ export function initFloatingAssistant(reloadDataCb) {
   closeBtn.addEventListener('click', () => {
     pane.classList.add('hidden');
     pane.classList.remove('active');
+    clearInactivityTimer(); // Hủy đếm ngược khi đóng
   });
 
   // Sự kiện gửi tin nhắn
@@ -126,6 +155,11 @@ export function initFloatingAssistant(reloadDataCb) {
       sendAssistantMessage();
     }
   });
+
+  // Đăng ký các sự kiện tương tác để reset lại bộ đếm thời gian
+  pane.addEventListener('click', resetInactivityTimer);
+  inputEl.addEventListener('input', resetInactivityTimer);
+  inputEl.addEventListener('focus', resetInactivityTimer);
 
   // Khởi tạo Speech Recognition (STT)
   setupAssistantSpeechRecognition(micBtn, inputEl);
@@ -152,6 +186,9 @@ async function sendAssistantMessage() {
 
   const userText = inputEl.value.trim();
   if (!userText) return;
+
+  // Reset đếm ngược không hoạt động khi gửi tin nhắn
+  resetInactivityTimer();
 
   // Xóa nội dung input và focus lại
   inputEl.value = "";
@@ -281,6 +318,7 @@ function setupAssistantSpeechRecognition(micBtn, inputEl) {
 
   recognition.onstart = function() {
     isRecognizing = true;
+    clearInactivityTimer(); // Hủy đếm ngược khi đang thu âm giọng nói
     micBtn.className = "w-9 h-9 rounded-lg bg-red-100 border border-red-200 text-red-600 hover:bg-red-200 flex items-center justify-center transition animate-pulse cursor-pointer";
     micBtn.innerHTML = `<i class="fa-solid fa-microphone-lines text-xs"></i>`;
   };
@@ -295,11 +333,13 @@ function setupAssistantSpeechRecognition(micBtn, inputEl) {
     console.error("STT Assistant Error:", event.error);
     isRecognizing = false;
     resetMicButtonUI(micBtn);
+    resetInactivityTimer(); // Chạy lại đếm ngược
   };
 
   recognition.onend = function() {
     isRecognizing = false;
     resetMicButtonUI(micBtn);
+    resetInactivityTimer(); // Chạy lại đếm ngược
   };
 
   micBtn.addEventListener('click', () => {
