@@ -1,4 +1,4 @@
-import { getAiCredentials, escapeHTML } from '../services/api.js';
+import { getAiCredentials, escapeHTML, callServer } from '../services/api.js';
 import { callAiNavigatorApi } from '../services/ai.js';
 import { showToast } from '../services/toast.js';
 
@@ -6,6 +6,7 @@ let assistantHistory = [];
 let recognition = null;
 let isRecognizing = false;
 let isInitialized = false;
+let reloadDataCallback = null;
 
 const tabNamesMap = {
   'home-tab': 'Trang chủ Launchpad',
@@ -37,7 +38,6 @@ function removeVietnameseTones(str) {
   str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
   str = str.replace(/Ý|Ỵ|Ỷ|Ỹ/g, "Y");
   str = str.replace(/Đ/g, "D");
-  // Một số bộ gõ thỉnh thoảng để lại các dấu kết hợp
   str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); 
   str = str.replace(/\u02C6|\u0306|\u031B/g, ""); 
   return str;
@@ -47,7 +47,6 @@ function removeVietnameseTones(str) {
 function matchLocalTab(text) {
   const normalized = removeVietnameseTones(text.toLowerCase().trim());
   
-  // Mở rộng bộ từ khóa so khớp
   if (/\b(chi tieu|tien|expense|vi|chi phi|cost|ngan sach)\b/.test(normalized)) {
     return 'cost-tab';
   }
@@ -85,7 +84,9 @@ function matchLocalTab(text) {
   return null;
 }
 
-export function initFloatingAssistant() {
+export function initFloatingAssistant(reloadDataCb) {
+  reloadDataCallback = reloadDataCb;
+
   if (isInitialized) return;
   isInitialized = true;
 
@@ -101,15 +102,18 @@ export function initFloatingAssistant() {
     return;
   }
 
-  // Toggle mở/đóng khung chat
-  bubble.addEventListener('click', () => {
+  // Khai báo hàm toggle toàn cục để gọi từ bên ngoài (phím tắt)
+  window.toggleFloatingAssistant = function() {
     pane.classList.toggle('hidden');
     pane.classList.toggle('active');
     if (!pane.classList.contains('hidden')) {
       inputEl.focus();
       renderInitialGreeting();
     }
-  });
+  };
+
+  // Toggle mở/đóng khung chat
+  bubble.addEventListener('click', window.toggleFloatingAssistant);
 
   closeBtn.addEventListener('click', () => {
     pane.classList.add('hidden');
@@ -135,7 +139,7 @@ function renderInitialGreeting() {
   historyContainer.innerHTML = `
     <div class="flex flex-col items-start gap-1">
       <div class="bg-white border border-slate-200 text-slate-800 rounded-2xl px-3 py-2 text-xs font-semibold shadow-2xs leading-relaxed max-w-[85%]">
-        Xin chào! Mình là Trợ lý Điều hướng AI. Bạn muốn chuyển sang trang nào? Hãy nói hoặc nhập tin nhắn (ví dụ: "Đưa tôi tới chi tiêu", "Mở tab từ vựng").
+        Xin chào! Mình là Trợ lý Điều hướng & Nhập liệu AI. Bạn muốn chuyển trang hay lưu nhanh thông tin chi tiêu/công việc? Hãy nói hoặc gõ (ví dụ: "Đưa tôi tới chi tiêu", "chi 50k ăn trưa").
       </div>
       <span class="text-[8px] text-blue-500 font-bold uppercase ml-1">Trợ Lý</span>
     </div>
@@ -150,19 +154,67 @@ async function sendAssistantMessage() {
   const userText = inputEl.value.trim();
   if (!userText) return;
 
-  // Xóa nội dung input
+  // Xóa nội dung input và focus lại
   inputEl.value = "";
 
   // 1. Thêm tin nhắn của User vào giao diện chat
   appendMessage('user', userText);
-
-  // Lưu lịch sử
   assistantHistory.push({ role: 'user', text: userText });
 
-  // 2. Chạy thử bộ lọc từ khóa cục bộ (Local Filter) để chuyển trang ngay tức thì
+  const today = new Date().toISOString().split('T')[0];
+
+  // 2. Kiểm tra các câu lệnh nhanh cục bộ (Local Bypass Shortcuts)
+  
+  // A. Lệnh thêm công việc nhanh: "/t [Nội dung công việc]"
+  if (userText.startsWith('/t ')) {
+    const taskDesc = userText.substring(3).trim();
+    if (!taskDesc) {
+      appendMessage('ai', "Nội dung công việc không được để trống! Cú pháp: /t [Nội dung]");
+      return;
+    }
+    appendMessage('ai', `Đang ghi nhận công việc: "${taskDesc}"...`);
+    callServer("insertTaskRow", [today, taskDesc, "FALSE", "FALSE", "FALSE"])
+      .then(() => {
+        appendMessage('ai', `✅ Đã lưu thành công công việc: "${taskDesc}" vào Google Sheets!`);
+        showToast("Đã thêm công việc nhanh!", "success");
+        if (typeof reloadDataCallback === 'function') reloadDataCallback(true);
+      })
+      .catch(err => {
+        appendMessage('ai', `❌ Lỗi lưu công việc: ${err.message || err}`);
+      });
+    return;
+  }
+
+  // B. Lệnh thêm chi tiêu nhanh: "/c [Số tiền] [Ghi chú]"
+  if (userText.startsWith('/c ')) {
+    const match = userText.match(/^\/c\s+(\d+k?|\d+)\s+(.+)/i);
+    if (!match) {
+      appendMessage('ai', "Cú pháp chi tiêu không đúng! Ví dụ: /c 50k ăn trưa hoặc /c 30000 gửi xe");
+      return;
+    }
+    let amtStr = match[1].toLowerCase();
+    let amt = parseFloat(amtStr);
+    if (amtStr.endsWith('k')) {
+      amt = amt * 1000;
+    }
+    const note = match[2].trim();
+
+    appendMessage('ai', `Đang ghi nhận chi tiêu: ${amt.toLocaleString()}đ cho "${note}"...`);
+    callServer("insertCostRow", [today, "Must have", amt, note])
+      .then(() => {
+        appendMessage('ai', `✅ Đã lưu thành công chi tiêu: ${amt.toLocaleString()}đ - "${note}" vào Google Sheets!`);
+        showToast("Đã thêm chi tiêu nhanh!", "success");
+        if (typeof reloadDataCallback === 'function') reloadDataCallback(true);
+      })
+      .catch(err => {
+        appendMessage('ai', `❌ Lỗi lưu chi tiêu: ${err.message || err}`);
+      });
+    return;
+  }
+
+  // 3. Kiểm tra các câu lệnh chuyển trang cục bộ (Local Navigation Filter)
   const matchedTab = matchLocalTab(userText);
   if (matchedTab) {
-    // Chuyển tab cục bộ
     if (typeof window.switchTab === 'function') {
       window.switchTab(matchedTab);
     }
@@ -176,7 +228,7 @@ async function sendAssistantMessage() {
     return;
   }
 
-  // 3. Nếu không khớp cục bộ, gọi AI để phân tích ý định
+  // 4. Nếu không khớp cục bộ, gọi AI để phân tích ý định (AI Agentic Action Parser)
   const aiCreds = getAiCredentials();
   const hasCreds = aiCreds.provider === "gemini" ? aiCreds.geminiKey : aiCreds.openaiKey;
 
@@ -185,34 +237,85 @@ async function sendAssistantMessage() {
     return;
   }
 
-  // Hiển thị bong bóng chờ AI trả lời
   const loadingId = appendLoadingIndicator();
 
   try {
     const result = await callAiNavigatorApi(userText, assistantHistory.slice(-5), aiCreds);
     removeLoadingIndicator(loadingId);
 
-    // Render phản hồi của AI
+    // Hiển thị phản hồi từ AI
     appendMessage('ai', result.reply);
     assistantHistory.push({ role: 'ai', text: result.reply });
 
-    // Thực hiện hành động nếu AI yêu cầu chuyển tab
-    if (result.intent && result.intent.action === 'switch_tab' && result.intent.target) {
-      const targetTab = result.intent.target;
+    const intent = result.intent || { action: "none" };
+
+    // A. Ý định chuyển trang
+    if (intent.action === 'switch_tab' && intent.target) {
+      const targetTab = intent.target;
       if (tabNamesMap[targetTab]) {
         if (typeof window.switchTab === 'function') {
           window.switchTab(targetTab);
         }
-      } else {
-        console.warn("[floating_assistant.js] AI trả về tab ID không tồn tại:", targetTab);
       }
+    } 
+    // B. Ý định thêm chi tiêu
+    else if (intent.action === 'add_expense' && intent.data) {
+      const { amount, category, note, date } = intent.data;
+      const targetDate = date || today;
+      const targetCat = category || "Must have";
+      
+      appendMessage('ai', `Đang lưu chi tiêu: ${Number(amount).toLocaleString()}đ vào danh mục "${targetCat}"...`);
+      
+      callServer("insertCostRow", [targetDate, targetCat, Number(amount) || 0, note || ""])
+        .then(() => {
+          appendMessage('ai', `✅ Đã đồng bộ chi tiêu lên Google Sheets thành công!`);
+          showToast("Đã lưu chi tiêu!", "success");
+          if (typeof reloadDataCallback === 'function') reloadDataCallback(true);
+        })
+        .catch(err => {
+          appendMessage('ai', `❌ Lỗi đồng bộ chi tiêu: ${err.message || err}`);
+        });
+    }
+    // C. Ý định thêm công việc
+    else if (intent.action === 'add_task' && intent.data) {
+      const { task, urgent, important, date } = intent.data;
+      const targetDate = date || today;
+      const isUrgent = urgent ? "TRUE" : "FALSE";
+      const isImportant = important ? "TRUE" : "FALSE";
+
+      appendMessage('ai', `Đang lưu công việc: "${task}"...`);
+      
+      callServer("insertTaskRow", [targetDate, task, isUrgent, isImportant, "FALSE"])
+        .then(() => {
+          appendMessage('ai', `✅ Đã đồng bộ công việc lên Google Sheets thành công!`);
+          showToast("Đã lưu công việc!", "success");
+          if (typeof reloadDataCallback === 'function') reloadDataCallback(true);
+        })
+        .catch(err => {
+          appendMessage('ai', `❌ Lỗi đồng bộ công việc: ${err.message || err}`);
+        });
+    }
+    // D. Ý định thêm từ vựng
+    else if (intent.action === 'add_vocab' && intent.data) {
+      const { content, meaning, transcription, category, topic, level } = intent.data;
+      
+      appendMessage('ai', `Đang thêm từ mới: "${content}"...`);
+      
+      callServer("insertVocabRow", [content, transcription || "", category || "", topic || "", level || "New", meaning || ""])
+        .then(() => {
+          appendMessage('ai', `✅ Đã đồng bộ từ mới "${content}" lên sổ từ vựng thành công!`);
+          showToast("Đã lưu từ vựng!", "success");
+          if (typeof reloadDataCallback === 'function') reloadDataCallback(true);
+        })
+        .catch(err => {
+          appendMessage('ai', `❌ Lỗi đồng bộ từ vựng: ${err.message || err}`);
+        });
     }
 
   } catch (error) {
     console.error("Lỗi AI Navigator:", error);
     removeLoadingIndicator(loadingId);
-    const errorMsg = "Có lỗi kết nối với AI. Hãy kiểm tra kết nối mạng hoặc API Key.";
-    appendMessage('ai', errorMsg);
+    appendMessage('ai', "Có lỗi kết nối với AI. Vui lòng kiểm tra lại cấu hình API hoặc kết nối internet.");
   }
 }
 
@@ -277,7 +380,7 @@ function setupAssistantSpeechRecognition(micBtn, inputEl) {
   recognition = new SpeechRecognition();
   recognition.continuous = false;
   recognition.interimResults = false;
-  recognition.lang = "vi-VN"; // Mặc định nhận dạng Tiếng Việt
+  recognition.lang = "vi-VN";
 
   recognition.onstart = function() {
     isRecognizing = true;
@@ -306,7 +409,6 @@ function setupAssistantSpeechRecognition(micBtn, inputEl) {
     if (isRecognizing) {
       recognition.stop();
     } else {
-      // Hủy mọi âm thanh đọc nếu có của TTS Speaking Partner
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }

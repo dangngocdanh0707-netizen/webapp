@@ -63,7 +63,7 @@ async function initApp() {
 
   initSortableSidebar();
   initResizeSidebar();
-  initFloatingAssistant();
+  initFloatingAssistant(loadDataFromServer);
 
   // Lắng nghe phím tắt 'H' để quay về Home (trừ lúc nhập liệu)
   document.addEventListener('keydown', (e) => {
@@ -80,6 +80,25 @@ async function initApp() {
       }
       if (typeof window.switchTab === 'function') {
         window.switchTab('home-tab');
+      }
+    }
+  });
+
+  // Lắng nghe phím tắt 'A' để mở/đóng Trợ lý ảo (trừ lúc nhập liệu)
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+    if (e.key === 'a' || e.key === 'A') {
+      const activeEl = document.activeElement;
+      if (activeEl) {
+        const tagName = activeEl.tagName.toLowerCase();
+        if (tagName === 'input' || tagName === 'textarea' || tagName === 'select' || activeEl.isContentEditable) {
+          return; // Đang nhập liệu thì gõ chữ 'A' bình thường
+        }
+      }
+      if (typeof window.toggleFloatingAssistant === 'function') {
+        e.preventDefault();
+        window.toggleFloatingAssistant();
       }
     }
   });

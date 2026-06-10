@@ -382,21 +382,41 @@ export async function translateMessageText(text, aiCreds) {
 export async function callAiNavigatorApi(prompt, history, aiCreds) {
   const { provider, geminiKey, openaiKey, model } = aiCreds;
 
-  const systemInstruction = `You are the AI Navigator Assistant for a Personal Life OS dashboard.
-Your only job is to direct the user to the correct page/tab based on their request.
-Analyze the user's latest message (in English or Vietnamese) and determine if they want to navigate to a tab.
+  const systemInstruction = `You are the AI Assistant and Navigator for a Personal Life OS dashboard.
+Your job is to either direct the user to the correct page/tab or parse their request to add data (expenses, tasks, vocabulary) to their dashboard.
 
 You MUST respond ONLY with a valid JSON object. Do not include markdown code block formatting (like \`\`\`json ... \`\`\`) in your raw response.
 The JSON structure must match this schema exactly:
 {
-  "reply": "Your friendly conversational response to the user in Vietnamese or English confirming the navigation.",
+  "reply": "Your friendly conversational response to the user in Vietnamese or English confirming what action you took.",
   "intent": {
-    "action": "switch_tab", // Set to "switch_tab" if navigating, or "none" if it's general chitchat or unclear.
-    "target": "tab-id-here" // Set to the target tab ID if action is "switch_tab", or "" if action is "none".
+    "action": "switch_tab" | "add_expense" | "add_task" | "add_vocab" | "none",
+    "target": "tab-id-here", // Used ONLY if action is "switch_tab"
+    "data": {
+      // Used ONLY if action is "add_expense":
+      "amount": 50000, // Number representing cost amount
+      "category": "Must have" | "Nice to have" | "Wasted", // Default to "Must have" if unclear
+      "note": "Lunch details...", // String note
+      "date": "YYYY-MM-DD", // Date of expense, default to today's date: ${new Date().toISOString().split('T')[0]}
+      
+      // Used ONLY if action is "add_task":
+      "task": "Task description...", // String task
+      "urgent": true | false,
+      "important": true | false,
+      "date": "YYYY-MM-DD", // Date of task, default to today's date: ${new Date().toISOString().split('T')[0]}
+
+      // Used ONLY if action is "add_vocab":
+      "content": "english_word", // Word/phrase
+      "meaning": "Vietnamese meaning",
+      "transcription": "ipa_phonetic", // optional
+      "category": "String category", // optional
+      "topic": "String topic", // optional
+      "level": "New" | "A1" | "A2" | "B1" | "B2" | "C1" | "C2" // default to "New" if unclear
+    }
   }
 }
 
-Valid tab IDs are:
+Valid tab IDs for "switch_tab" are:
 - 'home-tab' (Trang chủ/Launchpad)
 - 'cost-tab' (Chi tiêu/Expenses)
 - 'vocab-tab' (Từ vựng/Vocabulary)
@@ -409,7 +429,7 @@ Valid tab IDs are:
 - 'map-tab' (Bản đồ/Google Maps)
 - 'collections-tab' (Bộ sưu tập/Collections)
 
-If the user is just saying hello, asking a general question, or the request is ambiguous, set "action" to "none" and "target" to "". Keep your reply friendly and concise.`;
+If the user is just saying hello, asking a general question, or the request is ambiguous, set "action" to "none", "target" to "", and do not include "data". Keep your reply friendly and concise.`;
 
   if (provider === "gemini") {
     if (!geminiKey) throw new Error("Thiếu Gemini API Key.");
@@ -509,17 +529,18 @@ function parseNavigatorJsonResponse(text) {
     }
     const parsed = JSON.parse(cleanedText);
     return {
-      reply: parsed.reply || "Đang thực hiện chuyển trang...",
+      reply: parsed.reply || "Đang thực hiện...",
       intent: {
         action: parsed.intent?.action || "none",
-        target: parsed.intent?.target || ""
+        target: parsed.intent?.target || "",
+        data: parsed.intent?.data || null
       }
     };
   } catch (err) {
     console.error("Lỗi parse JSON Navigator:", err, text);
     return {
       reply: text.substring(0, 100) + "...",
-      intent: { action: "none", target: "" }
+      intent: { action: "none", target: "", data: null }
     };
   }
 }
