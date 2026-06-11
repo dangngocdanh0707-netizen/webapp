@@ -192,8 +192,6 @@ async function sendAssistantMessage() {
   const userMsgId = appendMessage('user', userText);
   assistantHistory.push({ id: userMsgId, role: 'user', text: userText });
 
-  const today = new Date().toISOString().split('T')[0];
-
   // 2. Kiểm tra các câu lệnh chuyển trang cục bộ (Local Navigation Filter)
   const matchedTab = matchLocalTab(userText);
   if (matchedTab) {

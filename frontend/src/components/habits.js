@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, parseDateToTimestamp, formatDateView } from '../services/api.js';
+import { callServer, escapeHTML, parseDateToTimestamp, formatDateView, getTodayDateString } from '../services/api.js';
 import { renderHabitLine, updateHabitChartData } from './charts.js';
 
 let allHabitData = [];
@@ -22,7 +22,7 @@ export function initHabitsModule(data, onSync) {
     totalHabitsEl.innerText = uniqueHabits.length;
   }
 
-  let todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+  let todayStr = getTodayDateString();
 
   let habitDates = [...new Set(allHabitData.map(h => h.date))];
 

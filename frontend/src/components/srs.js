@@ -174,10 +174,6 @@ export function initSrsModule(vocabData, onSync) {
   }
 }
 
-// Browser TTS Pronunciation
-function speakWord(word) {
-  speakEnglishText(word);
-}
 
 function showInteractiveFeedback(isCorrect, message) {
   const fbEl = document.getElementById('practice-interactive-feedback');
@@ -209,7 +205,7 @@ function highlightSrsButton(scoreOrSuccess) {
 
 window.app.srs.playPracticeTTS = function () {
   if (currentPracticeWord && currentPracticeWord.content) {
-    speakWord(currentPracticeWord.content);
+    speakEnglishText(currentPracticeWord.content);
   }
 };
 
@@ -328,7 +324,7 @@ window.app.srs.triggerRandomVocab = function () {
   }
 
   // Auto play TTS triggers automatically on card loading
-  speakWord(wordContent);
+  speakEnglishText(wordContent);
 
   // Calculate Dynamic Anki Days
   let currentInterval = Number(currentPracticeWord.interval) || 0;
@@ -632,7 +628,7 @@ window.app.srs.revealPracticeMeaning = function () {
 
   // Play native TTS pronunciation when revealing answer
   if (currentPracticeWord) {
-    speakWord(currentPracticeWord.content || "");
+    speakEnglishText(currentPracticeWord.content || "");
   }
 };
 
