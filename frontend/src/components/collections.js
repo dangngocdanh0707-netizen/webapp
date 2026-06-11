@@ -115,7 +115,7 @@ export function buildCollectionsGrid() {
           </td>
           <td class="p-4 pl-12 text-left col-view-${id}">
             <label class="inline-flex items-center gap-3 cursor-pointer select-none">
-              <input type="checkbox" id="col-check-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="toggleCollectionStatusDirectly(${id}, this)">
+              <input type="checkbox" id="col-check-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="app.collections.toggleCollectionStatusDirectly(${id}, this)">
               <span id="col-chk-lbl-${id}" class="text-xs font-semibold tracking-wide ${isDone ? 'text-emerald-600' : 'text-slate-400'}">${isDone ? 'Completed' : 'Pending'}</span>
             </label>
           </td>
@@ -129,16 +129,16 @@ export function buildCollectionsGrid() {
 
           <td class="p-4 pr-6 text-center">
             <div class="col-view-${id} flex items-center justify-center gap-2">
-              <button onclick="toggleCollectionEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition">
+              <button onclick="app.collections.toggleCollectionEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button onclick="deleteCollectionItem(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition">
+              <button onclick="app.collections.deleteCollectionItem(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
             <div class="hidden col-edit-${id} flex justify-center gap-1.5">
-              <button onclick="saveCollectionItem(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
-              <button onclick="toggleCollectionEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
+              <button onclick="app.collections.saveCollectionItem(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+              <button onclick="app.collections.toggleCollectionEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
             </div>
           </td>
         </tr>
@@ -159,11 +159,11 @@ export function buildCollectionsGrid() {
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
-window.filterCollectionGrid = function() {
+window.app.collections.filterCollectionGrid = function() {
   buildCollectionsGrid();
 };
 
-window.saveNewCollection = function() {
+window.app.collections.saveNewCollection = function() {
   const itemInput = document.getElementById('ins-col-item');
   const brandInput = document.getElementById('ins-col-brand');
   const styleInput = document.getElementById('ins-col-style');
@@ -223,7 +223,7 @@ window.saveNewCollection = function() {
   }
 };
 
-window.deleteCollectionItem = function(id) {
+window.app.collections.deleteCollectionItem = function(id) {
   // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allCollectionData.findIndex(c => c.rowNumber == id);
   if (idx === -1) return;
@@ -267,12 +267,12 @@ window.deleteCollectionItem = function(id) {
   }
 };
 
-window.toggleCollectionEdit = function(id, isEdit) {
+window.app.collections.toggleCollectionEdit = function(id, isEdit) {
   document.querySelectorAll(`.col-view-${id}`).forEach(el => isEdit ? el.classList.add('hidden') : el.classList.remove('hidden'));
   document.querySelectorAll(`.col-edit-${id}`).forEach(el => isEdit ? el.classList.remove('hidden') : el.classList.add('hidden'));
 };
 
-window.saveCollectionItem = function(id) {
+window.app.collections.saveCollectionItem = function(id) {
   const item = document.getElementById(`col-edit-item-${id}`).value.trim();
   const brand = document.getElementById(`col-edit-brand-${id}`).value.trim();
   const style = document.getElementById(`col-edit-style-${id}`).value.trim();
@@ -293,7 +293,7 @@ window.saveCollectionItem = function(id) {
   allCollectionData[idx].style = style;
   allCollectionData[idx].category = category;
 
-  window.toggleCollectionEdit(id, false);
+  window.app.collections.toggleCollectionEdit(id, false);
   buildCollectionsGrid();
   console.log("Asset successfully updated! 🎉");
 
@@ -313,12 +313,12 @@ window.saveCollectionItem = function(id) {
       allCollectionData[idx] = oldObj;
     }
     buildCollectionsGrid();
-    window.toggleCollectionEdit(id, true);
+    window.app.collections.toggleCollectionEdit(id, true);
     console.error("Update failed: " + errorMessage + ". Reverted changes.");
   }
 };
 
-window.toggleCollectionStatusDirectly = function(rowNumber, checkboxEl) {
+window.app.collections.toggleCollectionStatusDirectly = function(rowNumber, checkboxEl) {
   const isChecked = checkboxEl.checked;
   const labelEl = document.getElementById(`col-chk-lbl-${rowNumber}`);
   

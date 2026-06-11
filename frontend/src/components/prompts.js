@@ -62,13 +62,13 @@ export function buildPromptTable() {
         
         <td class="p-4 text-center">
           <div class="prompt-view-${id} flex justify-center gap-3">
-            <button onclick="copyPromptText(${id})" class="text-slate-400 hover:text-emerald-600 p-1 cursor-pointer transition"><i id="prompt-copy-icon-${id}" class="fa-solid fa-copy"></i></button>
-            <button onclick="togglePromptEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="deletePrompt(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="app.prompts.copyPromptText(${id})" class="text-slate-400 hover:text-emerald-600 p-1 cursor-pointer transition"><i id="prompt-copy-icon-${id}" class="fa-solid fa-copy"></i></button>
+            <button onclick="app.prompts.togglePromptEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.prompts.deletePrompt(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden prompt-edit-${id} flex justify-center gap-1.5">
-            <button onclick="savePrompt(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
-            <button onclick="togglePromptEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
+            <button onclick="app.prompts.savePrompt(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+            <button onclick="app.prompts.togglePromptEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
           </div>
         </td>
       </tr>
@@ -78,11 +78,11 @@ export function buildPromptTable() {
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
-window.filterPromptTable = function() {
+window.app.prompts.filterPromptTable = function() {
   buildPromptTable();
 };
 
-window.copyPromptText = function(id) {
+window.app.prompts.copyPromptText = function(id) {
   let item = allPromptData.find(p => p.rowNumber == id);
   if (!item) return;
   let text = (item.content || '').toString();
@@ -96,12 +96,12 @@ window.copyPromptText = function(id) {
   }).catch(err => { console.error('Không thể sao chép: ', err); });
 };
 
-window.togglePromptEdit = function(id, isEdit) {
+window.app.prompts.togglePromptEdit = function(id, isEdit) {
   document.querySelectorAll(`.prompt-view-${id}`).forEach(el => isEdit ? el.classList.add('hidden') : el.classList.remove('hidden'));
   document.querySelectorAll(`.prompt-edit-${id}`).forEach(el => isEdit ? el.classList.remove('hidden') : el.classList.add('hidden'));
 };
 
-window.addPromptRow = function() {
+window.app.prompts.addPromptRow = function() {
   let title = document.getElementById('ins-prompt-title').value.trim();
   let content = document.getElementById('ins-prompt-content').value.trim();
   let category = document.getElementById('ins-prompt-cat').value.trim();
@@ -148,7 +148,7 @@ window.addPromptRow = function() {
   }
 };
 
-window.savePrompt = function(id) {
+window.app.prompts.savePrompt = function(id) {
   let title = document.getElementById(`prompt-edit-title-${id}`).value.trim();
   let content = document.getElementById(`prompt-edit-content-${id}`).value.trim();
   let category = document.getElementById(`prompt-edit-cat-${id}`).value.trim();
@@ -162,7 +162,7 @@ window.savePrompt = function(id) {
   allPromptData[idx].content = content;
   allPromptData[idx].category = category;
 
-  window.togglePromptEdit(id, false);
+  window.app.prompts.togglePromptEdit(id, false);
   buildPromptTable();
   console.log("Đã cập nhật mẫu Prompt thành công!");
 
@@ -182,12 +182,12 @@ window.savePrompt = function(id) {
       allPromptData[idx] = oldObj;
     }
     buildPromptTable();
-    window.togglePromptEdit(id, true);
+    window.app.prompts.togglePromptEdit(id, true);
     console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
-window.deletePrompt = function(id) {
+window.app.prompts.deletePrompt = function(id) {
   // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allPromptData.findIndex(p => p.rowNumber == id);
   if (idx === -1) return;

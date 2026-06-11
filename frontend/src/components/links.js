@@ -69,12 +69,12 @@ export function buildLinkTable() {
         
         <td class="p-4 text-center">
           <div class="link-view-${id} flex justify-center gap-3">
-            <button onclick="toggleLinkEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="deleteLink(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="app.links.toggleLinkEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.links.deleteLink(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden link-edit-${id} flex justify-center gap-1.5">
-            <button onclick="saveLink(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
-            <button onclick="toggleLinkEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
+            <button onclick="app.links.saveLink(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+            <button onclick="app.links.toggleLinkEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
           </div>
         </td>
       </tr>
@@ -84,11 +84,11 @@ export function buildLinkTable() {
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
-window.filterLinkTable = function() {
+window.app.links.filterLinkTable = function() {
   buildLinkTable();
 };
 
-window.copyLinkText = function(id, text) {
+window.app.links.copyLinkText = function(id, text) {
   navigator.clipboard.writeText(text).then(() => {
     const icon = document.getElementById(`copy-icon-${id}`);
     if (icon) {
@@ -98,12 +98,12 @@ window.copyLinkText = function(id, text) {
   }).catch(err => { console.error('Không thể sao chép: ', err); });
 };
 
-window.toggleLinkEdit = function(id, isEdit) {
+window.app.links.toggleLinkEdit = function(id, isEdit) {
   document.querySelectorAll(`.link-view-${id}`).forEach(el => isEdit ? el.classList.add('hidden') : el.classList.remove('hidden'));
   document.querySelectorAll(`.link-edit-${id}`).forEach(el => isEdit ? el.classList.remove('hidden') : el.classList.add('hidden'));
 };
 
-window.addLinkRow = function() {
+window.app.links.addLinkRow = function() {
   let title = document.getElementById('ins-link-title').value.trim();
   let cat = document.getElementById('ins-link-cat').value.trim();
   let content = document.getElementById('ins-link-content').value.trim();
@@ -150,7 +150,7 @@ window.addLinkRow = function() {
   }
 };
 
-window.saveLink = function(id) {
+window.app.links.saveLink = function(id) {
   let title = document.getElementById(`link-edit-title-${id}`).value.trim();
   let cat = document.getElementById(`link-edit-cat-${id}`).value.trim();
   let content = document.getElementById(`link-edit-content-${id}`).value.trim();
@@ -164,7 +164,7 @@ window.saveLink = function(id) {
   allLinkData[idx].category = cat;
   allLinkData[idx].content = content;
 
-  window.toggleLinkEdit(id, false);
+  window.app.links.toggleLinkEdit(id, false);
   buildLinkTable();
   console.log("Đã cập nhật liên kết thành công!");
 
@@ -184,12 +184,12 @@ window.saveLink = function(id) {
       allLinkData[idx] = oldObj;
     }
     buildLinkTable();
-    window.toggleLinkEdit(id, true);
+    window.app.links.toggleLinkEdit(id, true);
     console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
-window.deleteLink = function(id) {
+window.app.links.deleteLink = function(id) {
   // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allLinkData.findIndex(l => l.rowNumber == id);
   if (idx === -1) return;

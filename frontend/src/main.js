@@ -27,6 +27,22 @@ import { initFloatingAssistant } from './components/floating_assistant.js';
 
 let serverSyncTimeout = null;
 
+window.app = {
+  expenses: {},
+  vocab: {},
+  srs: {},
+  grammar: {},
+  links: {},
+  prompts: {},
+  goals: {},
+  tasks: {},
+  habits: {},
+  maps: {},
+  collections: {},
+  ai: {},
+  floating: {}
+};
+
 // Catch-all syntax & runtime error helper
 window.onerror = function (message, source, lineno, colno, error) {
   console.error("Global Error Caught:", message, "at", source, "line", lineno);
@@ -65,8 +81,8 @@ async function initApp() {
           return; // Đang nhập liệu thì gõ chữ 'H' bình thường
         }
       }
-      if (typeof window.switchTab === 'function') {
-        window.switchTab('home-tab');
+      if (window.app && typeof window.app.switchTab === 'function') {
+        window.app.switchTab('home-tab');
       }
     }
   });
@@ -83,9 +99,9 @@ async function initApp() {
           return; // Đang nhập liệu thì gõ chữ 'A' bình thường
         }
       }
-      if (typeof window.toggleFloatingAssistant === 'function') {
+      if (window.app && window.app.floating && typeof window.app.floating.toggleFloatingAssistant === 'function') {
         e.preventDefault();
-        window.toggleFloatingAssistant();
+        window.app.floating.toggleFloatingAssistant();
       }
     }
   });
@@ -126,30 +142,30 @@ async function initApp() {
 
       // 1. Dành cho các ô THÊM MỚI (Mã bắt đầu bằng 'ins-')
       if (id.startsWith('ins-')) {
-        if (id.startsWith('ins-cost-') && typeof window.addCostRow === 'function') {
+        if (id.startsWith('ins-cost-') && window.app && window.app.expenses && typeof window.app.expenses.addCostRow === 'function') {
           e.preventDefault();
-          window.addCostRow();
-        } else if (id.startsWith('ins-v-') && typeof window.addVocabRow === 'function') {
+          window.app.expenses.addCostRow();
+        } else if (id.startsWith('ins-v-') && window.app && window.app.vocab && typeof window.app.vocab.addVocabRow === 'function') {
           e.preventDefault();
-          window.addVocabRow();
-        } else if (id.startsWith('ins-link-') && typeof window.addLinkRow === 'function') {
+          window.app.vocab.addVocabRow();
+        } else if (id.startsWith('ins-link-') && window.app && window.app.links && typeof window.app.links.addLinkRow === 'function') {
           e.preventDefault();
-          window.addLinkRow();
-        } else if (id.startsWith('ins-prompt-') && typeof window.addPromptRow === 'function') {
+          window.app.links.addLinkRow();
+        } else if (id.startsWith('ins-prompt-') && window.app && window.app.prompts && typeof window.app.prompts.addPromptRow === 'function') {
           e.preventDefault();
-          window.addPromptRow();
-        } else if (id.startsWith('ins-goal-') && typeof window.addGoalRow === 'function') {
+          window.app.prompts.addPromptRow();
+        } else if (id.startsWith('ins-goal-') && window.app && window.app.goals && typeof window.app.goals.addGoalRow === 'function') {
           e.preventDefault();
-          window.addGoalRow();
-        } else if (id.startsWith('ins-task-') && typeof window.addTaskRow === 'function') {
+          window.app.goals.addGoalRow();
+        } else if (id.startsWith('ins-task-') && window.app && window.app.tasks && typeof window.app.tasks.addTaskRow === 'function') {
           e.preventDefault();
-          window.addTaskRow();
-        } else if (id.startsWith('ins-map-') && typeof window.addMapRow === 'function') {
+          window.app.tasks.addTaskRow();
+        } else if (id.startsWith('ins-map-') && window.app && window.app.maps && typeof window.app.maps.addMapRow === 'function') {
           e.preventDefault();
-          window.addMapRow();
-        } else if (id.startsWith('ins-col-') && typeof window.saveNewCollection === 'function') {
+          window.app.maps.addMapRow();
+        } else if (id.startsWith('ins-col-') && window.app && window.app.collections && typeof window.app.collections.saveNewCollection === 'function') {
           e.preventDefault();
-          window.saveNewCollection();
+          window.app.collections.saveNewCollection();
         }
       } 
       // 2. Dành cho các ô CHỈNH SỬA dòng (Mã chứa '-edit-' hoặc 'edit-')
@@ -157,30 +173,30 @@ async function initApp() {
         const rowId = id.split('-').pop(); // Lấy số dòng (rowNumber) ở cuối ID
         if (!rowId || isNaN(rowId)) return;
 
-        if (id.startsWith('edit-') && typeof window.saveRow === 'function') {
+        if (id.startsWith('edit-') && window.app && window.app.expenses && typeof window.app.expenses.saveRow === 'function') {
           e.preventDefault();
-          window.saveRow(rowId);
-        } else if (id.startsWith('v-edit-') && typeof window.saveVocab === 'function') {
+          window.app.expenses.saveRow(rowId);
+        } else if (id.startsWith('v-edit-') && window.app && window.app.vocab && typeof window.app.vocab.saveVocab === 'function') {
           e.preventDefault();
-          window.saveVocab(rowId);
-        } else if (id.startsWith('link-edit-') && typeof window.saveLink === 'function') {
+          window.app.vocab.saveVocab(rowId);
+        } else if (id.startsWith('link-edit-') && window.app && window.app.links && typeof window.app.links.saveLink === 'function') {
           e.preventDefault();
-          window.saveLink(rowId);
-        } else if (id.startsWith('prompt-edit-') && typeof window.savePrompt === 'function') {
+          window.app.links.saveLink(rowId);
+        } else if (id.startsWith('prompt-edit-') && window.app && window.app.prompts && typeof window.app.prompts.savePrompt === 'function') {
           e.preventDefault();
-          window.savePrompt(rowId);
-        } else if (id.startsWith('goal-edit-') && typeof window.saveGoal === 'function') {
+          window.app.prompts.savePrompt(rowId);
+        } else if (id.startsWith('goal-edit-') && window.app && window.app.goals && typeof window.app.goals.saveGoal === 'function') {
           e.preventDefault();
-          window.saveGoal(rowId);
-        } else if (id.startsWith('task-edit-') && typeof window.saveTask === 'function') {
+          window.app.goals.saveGoal(rowId);
+        } else if (id.startsWith('task-edit-') && window.app && window.app.tasks && typeof window.app.tasks.saveTask === 'function') {
           e.preventDefault();
-          window.saveTask(rowId);
-        } else if (id.startsWith('map-edit-') && typeof window.saveMapPlace === 'function') {
+          window.app.tasks.saveTask(rowId);
+        } else if (id.startsWith('map-edit-') && window.app && window.app.maps && typeof window.app.maps.saveMapPlace === 'function') {
           e.preventDefault();
-          window.saveMapPlace(rowId);
-        } else if (id.startsWith('col-edit-') && typeof window.saveCollectionItem === 'function') {
+          window.app.maps.saveMapPlace(rowId);
+        } else if (id.startsWith('col-edit-') && window.app && window.app.collections && typeof window.app.collections.saveCollectionItem === 'function') {
           e.preventDefault();
-          window.saveCollectionItem(rowId);
+          window.app.collections.saveCollectionItem(rowId);
         }
       }
     }
@@ -209,18 +225,18 @@ async function initApp() {
           target.value = '';
           
           // Gọi hàm filter tương ứng để cập nhật lại danh sách dữ liệu
-          if (inputId === 'vocabSearchInput' && typeof window.filterVocabTable === 'function') {
-            window.filterVocabTable();
-          } else if (inputId === 'linkSearchInput' && typeof window.filterLinkTable === 'function') {
-            window.filterLinkTable();
-          } else if (inputId === 'promptSearchInput' && typeof window.filterPromptTable === 'function') {
-            window.filterPromptTable();
-          } else if (inputId === 'mapSearchInput' && typeof window.filterMapGrid === 'function') {
-            window.filterMapGrid();
-          } else if (inputId === 'collectionSearchInput' && typeof window.filterCollectionGrid === 'function') {
-            window.filterCollectionGrid();
-          } else if (inputId === 'taskSearchInput' && typeof window.filterTaskTable === 'function') {
-            window.filterTaskTable();
+          if (inputId === 'vocabSearchInput' && window.app && window.app.vocab && typeof window.app.vocab.filterVocabTable === 'function') {
+            window.app.vocab.filterVocabTable();
+          } else if (inputId === 'linkSearchInput' && window.app && window.app.links && typeof window.app.links.filterLinkTable === 'function') {
+            window.app.links.filterLinkTable();
+          } else if (inputId === 'promptSearchInput' && window.app && window.app.prompts && typeof window.app.prompts.filterPromptTable === 'function') {
+            window.app.prompts.filterPromptTable();
+          } else if (inputId === 'mapSearchInput' && window.app && window.app.maps && typeof window.app.maps.filterMapGrid === 'function') {
+            window.app.maps.filterMapGrid();
+          } else if (inputId === 'collectionSearchInput' && window.app && window.app.collections && typeof window.app.collections.filterCollectionGrid === 'function') {
+            window.app.collections.filterCollectionGrid();
+          } else if (inputId === 'taskSearchInput' && window.app && window.app.tasks && typeof window.app.tasks.filterTaskTable === 'function') {
+            window.app.tasks.filterTaskTable();
           } else {
             target.dispatchEvent(new Event('input', { bubbles: true }));
             target.dispatchEvent(new Event('keyup', { bubbles: true }));
@@ -369,7 +385,7 @@ function renderDashboard(data) {
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
-window.switchTab = function(tabId, btn) {
+window.app.switchTab = function(tabId, btn) {
   // Reset scroll position to top of the page so that tab headers are fully visible
   window.scrollTo(0, 0);
 
@@ -388,21 +404,21 @@ window.switchTab = function(tabId, btn) {
   }
 
   if (tabId === 'collections-tab') {
-    if (typeof window.filterCollectionGrid === 'function') {
-      window.filterCollectionGrid();
+    if (window.app && window.app.collections && typeof window.app.collections.filterCollectionGrid === 'function') {
+      window.app.collections.filterCollectionGrid();
     }
   }
 };
 
-window.launchApp = function(tabId) {
-  window.switchTab(tabId);
+window.app.launchApp = function(tabId) {
+  window.app.switchTab(tabId);
 };
 
 // Đăng nhập / Đăng xuất Google
-window.signInWithGoogle = signInWithGoogle;
-window.signOutFromGoogle = signOutFromGoogle;
+window.app.signInWithGoogle = signInWithGoogle;
+window.app.signOutFromGoogle = signOutFromGoogle;
 
-window.updateSettingsModelOptions = function(provider, currentModel = '') {
+window.app.updateSettingsModelOptions = function(provider, currentModel = '') {
   const modelSelect = document.getElementById('settings-ai-model');
   if (!modelSelect) return;
   
@@ -445,7 +461,7 @@ window.updateSettingsModelOptions = function(provider, currentModel = '') {
 };
 
 // Điều khiển Settings Modal
-window.openSettingsModal = function() {
+window.app.openSettingsModal = function() {
   const modal = document.getElementById('settings-modal');
   if (modal) {
     const creds = getCredentials();
@@ -459,20 +475,20 @@ window.openSettingsModal = function() {
     document.getElementById('settings-openai-key').value = aiCreds.openaiKey;
     
     // Khởi tạo/cập nhật danh sách model theo provider đã lưu
-    window.updateSettingsModelOptions(aiCreds.provider, aiCreds.model);
+    window.app.updateSettingsModelOptions(aiCreds.provider, aiCreds.model);
     
     modal.classList.remove('hidden');
   }
 };
 
-window.closeSettingsModal = function() {
+window.app.closeSettingsModal = function() {
   const modal = document.getElementById('settings-modal');
   if (modal) {
     modal.classList.add('hidden');
   }
 };
 
-window.saveSettingsCredentials = function() {
+window.app.saveSettingsCredentials = function() {
   const spreadsheetId = document.getElementById('settings-spreadsheet-id').value;
   const apiKey = document.getElementById('settings-api-key').value;
   const clientId = document.getElementById('settings-client-id').value;

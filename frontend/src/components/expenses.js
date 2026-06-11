@@ -220,12 +220,12 @@ export function buildTable() {
         
         <td class="p-4 text-center w-36">
           <div class="view-mode-${id} flex justify-center gap-2">
-            <button onclick="enterEditMode(${id})" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="deleteRow(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="app.expenses.enterEditMode(${id})" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.expenses.deleteRow(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="edit-mode-${id} hidden flex justify-center gap-2">
-            <button onclick="saveRow(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
-            <button onclick="cancelEditMode(${id})" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
+            <button onclick="app.expenses.saveRow(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+            <button onclick="app.expenses.cancelEditMode(${id})" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
           </div>
         </td>
       </tr>
@@ -236,7 +236,7 @@ export function buildTable() {
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
-window.enterEditMode = function (id) {
+window.app.expenses.enterEditMode = function (id) {
   document.querySelectorAll(`.view-mode-${id}`).forEach(el => el.classList.add('hidden'));
   document.querySelectorAll(`.edit-mode-${id}`).forEach(el => el.classList.remove('hidden'));
 
@@ -257,12 +257,12 @@ window.enterEditMode = function (id) {
   }
 };
 
-window.cancelEditMode = function (id) {
+window.app.expenses.cancelEditMode = function (id) {
   document.querySelectorAll(`.view-mode-${id}`).forEach(el => el.classList.remove('hidden'));
   document.querySelectorAll(`.edit-mode-${id}`).forEach(el => el.classList.add('hidden'));
 };
 
-window.filterTableByDropdown = function (triggerId) {
+window.app.expenses.filterTableByDropdown = function (triggerId) {
   if (triggerId === 'monthFilter') {
     const monthVal = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : 'All';
     if (monthVal !== 'All') {
@@ -280,7 +280,7 @@ window.filterTableByDropdown = function (triggerId) {
   renderCostGraphics();
 };
 
-window.addCostRow = function () {
+window.app.expenses.addCostRow = function () {
   let dateVal = document.getElementById('ins-cost-date').value;
   let date = formatDateDb(dateVal);
   let cat = document.getElementById('ins-cost-cat').value;
@@ -347,7 +347,7 @@ window.addCostRow = function () {
   }
 };
 
-window.saveRow = function (id) {
+window.app.expenses.saveRow = function (id) {
   let dateVal = document.getElementById(`edit-date-${id}`).value;
   let date = formatDateDb(dateVal);
   let cat = document.getElementById(`edit-cat-${id}`).value;
@@ -373,7 +373,7 @@ window.saveRow = function (id) {
     document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
   }
 
-  window.cancelEditMode(id);
+  window.app.expenses.cancelEditMode(id);
   buildTable();
   renderCostGraphics();
   console.log("Đã cập nhật khoản chi tiêu thành công!");
@@ -400,12 +400,12 @@ window.saveRow = function (id) {
     }
     buildTable();
     renderCostGraphics();
-    window.enterEditMode(id);
+    window.app.expenses.enterEditMode(id);
     console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
-window.deleteRow = function (id) {
+window.app.expenses.deleteRow = function (id) {
   // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allCostData.findIndex(c => c.rowNumber == id);
   if (idx === -1) return;

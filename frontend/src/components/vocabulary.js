@@ -111,7 +111,7 @@ export function buildVocabTable() {
         <td class="p-4 pl-6 font-semibold text-slate-800 text-sm v-view-${id}">
           <div class="flex items-center gap-2">
             <span>${escapeHTML(item.content) || ''}</span>
-            <button onclick="speakVocabById(${id})" class="text-slate-400 hover:text-blue-500 p-1 cursor-pointer transition">
+            <button onclick="app.vocab.speakVocabById(${id})" class="text-slate-400 hover:text-blue-500 p-1 cursor-pointer transition">
               <i class="fa-solid fa-volume-high text-xs"></i>
             </button>
           </div>
@@ -134,12 +134,12 @@ export function buildVocabTable() {
         
         <td class="p-4 text-center">
           <div class="v-view-${id} flex justify-center gap-2">
-            <button onclick="toggleVocabEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="deleteVocab(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="app.vocab.toggleVocabEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.vocab.deleteVocab(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden v-edit-${id} flex justify-center gap-1.5">
-            <button onclick="saveVocab(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
-            <button onclick="toggleVocabEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
+            <button onclick="app.vocab.saveVocab(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+            <button onclick="app.vocab.toggleVocabEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
           </div>
         </td>
       </tr>
@@ -149,18 +149,18 @@ export function buildVocabTable() {
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
-window.toggleVocabEdit = function(id, isEdit) {
+window.app.vocab.toggleVocabEdit = function(id, isEdit) {
   document.querySelectorAll(`.v-view-${id}`).forEach(el => isEdit ? el.classList.add('hidden') : el.classList.remove('hidden'));
   document.querySelectorAll(`.v-edit-${id}`).forEach(el => isEdit ? el.classList.remove('hidden') : el.classList.add('hidden'));
 };
 
-window.filterVocabTable = function() {
+window.app.vocab.filterVocabTable = function() {
   buildVocabTable();
 };
 
 
 
-window.addVocabRow = function() {
+window.app.vocab.addVocabRow = function() {
   let content = document.getElementById('ins-v-content').value.trim();
   if (!content) {
     return;
@@ -207,7 +207,7 @@ window.addVocabRow = function() {
   }
 };
 
-window.saveVocab = function(id) {
+window.app.vocab.saveVocab = function(id) {
   let content = document.getElementById(`v-edit-content-${id}`).value.trim(); 
   let transcription = document.getElementById(`v-edit-transcription-${id}`) ? document.getElementById(`v-edit-transcription-${id}`).value.trim() : "";
   let cat = document.getElementById(`v-edit-cat-${id}`).value.trim();
@@ -231,7 +231,7 @@ window.saveVocab = function(id) {
   allVocabData[idx].level = level;
   allVocabData[idx].meaning = meaning;
 
-  window.toggleVocabEdit(id, false);
+  window.app.vocab.toggleVocabEdit(id, false);
   buildVocabTable();
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
@@ -250,12 +250,12 @@ window.saveVocab = function(id) {
       allVocabData[idx] = oldObj;
     }
     buildVocabTable();
-    window.toggleVocabEdit(id, true);
+    window.app.vocab.toggleVocabEdit(id, true);
     console.error("Lỗi cập nhật: " + errorMessage);
   }
 };
 
-window.deleteVocab = function(id) {
+window.app.vocab.deleteVocab = function(id) {
   // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allVocabData.findIndex(v => v.rowNumber == id);
   if (idx === -1) return;
@@ -297,7 +297,7 @@ window.deleteVocab = function(id) {
   }
 };
 
-window.speakVocabById = function(id) {
+window.app.vocab.speakVocabById = function(id) {
   let item = allVocabData.find(v => v.rowNumber == id);
   if (item && item.content) {
     try {

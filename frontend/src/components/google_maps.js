@@ -111,7 +111,7 @@ export function buildMapGrid() {
           </td>
           <td class="p-4 pl-12 text-left map-view-${id}">
             <label class="inline-flex items-center gap-3 cursor-pointer select-none">
-              <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0" ${isExplored ? 'checked' : ''} onchange="toggleMapCheckInDirectly(${id}, this)">
+              <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0" ${isExplored ? 'checked' : ''} onchange="app.maps.toggleMapCheckInDirectly(${id}, this)">
               <span id="map-chk-lbl-${id}" class="text-xs font-semibold tracking-wide ${isExplored ? 'text-emerald-600' : 'text-slate-400'}">${isExplored ? 'Completed' : 'Pending'}</span>
             </label>
           </td>
@@ -125,16 +125,16 @@ export function buildMapGrid() {
 
           <td class="p-4 pr-6 text-center">
             <div class="map-view-${id} flex items-center justify-center gap-2">
-              <button onclick="toggleMapEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition">
+              <button onclick="app.maps.toggleMapEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button onclick="deleteMapPlace(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition">
+              <button onclick="app.maps.deleteMapPlace(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
             <div class="hidden map-edit-${id} flex justify-center gap-1.5">
-              <button onclick="saveMapPlace(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
-              <button onclick="toggleMapEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
+              <button onclick="app.maps.saveMapPlace(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+              <button onclick="app.maps.toggleMapEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
             </div>
           </td>
         </tr>
@@ -154,11 +154,11 @@ export function buildMapGrid() {
  
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
  
-window.filterMapGrid = function() {
+window.app.maps.filterMapGrid = function() {
   buildMapGrid();
 };
 
-window.addMapRow = function() {
+window.app.maps.addMapRow = function() {
   const placeInput = document.getElementById('ins-map-place');
   const cityInput = document.getElementById('ins-map-city');
   const catInput = document.getElementById('ins-map-cat');
@@ -218,7 +218,7 @@ window.addMapRow = function() {
   }
 };
  
-window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
+window.app.maps.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
   const isChecked = checkboxEl.checked;
   const labelEl = document.getElementById(`map-chk-lbl-${rowNumber}`);
   
@@ -264,7 +264,7 @@ window.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
   }
 };
  
-window.deleteMapPlace = function(id) {
+window.app.maps.deleteMapPlace = function(id) {
   // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allMapData.findIndex(m => m.rowNumber == id);
   if (idx === -1) return;
@@ -308,12 +308,12 @@ window.deleteMapPlace = function(id) {
   }
 };
 
-window.toggleMapEdit = function(id, isEdit) {
+window.app.maps.toggleMapEdit = function(id, isEdit) {
   document.querySelectorAll(`.map-view-${id}`).forEach(el => isEdit ? el.classList.add('hidden') : el.classList.remove('hidden'));
   document.querySelectorAll(`.map-edit-${id}`).forEach(el => isEdit ? el.classList.remove('hidden') : el.classList.add('hidden'));
 };
 
-window.saveMapPlace = function(id) {
+window.app.maps.saveMapPlace = function(id) {
   const place = document.getElementById(`map-edit-place-${id}`).value.trim();
   const city = document.getElementById(`map-edit-city-${id}`).value.trim();
   const category = document.getElementById(`map-edit-cat-${id}`).value.trim();
@@ -334,7 +334,7 @@ window.saveMapPlace = function(id) {
   allMapData[idx].category = category;
   allMapData[idx].address = address;
 
-  window.toggleMapEdit(id, false);
+  window.app.maps.toggleMapEdit(id, false);
   buildMapGrid();
   console.log("Đã cập nhật địa điểm thành công! 🎉");
  
@@ -354,7 +354,7 @@ window.saveMapPlace = function(id) {
       allMapData[idx] = oldObj;
     }
     buildMapGrid();
-    window.toggleMapEdit(id, true);
+    window.app.maps.toggleMapEdit(id, true);
     console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };

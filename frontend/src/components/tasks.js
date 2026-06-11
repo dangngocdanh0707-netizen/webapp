@@ -88,10 +88,10 @@ export function buildTaskTable() {
           <div class="task-view-${id} flex items-center gap-2 ${isDone ? 'text-slate-400 font-medium' : ''}">
             <span class="task-text-display">${escapeHTML(taskText)}</span>
             <div class="flex items-center gap-1.5 shrink-0 ml-auto select-none">
-              <button onclick="window.toggleTaskUrgent(${id})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${isUrgent ? 'text-slate-700 bg-slate-100' : 'text-slate-300'}">
+              <button onclick="app.tasks.toggleTaskUrgent(${id})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${isUrgent ? 'text-slate-700 bg-slate-100' : 'text-slate-300'}">
                 <i class="fa-solid fa-bolt-lightning"></i>
               </button>
-              <button onclick="window.toggleTaskImportant(${id})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${isImportant ? 'text-slate-700 bg-slate-100' : 'text-slate-300'}">
+              <button onclick="app.tasks.toggleTaskImportant(${id})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${isImportant ? 'text-slate-700 bg-slate-100' : 'text-slate-300'}">
                 <i class="fa-solid fa-star"></i>
               </button>
             </div>
@@ -114,7 +114,7 @@ export function buildTaskTable() {
         <!-- Column 3: Status -->
         <td class="p-4 pl-12 text-left">
           <label class="inline-flex items-center gap-3 cursor-pointer select-none">
-            <input type="checkbox" id="task-chk-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="toggleTaskStatusDirectly(${id}, this)">
+            <input type="checkbox" id="task-chk-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="app.tasks.toggleTaskStatusDirectly(${id}, this)">
             <span id="task-lbl-${id}" class="text-xs font-semibold tracking-wide ${isDone ? 'text-emerald-600' : 'text-slate-400'}">${isDone ? 'Completed' : 'Pending'}</span>
           </label>
         </td>
@@ -122,12 +122,12 @@ export function buildTaskTable() {
         <!-- Column 4: Action -->
         <td class="p-4 text-center">
           <div class="task-view-${id} flex justify-center gap-2">
-            <button onclick="toggleTaskEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="deleteTask(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="app.tasks.toggleTaskEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.tasks.deleteTask(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden task-edit-${id} flex justify-center gap-1.5">
-            <button onclick="saveTask(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
-            <button onclick="toggleTaskEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
+            <button onclick="app.tasks.saveTask(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+            <button onclick="app.tasks.toggleTaskEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
           </div>
         </td>
       </tr>
@@ -141,16 +141,16 @@ export function buildTaskTable() {
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
-window.filterTaskTable = function () {
+window.app.tasks.filterTaskTable = function () {
   buildTaskTable();
 };
 
-window.toggleTaskEdit = function (id, isEdit) {
+window.app.tasks.toggleTaskEdit = function (id, isEdit) {
   document.querySelectorAll(`.task-view-${id}`).forEach(el => isEdit ? el.classList.add('hidden') : el.classList.remove('hidden'));
   document.querySelectorAll(`.task-edit-${id}`).forEach(el => isEdit ? el.classList.remove('hidden') : el.classList.add('hidden'));
 };
 
-window.toggleTaskStatusDirectly = function (rowNumber, checkboxEl) {
+window.app.tasks.toggleTaskStatusDirectly = function (rowNumber, checkboxEl) {
   let isChecked = checkboxEl.checked;
   let labelEl = document.getElementById(`task-lbl-${rowNumber}`);
 
@@ -191,7 +191,7 @@ window.toggleTaskStatusDirectly = function (rowNumber, checkboxEl) {
   }
 };
 
-window.addTaskRow = function () {
+window.app.tasks.addTaskRow = function () {
   let dateVal = document.getElementById('ins-task-date').value;
   let date = formatDateDb(dateVal);
   let desc = document.getElementById('ins-task-desc').value.trim();
@@ -242,7 +242,7 @@ window.addTaskRow = function () {
   }
 };
 
-window.saveTask = function (id) {
+window.app.tasks.saveTask = function (id) {
   let dateVal = document.getElementById(`task-edit-date-${id}`).value;
   let date = formatDateDb(dateVal);
   let desc = document.getElementById(`task-edit-desc-${id}`).value.trim();
@@ -267,7 +267,7 @@ window.saveTask = function (id) {
   allTaskData[idx].important = importantVal;
   allTaskData[idx].status = statusVal;
 
-  window.toggleTaskEdit(id, false);
+  window.app.tasks.toggleTaskEdit(id, false);
   buildTaskTable();
   console.log("Đã cập nhật công việc thành công!");
 
@@ -287,12 +287,12 @@ window.saveTask = function (id) {
       allTaskData[idx] = oldObj;
     }
     buildTaskTable();
-    window.toggleTaskEdit(id, true);
+    window.app.tasks.toggleTaskEdit(id, true);
     console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
-window.deleteTask = function (id) {
+window.app.tasks.deleteTask = function (id) {
   // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allTaskData.findIndex(t => t.rowNumber == id);
   if (idx === -1) return;
@@ -378,15 +378,15 @@ export function buildTaskMatrix() {
     const listItemHtml = `
       <li class="flex items-center justify-between p-2.5 rounded-xl border border-slate-100 bg-white shadow-2xs hover:bg-slate-50/50 transition group/item">
         <label class="flex items-start gap-2.5 cursor-pointer select-none w-[82%]">
-          <input type="checkbox" class="habit-checkbox mt-0.5 shrink-0 cursor-pointer" ${isDone ? 'checked' : ''} onchange="toggleTaskStatusDirectly(${id}, this)">
+          <input type="checkbox" class="habit-checkbox mt-0.5 shrink-0 cursor-pointer" ${isDone ? 'checked' : ''} onchange="app.tasks.toggleTaskStatusDirectly(${id}, this)">
           <span class="text-xs font-semibold text-slate-700 leading-snug ${isDone ? 'line-through text-slate-400 font-medium' : ''}">
             ${escapeHTML(taskText)}
             <span class="text-[9px] font-bold text-slate-400 ml-1 block sm:inline">${formatDateInput(dateStr)}</span>
           </span>
         </label>
         <div class="flex items-center gap-1.5 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 shrink-0 select-none">
-          <button onclick="toggleTaskEditFromMatrix(${id})" class="text-slate-450 hover:text-blue-600 p-0.5 cursor-pointer text-[10px]"><i class="fa-solid fa-pen-to-square"></i></button>
-          <button onclick="deleteTask(${id})" class="text-slate-455 hover:text-rose-600 p-0.5 cursor-pointer text-[10px]"><i class="fa-solid fa-trash"></i></button>
+          <button onclick="app.tasks.toggleTaskEditFromMatrix(${id})" class="text-slate-450 hover:text-blue-600 p-0.5 cursor-pointer text-[10px]"><i class="fa-solid fa-pen-to-square"></i></button>
+          <button onclick="app.tasks.deleteTask(${id})" class="text-slate-455 hover:text-rose-600 p-0.5 cursor-pointer text-[10px]"><i class="fa-solid fa-trash"></i></button>
         </div>
       </li>
     `;
@@ -404,7 +404,7 @@ export function buildTaskMatrix() {
   });
 }
 
-window.switchTaskView = function (viewType) {
+window.app.tasks.switchTaskView = function (viewType) {
   const listContainer = document.getElementById('task-list-view-container');
   const matrixContainer = document.getElementById('task-matrix-view-container');
   const btnList = document.getElementById('btn-task-view-list');
@@ -429,7 +429,7 @@ window.switchTaskView = function (viewType) {
   }
 };
 
-window.toggleTaskUrgent = function (rowNumber) {
+window.app.tasks.toggleTaskUrgent = function (rowNumber) {
   let idx = allTaskData.findIndex(t => t.rowNumber == rowNumber);
   if (idx === -1) return;
 
@@ -459,7 +459,7 @@ window.toggleTaskUrgent = function (rowNumber) {
   }
 };
 
-window.toggleTaskImportant = function (rowNumber) {
+window.app.tasks.toggleTaskImportant = function (rowNumber) {
   let idx = allTaskData.findIndex(t => t.rowNumber == rowNumber);
   if (idx === -1) return;
 
@@ -489,14 +489,14 @@ window.toggleTaskImportant = function (rowNumber) {
   }
 };
 
-window.toggleTaskEditFromMatrix = function (id) {
-  window.switchTaskView('list');
+window.app.tasks.toggleTaskEditFromMatrix = function (id) {
+  window.app.tasks.switchTaskView('list');
   const statusFilter = document.getElementById('taskStatusFilter');
   if (statusFilter) statusFilter.value = 'All';
   const searchInput = document.getElementById('taskSearchInput');
   if (searchInput) searchInput.value = '';
   buildTaskTable();
-  window.toggleTaskEdit(id, true);
+  window.app.tasks.toggleTaskEdit(id, true);
   
   setTimeout(() => {
     const row = document.getElementById(`task-row-${id}`);

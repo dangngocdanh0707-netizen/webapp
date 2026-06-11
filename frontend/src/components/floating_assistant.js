@@ -125,7 +125,7 @@ export function initFloatingAssistant(reloadDataCb) {
   }
 
   // Khai báo hàm toggle toàn cục để gọi từ bên ngoài (phím tắt)
-  window.toggleFloatingAssistant = function () {
+  window.app.floating.toggleFloatingAssistant = function () {
     pane.classList.toggle('hidden');
     pane.classList.toggle('active');
     if (!pane.classList.contains('hidden')) {
@@ -138,7 +138,7 @@ export function initFloatingAssistant(reloadDataCb) {
   };
 
   // Toggle mở/đóng khung chat
-  bubble.addEventListener('click', window.toggleFloatingAssistant);
+  bubble.addEventListener('click', window.app.floating.toggleFloatingAssistant);
 
   closeBtn.addEventListener('click', () => {
     pane.classList.add('hidden');
@@ -197,8 +197,8 @@ async function sendAssistantMessage() {
   // 2. Kiểm tra các câu lệnh chuyển trang cục bộ (Local Navigation Filter)
   const matchedTab = matchLocalTab(userText);
   if (matchedTab) {
-    if (typeof window.switchTab === 'function') {
-      window.switchTab(matchedTab);
+    if (window.app && typeof window.app.switchTab === 'function') {
+      window.app.switchTab(matchedTab);
     }
     const tabName = tabNamesMap[matchedTab];
     const localReply = `Đã chuyển hướng bạn tới trang "${tabName}" thành công!`;
@@ -243,8 +243,8 @@ async function sendAssistantMessage() {
     if (intent.action === 'switch_tab' && intent.target) {
       const targetTab = intent.target;
       if (tabNamesMap[targetTab]) {
-        if (typeof window.switchTab === 'function') {
-          window.switchTab(targetTab);
+        if (window.app && typeof window.app.switchTab === 'function') {
+          window.app.switchTab(targetTab);
         }
       }
     }

@@ -64,7 +64,7 @@ export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
 }
 
 // ---------------- PHÂN TÁCH SUB-TAB (SRS vs AI Chat) ----------------
-window.switchPracticeSubTab = function (subTabId) {
+window.app.ai.switchPracticeSubTab = function (subTabId) {
   const btnSrs = document.getElementById('btn-subtab-srs');
   const btnAichat = document.getElementById('btn-subtab-aichat');
   const btnGrammar = document.getElementById('btn-subtab-grammar');
@@ -105,7 +105,7 @@ window.switchPracticeSubTab = function (subTabId) {
 };
 
 // ---------------- KHỞI TẠO VÀ CHUYỂN KỊCH BẢN (SCENARIOS) ----------------
-window.setAiScenario = function (scenarioKey) {
+window.app.ai.setAiScenario = function (scenarioKey) {
   if (!SCENARIOS[scenarioKey]) return;
 
   activeScenario = scenarioKey;
@@ -141,7 +141,7 @@ function initializeActiveScenario() {
   resetGrammarFeedbackUI();
 }
 
-window.clearAiChatHistory = function () {
+window.app.ai.clearAiChatHistory = function () {
   chatHistories[activeScenario] = [];
   initializeActiveScenario();
 };
@@ -171,10 +171,10 @@ function renderAiChatBubbles() {
               </div>
             </div>
             <div class="flex flex-col gap-1 self-end mb-1">
-              <button data-text="${escapeHTML(msg.text)}" onclick="window.speakAiResponse(this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
+              <button data-text="${escapeHTML(msg.text)}" onclick="app.ai.speakAiResponse(this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
                 <i class="fa-solid fa-volume-high text-[10px]"></i>
               </button>
-              <button data-text="${escapeHTML(msg.text)}" onclick="window.translateAiMessage(${index}, this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
+              <button data-text="${escapeHTML(msg.text)}" onclick="app.ai.translateAiMessage(${index}, this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
                 <i class="fa-solid fa-language text-[11px]"></i>
               </button>
             </div>
@@ -198,10 +198,10 @@ function renderAiChatBubbles() {
             </div>
           </div>
           <div class="flex flex-col gap-1 self-end mb-1">
-            <button data-text="${escapeHTML(msg.text)}" onclick="window.speakAiResponse(this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
+            <button data-text="${escapeHTML(msg.text)}" onclick="app.ai.speakAiResponse(this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
               <i class="fa-solid fa-volume-high text-[10px]"></i>
             </button>
-            <button data-text="${escapeHTML(msg.text)}" onclick="window.translateAiMessage(${index}, this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
+            <button data-text="${escapeHTML(msg.text)}" onclick="app.ai.translateAiMessage(${index}, this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
               <i class="fa-solid fa-language text-[11px]"></i>
             </button>
           </div>
@@ -219,7 +219,7 @@ function renderAiChatBubbles() {
 
 
 // ---------------- DỊCH TIếNG VIỆT - ĐỀ XUẤT 3 ----------------
-window.translateAiMessage = async function (index, text) {
+window.app.ai.translateAiMessage = async function (index, text) {
   const container = document.getElementById(`ai-chat-trans-${index}`);
   if (!container) return;
 
@@ -269,7 +269,7 @@ window.translateAiMessage = async function (index, text) {
 };
 
 // ---------------- GỬI TIN NHẮN VÀ XỬ LÝ PHẢN HỒI AI ----------------
-window.sendAiChatMessage = async function () {
+window.app.ai.sendAiChatMessage = async function () {
   const inputEl = document.getElementById('ai-chat-input');
   if (!inputEl) return;
 
@@ -281,8 +281,8 @@ window.sendAiChatMessage = async function () {
   const hasCreds = aiCreds.provider === "gemini" ? aiCreds.geminiKey : aiCreds.openaiKey;
   if (!hasCreds) {
     console.warn("Vui lòng cấu hình API Key trong Settings trước!");
-    if (typeof window.openSettingsModal === 'function') {
-      window.openSettingsModal();
+    if (window.app && typeof window.app.openSettingsModal === 'function') {
+      window.app.openSettingsModal();
     }
     return;
   }
@@ -406,7 +406,7 @@ function setupTtsVoiceSelector() {
   }
 }
 
-window.speakAiResponse = function (text) {
+window.app.ai.speakAiResponse = function (text) {
   if (!('speechSynthesis' in window)) return;
 
   try {
@@ -556,7 +556,7 @@ function renderGrammarFeedbackUI(userText, aiResult) {
 // ---------------- UTILS HELPERS ----------------
 
 // Thêm nhanh từ vựng mới từ giao diện AI Chat
-window.saveQuickVocabWord = function () {
+window.app.ai.saveQuickVocabWord = function () {
   const contentInput = document.getElementById('ai-chat-quick-vocab-word');
   if (!contentInput) return;
 

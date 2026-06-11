@@ -46,7 +46,7 @@ function renderGrammarCards() {
           <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-slate-50 text-slate-500 border border-slate-200">${scenario}</span>
           <div class="flex items-center gap-2">
             <span class="text-xs font-semibold text-slate-500">${date}</span>
-            <button onclick="window.deleteGrammarCard('${item.rowNumber}')" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition">
+            <button onclick="app.grammar.deleteGrammarCard('${item.rowNumber}')" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition">
               <i class="fa-solid fa-trash text-[11px]"></i>
             </button>
           </div>
@@ -79,22 +79,22 @@ function renderGrammarCards() {
                    data-correct="${correctedSentence}"
                    class="form-input text-xs font-semibold py-2 px-3 rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-none w-full"
                    placeholder=""
-                   oninput="window.handleGrammarPracticeInput('${item.rowNumber}', this.value, this.dataset.correct)"
-                   onkeyup="if(event.key === 'Enter') window.checkGrammarPractice('${item.rowNumber}', this.dataset.correct)">
+                   oninput="app.grammar.handleGrammarPracticeInput('${item.rowNumber}', this.value, this.dataset.correct)"
+                   onkeyup="if(event.key === 'Enter') app.grammar.checkGrammarPractice('${item.rowNumber}', this.dataset.correct)">
           </div>
         </div>
 
         <!-- Footer Actions -->
         <div class="border-t border-slate-100 pt-3 flex justify-center items-center">
           <!-- Default state button -->
-          <button id="btn-practice-trigger-${item.rowNumber}" onclick="window.toggleGrammarPracticeMode('${item.rowNumber}')" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 text-[10px] font-bold uppercase tracking-wider py-2 rounded-lg transition flex items-center justify-center gap-1 cursor-pointer">
+          <button id="btn-practice-trigger-${item.rowNumber}" onclick="app.grammar.toggleGrammarPracticeMode('${item.rowNumber}')" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 text-[10px] font-bold uppercase tracking-wider py-2 rounded-lg transition flex items-center justify-center gap-1 cursor-pointer">
             <i class="fa-solid fa-pen-to-square"></i> Practice
           </button>
           
           <!-- Active Practice buttons -->
           <div id="practice-actions-${item.rowNumber}" class="hidden w-full flex justify-end gap-2">
-            <button onclick="window.toggleGrammarPracticeMode('${item.rowNumber}')" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-700 transition cursor-pointer">Cancel</button>
-            <button id="btn-practice-check-${item.rowNumber}" data-correct="${correctedSentence}" onclick="window.checkGrammarPractice('${item.rowNumber}', this.dataset.correct)" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-1.5 rounded-lg transition shadow-xs flex items-center gap-1 cursor-pointer">
+            <button onclick="app.grammar.toggleGrammarPracticeMode('${item.rowNumber}')" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-700 transition cursor-pointer">Cancel</button>
+            <button id="btn-practice-check-${item.rowNumber}" data-correct="${correctedSentence}" onclick="app.grammar.checkGrammarPractice('${item.rowNumber}', this.dataset.correct)" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-1.5 rounded-lg transition shadow-xs flex items-center gap-1 cursor-pointer">
               <i class="fa-solid fa-circle-check"></i> Check
             </button>
           </div>
@@ -106,7 +106,7 @@ function renderGrammarCards() {
 
 
 // Ẩn/Hiện vùng luyện viết
-window.toggleGrammarPracticeMode = function(rowNumber) {
+window.app.grammar.toggleGrammarPracticeMode = function(rowNumber) {
   const infoZone = document.getElementById(`info-zone-${rowNumber}`);
   const practiceZone = document.getElementById(`practice-zone-${rowNumber}`);
   const triggerBtn = document.getElementById(`btn-practice-trigger-${rowNumber}`);
@@ -138,7 +138,7 @@ window.toggleGrammarPracticeMode = function(rowNumber) {
 };
 
 // So khớp và kiểm tra câu luyện viết
-window.checkGrammarPractice = async function(rowNumber, correctSentence) {
+window.app.grammar.checkGrammarPractice = async function(rowNumber, correctSentence) {
   const input = document.getElementById(`practice-input-${rowNumber}`);
   const btn = document.getElementById(`btn-practice-check-${rowNumber}`);
   const card = document.getElementById(`grammar-card-${rowNumber}`);
@@ -244,7 +244,7 @@ window.checkGrammarPractice = async function(rowNumber, correctSentence) {
   }
 };
 
-window.handleGrammarPracticeInput = function(rowNumber, value, correctSentence) {
+window.app.grammar.handleGrammarPracticeInput = function(rowNumber, value, correctSentence) {
   const cleanStr = (str) => {
     return str
       .toLowerCase()
@@ -257,11 +257,11 @@ window.handleGrammarPracticeInput = function(rowNumber, value, correctSentence) 
   const cleanCorrect = cleanStr(correctSentence);
 
   if (cleanUser === cleanCorrect && cleanUser.length > 0) {
-    window.checkGrammarPractice(rowNumber, correctSentence);
+    window.app.grammar.checkGrammarPractice(rowNumber, correctSentence);
   }
 };
 
-window.deleteGrammarCard = function(rowNumber) {
+window.app.grammar.deleteGrammarCard = function(rowNumber) {
   const card = document.getElementById(`grammar-card-${rowNumber}`);
   if (card) {
     card.style.transition = 'all 0.4s ease';

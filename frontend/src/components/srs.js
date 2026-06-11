@@ -216,13 +216,13 @@ function highlightSrsButton(scoreOrSuccess) {
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
-window.playPracticeTTS = function () {
+window.app.srs.playPracticeTTS = function () {
   if (currentPracticeWord && currentPracticeWord.content) {
     speakWord(currentPracticeWord.content);
   }
 };
 
-window.triggerRandomVocab = function () {
+window.app.srs.triggerRandomVocab = function () {
   fillActiveQueue();
   let totalDue = reviewQueue.length + activeQueue.length;
   if (totalDue === 0) {
@@ -393,18 +393,18 @@ window.triggerRandomVocab = function () {
 
 let draggedTileId = null;
 
-window.onScrambleDragStart = function (event, tileId) {
+window.app.srs.onScrambleDragStart = function (event, tileId) {
   draggedTileId = tileId;
   event.dataTransfer.effectAllowed = 'move';
   event.target.classList.add('opacity-40');
 };
 
-window.onScrambleDragOver = function (event) {
+window.app.srs.onScrambleDragOver = function (event) {
   event.preventDefault();
   event.dataTransfer.dropEffect = 'move';
 };
 
-window.onScrambleDrop = function (event, targetTileId) {
+window.app.srs.onScrambleDrop = function (event, targetTileId) {
   event.preventDefault();
   if (!draggedTileId || draggedTileId === targetTileId) return;
 
@@ -435,12 +435,12 @@ window.onScrambleDrop = function (event, targetTileId) {
   }
 };
 
-window.onScrambleDragEnd = function (event) {
+window.app.srs.onScrambleDragEnd = function (event) {
   event.target.classList.remove('opacity-40');
   draggedTileId = null;
 };
 
-window.shiftScrambleTile = function (tileId, direction) {
+window.app.srs.shiftScrambleTile = function (tileId, direction) {
   const index = scrambleUserOrder.indexOf(tileId);
   if (index === -1) return;
 
@@ -485,11 +485,11 @@ function updateScrambleUI() {
 
       return `
         <button draggable="true"
-          ondragstart="onScrambleDragStart(event, '${tile.id}')"
-          ondragover="onScrambleDragOver(event)"
-          ondrop="onScrambleDrop(event, '${tile.id}')"
-          ondragend="onScrambleDragEnd(event)"
-          onclick="deselectScrambleTile('${tile.id}')"
+          ondragstart="app.srs.onScrambleDragStart(event, '${tile.id}')"
+          ondragover="app.srs.onScrambleDragOver(event)"
+          ondrop="app.srs.onScrambleDrop(event, '${tile.id}')"
+          ondragend="app.srs.onScrambleDragEnd(event)"
+          onclick="app.srs.deselectScrambleTile('${tile.id}')"
           class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-sm shadow-2xs hover:border-blue-400 transition-all duration-200 transform hover:scale-105 active:scale-95 cursor-grab">
           ${escapeHTML(tile.word)}
         </button>
@@ -507,7 +507,7 @@ function updateScrambleUI() {
       `;
     } else {
       return `
-        <button onclick="selectScrambleTile('${tile.id}')"
+        <button onclick="app.srs.selectScrambleTile('${tile.id}')"
           class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-blue-400 text-slate-700 font-semibold text-sm shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer flex items-center justify-center transform hover:scale-105 active:scale-95">
           ${escapeHTML(tile.word)}
         </button>
@@ -516,7 +516,7 @@ function updateScrambleUI() {
   }).join("");
 }
 
-window.selectScrambleTile = function (tileId) {
+window.app.srs.selectScrambleTile = function (tileId) {
   const tile = scrambleTiles.find(t => t.id === tileId);
   if (!tile || tile.selected) return;
 
@@ -542,7 +542,7 @@ window.selectScrambleTile = function (tileId) {
   }
 };
 
-window.deselectScrambleTile = function (tileId) {
+window.app.srs.deselectScrambleTile = function (tileId) {
   const tile = scrambleTiles.find(t => t.id === tileId);
   if (!tile || !tile.selected) return;
 
@@ -551,7 +551,7 @@ window.deselectScrambleTile = function (tileId) {
   updateScrambleUI();
 };
 
-window.resetScramble = function () {
+window.app.srs.resetScramble = function () {
   scrambleTiles.forEach(tile => {
     tile.selected = false;
   });
@@ -562,7 +562,7 @@ window.resetScramble = function () {
   if (feedbackEl) feedbackEl.classList.add('hidden');
 };
 
-window.checkScrambleAnswer = function () {
+window.app.srs.checkScrambleAnswer = function () {
   if (!currentPracticeWord) return;
   const targetText = currentPracticeWord.content || "";
 
@@ -600,7 +600,7 @@ window.checkScrambleAnswer = function () {
   highlightSrsButton(isCorrect);
 };
 
-window.checkTypingAnswer = function () {
+window.app.srs.checkTypingAnswer = function () {
   if (!currentPracticeWord) return;
   const inputEl = document.getElementById('practice-typing-input');
   if (!inputEl) return;
@@ -632,7 +632,7 @@ window.checkTypingAnswer = function () {
   highlightSrsButton(isCorrect);
 };
 
-window.revealPracticeMeaning = function () {
+window.app.srs.revealPracticeMeaning = function () {
   const meaningBox = document.getElementById('practice-meaning-box');
   if (meaningBox) {
     meaningBox.classList.add('hidden');
@@ -675,7 +675,7 @@ window.revealPracticeMeaning = function () {
   }
 };
 
-window.logPracticeAction = function (action) {
+window.app.srs.logPracticeAction = function (action) {
   if (!currentPracticeWord || !currentPracticeWord.nextStates) return;
 
   let rowNumber = currentPracticeWord.rowNumber;
@@ -719,7 +719,7 @@ window.logPracticeAction = function (action) {
   const btnTrigger = document.getElementById('btn-practice-trigger');
 
   if (totalDue > 0) {
-    window.triggerRandomVocab();
+    window.app.srs.triggerRandomVocab();
   } else {
     if (cardContent) cardContent.classList.add('hidden');
     if (emptyState) emptyState.classList.remove('hidden');

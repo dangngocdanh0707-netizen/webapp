@@ -51,12 +51,12 @@ export function buildGoalTable() {
         
         <td class="p-4 text-center">
           <div class="goal-view-${id} flex justify-center gap-2">
-            <button onclick="toggleGoalEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="deleteGoal(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="app.goals.toggleGoalEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.goals.deleteGoal(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden goal-edit-${id} flex justify-center gap-1.5">
-            <button onclick="saveGoal(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
-            <button onclick="toggleGoalEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
+            <button onclick="app.goals.saveGoal(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
+            <button onclick="app.goals.toggleGoalEdit(${id}, false)" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
           </div>
         </td>
       </tr>
@@ -67,12 +67,12 @@ export function buildGoalTable() {
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
-window.toggleGoalEdit = function(id, isEdit) {
+window.app.goals.toggleGoalEdit = function(id, isEdit) {
   document.querySelectorAll(`.goal-view-${id}`).forEach(el => isEdit ? el.classList.add('hidden') : el.classList.remove('hidden'));
   document.querySelectorAll(`.goal-edit-${id}`).forEach(el => isEdit ? el.classList.remove('hidden') : el.classList.add('hidden'));
 };
 
-window.addGoalRow = function() {
+window.app.goals.addGoalRow = function() {
   let name = document.getElementById('ins-goal-name').value.trim();
   let startVal = document.getElementById('ins-goal-start').value;
   let start = formatDateDb(startVal);
@@ -128,7 +128,7 @@ window.addGoalRow = function() {
   }
 };
 
-window.saveGoal = function(id) {
+window.app.goals.saveGoal = function(id) {
   let name = document.getElementById(`goal-edit-name-${id}`).value.trim(); 
   let startVal = document.getElementById(`goal-edit-start-${id}`).value;
   let start = formatDateDb(startVal);
@@ -148,7 +148,7 @@ window.saveGoal = function(id) {
   allGoalData[idx].current_value = Number(current);
   allGoalData[idx].target_value = Number(target);
 
-  window.toggleGoalEdit(id, false);
+  window.app.goals.toggleGoalEdit(id, false);
   buildGoalTable();
   console.log("Đã cập nhật mục tiêu thành công!");
 
@@ -168,12 +168,12 @@ window.saveGoal = function(id) {
       allGoalData[idx] = oldObj;
     }
     buildGoalTable();
-    window.toggleGoalEdit(id, true);
+    window.app.goals.toggleGoalEdit(id, true);
     console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
 
-window.deleteGoal = function(id) {
+window.app.goals.deleteGoal = function(id) {
   // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allGoalData.findIndex(g => g.rowNumber == id);
   if (idx === -1) return;

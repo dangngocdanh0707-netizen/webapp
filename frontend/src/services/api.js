@@ -198,8 +198,8 @@ export function initGoogleAuth() {
 // Thực hiện đăng nhập Google OAuth
 export function signInWithGoogle() {
   if (!tokenClient) {
-    if (typeof window.openSettingsModal === 'function') {
-      window.openSettingsModal();
+    if (window.app && typeof window.app.openSettingsModal === 'function') {
+      window.app.openSettingsModal();
     }
     return;
   }

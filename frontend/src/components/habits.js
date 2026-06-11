@@ -78,7 +78,7 @@ export function initHabitsModule(data, onSync) {
     // Khi click vào chart, tự động đổi view về list để xem chi tiết ngày đó
     if (dateSelect) {
       dateSelect.value = clickedDate;
-      window.switchHabitView('list');
+      window.app.habits.switchHabitView('list');
     }
   });
 }
@@ -140,7 +140,7 @@ export function buildHabitGrid() {
               data-row="${record.rowNumber}" 
               data-date="${day.dateStr}" 
               data-habit="${escapeHTML(habitName)}" 
-              onchange="window.toggleHabitCell(Number(this.dataset.row), this.dataset.date, this.dataset.habit, this)">
+              onchange="app.habits.toggleHabitCell(Number(this.dataset.row), this.dataset.date, this.dataset.habit, this)">
           </td>
         `;
       } else {
@@ -149,7 +149,7 @@ export function buildHabitGrid() {
             <input type="checkbox" class="habit-checkbox mx-auto cursor-pointer" 
               data-date="${day.dateStr}" 
               data-habit="${escapeHTML(habitName)}" 
-              onchange="window.toggleHabitCell(null, this.dataset.date, this.dataset.habit, this)">
+              onchange="app.habits.toggleHabitCell(null, this.dataset.date, this.dataset.habit, this)">
           </td>
         `;
       }
@@ -194,7 +194,7 @@ export function buildHabitTable(filterValue) {
         <td class="p-4 font-semibold text-slate-800 text-sm">${escapeHTML(item.habit) || '-'}</td>
         <td class="p-4 pl-12">
           <label class="inline-flex items-center gap-3 cursor-pointer select-none">
-            <input type="checkbox" id="habit-chk-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="toggleHabitStatusDirectly(${id}, this)">
+            <input type="checkbox" id="habit-chk-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="app.habits.toggleHabitStatusDirectly(${id}, this)">
             <span id="habit-lbl-${id}" class="text-xs font-semibold tracking-wide ${isDone ? 'text-emerald-600' : 'text-slate-400'}">${isDone ? 'Completed' : 'Pending'}</span>
           </label>
         </td>
@@ -235,14 +235,14 @@ function recalculateHabitChartOnly() {
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
-window.filterHabitTable = function () {
+window.app.habits.filterHabitTable = function () {
   const dateSelect = document.getElementById('habitDateFilter');
   if (dateSelect) {
     buildHabitTable(dateSelect.value);
   }
 };
 
-window.switchHabitView = function (viewType) {
+window.app.habits.switchHabitView = function (viewType) {
   const gridContainer = document.getElementById('habit-grid-view-container');
   const listContainer = document.getElementById('habit-list-view-container');
   const filterWrapper = document.getElementById('habit-list-filter-wrapper');
@@ -272,7 +272,7 @@ window.switchHabitView = function (viewType) {
   }
 };
 
-window.toggleHabitStatusDirectly = function (rowNumber, checkboxEl) {
+window.app.habits.toggleHabitStatusDirectly = function (rowNumber, checkboxEl) {
   let isChecked = checkboxEl.checked;
   const dateSelect = document.getElementById('habitDateFilter');
 
@@ -310,7 +310,7 @@ window.toggleHabitStatusDirectly = function (rowNumber, checkboxEl) {
   }
 };
 
-window.toggleHabitCell = function (rowNumber, dateStr, habitName, checkboxEl) {
+window.app.habits.toggleHabitCell = function (rowNumber, dateStr, habitName, checkboxEl) {
   let isChecked = checkboxEl.checked;
 
   if (rowNumber !== null && rowNumber !== undefined) {
@@ -390,7 +390,7 @@ window.toggleHabitCell = function (rowNumber, dateStr, habitName, checkboxEl) {
   }
 };
 
-window.addHabitDirectly = function () {
+window.app.habits.addHabitDirectly = function () {
   const nameInput = document.getElementById('ins-habit-name');
   if (!nameInput) return;
   const habitName = nameInput.value.trim();
