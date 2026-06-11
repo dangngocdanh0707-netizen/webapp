@@ -17,6 +17,7 @@ personal_webapp/
     ├── package.json             # Cấu hình dependencies (Vite, Tailwind, v.v.)
     ├── vite.config.js           # Cấu hình đóng gói build
     └── src/
+        ├── init.js              # Khởi tạo đối tượng toàn cục window.app trước khi import các component (tránh lỗi ESM hoisting)
         ├── main.js              # Khởi chạy ứng dụng, quản lý Auth & định tuyến Tab
         ├── styles/main.css      # Cấu hình CSS chính & giao diện Glassmorphism
         ├── services/
@@ -77,6 +78,9 @@ personal_webapp/
   * Cân đối cột tối ưu: Thanh nhập mô tả công việc được nới rộng tối đa để căn lề hai ô checkbox sang bên phải, tạo bố cục đồng đều với nút Save Task bên dưới. Cải tiến cấu trúc dòng sửa để ngăn chặn hiện tượng méo lệch cột khi kích hoạt chỉnh sửa.
 * **✨ Tối giản hóa giao diện trống (Minimal Blank State)**:
   * Loại bỏ hoàn toàn các dòng văn bản thông báo trống (như "No tasks...", "No entries...", "No habits...") trên toàn bộ các trang (Thói quen, Công việc, Từ vựng, Chi tiêu, Mục tiêu, Bản đồ, Bộ sưu tập). Khi không có dữ liệu, danh sách và bảng biểu sẽ hiển thị trống hoàn toàn mang lại trải nghiệm UI sạch sẽ và hiện đại nhất.
+* **⚡ Tối ưu hóa & Clean Code**:
+  * **Giải quyết lỗi nạp ES Modules (ESM Hoisting)**: Tách riêng việc khởi tạo đối tượng toàn cục sang module [init.js](file:///c:/Users/dangn/.gemini/antigravity/scratch/personal_webapp/frontend/src/init.js) được load đầu tiên ở đầu file `main.js`, đảm bảo namespace `window.app` sẵn sàng cho các component gán hàm, loại bỏ triệt để lỗi runtime `TypeError: Cannot read properties of undefined` khi tải trang.
+  * **Tập trung hóa Tiện ích (Centralization)**: Gom các hàm lặp lại (chuẩn hóa văn bản so khớp tiếng Anh, định dạng ngày dạng `yyyy-MM-dd`, và phát âm giọng nói Speech Synthesis) vào các helper dùng chung ở [api.js](file:///c:/Users/dangn/.gemini/antigravity/scratch/personal_webapp/frontend/src/services/api.js) và [ai.js](file:///c:/Users/dangn/.gemini/antigravity/scratch/personal_webapp/frontend/src/services/ai.js), dọn dẹp và tối giản hóa mã nguồn cho toàn bộ 8 component nghiệp vụ.
 * **🛡️ Bảo mật & An toàn**:
   * Sử dụng bộ lọc `escapeHTML` ở các đầu ra HTML tĩnh để ngăn chặn tấn công XSS.
   * Sử dụng giải pháp **HTML5 Dataset Pattern** (`data-*`) khi truyền tham số động cho các trình xử lý sự kiện inline (`onclick`, `onchange`) để loại bỏ hoàn toàn lỗ hổng DOM-based XSS và lỗi cú pháp khi dữ liệu chứa dấu nháy.

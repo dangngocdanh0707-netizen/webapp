@@ -122,7 +122,7 @@ async function callGeminiAPI(prompt, history, apiKey, model, systemInstruction) 
     throw new Error("Gemini không trả về phản hồi hợp lệ.");
   }
 
-  return parseJsonReponse(textResponse);
+  return parseJsonResponse(textResponse);
 }
 
 /**
@@ -181,7 +181,7 @@ async function callOpenaiAPI(prompt, history, apiKey, model, systemInstruction) 
     throw new Error("OpenAI không trả về phản hồi hợp lệ.");
   }
 
-  return parseJsonReponse(textResponse);
+  return parseJsonResponse(textResponse);
 }
 
 /**
@@ -189,7 +189,7 @@ async function callOpenaiAPI(prompt, history, apiKey, model, systemInstruction) 
  * @param {string} text 
  * @returns {Object}
  */
-function parseJsonReponse(text) {
+function parseJsonResponse(text) {
   try {
     // Làm sạch chuỗi JSON nếu AI vô tình bọc trong ```json ... ```
     let cleanedText = text.trim();
