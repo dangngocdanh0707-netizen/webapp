@@ -1,5 +1,4 @@
-import { callServer, parseDateToTimestamp, escapeHTML, normalizeEnglishText, getTodayDateString } from '../services/api.js';
-import { speakEnglishText } from '../services/ai.js';
+import { callServer, parseDateToTimestamp, escapeHTML } from '../services/api.js';
 
 let reviewQueue = [];
 let activeQueue = [];
@@ -176,7 +175,17 @@ export function initSrsModule(vocabData, onSync) {
 
 // Browser TTS Pronunciation
 function speakWord(word) {
-  speakEnglishText(word);
+  try {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.85;
+      window.speechSynthesis.speak(utterance);
+    }
+  } catch (e) {
+    console.warn("TTS Synthesis failed:", e);
+  }
 }
 
 function showInteractiveFeedback(isCorrect, message) {
@@ -287,7 +296,11 @@ window.app.srs.triggerRandomVocab = function () {
       inputEl.oninput = function () {
         const userAns = inputEl.value;
         const targetAns = currentPracticeWord.content || "";
-        if (normalizeEnglishText(userAns) === normalizeEnglishText(targetAns)) {
+        const clean = (str) => str.toLowerCase()
+          .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+        if (clean(userAns) === clean(targetAns)) {
           checkTypingAnswer();
         }
       };
@@ -405,12 +418,17 @@ window.app.srs.onScrambleDrop = function (event, targetTileId) {
 
     if (currentPracticeWord) {
       const targetText = currentPracticeWord.content || "";
+      const clean = (str) => str.toLowerCase()
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
       const userSentence = scrambleUserOrder.map(id => {
         const t = scrambleTiles.find(x => x.id === id);
         return t ? t.word : "";
       }).join(" ");
 
-      if (normalizeEnglishText(userSentence) === normalizeEnglishText(targetText)) {
+      if (clean(userSentence) === clean(targetText)) {
         checkScrambleAnswer();
       }
     }
@@ -437,12 +455,17 @@ window.app.srs.shiftScrambleTile = function (tileId, direction) {
 
   if (currentPracticeWord) {
     const targetText = currentPracticeWord.content || "";
+    const clean = (str) => str.toLowerCase()
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
     const userSentence = scrambleUserOrder.map(id => {
       const t = scrambleTiles.find(x => x.id === id);
       return t ? t.word : "";
     }).join(" ");
 
-    if (normalizeEnglishText(userSentence) === normalizeEnglishText(targetText)) {
+    if (clean(userSentence) === clean(targetText)) {
       checkScrambleAnswer();
     }
   }
@@ -503,12 +526,17 @@ window.app.srs.selectScrambleTile = function (tileId) {
 
   if (currentPracticeWord) {
     const targetText = currentPracticeWord.content || "";
+    const clean = (str) => str.toLowerCase()
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
     const userSentence = scrambleUserOrder.map(id => {
       const t = scrambleTiles.find(x => x.id === id);
       return t ? t.word : "";
     }).join(" ");
 
-    if (normalizeEnglishText(userSentence) === normalizeEnglishText(targetText)) {
+    if (clean(userSentence) === clean(targetText)) {
       checkScrambleAnswer();
     }
   }
@@ -538,12 +566,17 @@ window.app.srs.checkScrambleAnswer = function () {
   if (!currentPracticeWord) return;
   const targetText = currentPracticeWord.content || "";
 
+  const clean = (str) => str.toLowerCase()
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
   const userSentence = scrambleUserOrder.map(tileId => {
     const tile = scrambleTiles.find(t => t.id === tileId);
     return tile ? tile.word : "";
   }).join(" ");
 
-  const isCorrect = normalizeEnglishText(userSentence) === normalizeEnglishText(targetText);
+  const isCorrect = clean(userSentence) === clean(targetText);
 
   if (isCorrect) {
     const outputContainer = document.getElementById('practice-scramble-output');
@@ -575,7 +608,13 @@ window.app.srs.checkTypingAnswer = function () {
   const userAns = inputEl.value.trim();
   const targetAns = currentPracticeWord.content || "";
 
-  const isCorrect = normalizeEnglishText(userAns) === normalizeEnglishText(targetAns);
+  // Clean punctuation and normalize spacing for robust checking
+  const clean = (str) => str.toLowerCase()
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const isCorrect = clean(userAns) === clean(targetAns);
 
   if (isCorrect) {
     inputEl.className = "practice-typing-input practice-state-correct";
@@ -646,7 +685,12 @@ window.app.srs.logPracticeAction = function (action) {
   let finalStatus = finalInterval === 0 ? "Relearning" : (finalInterval >= 21 ? "Mastered" : "Learning");
 
   // Tính chuỗi ngày ôn tiếp theo
-  const nextReviewStr = getTodayDateString(finalInterval);
+  const nextReviewDate = new Date();
+  nextReviewDate.setHours(0, 0, 0, 0);
+  nextReviewDate.setDate(nextReviewDate.getDate() + finalInterval);
+  const nextReviewStr = nextReviewDate.getFullYear() + '-' +
+    String(nextReviewDate.getMonth() + 1).padStart(2, '0') + '-' +
+    String(nextReviewDate.getDate()).padStart(2, '0');
 
   // Cập nhật thông tin trực tiếp trên thẻ từ vựng cục bộ
   if (currentPracticeWord.interval > 0 && (currentPracticeWord.prevInterval === undefined || currentPracticeWord.prevInterval === null)) {
