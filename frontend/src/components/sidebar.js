@@ -22,6 +22,19 @@ export function initResizeSidebar() {
   const mainLayout = document.getElementById('main-layout');
   if (!sidebar || !resizer || !mainLayout) return;
 
+  // Restore sidebar width from localStorage
+  const savedWidth = localStorage.getItem('DANH_SIDEBAR_WIDTH');
+  if (savedWidth) {
+    const widthNum = parseInt(savedWidth, 10);
+    sidebar.style.width = widthNum + 'px';
+    mainLayout.style.marginLeft = widthNum + 'px';
+    if (widthNum < 160) {
+      sidebar.classList.add('collapsed');
+    } else {
+      sidebar.classList.remove('collapsed');
+    }
+  }
+
   resizer.addEventListener('mousedown', (e) => {
     e.preventDefault();
     resizer.classList.add('resizing');
@@ -42,6 +55,9 @@ export function initResizeSidebar() {
     } else {
       sidebar.classList.remove('collapsed');
     }
+    
+    // Save preference to localStorage
+    localStorage.setItem('DANH_SIDEBAR_WIDTH', newWidth);
   }
 
   function handleMouseUp() {

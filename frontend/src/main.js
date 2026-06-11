@@ -399,8 +399,8 @@ window.app.updateSettingsModelOptions = function(provider, currentModel = '') {
   
   const models = {
     gemini: [
-      { value: 'gemini-2.5-flash', label: 'gemini-2.5-flash (Khuyên dùng)' },
-      { value: 'gemini-2.5-pro', label: 'gemini-2.5-pro' },
+      { value: 'gemini-2.0-flash', label: 'gemini-2.0-flash (Khuyên dùng)' },
+      { value: 'gemini-2.0-pro-exp-02-05', label: 'gemini-2.0-pro (Experimental)' },
       { value: 'gemini-1.5-flash', label: 'gemini-1.5-flash' },
       { value: 'gemini-1.5-pro', label: 'gemini-1.5-pro' }
     ],

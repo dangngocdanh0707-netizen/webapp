@@ -474,7 +474,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['link'] || 'links'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
       { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
       { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
-      { range: `${mappings['task'] || 'tasks'}!A1:C1`, values: [['Date', 'Task', 'Status']] },
+      { range: `${mappings['task'] || 'tasks'}!A1:E1`, values: [['Date', 'Task', 'Urgent', 'Important', 'Status']] },
       { range: `${mappings['google_map'] || 'google_maps'}!A1:E1`, values: [['place', 'city', 'category', 'address', 'status']] },
       { range: `${mappings['collections'] || 'collections'}!A1:E1`, values: [['item', 'brand', 'style', 'category', 'status']] },
       { range: `${mappings['grammar_diary'] || 'grammar_diaries'}!A1:F1`, values: [['date', 'scenario', 'user_sentence', 'corrected_sentence', 'explanation', 'status']] },

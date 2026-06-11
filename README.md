@@ -1,147 +1,143 @@
-# 🚀 Personal Life OS — Serverless Dashboard Web App
+# 🚀 Personal Life OS — Serverless Dashboard Web Application
 
-**Personal Life OS** là một Single Page Application (SPA) giúp quản lý toàn diện cuộc sống (chi tiêu, thói quen, công việc, mục tiêu, địa điểm du lịch, bộ sưu tập tài sản) và tự học tiếng Anh qua hệ thống thẻ nhớ **Anki Spaced Repetition (SRS)** kết hợp **Trợ lý hội thoại AI Speaking Partner**. 
+**Personal Life OS** là một nền tảng quản lý cuộc sống toàn diện (Life Operating System) được thiết kế dưới dạng ứng dụng đơn trang (SPA) chạy trực tiếp trên trình duyệt (100% Client-Side). Dự án tích hợp các công cụ quản lý tài chính, thói quen, công việc theo ma trận Eisenhower, mục tiêu dài hạn, bản đồ địa điểm khám phá, kết hợp với phân hệ học tiếng Anh thông minh qua phương pháp lặp lại ngắt quãng **Anki Spaced Repetition (SRS)** và trợ lý đối tác hội thoại AI.
 
-Ứng dụng kết nối trực tiếp **Google Sheets REST API v4** và **Google OAuth 2.0 (Google Identity Services)**, chạy 100% phía client, không sử dụng server trung gian.
+Điểm đặc biệt của kiến trúc này là giải pháp **Serverless hoàn toàn**, kết nối trực tiếp với **Google Sheets REST API v4** làm cơ sở dữ liệu lưu trữ thời gian thực thông qua cơ chế xác thực bảo mật **Google OAuth 2.0 (Google Identity Services)** mà không cần bất kỳ máy chủ trung gian nào.
 
 ---
 
-## 📂 Cấu trúc thư mục dự án
+## 🛠️ Kiến Trúc Hệ Thống & Công Nghệ Chủ Đạo
+
+Dự án được xây dựng dựa trên các tiêu chuẩn phát triển web hiện đại, đề cao hiệu năng và tính bảo mật:
+
+1. **Frontend Core**: HTML5 Semantic kết hợp Javascript (ES6+) đóng gói qua công cụ build siêu tốc **Vite**.
+2. **Styling & UI/UX**: Sử dụng **TailwindCSS** kết hợp Vanilla CSS tạo giao diện Glassmorphism mượt mà, chuyển động tự nhiên (Micro-animations) và chế độ responsive hoàn hảo trên mọi thiết bị.
+3. **Database & Sync**: Trực tiếp sử dụng **Google Sheets API v4** để thực hiện CRUD dữ liệu. Tích hợp cơ chế **Cập nhật Lạc quan (Optimistic UI Updates)** nâng cao trải nghiệm phản hồi tức thì và tự động khôi phục dữ liệu (Rollback) khi mất mạng hoặc API lỗi.
+4. **AI Engine Integration**: Tích hợp trực tiếp REST API của **Google Gemini (Default: 2.0-flash)** và **OpenAI (Default: 4o-mini)** trực tiếp từ phía client với cơ chế bảo mật khóa API cục bộ.
+5. **Interactive UI Utilities**: 
+   * **SortableJS** cho phép kéo thả sắp xếp danh sách thanh điều hướng.
+   * **Chart.js** trực quan hóa ngân sách chi tiêu và tiến độ thực hiện thói quen.
+
+---
+
+## 📂 Sơ Đồ Kiến Trúc Thư Mục
 
 ```text
 personal_webapp/
-├── .github/workflows/deploy.yml # CI/CD tự động deploy lên GitHub Pages
-├── README.md                    # Tài liệu hướng dẫn (Tệp tin này)
-└── frontend/                    # Mã nguồn chính của ứng dụng
-    ├── index.html               # Entry point HTML & Settings modal
-    ├── package.json             # Cấu hình dependencies (Vite, Tailwind, v.v.)
-    ├── vite.config.js           # Cấu hình đóng gói build
+├── .github/workflows/deploy.yml # Pipeline CI/CD tự động deploy lên GitHub Pages
+├── README.md                    # Tài liệu kỹ thuật dự án (Tệp tin này)
+└── frontend/                    # Thư mục mã nguồn ứng dụng
+    ├── index.html               # Điểm khởi đầu ứng dụng (Entry Point HTML) & Settings modal
+    ├── package.json             # Quản lý thư viện phụ thuộc (Vite, Tailwind, Chart.js...)
+    ├── tailwind.config.js       # Cấu hình hệ thống thiết kế Tailwind
+    ├── vite.config.js           # Cấu hình đóng gói & Base path phục vụ deployment
     └── src/
-        ├── init.js              # Khởi tạo đối tượng toàn cục window.app trước khi import các component (tránh lỗi ESM hoisting)
-        ├── main.js              # Khởi chạy ứng dụng, quản lý Auth & định tuyến Tab
-        ├── styles/main.css      # Cấu hình CSS chính & giao diện Glassmorphism
+        ├── init.js              # Khởi tạo đối tượng toàn cục window.app chống lỗi ESM hoisting
+        ├── main.js              # Luồng khởi chạy chính, quản lý định tuyến Tab & xác thực Google
+        ├── styles/
+        │   └── main.css         # Hệ thống token màu sắc CSS, hiệu ứng nền (Ambient glow) & Custom Scrollbar
         ├── services/
-        │   ├── api.js           # Xử lý CRUD Google Sheets & Local Storage
-        │   └── ai.js            # Client kết nối Gemini / OpenAI
-        └── components/          # Các module nghiệp vụ UI
-            ├── sidebar.js       # Co giãn/điều phối Sidebar
-            ├── charts.js        # Vẽ biểu đồ thống kê (Chart.js)
-            ├── expenses.js      # Module Quản lý chi tiêu
-            ├── vocabulary.js    # Module Từ điển từ vựng
-            ├── srs.js           # Trình ôn tập Anki SRS
-            ├── ai_chat.js       # Giao diện hội thoại & Phân tích ngữ pháp AI
-            ├── grammar_diaries.js # Nhật ký lỗi ngữ pháp & lật thẻ ôn tập
-            ├── goals.js         # Theo dõi tiến độ mục tiêu
-            ├── tasks.js         # Quản lý công việc
-            ├── habits.js        # Đánh giá thói quen hằng ngày
-            ├── collections.js   # Quản lý bộ sưu tập tài sản
-            └── google_maps.js   # Địa điểm du lịch/ăn uống (Google Maps)
+        │   ├── api.js           # Engine cốt lõi xử lý CRUD Sheets, đồng bộ Date & lọc bảo mật XSS
+        │   └── ai.js            # Service kết nối Gemini/OpenAI REST API & Phát âm TTS giọng Anh-Mỹ
+        └── components/          # Phân hệ nghiệp vụ hướng cấu trúc module độc lập
+            ├── sidebar.js       # Xử lý co giãn tự do (Resizable) & sắp xếp danh sách Sidebar
+            ├── charts.js        # Logic vẽ biểu đồ phân tích số liệu (Doughnut, Bar, Line charts)
+            ├── expenses.js      # Module quản lý dòng tiền chi tiêu (Phân bổ ngân sách & lọc theo tháng)
+            ├── vocabulary.js    # Sổ tay lưu trữ từ vựng & phân loại chủ đề chuyên sâu
+            ├── srs.js           # Phân hệ ôn tập thẻ nhớ Anki SRS (Chế độ gõ chữ & ghép cụm từ)
+            ├── ai_chat.js       # Chatbot đối tác luyện nói tiếng Anh & Đề xuất câu nói tự nhiên
+            ├── grammar_diaries.js # Nhật ký lưu trữ lỗi ngữ pháp & lật thẻ 3D ôn tập viết lại câu
+            ├── goals.js         # Theo dõi tiến trình mục tiêu (Progress Bar)
+            ├── tasks.js         # Danh sách công việc trực quan & Ma trận Eisenhower 2x2
+            ├── habits.js        # Lưới theo dõi thói quen 7 ngày qua & hiệu suất hoàn thành
+            ├── collections.js   # Quản lý bộ sưu tập tài sản/đồ dùng cá nhân
+            └── google_maps.js   # Bản đồ khám phá địa điểm du lịch & ẩm thực
 ```
 
 ---
 
-## ✨ Các tính năng & Giải pháp kỹ thuật chính
+## 💎 Điểm Nhấn Thiết Kế Kỹ Thuật & Giải Pháp
 
-* **🤖 Trợ lý hội thoại AI (Speaking Partner)**: 
-  * Tích hợp linh hoạt **Google Gemini** (`gemini-2.5-flash`) và **OpenAI** (`gpt-4o-mini`). API Key được lưu bảo mật ở `localStorage`.
-  * Hỗ trợ tự động phát âm phản hồi (Text-to-Speech) với nhiều tốc độ, accent.
-  * **📊 Grammar Analysis UI Redesign**: Tái cấu trúc thanh phản hồi bên phải gọn gàng, tự động tô màu hộp chứa câu viết (màu xanh lá pastel nếu đúng ngữ pháp, màu đỏ pastel nếu sai ngữ pháp), hiển thị câu đề xuất dưới nhãn `NATURAL SUGGESTION` và giải thích dưới nhãn `EXPLANATION`.
-  * **🛡️ Bộ lọc tối ưu hóa & Safeguard**: Prompt của AI được tối ưu hóa để loại bỏ gợi ý từ vựng nâng cấp gây hiểu nhầm. Frontend bổ sung bộ lọc tự động nhận diện câu đúng (`isCorrect = true`) nếu giải thích tiếng Việt của AI chứa các từ khóa khẳng định câu của người dùng *"không sai"*, *"không có lỗi"*.
-  * **💡 Smart Response Hints**: Sau mỗi lượt AI trả lời, tự động gợi ý 3 câu trả lời tự nhiên phù hợp ngữ cảnh dưới dạng pill button. Bấm vào pill để điền nhanh vào ô chat (có thể chỉnh sửa trước khi gửi).
-  * **🌐 Dịch tức thì (Instant Translation)**: Nút 🌐 trên mỗi bong bóng AI cho phép dịch câu sang tiếng Việt tự nhiên ngay trong giao diện, có cache để không gọi API lần 2.
-  * **💾 Đồng bộ Lịch sử Trò chuyện (Chat History Sync)**: Tự động lưu trữ và đồng bộ hóa hai chiều lịch sử chat với đối tác AI lên Google Sheets tại tab `chat_histories`. Tự động tải lịch sử chat cũ khi mở ứng dụng và phân loại theo từng kịch bản hội thoại để người dùng dễ dàng xem lại.
-* **💬 Trợ lý ảo Toàn cục (AI Assistant "DANH")**:
-  * **⚡ Gọi nhanh siêu tốc**: Nhấn phím **`A`** (hoặc `a`) từ bất kỳ vị trí nào (khi không ở ô nhập liệu) để đóng/mở nhanh khung chat bong bóng nổi của trợ lý **DANH**.
-  * **🗺️ Điều hướng thông minh & Xử lý cục bộ**: Tự động nhận diện lệnh chuyển trang cục bộ (Local Redirection) bằng từ khóa để chuyển nhanh sang các tab khác mà không tốn API tokens.
-  * **🔍 Tìm kiếm và mở nhanh liên kết**: Nhận diện thông minh nhu cầu mở các liên kết trong kho lưu trữ của bạn (ví dụ: *"Mở link Google Sheet"*). AI sẽ tìm kiếm khớp với các tiêu đề liên kết trong kho lưu trữ cục bộ của bạn, trả về chỉ mục (`index`) và tự động mở URL trên tab mới (`window.open`). **Bảo mật tuyệt đối**: Không bao giờ gửi URL thô của bạn lên máy chủ AI.
-  * **⏱️ Tin nhắn tự hủy (5-Minute Self-Destruction)**: Các tin nhắn trò chuyện với AI sẽ tự động xóa mượt mà khỏi giao diện và bộ nhớ đệm `assistantHistory` sau 5 phút để giữ an toàn dữ liệu cá nhân và bảo mật thông tin màn hình.
-* **📝 Nhật ký lỗi ngữ pháp (Grammar Error Diary)**:
-  * Tự động ghi lại các câu có lỗi ngữ pháp trong quá trình chat với AI Speaking Partner và đồng bộ trực tiếp lên Google Sheets.
-  * Lưu dữ liệu vào **dòng trống đầu tiên** tìm được trong sheet (giống `insertTaskRow`), không tạo dòng mới cuối bảng, phù hợp với sheet đã chuẩn bị checkbox sẵn.
-  * Hiển thị các lỗi dưới dạng thẻ học lật 3D Anki-style (Mặt trước: lỗi sai & ngày; Mặt sau: câu sửa đúng & giải thích chi tiết bằng tiếng Việt).
-  * **✍️ Chế độ Re-test (Practice)**: Bấm nút *Practice* để gõ lại câu đúng, AI tự động xác nhận đáp án, tự động cập nhật trạng thái đã thuộc và đồng bộ lên Google Sheets.
-  * **🗑️ Xóa bản ghi (Delete Card)**: Thêm nút biểu tượng thùng rác (xóa dòng) trực tiếp tại góc trên mỗi thẻ lỗi ngữ pháp kèm hiệu ứng thu nhỏ, hỗ trợ đồng bộ CRUD đầy đủ lên Google Sheets.
-* **🎓 Ôn tập Anki Spaced Repetition (SM-2)**:
-  * Chế độ *Typing* luyện chính tả từ đơn và *Word Scramble* kéo thả (Drag & Drop) luyện ghép cụm từ/câu.
-  * Áp dụng thuật toán SM-2 chuẩn hóa (Again, Hard, Good, Easy) với cơ chế bảo toàn tiến độ (20% Lapse Penalty) và cộng thưởng trễ hạn (Overdue Delay Bonus).
-  * Chống giật khung hình (CLS) bằng layout cố định chiều cao thẻ học.
-* **🚀 Cập nhật lạc quan (Optimistic UI) & Rollback tự động**:
-  * Cập nhật UI ngay lập tức (Zero Latency) khi thêm/sửa/xóa dòng, tự động hoàn tác (rollback) nếu API Sheets báo lỗi hoặc mất mạng.
-  * Tự động căn chỉnh chỉ số dòng (`rowNumber`) thời gian thực khi có thao tác xóa hàng trên Google Sheets.
-* **🗺️ Google Maps Explorer**:
-  * Quản lý địa điểm thám hiểm kèm nút tìm kiếm nhanh trên Google.
-  * Cột Address được đồng bộ kiểu chữ (`text-slate-650`) với cột Meaning của trang Vocabulary nhằm tối ưu hóa thẩm mỹ giao diện.
-* **📋 Quản lý Công việc & Ma trận Eisenhower (Tasks & Eisenhower Matrix)**:
-  * Tích hợp 5 cột dữ liệu (`Date`, `Task`, `urgent`, `important`, `status`) đồng bộ thời gian thực lên Google Sheets.
-  * Chế độ xem kép (Dual View): Dễ dàng chuyển đổi giữa dạng Danh sách (List View) truyền thống và dạng lưới Ma trận 2x2 (Eisenhower Quadrants) bao gồm Do First, Schedule, Delegate, và Eliminate.
-  * Tương tác thông minh: Hỗ trợ nút click nhanh ⚡/⭐ để thay đổi mức độ khẩn cấp/quan trọng với tông màu trung tính sạch sẽ (`text-slate-700 bg-slate-100`). Khi bấm nút sửa trên ma trận, hệ thống tự động chuyển về view danh sách và cuộn mượt mà (Scroll into view) để chỉnh sửa.
-  * Cân đối cột tối ưu: Thanh nhập mô tả công việc được nới rộng tối đa để căn lề hai ô checkbox sang bên phải, tạo bố cục đồng đều với nút Save Task bên dưới. Cải tiến cấu trúc dòng sửa để ngăn chặn hiện tượng méo lệch cột khi kích hoạt chỉnh sửa.
-* **✨ Tối giản hóa giao diện trống (Minimal Blank State)**:
-  * Loại bỏ hoàn toàn các dòng văn bản thông báo trống (như "No tasks...", "No entries...", "No habits...") trên toàn bộ các trang (Thói quen, Công việc, Từ vựng, Chi tiêu, Mục tiêu, Bản đồ, Bộ sưu tập). Khi không có dữ liệu, danh sách và bảng biểu sẽ hiển thị trống hoàn toàn mang lại trải nghiệm UI sạch sẽ và hiện đại nhất.
-* **⚡ Tối ưu hóa & Clean Code**:
-  * **Giải quyết lỗi nạp ES Modules (ESM Hoisting)**: Tách riêng việc khởi tạo đối tượng toàn cục sang module [init.js](file:///c:/Users/dangn/.gemini/antigravity/scratch/personal_webapp/frontend/src/init.js) được load đầu tiên ở đầu file `main.js`, đảm bảo namespace `window.app` sẵn sàng cho các component gán hàm, loại bỏ triệt để lỗi runtime `TypeError: Cannot read properties of undefined` khi tải trang.
-  * **Tập trung hóa Tiện ích (Centralization)**: Gom các hàm lặp lại (chuẩn hóa văn bản so khớp tiếng Anh, định dạng ngày dạng `yyyy-MM-dd`, và phát âm giọng nói Speech Synthesis) vào các helper dùng chung ở [api.js](file:///c:/Users/dangn/.gemini/antigravity/scratch/personal_webapp/frontend/src/services/api.js) và [ai.js](file:///c:/Users/dangn/.gemini/antigravity/scratch/personal_webapp/frontend/src/services/ai.js), dọn dẹp và tối giản hóa mã nguồn cho toàn bộ 8 component nghiệp vụ.
-* **🛡️ Bảo mật & An toàn**:
-  * Sử dụng bộ lọc `escapeHTML` ở các đầu ra HTML tĩnh để ngăn chặn tấn công XSS.
-  * Sử dụng giải pháp **HTML5 Dataset Pattern** (`data-*`) khi truyền tham số động cho các trình xử lý sự kiện inline (`onclick`, `onchange`) để loại bỏ hoàn toàn lỗ hổng DOM-based XSS và lỗi cú pháp khi dữ liệu chứa dấu nháy.
-  * Tích hợp cơ chế bảo vệ chống lỗ hổng **Tabnabbing** bằng cách thêm thuộc tính `rel="noopener noreferrer"` cho tất cả các liên kết ngoài và cấu hình an toàn cho lệnh `window.open` trong Trợ lý ảo.
+### 1. Đồng bộ Dữ liệu và Tự động Khởi tạo Sheet (Auto Schema Initialization)
+Khi người dùng kết nối với một file Google Sheet mới trống hoàn toàn, ứng dụng sẽ tự động phân tích và chạy truy vấn tạo cấu trúc các Sheet tab bị thiếu, đồng thời điền trước tiêu đề cột tương ứng. Nếu người dùng thay đổi tên Tab thủ công, hệ thống sở hữu **thuật toán tự động phân giải cột (Heuristic Column Matching)** bằng cách tải dòng tiêu đề hàng 1 để tự động ánh xạ chính xác Tab phù hợp mà không làm gián đoạn công việc.
+
+### 2. Giải thuật Spaced Repetition (Anki SM-2)
+Trình ôn tập Anki SRS được cài đặt thuật toán **SuperMemo-2 (SM-2)** chuẩn hóa:
+* **Lapse Penalty**: Thẻ bị quên (chọn Again) sẽ chuyển trạng thái học lại (Relearning) với mức phạt 20% khoảng thời gian cũ để tránh giảm tiến độ đột ngột.
+* **Overdue Delay Bonus**: Điểm thưởng cộng dồn khoảng thời gian ôn tập khi người dùng ôn trễ hạn, giúp giãn cách thẻ hiệu quả hơn.
+* **Anki Fuzz**: Cộng trừ một lượng ngẫu nhiên nhỏ vào chu kỳ ôn tập để tránh hiện tượng các thẻ bị lặp lại đồng loạt vào cùng một ngày.
+
+### 3. Phân Tích & Sửa Lỗi Ngữ Pháp Bằng AI Trực Tiếp (Grammar Evaluation Loop)
+* Hệ thống phân tích tin nhắn người dùng gửi đi trong khung AI Chat thông qua JSON Schema nghiêm ngặt. Phản hồi trả về gồm câu trò chuyện tự nhiên của AI, trạng thái lỗi (`isCorrect`), câu đề xuất sửa lại (`correctText`) và giải thích chi tiết lỗi bằng Tiếng Việt (`corrections`).
+* Khi câu viết có lỗi, hệ thống tự động ghi nhận vào phân hệ **Nhật ký lỗi ngữ pháp** để người dùng ôn tập lại dưới dạng thẻ lật 3D.
+* Hỗ trợ giải thuật so khớp chuỗi thông minh ở Client-side trước khi gọi AI để chấm điểm câu luyện tập nhằm tiết kiệm API token tối đa.
+
+### 4. Trợ lý ảo bong bóng nổi "DANH"
+* Kích hoạt nhanh bằng phím tắt **`A`** để đóng/mở trợ lý thông minh hỗ trợ điều hướng hệ thống bằng giọng lệnh tự nhiên (không tốn phí API nếu là các lệnh chuyển trang đơn giản).
+* **AI Link Finder (Bảo mật URL)**: Trợ lý giúp tìm kiếm và mở nhanh các liên kết đã lưu trong cơ sở dữ liệu. Để bảo vệ dữ liệu cá nhân, hệ thống chỉ gửi danh sách tiêu đề (`title`) và chủ đề (`category`) lên AI để xác định chỉ mục (`index`), sau đó client tự động thực hiện mở liên kết ở tab mới mà không bao giờ tiết lộ URL thô cho nhà cung cấp AI.
+* **Tin nhắn tự hủy**: Lịch sử trò chuyện với trợ lý DANH sẽ tự động xóa sạch khỏi bộ nhớ và DOM sau 5 phút để bảo mật màn hình làm việc của bạn.
 
 ---
 
-## 📊 Cấu trúc cột dữ liệu Google Sheet tiêu chuẩn
+## 📊 Cấu Trúc Bảng Dữ Liệu Google Sheets
 
-Nếu Spreadsheet trống, hệ thống sẽ **tự động khởi tạo** các tab và dòng tiêu đề sau:
+Bảng dưới đây mô tả chính xác các cột dữ liệu được lưu trữ trên Google Sheets mà ứng dụng tương tác:
 
-| Tên Tab | Cột A | Cột B | Cột C | Cột D | Cột E | Các cột còn lại (F đến J) |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`expenses`** | Date | Category | Amount | Note | | |
-| **`vocabulary`** | Content | Transcription | Category | Topic | Level | Meaning, Status, Next Review, Ease Factor, Interval |
-| **`habits`** | Date | Habit | Status | | | |
-| **`links`** | Title | Category | Content | | | |
-| **`prompts`** | Title | Content | Category | | | |
-| **`goals`** | Goal Name | Start Date | End Date | Current Value | Target Value | |
-| **`tasks`** | Date | Task | urgent | important | status | |
-| **`google_maps`**| place | city | category | address | status | |
-| **`collections`**| item | brand | style | category | status | |
-| **`grammar_diaries`**| date | scenario | user_sentence | corrected_sentence | explanation | **status** (checkbox — TRUE = Mastered) |
-| **`chat_histories`**| date | scenario | role | content | | |
+| Tên Tab | Cột A | Cột B | Cột C | Cột D | Cột E | Cột F | Ghi chú cột còn lại (G - J) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`expenses`** | Date | Category | Amount | Note | | | Quản lý chi tiêu cá nhân |
+| **`vocabulary`** | Content | Transcription | Category | Topic | Level | Meaning | G - J: Status, Next Review, Ease Factor, Interval |
+| **`habits`** | Date | Habit | Status | | | | Theo dõi thói quen (TRUE/FALSE) |
+| **`links`** | Title | Category | Content | | | | Lưu trữ liên kết nhanh |
+| **`prompts`** | Title | Content | Category | | | | Thư viện prompt AI |
+| **`goals`** | Goal Name | Start Date | End Date | Current Value | Target Value | | Theo dõi mục tiêu |
+| **`tasks`** | Date | Task | Urgent | Important | Status | | Ma trận Eisenhower (TRUE/FALSE) |
+| **`google_maps`**| place | city | category | address | status | | Địa điểm khám phá |
+| **`collections`**| item | brand | style | category | status | | Bộ sưu tập tài sản cá nhân |
+| **`grammar_diaries`**| date | scenario | user_sentence | corrected_sentence | explanation | status | Nhật ký lỗi sai ngữ pháp |
+| **`chat_histories`**| date | scenario | role | content | | | Lưu trữ lịch sử chat đối thoại |
 
 ---
 
-## 🛠️ Hướng dẫn thiết lập & Vận hành nhanh
+## 🚀 Hướng Dẫn Cài Đặt & Vận Hành Nhanh
 
-### Bước 1: Lấy thông tin kết nối từ Google Cloud Console
-1. **API Key**: Tạo API Key tại mục *APIs & Services > Credentials* (giới hạn quyền truy cập chỉ dùng cho *Google Sheets API*).
-2. **OAuth 2.0 Client ID**: Tạo Client ID cho ứng dụng Web. Thêm các link được phép truy cập vào **Authorized JavaScript origins**:
-   * Chạy local: `http://localhost:5173`
-   * Chạy online: `https://<tên-tài-khoản-github>.github.io`
-3. **Spreadsheet ID**: Tạo Google Sheet mới và sao chép ID trên URL: `https://docs.google.com/spreadsheets/d/<SPREADSHEET_ID>/edit`.
+### Bước 1: Khởi Tạo Credentials Trên Google Cloud Console
+1. Truy cập [Google Cloud Console](https://console.cloud.google.com/).
+2. Tạo một Project mới và kích hoạt dịch vụ **Google Sheets API**.
+3. Tại mục **APIs & Services > Credentials**:
+   * Tạo một **API Key** (Khuyến nghị cấu hình giới hạn quyền truy cập API chỉ dành riêng cho *Google Sheets API*).
+   * Tạo một **OAuth 2.0 Client ID** (Chọn loại ứng dụng Web). Thêm các URL sau vào mục **Authorized JavaScript origins**:
+     * Phát triển cục bộ: `http://localhost:5173`
+     * Môi trường online: `https://<ten-user-github>.github.io`
+4. Tạo một trang tính Google Sheets mới và sao chép **Spreadsheet ID** từ thanh địa chỉ URL:
+   `https://docs.google.com/spreadsheets/d/<SPREADSHEET_ID>/edit`
 
-### Bước 2: Cấu hình credentials (Chọn 1 trong 2 cách)
-* **Cách A (Giao diện Web)**: Vào **Setting** (góc dưới sidebar bên trái) -> Nhập Spreadsheet ID, API Key, Client ID -> Bấm **Save Settings** -> Nhấp **Connect Google Sheets** để đăng nhập OAuth.
-* **Cách B (Môi trường Dev)**: Tạo file `.env` tại thư mục `frontend/` và điền:
+### Bước 2: Cấu Hình Ứng Dụng (Chọn một trong hai phương án)
+* **Phương án 1 (Qua giao diện Web - Khuyên dùng)**:
+  Mở ứng dụng -> Bấm nút **Setting** ở góc dưới sidebar bên trái -> Nhập Spreadsheet ID, API Key, Client ID của dự án -> Bấm **Save Settings** -> Bấm nút **Connect Google Sheets** ở sidebar để đăng nhập qua tài khoản Google.
+* **Phương án 2 (Qua tệp tin `.env` cho Developer)**:
+  Tạo tệp tin `.env` hoặc `.env.local` tại thư mục `frontend/` với nội dung:
   ```env
-  VITE_SPREADSHEET_ID=mã_bảng_tính
-  VITE_API_KEY=api_key_của_bạn
-  VITE_CLIENT_ID=client_id_của_bạn
+  VITE_SPREADSHEET_ID=mã_spreadsheet_id_của_bạn
+  VITE_API_KEY=api_key_google_của_bạn
+  VITE_CLIENT_ID=oauth_client_id_của_bạn
   ```
 
-### Bước 3: Triển khai lên GitHub Pages
-1. Đẩy code lên repository GitHub cá nhân (nhánh `main`).
-2. Vào **Settings > Actions > General**, mục *Workflow permissions* chọn **Read and write permissions** rồi lưu lại.
-3. Vào **Settings > Pages**, mục *Build and deployment > Source* chọn **GitHub Actions**. Hệ thống sẽ tự động build và deploy sau mỗi lượt push code lên `main`.
-
----
-
-## 💻 Khởi chạy dưới máy tính (Local Development)
-
-1. Cài đặt các thư viện cần thiết:
+### Bước 3: Phát Triển Dưới Máy Cục Bộ (Local Development)
+Yêu cầu hệ máy cài đặt sẵn **Node.js** (Phiên bản khuyến nghị >= 18).
+1. Di chuyển vào thư mục frontend và cài đặt dependencies:
    ```bash
    cd frontend
    npm install
    ```
-2. Khởi chạy server phát triển cục bộ:
+2. Khởi chạy máy chủ phát triển cục bộ của Vite:
    ```bash
    npm run dev
    ```
-3. Truy cập địa chỉ hiển thị trên terminal (thông thường là `http://localhost:5173`) để kiểm thử.
+3. Mở trình duyệt truy cập `http://localhost:5173`.
+
+### Bước 4: Deploy Lên GitHub Pages Tự Động (CI/CD)
+Dự án đã được cấu hình sẵn GitHub Actions ở `.github/workflows/deploy.yml`:
+1. Đẩy mã nguồn lên repository GitHub cá nhân của bạn.
+2. Vào **Settings > Actions > General**, cuộn xuống mục **Workflow permissions**, cấp quyền chọn **Read and write permissions** rồi lưu lại.
+3. Kích hoạt tính năng GitHub Pages: Vào **Settings > Pages**, tại mục *Build and deployment > Source*, chọn **GitHub Actions**. Hệ thống sẽ tự động build sản phẩm và đẩy lên GitHub Pages sau vài phút sau mỗi đợt push code lên nhánh `main`.

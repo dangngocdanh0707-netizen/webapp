@@ -52,7 +52,7 @@ The JSON structure must match this schema exactly:
     if (!geminiKey) {
       throw new Error("Thiếu Gemini API Key. Vui lòng thiết lập trong Cấu hình (Settings).");
     }
-    const geminiModel = model.trim() || "gemini-2.5-flash";
+    const geminiModel = model.trim() || "gemini-2.0-flash";
     return await callGeminiAPI(prompt, history, geminiKey, geminiModel, finalSystemInstruction);
   } else if (provider === "openai") {
     if (!openaiKey) {
@@ -249,7 +249,7 @@ or
   try {
     if (provider === "gemini") {
       if (!geminiKey) throw new Error("Thiếu Gemini API Key.");
-      const geminiModel = model.trim() || "gemini-2.5-flash";
+      const geminiModel = model.trim() || "gemini-2.0-flash";
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`;
 
       const requestBody = {
@@ -329,7 +329,7 @@ export async function translateMessageText(text, aiCreds) {
 
   if (provider === "gemini") {
     if (!geminiKey) throw new Error("Thiếu Gemini API Key.");
-    const geminiModel = model.trim() || "gemini-2.5-flash";
+    const geminiModel = model.trim() || "gemini-2.0-flash";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`;
 
     const response = await fetch(url, {
@@ -427,7 +427,7 @@ If the user is just saying hello, asking a general question, or the request is a
 
   if (provider === "gemini") {
     if (!geminiKey) throw new Error("Thiếu Gemini API Key.");
-    const geminiModel = model.trim() || "gemini-2.5-flash";
+    const geminiModel = model.trim() || "gemini-2.0-flash";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`;
 
     const contents = [];

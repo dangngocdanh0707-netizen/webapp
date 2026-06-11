@@ -246,6 +246,10 @@ window.app.grammar.handleGrammarPracticeInput = function(rowNumber, value, corre
 };
 
 window.app.grammar.deleteGrammarCard = function(rowNumber) {
+  const idNum = Number(rowNumber);
+  let deletedItem = currentData.find(item => Number(item.rowNumber) === idNum);
+  let deletedIndex = currentData.findIndex(item => Number(item.rowNumber) === idNum);
+
   const card = document.getElementById(`grammar-card-${rowNumber}`);
   if (card) {
     card.style.transition = 'all 0.4s ease';
@@ -256,7 +260,12 @@ window.app.grammar.deleteGrammarCard = function(rowNumber) {
   setTimeout(() => {
     // Optimistic local state update + FLIP animation
     animateGridReflow(() => {
-      currentData = currentData.filter(item => String(item.rowNumber) !== String(rowNumber));
+      currentData = currentData.filter(item => Number(item.rowNumber) !== idNum);
+      currentData.forEach(item => {
+        if (Number(item.rowNumber) > idNum) {
+          item.rowNumber--;
+        }
+      });
       const totalCountEl = document.getElementById('grammar-total-count');
       if (totalCountEl) {
         totalCountEl.innerText = currentData.length;
@@ -264,7 +273,7 @@ window.app.grammar.deleteGrammarCard = function(rowNumber) {
       renderGrammarCards();
     });
 
-    callServer("deleteGrammarDiaryRow", [Number(rowNumber)])
+    callServer("deleteGrammarDiaryRow", [idNum])
       .then(res => {
         if (res === "Thành công") {
           console.log("Đã xóa bản ghi lỗi ngữ pháp thành công!");
@@ -272,18 +281,29 @@ window.app.grammar.deleteGrammarCard = function(rowNumber) {
             refreshCallback(true); // silent reload
           }
         } else {
-          console.error("Lỗi khi xóa: " + res);
-          if (typeof refreshCallback === 'function') {
-            refreshCallback(true);
-          }
+          rollback(res);
         }
       })
       .catch(err => {
-        console.error("Lỗi kết nối: " + (err.message || err));
-        if (typeof refreshCallback === 'function') {
-          refreshCallback(true);
+        rollback(err.message || err);
+      });
+
+    function rollback(errorMessage) {
+      currentData.forEach(item => {
+        if (Number(item.rowNumber) >= idNum) {
+          item.rowNumber++;
         }
       });
+      if (deletedIndex !== -1 && deletedItem) {
+        currentData.splice(deletedIndex, 0, deletedItem);
+      }
+      const totalCountEl = document.getElementById('grammar-total-count');
+      if (totalCountEl) {
+        totalCountEl.innerText = currentData.length;
+      }
+      renderGrammarCards();
+      console.error("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
+    }
   }, 400);
 };
 
