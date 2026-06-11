@@ -1,4 +1,5 @@
 import { callServer, escapeHTML } from '../services/api.js';
+import { speakEnglishText } from '../services/ai.js';
 
 let allVocabData = [];
 let onSyncNeeded = null;
@@ -300,16 +301,6 @@ window.app.vocab.deleteVocab = function(id) {
 window.app.vocab.speakVocabById = function(id) {
   let item = allVocabData.find(v => v.rowNumber == id);
   if (item && item.content) {
-    try {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(item.content);
-        utterance.lang = 'en-US';
-        utterance.rate = 0.85;
-        window.speechSynthesis.speak(utterance);
-      }
-    } catch (e) {
-      console.warn("TTS Synthesis failed:", e);
-    }
+    speakEnglishText(item.content);
   }
 };

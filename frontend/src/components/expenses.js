@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp } from '../services/api.js';
+import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString } from '../services/api.js';
 import { renderExpensePie, renderExpenseBar } from './charts.js';
 
 
@@ -22,11 +22,7 @@ export function initCostModule(data, onSync) {
   // Set default date input to today's date
   const dateInput = document.getElementById('ins-cost-date');
   if (dateInput) {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    dateInput.value = `${yyyy}-${mm}-${dd}`;
+    dateInput.value = getTodayDateString();
   }
 
   // POPULATE MONTHS IN FILTER DROPDOWN
@@ -65,18 +61,8 @@ function renderCostGraphics() {
   const dayFilterVal = dayFilterSelect ? dayFilterSelect.value : "All";
 
   // Calculate local today and yesterday strings (yyyy-MM-dd)
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  const todayStr = `${yyyy}-${mm}-${dd}`;
-
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
-  const yyyyYest = yesterday.getFullYear();
-  const mmYest = String(yesterday.getMonth() + 1).padStart(2, '0');
-  const ddYest = String(yesterday.getDate()).padStart(2, '0');
-  const yesterdayStr = `${yyyyYest}-${mmYest}-${ddYest}`;
+  const todayStr = getTodayDateString();
+  const yesterdayStr = getTodayDateString(-1);
 
   let filteredData = allCostData;
   if (monthFilterVal !== "All") {
@@ -167,18 +153,8 @@ export function buildTable() {
   const dayFilterVal = document.getElementById('dayFilter') ? document.getElementById('dayFilter').value : "All";
 
   // Calculate local today and yesterday strings (yyyy-MM-dd)
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  const todayStr = `${yyyy}-${mm}-${dd}`;
-
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
-  const yyyyYest = yesterday.getFullYear();
-  const mmYest = String(yesterday.getMonth() + 1).padStart(2, '0');
-  const ddYest = String(yesterday.getDate()).padStart(2, '0');
-  const yesterdayStr = `${yyyyYest}-${mmYest}-${ddYest}`;
+  const todayStr = getTodayDateString();
+  const yesterdayStr = getTodayDateString(-1);
 
   let displayCostData = [...allCostData];
   displayCostData.sort((a, b) => {

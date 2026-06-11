@@ -1349,3 +1349,25 @@ export function parseDateToTimestamp(dateStr) {
   let ts = Date.parse(cleanStr);
   return isNaN(ts) ? 0 : ts;
 }
+
+// 6. Hàm tiện ích dùng chung để chuẩn hóa văn bản tiếng Anh
+export function normalizeEnglishText(str) {
+  if (!str) return "";
+  return str.toLowerCase()
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// 7. Hàm tiện ích dùng chung để lấy chuỗi ngày hôm nay (hoặc offset ngày) dạng yyyy-MM-dd
+export function getTodayDateString(offsetDays = 0) {
+  const date = new Date();
+  if (offsetDays !== 0) {
+    date.setDate(date.getDate() + offsetDays);
+  }
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+

@@ -1,6 +1,6 @@
 // HỢP PHẦN AI SPEAKING PARTNER - FRONTEND LOGIC
-import { getAiCredentials, callServer, escapeHTML } from '../services/api.js';
-import { callAiApi, SCENARIOS, translateMessageText } from '../services/ai.js';
+import { getAiCredentials, callServer, escapeHTML, getTodayDateString } from '../services/api.js';
+import { callAiApi, SCENARIOS, translateMessageText, speakEnglishText } from '../services/ai.js';
 
 
 let activeScenario = "casual";
@@ -305,11 +305,7 @@ window.app.ai.sendAiChatMessage = async function () {
   renderAiChatBubbles();
 
   // Định nghĩa ngày giờ và kịch bản hội thoại để dùng chung cho việc lưu trữ
-  const dateObj = new Date();
-  const day = String(dateObj.getDate()).padStart(2, '0');
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-  const year = dateObj.getFullYear();
-  const dateStr = `${year}-${month}-${day}`;
+  const dateStr = getTodayDateString();
   const scenarioTitle = SCENARIOS[activeScenario]?.title || activeScenario;
 
   // Reset UI feedback cũ khi gửi câu mới
@@ -407,38 +403,7 @@ function setupTtsVoiceSelector() {
 }
 
 window.app.ai.speakAiResponse = function (text) {
-  if (!('speechSynthesis' in window)) return;
-
-  try {
-    // Dừng mọi âm thanh đang đọc dở dang
-    window.speechSynthesis.cancel();
-
-    // Làm sạch text khỏi mã markdown để đọc mượt mà
-    const cleanText = text.replace(/[*_`]/g, "").trim();
-
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = "en-US";
-
-    // Lấy cài đặt tốc độ đọc
-    const speedEl = document.getElementById('ai-chat-tts-speed');
-    if (speedEl) {
-      utterance.rate = parseFloat(speedEl.value) || 0.95;
-    }
-
-    // Lấy cài đặt giọng đọc
-    const voiceSelect = document.getElementById('ai-chat-tts-voice');
-    if (voiceSelect && voiceSelect.value !== "default") {
-      const voices = window.speechSynthesis.getVoices();
-      const selectedVoice = voices.find(v => v.voiceURI === voiceSelect.value);
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
-      }
-    }
-
-    window.speechSynthesis.speak(utterance);
-  } catch (e) {
-    console.warn("TTS Speech failed:", e);
-  }
+  speakEnglishText(text);
 };
 
 // ---------------- GIAO DIỆN PHÂN TÍCH LỖI NGỮ PHÁP ----------------
@@ -527,11 +492,7 @@ function renderGrammarFeedbackUI(userText, aiResult) {
 
   // 4. Tự động lưu lỗi ngữ pháp vào Google Sheets nếu phát hiện lỗi
   if (aiResult.isCorrect === false) {
-    const date = new Date();
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    const dateStr = `${year}-${month}-${day}`;
+    const dateStr = getTodayDateString();
 
     const scenarioTitle = SCENARIOS[activeScenario]?.title || activeScenario;
     const userSentence = userText.trim();

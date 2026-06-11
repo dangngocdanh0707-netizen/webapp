@@ -1,4 +1,4 @@
-import { callServer, getAiCredentials, escapeHTML } from '../services/api.js';
+import { callServer, getAiCredentials, escapeHTML, normalizeEnglishText } from '../services/api.js';
 import { verifyPracticeSentence } from '../services/ai.js';
 
 let refreshCallback = null;
@@ -166,16 +166,8 @@ window.app.grammar.checkGrammarPractice = async function(rowNumber, correctSente
   };
 
   // Bước 1: So khớp chuỗi nhanh (Client-side String Matching)
-  const cleanStr = (str) => {
-    return str
-      .toLowerCase()
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
-  };
-
-  const cleanUser = cleanStr(userText);
-  const cleanCorrect = cleanStr(correctSentence);
+  const cleanUser = normalizeEnglishText(userText);
+  const cleanCorrect = normalizeEnglishText(correctSentence);
 
   let isMatch = (cleanUser === cleanCorrect);
 
@@ -245,16 +237,8 @@ window.app.grammar.checkGrammarPractice = async function(rowNumber, correctSente
 };
 
 window.app.grammar.handleGrammarPracticeInput = function(rowNumber, value, correctSentence) {
-  const cleanStr = (str) => {
-    return str
-      .toLowerCase()
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
-  };
-
-  const cleanUser = cleanStr(value);
-  const cleanCorrect = cleanStr(correctSentence);
+  const cleanUser = normalizeEnglishText(value);
+  const cleanCorrect = normalizeEnglishText(correctSentence);
 
   if (cleanUser === cleanCorrect && cleanUser.length > 0) {
     window.app.grammar.checkGrammarPractice(rowNumber, correctSentence);
