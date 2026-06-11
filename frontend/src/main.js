@@ -1,3 +1,4 @@
+import './init.js';
 import { 
   callServer, 
   initGoogleAuth, 
@@ -27,21 +28,6 @@ import { initFloatingAssistant } from './components/floating_assistant.js';
 
 let serverSyncTimeout = null;
 
-window.app = {
-  expenses: {},
-  vocab: {},
-  srs: {},
-  grammar: {},
-  links: {},
-  prompts: {},
-  goals: {},
-  tasks: {},
-  habits: {},
-  maps: {},
-  collections: {},
-  ai: {},
-  floating: {}
-};
 
 // Catch-all syntax & runtime error helper
 window.onerror = function (message, source, lineno, colno, error) {
