@@ -224,23 +224,10 @@ async function initApp() {
         if (target.value !== '') {
           target.value = '';
           
-          // Gọi hàm filter tương ứng để cập nhật lại danh sách dữ liệu
-          if (inputId === 'vocabSearchInput' && window.app && window.app.vocab && typeof window.app.vocab.filterVocabTable === 'function') {
-            window.app.vocab.filterVocabTable();
-          } else if (inputId === 'linkSearchInput' && window.app && window.app.links && typeof window.app.links.filterLinkTable === 'function') {
-            window.app.links.filterLinkTable();
-          } else if (inputId === 'promptSearchInput' && window.app && window.app.prompts && typeof window.app.prompts.filterPromptTable === 'function') {
-            window.app.prompts.filterPromptTable();
-          } else if (inputId === 'mapSearchInput' && window.app && window.app.maps && typeof window.app.maps.filterMapGrid === 'function') {
-            window.app.maps.filterMapGrid();
-          } else if (inputId === 'collectionSearchInput' && window.app && window.app.collections && typeof window.app.collections.filterCollectionGrid === 'function') {
-            window.app.collections.filterCollectionGrid();
-          } else if (inputId === 'taskSearchInput' && window.app && window.app.tasks && typeof window.app.tasks.filterTaskTable === 'function') {
-            window.app.tasks.filterTaskTable();
-          } else {
-            target.dispatchEvent(new Event('input', { bubbles: true }));
-            target.dispatchEvent(new Event('keyup', { bubbles: true }));
-          }
+          // Gửi các sự kiện để kích hoạt trình lắng nghe tự động của ô tìm kiếm
+          target.dispatchEvent(new Event('input', { bubbles: true }));
+          target.dispatchEvent(new Event('keyup', { bubbles: true }));
+          target.dispatchEvent(new Event('change', { bubbles: true }));
         }
         searchTimeoutMap.delete(inputId);
       }, 15000);
