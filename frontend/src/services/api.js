@@ -93,6 +93,7 @@ export function initGoogleAuth() {
       return;
     }
 
+    let checkAttempts = 0;
     function checkSDKsLoaded() {
       if (typeof gapi !== 'undefined' && typeof google !== 'undefined') {
         // 1. Khởi tạo GAPI Client
@@ -188,6 +189,12 @@ export function initGoogleAuth() {
           }
         });
       } else {
+        checkAttempts++;
+        if (checkAttempts > 50) { // 5 giây (50 * 100ms)
+          console.warn("[api.js] Không thể tải Google SDKs (gapi/google). Hủy kích hoạt chế độ Online.");
+          resolve(false);
+          return;
+        }
         setTimeout(checkSDKsLoaded, 100);
       }
     }
