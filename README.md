@@ -92,8 +92,8 @@ Bảng dưới đây mô tả chính xác các cột dữ liệu được lưu t
 | **`prompts`** | Title | Content | Category | | | | Thư viện prompt AI |
 | **`goals`** | Goal Name | Start Date | End Date | Current Value | Target Value | | Theo dõi mục tiêu |
 | **`tasks`** | Date | Task | Urgent | Important | Status | | Ma trận Eisenhower (TRUE/FALSE) |
-| **`google_maps`**| place | city | category | address | status | | Địa điểm khám phá |
-| **`collections`**| item | brand | style | category | status | | Bộ sưu tập tài sản cá nhân |
+| **`google_maps`**| place | city | category | address | | | Địa điểm khám phá |
+| **`collections`**| item | brand | category | | | | Bộ sưu tập tài sản cá nhân |
 | **`grammar_diaries`**| date | scenario | user_sentence | corrected_sentence | explanation | status | Nhật ký lỗi sai ngữ pháp |
 | **`chat_histories`**| date | scenario | role | content | | | Lưu trữ lịch sử chat đối thoại |
 

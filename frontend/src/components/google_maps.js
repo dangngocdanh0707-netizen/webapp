@@ -55,7 +55,6 @@ export function buildMapGrid() {
   const searchVal = document.getElementById('mapSearchInput') ? document.getElementById('mapSearchInput').value.toLowerCase().trim() : "";
   const cityVal = document.getElementById('mapCityFilter') ? document.getElementById('mapCityFilter').value : "All";
   const catVal = document.getElementById('mapCategoryFilter') ? document.getElementById('mapCategoryFilter').value : "All";
-  const checkVal = document.getElementById('mapCheckFilter') ? document.getElementById('mapCheckFilter').value : "All";
  
   // 3. Render Rows (Defensive 5-column mapping)
   allMapData.forEach(item => {
@@ -67,13 +66,10 @@ export function buildMapGrid() {
       const city = String(item.city || "").trim();
       const category = String(item.category || "").trim();
       const address = String(item.address || "").trim();
-      const isExplored = item.status === true;
  
       // Apply Filter constraints
       if (cityVal !== "All" && city !== cityVal) return;
       if (catVal !== "All" && category !== catVal) return;
-      if (checkVal === "Explored" && !isExplored) return;
-      if (checkVal === "Unexplored" && isExplored) return;
  
       if (searchVal !== "") {
         const match = placeName.toLowerCase().includes(searchVal) || 
@@ -109,19 +105,12 @@ export function buildMapGrid() {
           <td class="p-4 text-xs text-slate-650 max-w-[300px] break-words whitespace-normal map-view-${id}">
             ${escapeHTML(address) || '-'}
           </td>
-          <td class="p-4 pl-12 text-left map-view-${id}">
-            <label class="inline-flex items-center gap-3 cursor-pointer select-none">
-              <input type="checkbox" id="map-check-${id}" class="habit-checkbox shrink-0" ${isExplored ? 'checked' : ''} onchange="app.maps.toggleMapCheckInDirectly(${id}, this)">
-              <span id="map-chk-lbl-${id}" class="text-xs font-semibold tracking-wide ${isExplored ? 'text-emerald-600' : 'text-slate-400'}">${isExplored ? 'Completed' : 'Pending'}</span>
-            </label>
-          </td>
 
           <!-- Edit inputs -->
           <td class="p-4 pl-6 hidden map-edit-${id}"><input type="text" id="map-edit-place-${id}" class="edit-input font-bold" value="${escapeHTML(placeName)}"></td>
           <td class="p-4 hidden map-edit-${id}"><input type="text" id="map-edit-city-${id}" class="edit-input" value="${escapeHTML(city)}"></td>
           <td class="p-4 hidden map-edit-${id}"><input type="text" id="map-edit-cat-${id}" class="edit-input" value="${escapeHTML(category)}"></td>
           <td class="p-4 hidden map-edit-${id}"><input type="text" id="map-edit-address-${id}" class="edit-input" value="${escapeHTML(address)}"></td>
-          <td class="p-4 pl-12 text-left hidden map-edit-${id}"><span class="text-xs italic text-slate-400">Locked</span></td>
 
           <td class="p-4 pr-6 text-center">
             <div class="map-view-${id} flex items-center justify-center gap-2">
@@ -143,7 +132,7 @@ export function buildMapGrid() {
       console.error("Table Row Render Error for item:", item, rowError);
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="bg-rose-50/10">
-          <td colspan="6" class="p-4 pl-6 text-xs text-rose-800 font-medium">
+          <td colspan="5" class="p-4 pl-6 text-xs text-rose-800 font-medium">
             ⚠️ Lỗi dữ liệu dòng #${item.rowNumber || '?'}: ${escapeHTML(rowError.message)}
           </td>
         </tr>
@@ -183,8 +172,7 @@ window.app.maps.addMapRow = function() {
     place: place,
     city: city,
     category: category,
-    address: address,
-    status: false
+    address: address
   };
 
   allMapData.push(newObj);
@@ -218,52 +206,7 @@ window.app.maps.addMapRow = function() {
   }
 };
  
-window.app.maps.toggleMapCheckInDirectly = function(rowNumber, checkboxEl) {
-  const isChecked = checkboxEl.checked;
-  const labelEl = document.getElementById(`map-chk-lbl-${rowNumber}`);
-  
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
-  if (labelEl) {
-    labelEl.innerText = isChecked ? "Completed" : "Pending";
-    labelEl.className = isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
-  }
 
-  let idx = allMapData.findIndex(item => item.rowNumber == rowNumber);
-  let oldStatus = false;
-  if (idx !== -1) {
-    oldStatus = allMapData[idx].status;
-    allMapData[idx].status = isChecked;
-  }
-
-  console.log(isChecked ? "Đã check-in chinh phục địa điểm này! 🎉" : "Đã hủy thám hiểm địa điểm");
-  buildMapGrid();
- 
-  // 2. Gửi yêu cầu ngầm lên Google Sheets
-  callServer("updateMapCheckStatusRow", [rowNumber, isChecked])
-    .then(res => {
-      if (res !== "Thành công") {
-        rollback(res);
-      }
-    })
-    .catch(err => {
-      rollback(err.message);
-    });
-
-  function rollback(errorMessage) {
-    if (idx !== -1) {
-      allMapData[idx].status = oldStatus;
-    }
-    checkboxEl.checked = oldStatus;
-    if (labelEl) {
-      let isExplored = oldStatus === true;
-      labelEl.innerText = isExplored ? "Completed" : "Pending";
-      labelEl.className = isExplored ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
-    }
-    buildMapGrid();
-    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
-  }
-};
- 
 window.app.maps.deleteMapPlace = function(id) {
   // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allMapData.findIndex(m => m.rowNumber == id);

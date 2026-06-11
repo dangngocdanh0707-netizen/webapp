@@ -511,8 +511,8 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
       { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
       { range: `${mappings['task'] || 'tasks'}!A1:E1`, values: [['Date', 'Task', 'Urgent', 'Important', 'Status']] },
-      { range: `${mappings['google_map'] || 'google_maps'}!A1:E1`, values: [['place', 'city', 'category', 'address', 'status']] },
-      { range: `${mappings['collections'] || 'collections'}!A1:E1`, values: [['item', 'brand', 'style', 'category', 'status']] },
+      { range: `${mappings['google_map'] || 'google_maps'}!A1:D1`, values: [['place', 'city', 'category', 'address']] },
+      { range: `${mappings['collections'] || 'collections'}!A1:C1`, values: [['item', 'brand', 'category']] },
       { range: `${mappings['grammar_diary'] || 'grammar_diaries'}!A1:F1`, values: [['date', 'scenario', 'user_sentence', 'corrected_sentence', 'explanation', 'status']] },
       { range: `${mappings['chat_history'] || 'chat_histories'}!A1:D1`, values: [['date', 'scenario', 'role', 'content']] }
     ].filter(h => {
@@ -585,8 +585,8 @@ export function callServer(methodName, args) {
             `${promptTab}!A2:C`,
             `${goalTab}!A2:E`,
             `${taskTab}!A2:E`,
-            `${mappings['google_map']}!A2:E`,
-            `${mappings['collections'] || 'collections'}!A2:E`,
+            `${mappings['google_map']}!A2:D`,
+            `${mappings['collections'] || 'collections'}!A2:C`,
             `${grammarTab || 'grammar_diaries'}!A2:F`,
             `${chatTab || 'chat_histories'}!A2:D`
           ],
@@ -662,17 +662,14 @@ export function callServer(methodName, args) {
             place: row[0] || "",
             city: row[1] || "",
             category: row[2] || "",
-            address: row[3] || "",
-            status: row[4] === "TRUE" || row[4] === true || row[4] === "true" || row[4] === "v" || row[4] === "checked"
+            address: row[3] || ""
           })).filter(item => item.place),
 
           collections: getRows(valueRanges[8]).map((row, idx) => ({
             rowNumber: idx + 2,
             item: row[0] || "",
             brand: row[1] || "",
-            style: row[2] || "",
-            category: row[3] || "",
-            status: row[4] === "TRUE" || row[4] === true || row[4] === "true" || row[4] === "v" || row[4] === "checked"
+            category: row[2] || ""
           })).filter(item => item.item),
 
           grammar_diary: getRows(valueRanges[9]).map((row, idx) => ({
@@ -840,17 +837,6 @@ export function callServer(methodName, args) {
       }
       
       // 9. Nghiệp vụ BẢN ĐỒ (Google Maps Explorer)
-      if (methodName === "updateMapCheckStatusRow") {
-        const [rowNumber, isChecked] = args;
-        await gapi.client.sheets.spreadsheets.values.update({
-          spreadsheetId,
-          range: `${mappings['google_map']}!E${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
-          resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
-        });
-        resolve("Thành công");
-        return;
-      }
       if (methodName === "updateMapRow") {
         const [rowNumber, place, city, category, address] = args;
         const mapTab = mappings['google_map'];
@@ -868,10 +854,10 @@ export function callServer(methodName, args) {
         const mapTab = mappings['google_map'];
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${mapTab}!A:E`,
+          range: `${mapTab}!A:D`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[place, city, category, address, "FALSE"]] }
+          resource: { values: [[place, city, category, address]] }
         });
         resolve("Thành công");
         return;
@@ -901,38 +887,26 @@ export function callServer(methodName, args) {
 
       // 10. Nghiệp vụ SƯU TẬP (Collections CRUD)
       if (methodName === "insertCollectionRow") {
-        const [item, brand, style, category] = args;
+        const [item, brand, category] = args;
         const colTab = mappings['collections'] || 'collections';
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${colTab}!A:E`,
+          range: `${colTab}!A:C`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[item, brand, style, category, "FALSE"]] }
-        });
-        resolve("Thành công");
-        return;
-      }
-      if (methodName === "updateCollectionStatusRow") {
-        const [rowNumber, isChecked] = args;
-        const colTab = mappings['collections'] || 'collections';
-        await gapi.client.sheets.spreadsheets.values.update({
-          spreadsheetId,
-          range: `${colTab}!E${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
-          resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
+          resource: { values: [[item, brand, category]] }
         });
         resolve("Thành công");
         return;
       }
       if (methodName === "updateCollectionRow") {
-        const [rowNumber, item, brand, style, category] = args;
+        const [rowNumber, item, brand, category] = args;
         const colTab = mappings['collections'] || 'collections';
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${colTab}!A${rowNumber}:D${rowNumber}`,
+          range: `${colTab}!A${rowNumber}:C${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[item, brand, style, category]] }
+          resource: { values: [[item, brand, category]] }
         });
         resolve("Thành công");
         return;

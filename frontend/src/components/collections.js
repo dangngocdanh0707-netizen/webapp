@@ -65,7 +65,6 @@ export function buildCollectionsGrid() {
     if (searchVal !== "") {
       const match = (item.item || "").toLowerCase().includes(searchVal) || 
                     (item.brand || "").toLowerCase().includes(searchVal) || 
-                    (item.style || "").toLowerCase().includes(searchVal) || 
                     (item.category || "").toLowerCase().includes(searchVal);
       if (!match) return false;
     }
@@ -78,17 +77,14 @@ export function buildCollectionsGrid() {
       const id = item.rowNumber;
       const name = String(item.item || "").trim();
       const brand = String(item.brand || "").trim();
-      const style = String(item.style || "").trim();
       const category = String(item.category || "").trim();
-      const isDone = item.status === true;
 
       // Uniform minimalist gray pill badge styling matching expenses category badge
       const styleClass = "bg-slate-50 text-slate-650 border-slate-200 font-semibold";
 
       const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(brand + ' ' + name)}`;
 
-      // Capitalize first letter of style/category and lowercase the rest
-      const formattedStyle = style ? (style.charAt(0).toUpperCase() + style.slice(1).toLowerCase()) : "";
+      // Capitalize first letter of category and lowercase the rest
       const formattedCategory = category ? (category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()) : "";
 
       tableBody.insertAdjacentHTML('beforeend', `
@@ -105,27 +101,14 @@ export function buildCollectionsGrid() {
           </td>
           <td class="p-4 col-view-${id}">
             <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
-              ${escapeHTML(formattedStyle)}
-            </span>
-          </td>
-          <td class="p-4 col-view-${id}">
-            <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
               ${escapeHTML(formattedCategory)}
             </span>
-          </td>
-          <td class="p-4 pl-12 text-left col-view-${id}">
-            <label class="inline-flex items-center gap-3 cursor-pointer select-none">
-              <input type="checkbox" id="col-check-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="app.collections.toggleCollectionStatusDirectly(${id}, this)">
-              <span id="col-chk-lbl-${id}" class="text-xs font-semibold tracking-wide ${isDone ? 'text-emerald-600' : 'text-slate-400'}">${isDone ? 'Completed' : 'Pending'}</span>
-            </label>
           </td>
 
           <!-- Edit inputs -->
           <td class="p-4 pl-6 hidden col-edit-${id}"><input type="text" id="col-edit-item-${id}" class="edit-input font-bold" value="${escapeHTML(name)}"></td>
           <td class="p-4 hidden col-edit-${id}"><input type="text" id="col-edit-brand-${id}" class="edit-input" value="${escapeHTML(brand)}"></td>
-          <td class="p-4 hidden col-edit-${id}"><input type="text" id="col-edit-style-${id}" class="edit-input" value="${escapeHTML(formattedStyle)}"></td>
           <td class="p-4 hidden col-edit-${id}"><input type="text" id="col-edit-cat-${id}" class="edit-input" value="${escapeHTML(formattedCategory)}"></td>
-          <td class="p-4 pl-12 text-left hidden col-edit-${id}"><span class="text-xs italic text-slate-400">Locked</span></td>
 
           <td class="p-4 pr-6 text-center">
             <div class="col-view-${id} flex items-center justify-center gap-2">
@@ -147,7 +130,7 @@ export function buildCollectionsGrid() {
       console.error("Asset Ledger Render Error:", item, rowError);
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="bg-rose-50/10">
-          <td colspan="6" class="p-4 pl-6 text-xs text-rose-800 font-medium">
+          <td colspan="4" class="p-4 pl-6 text-xs text-rose-800 font-medium">
             ⚠️ Lỗi dữ liệu dòng #${item.rowNumber || '?'}: ${escapeHTML(rowError.message)}
           </td>
         </tr>
@@ -166,14 +149,12 @@ window.app.collections.filterCollectionGrid = function() {
 window.app.collections.saveNewCollection = function() {
   const itemInput = document.getElementById('ins-col-item');
   const brandInput = document.getElementById('ins-col-brand');
-  const styleInput = document.getElementById('ins-col-style');
   const catInput = document.getElementById('ins-col-category');
 
   if (!itemInput || !brandInput) return;
 
   const item = itemInput.value.trim();
   const brand = brandInput.value.trim();
-  const style = styleInput ? styleInput.value.trim() : "Standard";
   const category = catInput ? catInput.value.trim() : "General";
 
   if (!item || !brand) {
@@ -187,9 +168,7 @@ window.app.collections.saveNewCollection = function() {
     rowNumber: newRowNumber,
     item: item,
     brand: brand,
-    style: style,
-    category: category,
-    status: false
+    category: category
   };
 
   allCollectionData.push(newObj);
@@ -198,11 +177,10 @@ window.app.collections.saveNewCollection = function() {
   // Clear inputs
   itemInput.value = "";
   brandInput.value = "";
-  if (styleInput) styleInput.value = "";
   if (catInput) catInput.value = "";
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
-  callServer("insertCollectionRow", [item, brand, style, category])
+  callServer("insertCollectionRow", [item, brand, category])
     .then(res => {
       if (res !== "Thành công") {
         rollback(res);
@@ -217,7 +195,6 @@ window.app.collections.saveNewCollection = function() {
     buildCollectionsGrid();
     itemInput.value = item;
     brandInput.value = brand;
-    if (styleInput) styleInput.value = style;
     if (catInput) catInput.value = category;
     console.error("Add failed: " + errorMessage + ". Reverted changes.");
   }
@@ -275,7 +252,6 @@ window.app.collections.toggleCollectionEdit = function(id, isEdit) {
 window.app.collections.saveCollectionItem = function(id) {
   const item = document.getElementById(`col-edit-item-${id}`).value.trim();
   const brand = document.getElementById(`col-edit-brand-${id}`).value.trim();
-  const style = document.getElementById(`col-edit-style-${id}`).value.trim();
   const category = document.getElementById(`col-edit-cat-${id}`).value.trim();
 
   if (!item || !brand) {
@@ -290,7 +266,6 @@ window.app.collections.saveCollectionItem = function(id) {
   let oldObj = { ...allCollectionData[idx] };
   allCollectionData[idx].item = item;
   allCollectionData[idx].brand = brand;
-  allCollectionData[idx].style = style;
   allCollectionData[idx].category = category;
 
   window.app.collections.toggleCollectionEdit(id, false);
@@ -298,7 +273,7 @@ window.app.collections.saveCollectionItem = function(id) {
   console.log("Asset successfully updated! 🎉");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
-  callServer("updateCollectionRow", [id, item, brand, style, category])
+  callServer("updateCollectionRow", [id, item, brand, category])
     .then(res => {
       if (res !== "Thành công") {
         rollback(res);
@@ -315,50 +290,5 @@ window.app.collections.saveCollectionItem = function(id) {
     buildCollectionsGrid();
     window.app.collections.toggleCollectionEdit(id, true);
     console.error("Update failed: " + errorMessage + ". Reverted changes.");
-  }
-};
-
-window.app.collections.toggleCollectionStatusDirectly = function(rowNumber, checkboxEl) {
-  const isChecked = checkboxEl.checked;
-  const labelEl = document.getElementById(`col-chk-lbl-${rowNumber}`);
-  
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
-  if (labelEl) {
-    labelEl.innerText = isChecked ? "Completed" : "Pending";
-    labelEl.className = isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
-  }
-
-  let idx = allCollectionData.findIndex(item => item.rowNumber == rowNumber);
-  let oldStatus = false;
-  if (idx !== -1) {
-    oldStatus = allCollectionData[idx].status;
-    allCollectionData[idx].status = isChecked;
-  }
-
-  console.log(isChecked ? "Asset status updated successfully! 🎉" : "Asset status reverted successfully");
-  buildCollectionsGrid();
- 
-  // 2. Gửi yêu cầu ngầm lên Google Sheets
-  callServer("updateCollectionStatusRow", [rowNumber, isChecked])
-    .then(res => {
-      if (res !== "Thành công") {
-        rollback(res);
-      }
-    })
-    .catch(err => {
-      rollback(err.message);
-    });
-
-  function rollback(errorMessage) {
-    if (idx !== -1) {
-      allCollectionData[idx].status = oldStatus;
-    }
-    checkboxEl.checked = oldStatus;
-    if (labelEl) {
-      labelEl.innerText = oldStatus ? "Completed" : "Pending";
-      labelEl.className = oldStatus ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
-    }
-    buildCollectionsGrid();
-    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
