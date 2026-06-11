@@ -88,8 +88,8 @@ var Sc=Object.defineProperty;var Tc=(n,t,e)=>t in n?Sc(n,t,{enumerable:!0,config
         
         <td class="p-4 text-center">
           <div class="v-view-${x} flex justify-center gap-2">
-            <button onclick="toggleVocabEdit(${x}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="deleteVocab(${x})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Delete"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="toggleVocabEdit(${x}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="deleteVocab(${x})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden v-edit-${x} flex justify-center gap-1.5">
             <button onclick="saveVocab(${x})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
@@ -189,10 +189,10 @@ If the user is just saying hello, asking a general question, or the request is a
               </div>
             </div>
             <div class="flex flex-col gap-1 self-end mb-1">
-              <button data-text="${k(e.text)}" onclick="window.speakAiResponse(this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer" title="Nghe phát âm">
+              <button data-text="${k(e.text)}" onclick="window.speakAiResponse(this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
                 <i class="fa-solid fa-volume-high text-[10px]"></i>
               </button>
-              <button data-text="${k(e.text)}" onclick="window.translateAiMessage(${i}, this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer" title="Xem bản dịch tiếng Việt">
+              <button data-text="${k(e.text)}" onclick="window.translateAiMessage(${i}, this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
                 <i class="fa-solid fa-language text-[11px]"></i>
               </button>
             </div>
@@ -212,10 +212,10 @@ If the user is just saying hello, asking a general question, or the request is a
             </div>
           </div>
           <div class="flex flex-col gap-1 self-end mb-1">
-            <button data-text="${k(e.text)}" onclick="window.speakAiResponse(this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer" title="Nghe phát âm">
+            <button data-text="${k(e.text)}" onclick="window.speakAiResponse(this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
               <i class="fa-solid fa-volume-high text-[10px]"></i>
             </button>
-            <button data-text="${k(e.text)}" onclick="window.translateAiMessage(${i}, this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer" title="Xem bản dịch tiếng Việt">
+            <button data-text="${k(e.text)}" onclick="window.translateAiMessage(${i}, this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
               <i class="fa-solid fa-language text-[11px]"></i>
             </button>
           </div>
@@ -229,7 +229,7 @@ If the user is just saying hello, asking a general question, or the request is a
           <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-slate-50 text-slate-500 border border-slate-200">${i}</span>
           <div class="flex items-center gap-2">
             <span class="text-xs font-semibold text-slate-500">${s}</span>
-            <button onclick="window.deleteGrammarCard('${e.rowNumber}')" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Delete">
+            <button onclick="window.deleteGrammarCard('${e.rowNumber}')" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition">
               <i class="fa-solid fa-trash text-[11px]"></i>
             </button>
           </div>
@@ -295,8 +295,8 @@ If the user is just saying hello, asking a general question, or the request is a
         
         <td class="p-4 text-center">
           <div class="link-view-${l} flex justify-center gap-3">
-            <button onclick="toggleLinkEdit(${l}, true)" title="Edit" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="deleteLink(${l})" title="Delete" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="toggleLinkEdit(${l}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="deleteLink(${l})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden link-edit-${l} flex justify-center gap-1.5">
             <button onclick="saveLink(${l})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
@@ -316,9 +316,9 @@ If the user is just saying hello, asking a general question, or the request is a
         
         <td class="p-4 text-center">
           <div class="prompt-view-${l} flex justify-center gap-3">
-            <button onclick="copyPromptText(${l})" title="Copy Prompt" class="text-slate-400 hover:text-emerald-600 p-1 cursor-pointer transition"><i id="prompt-copy-icon-${l}" class="fa-solid fa-copy"></i></button>
-            <button onclick="togglePromptEdit(${l}, true)" title="Edit" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="deletePrompt(${l})" title="Delete" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="copyPromptText(${l})" class="text-slate-400 hover:text-emerald-600 p-1 cursor-pointer transition"><i id="prompt-copy-icon-${l}" class="fa-solid fa-copy"></i></button>
+            <button onclick="togglePromptEdit(${l}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="deletePrompt(${l})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden prompt-edit-${l} flex justify-center gap-1.5">
             <button onclick="savePrompt(${l})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
@@ -377,10 +377,10 @@ If the user is just saying hello, asking a general question, or the request is a
           <div class="task-view-${r} flex items-center gap-2 ${d?"text-slate-400 font-medium":""}">
             <span class="task-text-display">${k(c)}</span>
             <div class="flex items-center gap-1.5 shrink-0 ml-auto select-none">
-              <button onclick="window.toggleTaskUrgent(${r})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${u?"text-slate-700 bg-slate-100":"text-slate-300"}" title="Khẩn cấp: ${u?"Có":"Không"}">
+              <button onclick="window.toggleTaskUrgent(${r})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${u?"text-slate-700 bg-slate-100":"text-slate-300"}">
                 <i class="fa-solid fa-bolt-lightning"></i>
               </button>
-              <button onclick="window.toggleTaskImportant(${r})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${h?"text-slate-700 bg-slate-100":"text-slate-300"}" title="Quan trọng: ${h?"Có":"Không"}">
+              <button onclick="window.toggleTaskImportant(${r})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${h?"text-slate-700 bg-slate-100":"text-slate-300"}">
                 <i class="fa-solid fa-star"></i>
               </button>
             </div>
@@ -411,8 +411,8 @@ If the user is just saying hello, asking a general question, or the request is a
         <!-- Column 4: Action -->
         <td class="p-4 text-center">
           <div class="task-view-${r} flex justify-center gap-2">
-            <button onclick="toggleTaskEdit(${r}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="deleteTask(${r})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="toggleTaskEdit(${r}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="deleteTask(${r})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden task-edit-${r} flex justify-center gap-1.5">
             <button onclick="saveTask(${r})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
@@ -430,8 +430,8 @@ If the user is just saying hello, asking a general question, or the request is a
           </span>
         </label>
         <div class="flex items-center gap-1.5 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 shrink-0 select-none">
-          <button onclick="toggleTaskEditFromMatrix(${d})" class="text-slate-450 hover:text-blue-600 p-0.5 cursor-pointer text-[10px]" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-          <button onclick="deleteTask(${d})" class="text-slate-455 hover:text-rose-600 p-0.5 cursor-pointer text-[10px]" title="Delete"><i class="fa-solid fa-trash"></i></button>
+          <button onclick="toggleTaskEditFromMatrix(${d})" class="text-slate-450 hover:text-blue-600 p-0.5 cursor-pointer text-[10px]"><i class="fa-solid fa-pen-to-square"></i></button>
+          <button onclick="deleteTask(${d})" class="text-slate-455 hover:text-rose-600 p-0.5 cursor-pointer text-[10px]"><i class="fa-solid fa-trash"></i></button>
         </div>
       </li>
     `;p&&g?n.insertAdjacentHTML("beforeend",m):!p&&g?t.insertAdjacentHTML("beforeend",m):p&&!g?e.insertAdjacentHTML("beforeend",m):i.insertAdjacentHTML("beforeend",m)})}window.switchTaskView=function(n){const t=document.getElementById("task-list-view-container"),e=document.getElementById("task-matrix-view-container"),i=document.getElementById("btn-task-view-list"),s=document.getElementById("btn-task-view-matrix");if(!t||!e||!i||!s)return;const o="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition bg-white text-blue-600 shadow-2xs cursor-pointer flex items-center gap-1",a="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition text-slate-500 hover:text-slate-700 cursor-pointer flex items-center gap-1";n==="list"?(t.classList.remove("hidden"),e.classList.add("hidden"),i.className=o,s.className=a):(t.classList.add("hidden"),e.classList.remove("hidden"),i.className=a,s.className=o,ia())};window.toggleTaskUrgent=function(n){let t=j.findIndex(o=>o.rowNumber==n);if(t===-1)return;let e=!j[t].urgent,i=j[t].urgent;j[t].urgent=e,Dt(),console.log(e?"Đã đánh dấu Khẩn cấp! ⚡":"Đã bỏ đánh dấu Khẩn cấp"),N("updateTaskUrgentRow",[n,e]).then(o=>{o!=="Thành công"&&s(o)}).catch(o=>{s(o.message)});function s(o){j[t].urgent=i,Dt(),console.error("Lỗi đồng bộ: "+o)}};window.toggleTaskImportant=function(n){let t=j.findIndex(o=>o.rowNumber==n);if(t===-1)return;let e=!j[t].important,i=j[t].important;j[t].important=e,Dt(),console.log(e?"Đã đánh dấu Quan trọng! ⭐":"Đã bỏ đánh dấu Quan trọng"),N("updateTaskImportantRow",[n,e]).then(o=>{o!=="Thành công"&&s(o)}).catch(o=>{s(o.message)});function s(o){j[t].important=i,Dt(),console.error("Lỗi đồng bộ: "+o)}};window.toggleTaskEditFromMatrix=function(n){window.switchTaskView("list");const t=document.getElementById("taskStatusFilter");t&&(t.value="All");const e=document.getElementById("taskSearchInput");e&&(e.value=""),Dt(),window.toggleTaskEdit(n,!0),setTimeout(()=>{const i=document.getElementById(`task-row-${n}`);i&&i.scrollIntoView({behavior:"smooth",block:"center"})},100)};let G=[],wi=null;function dm(n,t){let e=new Date;e.setHours(0,0,0,0);const i=e.getTime();G=(n||[]).filter(f=>f.date?yt(f.date)<=i:!1),wi=t;const s=[...new Set(G.map(f=>f.habit).filter(f=>f&&f.trim()!==""))],o=document.getElementById("total-unique-habits");o&&(o.innerText=s.length);let a=e.getFullYear()+"-"+String(e.getMonth()+1).padStart(2,"0")+"-"+String(e.getDate()).padStart(2,"0"),r=[...new Set(G.map(f=>f.date))];r.sort((f,p)=>yt(f)-yt(p));const l=document.getElementById("habitDateFilter");if(l){l.innerHTML='<option value="All">All Days</option>';let f=[...r].sort((g,m)=>yt(m)-yt(g));f.forEach(g=>{l.insertAdjacentHTML("beforeend",`<option value="${g}">${el(g)}</option>`)});let p=f[0]||a;l.value=p,ee(),Xt(p)}if(G.length===0){const f=document.getElementById("avg-habit-performance");f&&(f.innerText="0%");return}let c=[],d=0,u=[...r];u.sort((f,p)=>yt(f)-yt(p)),u.forEach(f=>{let p=G.filter(x=>x.date===f),g=p.filter(x=>x.status===!0||x.status==="TRUE"||x.status==="√"||x.status==="checked"),m=p.length>0?Math.round(g.length/p.length*100):0;c.push(m),d+=m});const h=document.getElementById("avg-habit-performance");h&&(h.innerText=(u.length>0?Math.round(d/u.length):0)+"%"),zg(u,c,f=>{l&&(l.value=f,window.switchHabitView("list"))})}function um(){const n=[];for(let t=6;t>=0;t--){const e=new Date;e.setDate(e.getDate()-t);const i=e.getFullYear(),s=String(e.getMonth()+1).padStart(2,"0"),o=String(e.getDate()).padStart(2,"0");n.push({dateStr:`${i}-${s}-${o}`,label:`${o}/${s}`})}return n}function ee(){const n=document.getElementById("table-habit-grid");if(!n)return;const t=n.querySelector("thead tr"),e=n.querySelector("tbody");if(!t||!e)return;const i=um();t.innerHTML='<th class="p-4 pl-6 text-left">HABIT</th>',i.forEach(o=>{t.insertAdjacentHTML("beforeend",`<th class="p-4 text-center w-24 text-slate-500 font-semibold text-xs">${o.label}</th>`)}),e.innerHTML="";const s=[...new Set(G.map(o=>o.habit).filter(o=>o&&o.trim()!==""))].sort();if(s.length===0){e.innerHTML='<tr><td colspan="8" class="p-8 text-center text-slate-500 italic">No habits added. Create one above!</td></tr>';return}s.forEach(o=>{let a=`
@@ -466,7 +466,9 @@ If the user is just saying hello, asking a general question, or the request is a
     `)})}function Oe(){let n=[...new Set(G.map(a=>a.date))].sort((a,r)=>yt(a)-yt(r)),t=[],e=0;n.forEach(a=>{let r=G.filter(d=>d.date===a),l=r.filter(d=>d.status===!0||d.status==="TRUE"||d.status==="√"||d.status==="checked"),c=r.length>0?Math.round(l.length/r.length*100):0;t.push(c),e+=c});const i=document.getElementById("avg-habit-performance");i&&(i.innerText=(n.length>0?Math.round(e/n.length):0)+"%");const s=[...new Set(G.map(a=>a.habit).filter(a=>a&&a.trim()!==""))],o=document.getElementById("total-unique-habits");o&&(o.innerText=s.length),Vg(t)}window.filterHabitTable=function(){const n=document.getElementById("habitDateFilter");n&&Xt(n.value)};window.switchHabitView=function(n){const t=document.getElementById("habit-grid-view-container"),e=document.getElementById("habit-list-view-container"),i=document.getElementById("habit-list-filter-wrapper"),s=document.getElementById("btn-habit-view-grid"),o=document.getElementById("btn-habit-view-list");if(!t||!e||!i||!s||!o)return;const a="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition bg-white text-blue-600 shadow-2xs cursor-pointer flex items-center gap-1",r="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition text-slate-500 hover:text-slate-700 cursor-pointer flex items-center gap-1";if(n==="grid")t.classList.remove("hidden"),e.classList.add("hidden"),i.classList.add("hidden"),s.className=a,o.className=r,ee();else{t.classList.add("hidden"),e.classList.remove("hidden"),i.classList.remove("hidden"),s.className=r,o.className=a;const l=document.getElementById("habitDateFilter");l&&Xt(l.value)}};window.toggleHabitStatusDirectly=function(n,t){let e=t.checked;const i=document.getElementById("habitDateFilter");let s=G.findIndex(r=>r.rowNumber==n),o=!1;s!==-1&&(o=G[s].status,G[s].status=e),Oe(),ee(),i&&Xt(i.value),console.log(e?"Completed habit!":"Marked habit as pending"),N("updateHabitStatusRow",[n,e]).then(r=>{r!=="Thành công"&&a(r)}).catch(r=>{a(r.message)});function a(r){s!==-1&&(G[s].status=o),Oe(),ee(),i&&Xt(i.value),console.error("Sync error: "+r)}};window.toggleHabitCell=function(n,t,e,i){let s=i.checked;if(n!=null){let c=function(d){a!==-1&&(G[a].status=r),i.checked=r,Oe(),ee(),l&&Xt(l.value),console.error("Sync error: "+d)};var o=c;let a=G.findIndex(d=>d.rowNumber==n),r=!1;a!==-1&&(r=G[a].status,G[a].status=s),Oe(),ee();const l=document.getElementById("habitDateFilter");l&&Xt(l.value),console.log(s?"Completed habit!":"Marked habit as pending"),N("updateHabitStatusRow",[n,s]).then(d=>{d!=="Thành công"&&c(d)}).catch(d=>{c(d.message)})}else{let c=function(u){G=G.filter(h=>h.rowNumber!==a),Oe(),ee(),l&&Xt(l.value),console.error("Sync error: "+u)};var o=c;let a=Math.max(...G.map(u=>u.rowNumber),1)+1,r={rowNumber:a,date:t,habit:e,status:s};G.push(r),Oe(),ee();const l=document.getElementById("habitDateFilter");l&&Xt(l.value),console.log("Completed habit!"),N("insertHabitRow",[t,e,s]).then(u=>{u!=="Thành công"?c("Server rejected save"):wi&&wi(!0)}).catch(u=>{c(u.message)})}};window.addHabitDirectly=function(){const n=document.getElementById("ins-habit-name");if(!n)return;const t=n.value.trim();if(!t){console.warn("Please enter a habit name!");return}const e=new Date,i=e.getFullYear(),s=String(e.getMonth()+1).padStart(2,"0"),o=String(e.getDate()).padStart(2,"0"),a=`${i}-${s}-${o}`;if(G.some(h=>h.habit.toLowerCase()===t.toLowerCase()&&h.date===a)){console.warn("This habit is already tracked for today!");return}let l=Math.max(...G.map(h=>h.rowNumber),1)+1,c={rowNumber:l,date:a,habit:t,status:!1};G.push(c),n.value="",Oe(),ee();const d=document.getElementById("habitDateFilter");d&&Xt(d.value),console.log("Habit added successfully!"),N("insertHabitRow",[a,t,!1]).then(h=>{h!=="Thành công"?u("Server rejected save"):wi&&wi(!0)}).catch(h=>{u(h.message)});function u(h){G=G.filter(f=>f.rowNumber!==l),Oe(),ee(),d&&Xt(d.value),console.error("Sync error: "+h)}};let Z=[];function hm(n,t){Z=n||[];let e=new Set,i=new Set;Z.forEach(c=>{c&&(c.category&&e.add(String(c.category).trim()),c.city&&i.add(String(c.city).trim()))});const s=document.getElementById("mapCityFilter");s&&(s.innerHTML='<option value="All">All Cities</option>',i.forEach(c=>{s.insertAdjacentHTML("beforeend",`<option value="${k(c)}">${k(c)}</option>`)}));const o=document.getElementById("mapCategoryFilter");o&&(o.innerHTML='<option value="All">All Categories</option>',e.forEach(c=>{o.insertAdjacentHTML("beforeend",`<option value="${k(c)}">${k(c)}</option>`)}));const a=document.getElementById("total-map-places"),r=document.getElementById("total-map-categories"),l=Z.filter(c=>c&&c.place);a&&(a.innerText=l.length),r&&(r.innerText=e.size),ce()}function ce(){const n=document.getElementById("map-places-table-body");if(!n)return;n.innerHTML="";const t=document.getElementById("mapSearchInput")?document.getElementById("mapSearchInput").value.toLowerCase().trim():"",e=document.getElementById("mapCityFilter")?document.getElementById("mapCityFilter").value:"All",i=document.getElementById("mapCategoryFilter")?document.getElementById("mapCategoryFilter").value:"All",s=document.getElementById("mapCheckFilter")?document.getElementById("mapCheckFilter").value:"All";Z.forEach(o=>{if(!(!o||!o.place))try{const a=o.rowNumber,r=String(o.place||"").trim(),l=String(o.city||"").trim(),c=String(o.category||"").trim(),d=String(o.address||"").trim(),u=o.status===!0;if(e!=="All"&&l!==e||i!=="All"&&c!==i||s==="Explored"&&!u||s==="Unexplored"&&u||t!==""&&!(r.toLowerCase().includes(t)||c.toLowerCase().includes(t)||d.toLowerCase().includes(t)||l.toLowerCase().includes(t)))return;const h=`https://www.google.com/search?q=${encodeURIComponent(r+" "+l)}`,f="bg-slate-50 text-slate-650 border-slate-200 font-semibold";n.insertAdjacentHTML("beforeend",`
         <tr class="hover:bg-slate-900/5 transition group">
           <td class="p-4 pl-6 font-semibold text-slate-800 text-sm map-view-${a}">
-            ${k(r)}
+            <a href="${h}" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline transition cursor-pointer">
+              ${k(r)}
+            </a>
           </td>
           <td class="p-4 map-view-${a}">
             <span class="px-2 py-0.5 rounded-md text-xs border ${f}">
@@ -497,13 +499,10 @@ If the user is just saying hello, asking a general question, or the request is a
 
           <td class="p-4 pr-6 text-center">
             <div class="map-view-${a} flex items-center justify-center gap-2">
-              <a href="${h}" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Explore">
-                <i class="fa-solid fa-magnifying-glass text-sm"></i>
-              </a>
-              <button onclick="toggleMapEdit(${a}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Edit">
+              <button onclick="toggleMapEdit(${a}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button onclick="deleteMapPlace(${a})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Delete">
+              <button onclick="deleteMapPlace(${a})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
@@ -522,7 +521,9 @@ If the user is just saying hello, asking a general question, or the request is a
       `)}})}window.filterMapGrid=function(){ce()};window.addMapRow=function(){const n=document.getElementById("ins-map-place"),t=document.getElementById("ins-map-city"),e=document.getElementById("ins-map-cat"),i=document.getElementById("ins-map-address");if(!n||!t)return;const s=n.value.trim(),o=t.value.trim(),a=e?e.value.trim():"",r=i?i.value.trim():"";if(!s||!o){console.warn("Vui lòng nhập Tên địa điểm và Thành phố!");return}let l=Math.max(...Z.map(u=>u.rowNumber),1)+1,c={rowNumber:l,place:s,city:o,category:a,address:r,status:!1};Z.push(c),ce(),n.value="",t.value="",e&&(e.value=""),i&&(i.value=""),N("insertMapRow",[s,o,a,r]).then(u=>{u!=="Thành công"&&d(u)}).catch(u=>{d(u.message)});function d(u){Z=Z.filter(h=>h.rowNumber!==l),ce(),n.value=s,t.value=o,e&&(e.value=a),i&&(i.value=r),console.error("Lỗi đồng bộ: "+u+". Đã khôi phục trạng thái cũ.")}};window.toggleMapCheckInDirectly=function(n,t){const e=t.checked,i=document.getElementById(`map-chk-lbl-${n}`);i&&(i.innerText=e?"Completed":"Pending",i.className=e?"text-xs font-semibold text-emerald-600":"text-xs font-semibold text-slate-400");let s=Z.findIndex(r=>r.rowNumber==n),o=!1;s!==-1&&(o=Z[s].status,Z[s].status=e),console.log(e?"Đã check-in chinh phục địa điểm này! 🎉":"Đã hủy thám hiểm địa điểm"),ce(),N("updateMapCheckStatusRow",[n,e]).then(r=>{r!=="Thành công"&&a(r)}).catch(r=>{a(r.message)});function a(r){if(s!==-1&&(Z[s].status=o),t.checked=o,i){let l=o===!0;i.innerText=l?"Completed":"Pending",i.className=l?"text-xs font-semibold text-emerald-600":"text-xs font-semibold text-slate-400"}ce(),console.error("Lỗi đồng bộ: "+r+". Đã khôi phục trạng thái cũ.")}};window.deleteMapPlace=function(n){let t=Z.findIndex(o=>o.rowNumber==n);if(t===-1)return;let e=Z[t],i=t;Z.splice(t,1),Z.forEach(o=>{o.rowNumber>n&&o.rowNumber--}),ce(),console.log("Đã xóa địa điểm thành công!"),N("deleteMapRow",[n]).then(o=>{o!=="Thành công"&&s(o)}).catch(o=>{s(o.message)});function s(o){Z.forEach(a=>{a.rowNumber>=n&&a.rowNumber++}),Z.splice(i,0,e),ce(),console.error("Lỗi xóa: "+o+". Đã khôi phục trạng thái cũ.")}};window.toggleMapEdit=function(n,t){document.querySelectorAll(`.map-view-${n}`).forEach(e=>t?e.classList.add("hidden"):e.classList.remove("hidden")),document.querySelectorAll(`.map-edit-${n}`).forEach(e=>t?e.classList.remove("hidden"):e.classList.add("hidden"))};window.saveMapPlace=function(n){const t=document.getElementById(`map-edit-place-${n}`).value.trim(),e=document.getElementById(`map-edit-city-${n}`).value.trim(),i=document.getElementById(`map-edit-cat-${n}`).value.trim(),s=document.getElementById(`map-edit-address-${n}`).value.trim();if(!t||!e){console.warn("Vui lòng nhập Tên địa điểm và Thành phố!");return}let o=Z.findIndex(l=>l.rowNumber==n);if(o===-1)return;let a={...Z[o]};Z[o].place=t,Z[o].city=e,Z[o].category=i,Z[o].address=s,window.toggleMapEdit(n,!1),ce(),console.log("Đã cập nhật địa điểm thành công! 🎉"),N("updateMapRow",[n,t,e,i,s]).then(l=>{l!=="Thành công"&&r(l)}).catch(l=>{r(l.message)});function r(l){o!==-1&&(Z[o]=a),ce(),window.toggleMapEdit(n,!0),console.error("Lỗi cập nhật: "+l+". Đã khôi phục trạng thái cũ.")}};let Q=[];function fm(n,t){Q=n||[];let e=new Set,i=new Set;Q.forEach(d=>{d&&(d.brand&&e.add(String(d.brand).trim()),d.category&&i.add(String(d.category).trim()))});const s=document.getElementById("collectionBrandFilter");s&&(s.innerHTML='<option value="All">All Brands</option>',e.forEach(d=>{s.insertAdjacentHTML("beforeend",`<option value="${k(d)}">${k(d)}</option>`)}));const o=document.getElementById("collectionCategoryFilter");o&&(o.innerHTML='<option value="All">All Categories</option>',i.forEach(d=>{o.insertAdjacentHTML("beforeend",`<option value="${k(d)}">${k(d)}</option>`)}));const a=document.getElementById("total-col-items"),r=document.getElementById("total-col-brands"),l=document.getElementById("total-col-categories"),c=Q.filter(d=>d&&d.item);a&&(a.innerText=c.length),r&&(r.innerText=e.size),l&&(l.innerText=i.size),de()}function de(){const n=document.getElementById("collections-table-body");if(!n)return;n.innerHTML="";const t=document.getElementById("collectionSearchInput")?document.getElementById("collectionSearchInput").value.toLowerCase().trim():"",e=document.getElementById("collectionBrandFilter")?document.getElementById("collectionBrandFilter").value:"All",i=document.getElementById("collectionCategoryFilter")?document.getElementById("collectionCategoryFilter").value:"All";Q.filter(o=>!(!o||!o.item||e!=="All"&&o.brand!==e||i!=="All"&&o.category!==i||t!==""&&!((o.item||"").toLowerCase().includes(t)||(o.brand||"").toLowerCase().includes(t)||(o.style||"").toLowerCase().includes(t)||(o.category||"").toLowerCase().includes(t)))).forEach(o=>{try{const a=o.rowNumber,r=String(o.item||"").trim(),l=String(o.brand||"").trim(),c=String(o.style||"").trim(),d=String(o.category||"").trim(),u=o.status===!0,h="bg-slate-50 text-slate-650 border-slate-200 font-semibold",f=`https://www.google.com/search?q=${encodeURIComponent(l+" "+r)}`,p=c?c.charAt(0).toUpperCase()+c.slice(1).toLowerCase():"",g=d?d.charAt(0).toUpperCase()+d.slice(1).toLowerCase():"";n.insertAdjacentHTML("beforeend",`
         <tr class="hover:bg-slate-900/5 transition group">
           <td class="p-4 pl-6 font-semibold text-slate-800 text-sm col-view-${a}">
-            ${k(r)}
+            <a href="${f}" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline transition cursor-pointer">
+              ${k(r)}
+            </a>
           </td>
           <td class="p-4 col-view-${a}">
             <span class="px-2 py-0.5 rounded-md text-xs border ${h}">
@@ -555,13 +556,10 @@ If the user is just saying hello, asking a general question, or the request is a
 
           <td class="p-4 pr-6 text-center">
             <div class="col-view-${a} flex items-center justify-center gap-2">
-              <a href="${f}" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Explore">
-                <i class="fa-solid fa-magnifying-glass text-sm"></i>
-              </a>
-              <button onclick="toggleCollectionEdit(${a}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Edit">
+              <button onclick="toggleCollectionEdit(${a}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button onclick="deleteCollectionItem(${a})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Delete">
+              <button onclick="deleteCollectionItem(${a})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
