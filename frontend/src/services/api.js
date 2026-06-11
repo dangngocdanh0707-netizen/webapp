@@ -13,6 +13,29 @@ let gapiInitialized = false;
 let isManualLogin = false;
 let sheetIdMap = {}; // Cache tên sheet -> sheetId để xóa dòng
 let resolvedTabsCache = {}; // Cache ánh xạ tên tab tự động phân giải
+let tokenRefreshTimeout = null;
+
+// Tự động gia hạn token ngầm trước khi hết hạn
+function scheduleTokenSilentRefresh(expiresIn) {
+  if (tokenRefreshTimeout) {
+    clearTimeout(tokenRefreshTimeout);
+  }
+  
+  // Gia hạn trước khi hết hạn 5 phút (ví dụ 55 phút nếu hết hạn sau 60 phút)
+  const delayMs = (expiresIn - 300) * 1000;
+  if (delayMs <= 0) return;
+  
+  tokenRefreshTimeout = setTimeout(() => {
+    if (tokenClient && isGoogleConnected()) {
+      console.log("[api.js] Token sắp hết hạn, đang tự động làm mới ngầm...");
+      try {
+        tokenClient.requestAccessToken({ prompt: 'none' });
+      } catch (e) {
+        console.warn("[api.js] Tự động làm mới ngầm định kỳ thất bại:", e);
+      }
+    }
+  }, delayMs);
+}
 
 // Lấy thông tin cấu hình credentials từ localStorage
 export function getCredentials() {
@@ -132,6 +155,11 @@ export function initGoogleAuth() {
                 localStorage.setItem("GOOGLE_ACCESS_TOKEN", JSON.stringify(tokenResponse));
                 gapi.client.setToken(tokenResponse);
 
+                // Lên lịch tự động làm mới ngầm (silent refresh)
+                if (tokenResponse.expires_in) {
+                  scheduleTokenSilentRefresh(tokenResponse.expires_in);
+                }
+
                 if (isManualLogin) {
                   // Đăng nhập thủ công thì tải lại trang để nạp lại dữ liệu Sheets
                   window.location.reload();
@@ -174,6 +202,14 @@ export function initGoogleAuth() {
                 }
               } else {
                 gapi.client.setToken(cachedToken);
+
+                // Tính toán thời gian còn lại của token và lên lịch tự động làm mới ngầm
+                const elapsedSeconds = Math.floor((Date.now() - cachedToken.timestamp) / 1000);
+                const timeLeft = cachedToken.expires_in - elapsedSeconds;
+                if (timeLeft > 0) {
+                  scheduleTokenSilentRefresh(timeLeft);
+                }
+
                 authResolved = true;
                 resolve(true);
               }
