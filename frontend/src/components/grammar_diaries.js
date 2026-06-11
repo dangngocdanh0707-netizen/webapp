@@ -46,7 +46,7 @@ function renderGrammarCards() {
           <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-slate-50 text-slate-500 border border-slate-200">${scenario}</span>
           <div class="flex items-center gap-2">
             <span class="text-xs font-semibold text-slate-500">${date}</span>
-            <button onclick="window.deleteGrammarCard('${item.rowNumber}')" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Delete">
+            <button onclick="window.deleteGrammarCard('${item.rowNumber}')" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition">
               <i class="fa-solid fa-trash text-[11px]"></i>
             </button>
           </div>

@@ -88,10 +88,10 @@ export function buildTaskTable() {
           <div class="task-view-${id} flex items-center gap-2 ${isDone ? 'text-slate-400 font-medium' : ''}">
             <span class="task-text-display">${escapeHTML(taskText)}</span>
             <div class="flex items-center gap-1.5 shrink-0 ml-auto select-none">
-              <button onclick="window.toggleTaskUrgent(${id})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${isUrgent ? 'text-slate-700 bg-slate-100' : 'text-slate-300'}" title="Khẩn cấp: ${isUrgent ? 'Có' : 'Không'}">
+              <button onclick="window.toggleTaskUrgent(${id})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${isUrgent ? 'text-slate-700 bg-slate-100' : 'text-slate-300'}">
                 <i class="fa-solid fa-bolt-lightning"></i>
               </button>
-              <button onclick="window.toggleTaskImportant(${id})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${isImportant ? 'text-slate-700 bg-slate-100' : 'text-slate-300'}" title="Quan trọng: ${isImportant ? 'Có' : 'Không'}">
+              <button onclick="window.toggleTaskImportant(${id})" class="w-6 h-6 rounded-md hover:bg-slate-100 flex items-center justify-center text-xs transition cursor-pointer ${isImportant ? 'text-slate-700 bg-slate-100' : 'text-slate-300'}">
                 <i class="fa-solid fa-star"></i>
               </button>
             </div>
@@ -122,8 +122,8 @@ export function buildTaskTable() {
         <!-- Column 4: Action -->
         <td class="p-4 text-center">
           <div class="task-view-${id} flex justify-center gap-2">
-            <button onclick="toggleTaskEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="deleteTask(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="toggleTaskEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="deleteTask(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden task-edit-${id} flex justify-center gap-1.5">
             <button onclick="saveTask(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
@@ -385,8 +385,8 @@ export function buildTaskMatrix() {
           </span>
         </label>
         <div class="flex items-center gap-1.5 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 shrink-0 select-none">
-          <button onclick="toggleTaskEditFromMatrix(${id})" class="text-slate-450 hover:text-blue-600 p-0.5 cursor-pointer text-[10px]" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
-          <button onclick="deleteTask(${id})" class="text-slate-455 hover:text-rose-600 p-0.5 cursor-pointer text-[10px]" title="Delete"><i class="fa-solid fa-trash"></i></button>
+          <button onclick="toggleTaskEditFromMatrix(${id})" class="text-slate-450 hover:text-blue-600 p-0.5 cursor-pointer text-[10px]"><i class="fa-solid fa-pen-to-square"></i></button>
+          <button onclick="deleteTask(${id})" class="text-slate-455 hover:text-rose-600 p-0.5 cursor-pointer text-[10px]"><i class="fa-solid fa-trash"></i></button>
         </div>
       </li>
     `;

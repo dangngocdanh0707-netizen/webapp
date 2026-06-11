@@ -171,10 +171,10 @@ function renderAiChatBubbles() {
               </div>
             </div>
             <div class="flex flex-col gap-1 self-end mb-1">
-              <button data-text="${escapeHTML(msg.text)}" onclick="window.speakAiResponse(this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer" title="Nghe phát âm">
+              <button data-text="${escapeHTML(msg.text)}" onclick="window.speakAiResponse(this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
                 <i class="fa-solid fa-volume-high text-[10px]"></i>
               </button>
-              <button data-text="${escapeHTML(msg.text)}" onclick="window.translateAiMessage(${index}, this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer" title="Xem bản dịch tiếng Việt">
+              <button data-text="${escapeHTML(msg.text)}" onclick="window.translateAiMessage(${index}, this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
                 <i class="fa-solid fa-language text-[11px]"></i>
               </button>
             </div>
@@ -198,10 +198,10 @@ function renderAiChatBubbles() {
             </div>
           </div>
           <div class="flex flex-col gap-1 self-end mb-1">
-            <button data-text="${escapeHTML(msg.text)}" onclick="window.speakAiResponse(this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer" title="Nghe phát âm">
+            <button data-text="${escapeHTML(msg.text)}" onclick="window.speakAiResponse(this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
               <i class="fa-solid fa-volume-high text-[10px]"></i>
             </button>
-            <button data-text="${escapeHTML(msg.text)}" onclick="window.translateAiMessage(${index}, this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer" title="Xem bản dịch tiếng Việt">
+            <button data-text="${escapeHTML(msg.text)}" onclick="window.translateAiMessage(${index}, this.dataset.text)" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition cursor-pointer">
               <i class="fa-solid fa-language text-[11px]"></i>
             </button>
           </div>

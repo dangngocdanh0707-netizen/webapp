@@ -94,7 +94,9 @@ export function buildCollectionsGrid() {
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition group">
           <td class="p-4 pl-6 font-semibold text-slate-800 text-sm col-view-${id}">
-            ${escapeHTML(name)}
+            <a href="${searchUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline transition cursor-pointer">
+              ${escapeHTML(name)}
+            </a>
           </td>
           <td class="p-4 col-view-${id}">
             <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
@@ -127,13 +129,10 @@ export function buildCollectionsGrid() {
 
           <td class="p-4 pr-6 text-center">
             <div class="col-view-${id} flex items-center justify-center gap-2">
-              <a href="${searchUrl}" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Explore">
-                <i class="fa-solid fa-magnifying-glass text-sm"></i>
-              </a>
-              <button onclick="toggleCollectionEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition" title="Edit">
+              <button onclick="toggleCollectionEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button onclick="deleteCollectionItem(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition" title="Delete">
+              <button onclick="deleteCollectionItem(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>

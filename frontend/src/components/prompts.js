@@ -62,9 +62,9 @@ export function buildPromptTable() {
         
         <td class="p-4 text-center">
           <div class="prompt-view-${id} flex justify-center gap-3">
-            <button onclick="copyPromptText(${id})" title="Copy Prompt" class="text-slate-400 hover:text-emerald-600 p-1 cursor-pointer transition"><i id="prompt-copy-icon-${id}" class="fa-solid fa-copy"></i></button>
-            <button onclick="togglePromptEdit(${id}, true)" title="Edit" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="deletePrompt(${id})" title="Delete" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="copyPromptText(${id})" class="text-slate-400 hover:text-emerald-600 p-1 cursor-pointer transition"><i id="prompt-copy-icon-${id}" class="fa-solid fa-copy"></i></button>
+            <button onclick="togglePromptEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="deletePrompt(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden prompt-edit-${id} flex justify-center gap-1.5">
             <button onclick="savePrompt(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
