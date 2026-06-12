@@ -131,7 +131,7 @@ export function buildAssetTable() {
           <span class="view-ast-mode-${id}">${price.toLocaleString('vi-VN')}đ</span>
           <input type="text" id="edit-ast-price-${id}" class="edit-input text-right font-bold edit-ast-mode-${id} hidden w-full" value="${price}">
         </td>
-        <td class="p-4 text-right font-bold text-blue-600 w-36">
+        <td class="p-4 text-right font-bold text-slate-900 w-36">
           <span>${total.toLocaleString('vi-VN')}đ</span>
         </td>
         
