@@ -47,7 +47,7 @@ var Yc=Object.defineProperty;var qc=(n,t,e)=>t in n?Yc(n,t,{enumerable:!0,config
           <input type="text" id="edit-amount-${d}" class="edit-input text-right text-xs font-bold edit-mode-${d} hidden w-full" value="${c}">
         </td>
         <td class="p-4">
-          <span class="view-mode-${d} text-xs text-slate-650">${S(r.note)||"-"}</span>
+          <span class="view-mode-${d} text-xs text-slate-650 font-semibold">${S(r.note)||"-"}</span>
           <input type="text" id="edit-note-${d}" class="edit-input edit-mode-${d} hidden w-full" value="${S(r.note)}">
         </td>
         
@@ -79,7 +79,7 @@ var Yc=Object.defineProperty;var qc=(n,t,e)=>t in n?Yc(n,t,{enumerable:!0,config
           <input type="text" id="edit-inc-amount-${d}" class="edit-input text-right text-xs font-bold edit-inc-mode-${d} hidden w-full" value="${c}">
         </td>
         <td class="p-4">
-          <span class="view-inc-mode-${d} text-xs text-slate-650">${S(r.note)||"-"}</span>
+          <span class="view-inc-mode-${d} text-xs text-slate-650 font-semibold">${S(r.note)||"-"}</span>
           <input type="text" id="edit-inc-note-${d}" class="edit-input edit-inc-mode-${d} hidden w-full" value="${S(r.note)}">
         </td>
         
