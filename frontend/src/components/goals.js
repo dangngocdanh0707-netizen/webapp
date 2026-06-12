@@ -45,8 +45,8 @@ export function buildGoalTable() {
         <td class="p-4 pl-6 hidden goal-edit-${id}"><input type="text" id="goal-edit-name-${id}" class="edit-input font-bold" value="${escapeHTML(item.goal_name)}"></td>
         <td class="p-4 hidden goal-edit-${id}"><input type="date" id="goal-edit-start-${id}" class="edit-input" value="${formatDateInput(item.start_date)}"></td>
         <td class="p-4 hidden goal-edit-${id}"><input type="date" id="goal-edit-end-${id}" class="edit-input" value="${formatDateInput(item.end_date)}"></td>
-        <td class="p-4 hidden goal-edit-${id}"><input type="number" id="goal-edit-current-${id}" class="edit-input text-center font-bold" value="${cur}"></td>
-        <td class="p-4 hidden goal-edit-${id}"><input type="number" id="goal-edit-target-${id}" class="edit-input text-center font-bold text-blue-600" value="${tar}"></td>
+        <td class="p-4 hidden goal-edit-${id}"><input type="number" id="goal-edit-current-${id}" class="edit-input font-bold" value="${cur}"></td>
+        <td class="p-4 hidden goal-edit-${id}"><input type="number" id="goal-edit-target-${id}" class="edit-input font-bold text-blue-600" value="${tar}"></td>
         <td class="p-4 hidden goal-edit-${id}"><span class="text-xs italic text-slate-400">Locked</span></td>
         
         <td class="p-4 text-center">
