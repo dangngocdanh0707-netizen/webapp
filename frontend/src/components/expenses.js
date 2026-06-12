@@ -251,7 +251,7 @@ export function buildTable() {
           <input type="text" id="edit-amount-${id}" class="edit-input text-right text-xs font-bold edit-mode-${id} hidden w-full" value="${amount}">
         </td>
         <td class="p-4">
-          <span class="view-mode-${id} text-xs text-slate-650">${escapeHTML(item.note) || '-'}</span>
+          <span class="view-mode-${id} text-xs text-slate-650 font-semibold">${escapeHTML(item.note) || '-'}</span>
           <input type="text" id="edit-note-${id}" class="edit-input edit-mode-${id} hidden w-full" value="${escapeHTML(item.note)}">
         </td>
         

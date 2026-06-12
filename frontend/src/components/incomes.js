@@ -201,7 +201,7 @@ export function buildIncomeTable() {
           <input type="text" id="edit-inc-amount-${id}" class="edit-input text-right text-xs font-bold edit-inc-mode-${id} hidden w-full" value="${amount}">
         </td>
         <td class="p-4">
-          <span class="view-inc-mode-${id} text-xs text-slate-650">${escapeHTML(item.note) || '-'}</span>
+          <span class="view-inc-mode-${id} text-xs text-slate-650 font-semibold">${escapeHTML(item.note) || '-'}</span>
           <input type="text" id="edit-inc-note-${id}" class="edit-input edit-inc-mode-${id} hidden w-full" value="${escapeHTML(item.note)}">
         </td>
         
