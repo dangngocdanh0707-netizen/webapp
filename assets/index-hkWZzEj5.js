@@ -398,7 +398,7 @@ If the user is just saying hello, asking a general question, or the request is a
         <td class="p-4 pl-6 font-semibold text-slate-800 text-sm goal-view-${e}">${S(t.goal_name)||"-"}</td>
         <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${e}">${S(t.start_date)}</td>
         <td class="p-4 font-semibold text-xs text-slate-500 goal-view-${e}">${S(t.end_date)}</td>
-        <td class="p-4 font-bold text-slate-800 text-sm goal-view-${e}">${i.toLocaleString()}</td>
+        <td class="p-4 font-semibold text-slate-500 text-sm goal-view-${e}">${i.toLocaleString()}</td>
         <td class="p-4 font-semibold text-slate-500 text-sm goal-view-${e}">${s.toLocaleString()}</td>
         <td class="p-4 goal-view-${e}">
           <div class="flex items-center gap-3.5">
