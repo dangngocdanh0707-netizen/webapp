@@ -44,7 +44,7 @@ var Yc=Object.defineProperty;var qc=(n,t,e)=>t in n?Yc(n,t,{enumerable:!0,config
         </td>
         <td class="p-4 text-right text-xs font-bold text-slate-900 w-40">
           <span class="view-mode-${d}">${c.toLocaleString("vi-VN")}đ</span>
-          <input type="text" id="edit-amount-${d}" class="edit-input text-right text-xs font-bold edit-mode-${d} hidden w-full" value="${c}">
+          <input type="text" id="edit-amount-${d}" class="edit-input text-xs font-bold edit-mode-${d} hidden w-full" value="${c}">
         </td>
         <td class="p-4">
           <span class="view-mode-${d} text-xs text-slate-650 font-semibold">${S(r.note)||"-"}</span>
@@ -76,7 +76,7 @@ var Yc=Object.defineProperty;var qc=(n,t,e)=>t in n?Yc(n,t,{enumerable:!0,config
         </td>
         <td class="p-4 text-right text-xs font-bold text-slate-900 w-40">
           <span class="view-inc-mode-${d}">${c.toLocaleString("vi-VN")}đ</span>
-          <input type="text" id="edit-inc-amount-${d}" class="edit-input text-right text-xs font-bold edit-inc-mode-${d} hidden w-full" value="${c}">
+          <input type="text" id="edit-inc-amount-${d}" class="edit-input text-xs font-bold edit-inc-mode-${d} hidden w-full" value="${c}">
         </td>
         <td class="p-4">
           <span class="view-inc-mode-${d} text-xs text-slate-650 font-semibold">${S(r.note)||"-"}</span>
@@ -102,15 +102,15 @@ var Yc=Object.defineProperty;var qc=(n,t,e)=>t in n?Yc(n,t,{enumerable:!0,config
         </td>
         <td class="p-4 text-right font-medium text-slate-650 w-28">
           <span class="view-ast-mode-${l}">${o}</span>
-          <input type="number" step="any" id="edit-ast-quantity-${l}" class="edit-input text-right edit-ast-mode-${l} hidden w-full" value="${o}">
+          <input type="number" step="any" id="edit-ast-quantity-${l}" class="edit-input edit-ast-mode-${l} hidden w-full" value="${o}">
         </td>
         <td class="p-4 text-center text-xs text-slate-500 w-24">
           <span class="px-2 py-0.5 rounded-md border bg-slate-50 text-slate-650 border-slate-200 font-medium view-ast-mode-${l}">${S(c)||"-"}</span>
-          <input type="text" id="edit-ast-unit-${l}" class="edit-input text-center edit-ast-mode-${l} hidden w-full" value="${S(c)}">
+          <input type="text" id="edit-ast-unit-${l}" class="edit-input edit-ast-mode-${l} hidden w-full" value="${S(c)}">
         </td>
         <td class="p-4 text-right text-xs font-bold text-slate-900 w-36">
           <span class="view-ast-mode-${l}">${a.toLocaleString("vi-VN")}đ</span>
-          <input type="text" id="edit-ast-price-${l}" class="edit-input text-right text-xs font-bold edit-ast-mode-${l} hidden w-full" value="${a}">
+          <input type="text" id="edit-ast-price-${l}" class="edit-input text-xs font-bold edit-ast-mode-${l} hidden w-full" value="${a}">
         </td>
         <td class="p-4 text-right text-xs font-bold text-slate-900 w-36">
           <span>${r.toLocaleString("vi-VN")}đ</span>
@@ -414,8 +414,8 @@ If the user is just saying hello, asking a general question, or the request is a
         <td class="p-4 pl-6 hidden goal-edit-${e}"><input type="text" id="goal-edit-name-${e}" class="edit-input font-bold" value="${S(t.goal_name)}"></td>
         <td class="p-4 hidden goal-edit-${e}"><input type="date" id="goal-edit-start-${e}" class="edit-input" value="${Vn(t.start_date)}"></td>
         <td class="p-4 hidden goal-edit-${e}"><input type="date" id="goal-edit-end-${e}" class="edit-input" value="${Vn(t.end_date)}"></td>
-        <td class="p-4 hidden goal-edit-${e}"><input type="number" id="goal-edit-current-${e}" class="edit-input text-center font-bold" value="${i}"></td>
-        <td class="p-4 hidden goal-edit-${e}"><input type="number" id="goal-edit-target-${e}" class="edit-input text-center font-bold text-blue-600" value="${s}"></td>
+        <td class="p-4 hidden goal-edit-${e}"><input type="number" id="goal-edit-current-${e}" class="edit-input font-bold" value="${i}"></td>
+        <td class="p-4 hidden goal-edit-${e}"><input type="number" id="goal-edit-target-${e}" class="edit-input font-bold text-blue-600" value="${s}"></td>
         <td class="p-4 hidden goal-edit-${e}"><span class="text-xs italic text-slate-400">Locked</span></td>
         
         <td class="p-4 text-center">
