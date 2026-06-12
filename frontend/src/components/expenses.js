@@ -31,6 +31,40 @@ export function initCostModule(data, onSync) {
   // POPULATE CATEGORIES IN FILTER DROPDOWN
   populateCostCategories();
 
+  // POPULATE SUBCATEGORIES IN FILTER DROPDOWN
+  populateCostSubcategories();
+
+  // Setup subcategory 'change' handler for new entries
+  const subcatSelect = document.getElementById('ins-cost-subcat');
+  if (subcatSelect) {
+    subcatSelect.addEventListener('change', (e) => {
+      if (e.target.value === '__new__') {
+        const val = prompt("Nhập tên subcategory mới:");
+        if (val && val.trim()) {
+          const newSub = val.trim();
+          // Check if option already exists
+          let exists = false;
+          for (let i = 0; i < subcatSelect.options.length; i++) {
+            if (subcatSelect.options[i].value === newSub) {
+              subcatSelect.value = newSub;
+              exists = true;
+              break;
+            }
+          }
+          if (!exists) {
+            const opt = document.createElement('option');
+            opt.value = newSub;
+            opt.textContent = newSub;
+            subcatSelect.insertBefore(opt, subcatSelect.lastChild);
+            subcatSelect.value = newSub;
+          }
+        } else {
+          subcatSelect.selectedIndex = 0;
+        }
+      }
+    });
+  }
+
   // Setup auto-formatting event listener on new cost amount input
   const amountInput = document.getElementById('ins-cost-amount');
   if (amountInput) {
@@ -173,6 +207,28 @@ function populateCostCategories() {
     costCategories.forEach(cat => {
       insertSelect.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`);
     });
+  }
+}
+
+function populateCostSubcategories() {
+  const insertSelect = document.getElementById('ins-cost-subcat');
+  if (!insertSelect) return;
+
+  const currentVal = insertSelect.value;
+
+  const costSubcategories = new Set();
+  allCostData.forEach(item => {
+    if (item.subcategory) costSubcategories.add(item.subcategory.trim());
+  });
+
+  insertSelect.innerHTML = '<option value="">Chọn subcategory...</option>';
+  costSubcategories.forEach(subcat => {
+    insertSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(subcat)}">${escapeHTML(subcat)}</option>`);
+  });
+  insertSelect.insertAdjacentHTML('beforeend', `<option value="__new__">+ Thêm mới...</option>`);
+
+  if (currentVal && Array.from(insertSelect.options).some(opt => opt.value === currentVal)) {
+    insertSelect.value = currentVal;
   }
 }
 
@@ -324,6 +380,7 @@ window.app.expenses.addCostRow = function () {
   const currentMonthFilter = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : "All";
   populateCostMonths();
   populateCostCategories();
+  populateCostSubcategories();
   if (document.getElementById('monthFilter')) {
     const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
     document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -352,6 +409,7 @@ window.app.expenses.addCostRow = function () {
     allCostData = allCostData.filter(c => c.rowNumber !== newRowNumber);
     populateCostMonths();
     populateCostCategories();
+    populateCostSubcategories();
     if (document.getElementById('monthFilter')) {
       const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
       document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -390,6 +448,7 @@ window.app.expenses.saveRow = function (id) {
   const currentMonthFilter = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : "All";
   populateCostMonths();
   populateCostCategories();
+  populateCostSubcategories();
   if (document.getElementById('monthFilter')) {
     const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
     document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -417,6 +476,7 @@ window.app.expenses.saveRow = function (id) {
     }
     populateCostMonths();
     populateCostCategories();
+    populateCostSubcategories();
     if (document.getElementById('monthFilter')) {
       const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
       document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -448,6 +508,7 @@ window.app.expenses.deleteRow = function (id) {
   const currentMonthFilter = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : "All";
   populateCostMonths();
   populateCostCategories();
+  populateCostSubcategories();
   if (document.getElementById('monthFilter')) {
     const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
     document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -479,6 +540,7 @@ window.app.expenses.deleteRow = function (id) {
     allCostData.splice(deletedIndex, 0, deletedItem);
     populateCostMonths();
     populateCostCategories();
+    populateCostSubcategories();
     if (document.getElementById('monthFilter')) {
       const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
       document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
