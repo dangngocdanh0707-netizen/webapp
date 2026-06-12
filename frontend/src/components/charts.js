@@ -5,6 +5,9 @@ import { formatDateView } from '../services/api.js';
 // Đăng ký bổ sung plugin vẽ nhãn dữ liệu
 Chart.register(ChartDataLabels);
 
+// Vô hiệu hóa tooltip toàn cục cho tất cả biểu đồ
+Chart.defaults.plugins.tooltip.enabled = false;
+
 export let pieChartInstance = null;
 export let barChartInstance = null;
 export let habitLineChartInstance = null;
@@ -24,38 +27,36 @@ const costColorsMap = {
 
 const subcatColorsMap = {
   "Uncategorized": '#94a3b8',   // Slate gray
-  "Học tập": '#a78bfa',         // Soft purple
-  "Ăn uống": '#f87171',         // Soft red
-  "Sinh hoạt": '#fbbf24',       // Soft yellow
-  "Đầu tư": '#60a5fa',          // Soft blue
-  "Xăng xe": '#f472b6',         // Soft pink
-  "Quà tặng": '#2dd4bf',        // Soft teal
-  "Giải trí": '#34d399',        // Soft green
-  "Khác": '#cbd5e1'             // Light gray
+  "Học tập": '#1e3a8a',         // Dark blue
+  "Ăn uống": '#2563eb',         // Royal blue
+  "Sinh hoạt": '#3b82f6',       // Blue
+  "Đầu tư": '#60a5fa',          // Sky blue
+  "Xăng xe": '#93c5fd',         // Light blue
+  "Quà tặng": '#bfdbfe',        // Very light blue
+  "Giải trí": '#cbd5e1',        // Slate light gray
+  "Khác": '#cbd5e1'             // Slate light gray
 };
 
 const subcatColorsHoverMap = {
   "Uncategorized": '#64748b',   // Slate gray hover
-  "Học tập": '#8b5cf6',         // Purple hover
-  "Ăn uống": '#ef4444',         // Red hover
-  "Sinh hoạt": '#d97706',       // Yellow hover
-  "Đầu tư": '#2563eb',          // Blue hover
-  "Xăng xe": '#ec4899',         // Pink hover
-  "Quà tặng": '#0d9488',        // Teal hover
-  "Giải trí": '#10b981',        // Green hover
-  "Khác": '#94a3b8'             // Gray hover
+  "Học tập": '#172554',         // Navy hover
+  "Ăn uống": '#1d4ed8',         // Royal blue hover
+  "Sinh hoạt": '#2563eb',       // Blue hover
+  "Đầu tư": '#3b82f6',          // Sky blue hover
+  "Xăng xe": '#60a5fa',         // Light blue hover
+  "Quà tặng": '#93c5fd',        // Very light blue hover
+  "Giải trí": '#94a3b8',        // Slate light gray hover
+  "Khác": '#94a3b8'
 };
 
 const fallbackColors = [
-  '#60a5fa', '#f87171', '#34d399', '#fbbf24', '#a78bfa',
-  '#f472b6', '#2dd4bf', '#fb923c', '#fb7185', '#a3e635',
-  '#818cf8', '#fb7185', '#38bdf8', '#c084fc', '#fb923c'
+  '#2563eb', '#3b82f6', '#60a5fa', '#1d4ed8', '#1e40af',
+  '#1e3a8a', '#93c5fd', '#bfdbfe', '#cbd5e1', '#94a3b8'
 ];
 
 const fallbackHoverColors = [
-  '#2563eb', '#dc2626', '#059669', '#d97706', '#7c3aed',
-  '#db2777', '#0d9488', '#ea580c', '#e11d48', '#65a30d',
-  '#4f46e5', '#e11d48', '#0284c7', '#a855f7', '#ea580c'
+  '#1d4ed8', '#2563eb', '#3b82f6', '#1e3a8a', '#172554',
+  '#172554', '#60a5fa', '#93c5fd', '#94a3b8', '#64748b'
 ];
 
 export function getSubcatColor(label) {
@@ -113,6 +114,7 @@ export function renderSubcatPie(subcategories, onClickCallback) {
         }
       },
       plugins: {
+        tooltip: { enabled: false },
         legend: {
           position: 'bottom',
           labels: {
@@ -123,7 +125,8 @@ export function renderSubcatPie(subcategories, onClickCallback) {
         datalabels: {
           formatter: (v, ctx) => {
             const sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
-            return sum > 0 ? Math.round((v / sum) * 100) + "%" : "0%";
+            const pct = sum > 0 ? Math.round((v / sum) * 100) : 0;
+            return pct >= 5 ? pct + "%" : "";
           },
           color: '#fff',
           font: { weight: 'bold', family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 12 }
@@ -146,9 +149,9 @@ export function renderSubcatBar(barLabels, barData, onClickCallback) {
       labels: barLabels,
       datasets: [{
         data: barData,
-        backgroundColor: barLabels.map(cat => getSubcatColor(cat)),
+        backgroundColor: barLabels.map(cat => cat === "Uncategorized" ? '#94a3b8' : '#3b82f6'),
         borderRadius: 8,
-        hoverBackgroundColor: barLabels.map(cat => getSubcatHoverColor(cat))
+        hoverBackgroundColor: barLabels.map(cat => cat === "Uncategorized" ? '#64748b' : '#2563eb')
       }]
     },
     options: {
@@ -160,10 +163,11 @@ export function renderSubcatBar(barLabels, barData, onClickCallback) {
         }
       },
       scales: {
-        x: { beginAtZero: true, grace: '15%', grid: { color: 'rgba(0, 0, 0, 0.04)' }, ticks: { display: false } },
+        x: { beginAtZero: true, grace: '35%', grid: { color: 'rgba(0, 0, 0, 0.04)' }, ticks: { display: false } },
         y: { grid: { display: false }, ticks: { color: '#64748b', font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 } } }
       },
       plugins: {
+        tooltip: { enabled: false },
         legend: { display: false },
         datalabels: {
           anchor: 'end',
@@ -201,6 +205,7 @@ export function renderMonthlyExpensesBar(labels, data) {
         x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 } } }
       },
       plugins: {
+        tooltip: { enabled: false },
         legend: { display: false },
         datalabels: {
           anchor: 'end',
@@ -243,6 +248,7 @@ export function renderIncomePie(categories, onClickCallback) {
         }
       },
       plugins: {
+        tooltip: { enabled: false },
         legend: {
           position: 'bottom',
           labels: {
@@ -293,6 +299,7 @@ export function renderIncomeBar(barLabels, barData, onClickCallback) {
         x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 } } }
       },
       plugins: {
+        tooltip: { enabled: false },
         legend: { display: false },
         datalabels: {
           anchor: 'end',
@@ -335,6 +342,7 @@ export function renderExpensePie(categories, onClickCallback) {
         }
       },
       plugins: {
+        tooltip: { enabled: false },
         legend: {
           position: 'bottom',
           labels: {
@@ -385,6 +393,7 @@ export function renderExpenseBar(barLabels, barData, onClickCallback) {
         x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 } } }
       },
       plugins: {
+        tooltip: { enabled: false },
         legend: { display: false },
         datalabels: {
           anchor: 'end',
@@ -435,6 +444,7 @@ export function renderHabitLine(habitDates, performanceDataPerDay, onClickCallba
         x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 } } }
       },
       plugins: {
+        tooltip: { enabled: false },
         legend: { display: false },
         datalabels: {
           anchor: 'end',
@@ -487,6 +497,7 @@ export function renderAssetPie(assetsMap, onClickCallback) {
         }
       },
       plugins: {
+        tooltip: { enabled: false },
         legend: {
           position: 'bottom',
           labels: {
@@ -543,6 +554,7 @@ export function renderAssetBar(barLabels, barData, onClickCallback) {
         x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 } } }
       },
       plugins: {
+        tooltip: { enabled: false },
         legend: { display: false },
         datalabels: {
           anchor: 'end',

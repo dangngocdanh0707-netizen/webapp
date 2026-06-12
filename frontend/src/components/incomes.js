@@ -132,18 +132,26 @@ function populateIncomeMonths() {
 
 function populateIncomeCategories() {
   const filterSelect = document.getElementById('incomeCategoryFilter');
-  if (!filterSelect) return;
+  const insertSelect = document.getElementById('ins-inc-cat');
 
-  const incomeCategories = new Set(["Salary", "Return", "Bonus", "Investment"]);
-  // Include any other categories present in the data dynamically
+  const incomeCategories = new Set();
   allIncomeData.forEach(item => {
     if (item.category) incomeCategories.add(item.category);
   });
 
-  filterSelect.innerHTML = '<option value="All">All Categories</option>';
-  incomeCategories.forEach(cat => {
-    filterSelect.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`);
-  });
+  if (filterSelect) {
+    filterSelect.innerHTML = '<option value="All">All Categories</option>';
+    incomeCategories.forEach(cat => {
+      filterSelect.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`);
+    });
+  }
+
+  if (insertSelect) {
+    insertSelect.innerHTML = "";
+    incomeCategories.forEach(cat => {
+      insertSelect.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`);
+    });
+  }
 }
 
 export function buildIncomeTable() {
@@ -183,10 +191,9 @@ export function buildIncomeTable() {
         <td class="p-4 w-36">
           <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-inc-mode-${id}">${escapeHTML(cat)}</span>
           <select id="edit-inc-cat-${id}" class="edit-input font-bold edit-inc-mode-${id} hidden w-full">
-            <option value="Salary" ${cat == 'Salary' ? 'selected' : ''}>Salary</option>
-            <option value="Return" ${cat == 'Return' ? 'selected' : ''}>Return</option>
-            <option value="Bonus" ${cat == 'Bonus' ? 'selected' : ''}>Bonus</option>
-            <option value="Investment" ${cat == 'Investment' ? 'selected' : ''}>Investment</option>
+            ${Array.from(new Set(allIncomeData.map(d => d.category).filter(Boolean))).map(c => 
+              `<option value="${c}" ${cat === c ? 'selected' : ''}>${escapeHTML(c)}</option>`
+            ).join('')}
           </select>
         </td>
         <td class="p-4 text-right font-bold text-slate-900 w-40">
@@ -287,6 +294,7 @@ window.app.incomes.addIncomeRow = function () {
   // Update month filter dropdown and preserve selection
   const currentMonthFilter = document.getElementById('incomeMonthFilter') ? document.getElementById('incomeMonthFilter').value : "All";
   populateIncomeMonths();
+  populateIncomeCategories();
   if (document.getElementById('incomeMonthFilter')) {
     const hasMonth = Array.from(document.getElementById('incomeMonthFilter').options).some(opt => opt.value === currentMonthFilter);
     document.getElementById('incomeMonthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -313,6 +321,7 @@ window.app.incomes.addIncomeRow = function () {
   function rollback(errorMessage) {
     allIncomeData = allIncomeData.filter(c => c.rowNumber !== newRowNumber);
     populateIncomeMonths();
+    populateIncomeCategories();
     if (document.getElementById('incomeMonthFilter')) {
       const hasMonth = Array.from(document.getElementById('incomeMonthFilter').options).some(opt => opt.value === currentMonthFilter);
       document.getElementById('incomeMonthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -347,6 +356,7 @@ window.app.incomes.saveIncomeRow = function (id) {
   // Store current selection of filters
   const currentMonthFilter = document.getElementById('incomeMonthFilter') ? document.getElementById('incomeMonthFilter').value : "All";
   populateIncomeMonths();
+  populateIncomeCategories();
   if (document.getElementById('incomeMonthFilter')) {
     const hasMonth = Array.from(document.getElementById('incomeMonthFilter').options).some(opt => opt.value === currentMonthFilter);
     document.getElementById('incomeMonthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -373,6 +383,7 @@ window.app.incomes.saveIncomeRow = function (id) {
       allIncomeData[idx] = oldObj;
     }
     populateIncomeMonths();
+    populateIncomeCategories();
     if (document.getElementById('incomeMonthFilter')) {
       const hasMonth = Array.from(document.getElementById('incomeMonthFilter').options).some(opt => opt.value === currentMonthFilter);
       document.getElementById('incomeMonthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -403,6 +414,7 @@ window.app.incomes.deleteRow = function (id) {
 
   const currentMonthFilter = document.getElementById('incomeMonthFilter') ? document.getElementById('incomeMonthFilter').value : "All";
   populateIncomeMonths();
+  populateIncomeCategories();
   if (document.getElementById('incomeMonthFilter')) {
     const hasMonth = Array.from(document.getElementById('incomeMonthFilter').options).some(opt => opt.value === currentMonthFilter);
     document.getElementById('incomeMonthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -432,6 +444,7 @@ window.app.incomes.deleteRow = function (id) {
 
     allIncomeData.splice(deletedIndex, 0, deletedItem);
     populateIncomeMonths();
+    populateIncomeCategories();
     if (document.getElementById('incomeMonthFilter')) {
       const hasMonth = Array.from(document.getElementById('incomeMonthFilter').options).some(opt => opt.value === currentMonthFilter);
       document.getElementById('incomeMonthFilter').value = hasMonth ? currentMonthFilter : "All";

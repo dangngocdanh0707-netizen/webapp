@@ -161,13 +161,27 @@ function populateCostMonths() {
 
 function populateCostCategories() {
   const filterSelect = document.getElementById('categoryFilter');
-  if (!filterSelect) return;
+  const insertSelect = document.getElementById('ins-cost-cat');
+  if (!filterSelect && !insertSelect) return;
 
-  const costCategories = new Set(["Must have", "Wasted", "Nice to have"]);
-  filterSelect.innerHTML = '<option value="All">All Categories</option>';
-  costCategories.forEach(cat => {
-    filterSelect.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`);
+  const costCategories = new Set();
+  allCostData.forEach(item => {
+    if (item.category) costCategories.add(item.category);
   });
+
+  if (filterSelect) {
+    filterSelect.innerHTML = '<option value="All">All Categories</option>';
+    costCategories.forEach(cat => {
+      filterSelect.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`);
+    });
+  }
+
+  if (insertSelect) {
+    insertSelect.innerHTML = "";
+    costCategories.forEach(cat => {
+      insertSelect.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`);
+    });
+  }
 }
 
 // Refactored buildTable to apply both category, month, and day filters and preserve <td> layout integrity
@@ -207,9 +221,9 @@ export function buildTable() {
         <td class="p-4 w-36">
           <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-mode-${id}">${escapeHTML(cat)}</span>
           <select id="edit-cat-${id}" class="edit-input font-bold edit-mode-${id} hidden w-full">
-            <option value="Must have" ${cat == 'Must have' ? 'selected' : ''}>Must have</option>
-            <option value="Wasted" ${cat == 'Wasted' ? 'selected' : ''}>Wasted</option>
-            <option value="Nice to have" ${cat == 'Nice to have' ? 'selected' : ''}>Nice to have</option>
+            ${Array.from(new Set(allCostData.map(d => d.category).filter(Boolean))).map(c => 
+              `<option value="${c}" ${cat === c ? 'selected' : ''}>${escapeHTML(c)}</option>`
+            ).join('')}
           </select>
         </td>
         <td class="p-4 w-36">
@@ -317,6 +331,7 @@ window.app.expenses.addCostRow = function () {
   // Update month filter dropdown and preserve current month filter selection
   const currentMonthFilter = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : "All";
   populateCostMonths();
+  populateCostCategories();
   if (document.getElementById('monthFilter')) {
     const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
     document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -344,6 +359,7 @@ window.app.expenses.addCostRow = function () {
   function rollback(errorMessage) {
     allCostData = allCostData.filter(c => c.rowNumber !== newRowNumber);
     populateCostMonths();
+    populateCostCategories();
     if (document.getElementById('monthFilter')) {
       const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
       document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -381,6 +397,7 @@ window.app.expenses.saveRow = function (id) {
   // Store current selection of filters
   const currentMonthFilter = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : "All";
   populateCostMonths();
+  populateCostCategories();
   if (document.getElementById('monthFilter')) {
     const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
     document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -407,6 +424,7 @@ window.app.expenses.saveRow = function (id) {
       allCostData[idx] = oldObj;
     }
     populateCostMonths();
+    populateCostCategories();
     if (document.getElementById('monthFilter')) {
       const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
       document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -437,6 +455,7 @@ window.app.expenses.deleteRow = function (id) {
 
   const currentMonthFilter = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : "All";
   populateCostMonths();
+  populateCostCategories();
   if (document.getElementById('monthFilter')) {
     const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
     document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
@@ -467,6 +486,7 @@ window.app.expenses.deleteRow = function (id) {
 
     allCostData.splice(deletedIndex, 0, deletedItem);
     populateCostMonths();
+    populateCostCategories();
     if (document.getElementById('monthFilter')) {
       const hasMonth = Array.from(document.getElementById('monthFilter').options).some(opt => opt.value === currentMonthFilter);
       document.getElementById('monthFilter').value = hasMonth ? currentMonthFilter : "All";
