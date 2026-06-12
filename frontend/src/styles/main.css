@@ -309,6 +309,14 @@ select.form-input option {
   background-color: #ffffff;
 }
 
+/* Force all form input wrappers to share equal width on desktop */
+@media (min-width: 768px) {
+  .flex.items-end.gap-4 > .flex-1 {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
 /* Habits Checkbox: Premium Anki Task Style */
 .habit-checkbox {
   width: 24px;
