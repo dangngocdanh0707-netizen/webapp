@@ -60,6 +60,13 @@ function renderAssetGraphics() {
     totalAssetsEl.innerText = totalAssetsVal.toLocaleString('vi-VN') + "đ";
   }
 
+  // Calculate unique assets count
+  const uniqueCount = Object.keys(assetsMap).length;
+  const totalAssetsCountEl = document.getElementById('total-assets-count');
+  if (totalAssetsCountEl) {
+    totalAssetsCountEl.innerText = uniqueCount;
+  }
+
   // Populate Asset Allocation Table
   const tbody = document.querySelector('#table-asset-alloc tbody');
   if (tbody) {
