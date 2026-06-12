@@ -34,37 +34,6 @@ export function initCostModule(data, onSync) {
   // POPULATE SUBCATEGORIES IN FILTER DROPDOWN
   populateCostSubcategories();
 
-  // Setup subcategory 'change' handler for new entries
-  const subcatSelect = document.getElementById('ins-cost-subcat');
-  if (subcatSelect) {
-    subcatSelect.addEventListener('change', (e) => {
-      if (e.target.value === '__new__') {
-        const val = prompt("Nhập tên subcategory mới:");
-        if (val && val.trim()) {
-          const newSub = val.trim();
-          // Check if option already exists
-          let exists = false;
-          for (let i = 0; i < subcatSelect.options.length; i++) {
-            if (subcatSelect.options[i].value === newSub) {
-              subcatSelect.value = newSub;
-              exists = true;
-              break;
-            }
-          }
-          if (!exists) {
-            const opt = document.createElement('option');
-            opt.value = newSub;
-            opt.textContent = newSub;
-            subcatSelect.insertBefore(opt, subcatSelect.lastChild);
-            subcatSelect.value = newSub;
-          }
-        } else {
-          subcatSelect.selectedIndex = 0;
-        }
-      }
-    });
-  }
-
   // Setup auto-formatting event listener on new cost amount input
   const amountInput = document.getElementById('ins-cost-amount');
   if (amountInput) {
@@ -221,11 +190,10 @@ function populateCostSubcategories() {
     if (item.subcategory) costSubcategories.add(item.subcategory.trim());
   });
 
-  insertSelect.innerHTML = '<option value="">Chọn subcategory...</option>';
+  insertSelect.innerHTML = "";
   costSubcategories.forEach(subcat => {
     insertSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(subcat)}">${escapeHTML(subcat)}</option>`);
   });
-  insertSelect.insertAdjacentHTML('beforeend', `<option value="__new__">+ Thêm mới...</option>`);
 
   if (currentVal && Array.from(insertSelect.options).some(opt => opt.value === currentVal)) {
     insertSelect.value = currentVal;
