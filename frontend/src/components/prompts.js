@@ -52,7 +52,7 @@ export function buildPromptTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="prompt-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-800 text-sm prompt-view-${id}">${escapeHTML(titleText) || '-'}</td>
+        <td class="p-4 pl-6 font-semibold text-slate-650 text-sm prompt-view-${id}">${escapeHTML(titleText) || '-'}</td>
         <td class="p-4 prompt-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${badgeStyle}">${escapeHTML(catText) || '-'}</span></td>
         <td class="p-4 text-xs text-slate-650 prompt-view-${id}">${escapeHTML(contentText)}</td>
         

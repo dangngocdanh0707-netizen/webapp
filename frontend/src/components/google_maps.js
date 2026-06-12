@@ -87,7 +87,7 @@ export function buildMapGrid() {
  
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition group">
-          <td class="p-4 pl-6 font-semibold text-slate-800 text-sm map-view-${id}">
+          <td class="p-4 pl-6 font-semibold text-slate-650 text-sm map-view-${id}">
             <a href="${searchUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline transition cursor-pointer">
               ${escapeHTML(placeName)}
             </a>

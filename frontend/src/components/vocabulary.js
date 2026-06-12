@@ -109,7 +109,7 @@ export function buildVocabTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="vocab-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-800 text-sm v-view-${id}">
+        <td class="p-4 pl-6 font-semibold text-slate-650 text-sm v-view-${id}">
           <div class="flex items-center gap-2">
             <span>${escapeHTML(item.content) || ''}</span>
             <button onclick="app.vocab.speakVocabById(${id})" class="text-slate-400 hover:text-blue-500 p-1 cursor-pointer transition">

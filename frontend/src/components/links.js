@@ -59,7 +59,7 @@ export function buildLinkTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="link-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-800 text-sm link-view-${id}">${escapeHTML(titleText) || '-'}</td>
+        <td class="p-4 pl-6 font-semibold text-slate-650 text-sm link-view-${id}">${escapeHTML(titleText) || '-'}</td>
         <td class="p-4 link-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold">${escapeHTML(catText) || '-'}</span></td>
         <td class="p-4 text-xs text-slate-650 link-view-${id}">${contentDisplay}</td>
         

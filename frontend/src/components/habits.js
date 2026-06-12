@@ -127,7 +127,7 @@ export function buildHabitGrid() {
   uniqueHabits.forEach(habitName => {
     let rowHtml = `
       <tr class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-800 text-sm">${escapeHTML(habitName)}</td>
+        <td class="p-4 pl-6 font-semibold text-slate-650 text-sm">${escapeHTML(habitName)}</td>
     `;
 
     last7Days.forEach(day => {
@@ -191,7 +191,7 @@ export function buildHabitTable(filterValue) {
     tbody.insertAdjacentHTML('beforeend', `
       <tr class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500">${escapeHTML(item.date)}</td>
-        <td class="p-4 font-semibold text-slate-800 text-sm">${escapeHTML(item.habit) || '-'}</td>
+        <td class="p-4 font-semibold text-slate-650 text-sm">${escapeHTML(item.habit) || '-'}</td>
         <td class="p-4 pl-12">
           <label class="inline-flex items-center gap-3 cursor-pointer select-none">
             <input type="checkbox" id="habit-chk-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="app.habits.toggleHabitStatusDirectly(${id}, this)">
