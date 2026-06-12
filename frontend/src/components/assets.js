@@ -77,9 +77,9 @@ function renderAssetGraphics() {
       let pct = totalAssetsVal > 0 ? ((val / totalAssetsVal) * 100).toFixed(1) : "0.0";
       tbody.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition">
-          <td class="p-3 pl-4 font-semibold text-slate-800">${escapeHTML(assetName)}</td>
+          <td class="p-3 pl-4 font-semibold text-slate-650">${escapeHTML(assetName)}</td>
           <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}đ</td>
-          <td class="p-3 text-right text-xs font-bold text-slate-500">${pct}%</td>
+          <td class="p-3 text-right text-xs font-bold text-slate-650">${pct}%</td>
         </tr>
       `);
     });
@@ -109,7 +109,7 @@ export function buildAssetTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="asset-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-800 w-48">
+        <td class="p-4 pl-6 font-semibold text-slate-650 w-48">
           <span class="view-ast-mode-${id}">${escapeHTML(name)}</span>
           <input type="text" id="edit-ast-name-${id}" class="edit-input edit-ast-mode-${id} hidden w-full font-semibold" value="${escapeHTML(name)}">
         </td>
@@ -117,7 +117,7 @@ export function buildAssetTable() {
           <span class="view-ast-mode-${id}">${quantity}</span>
           <input type="number" step="any" id="edit-ast-quantity-${id}" class="edit-input edit-ast-mode-${id} hidden w-full" value="${quantity}">
         </td>
-        <td class="p-4 text-center text-xs text-slate-500 w-24">
+        <td class="p-4 text-center text-xs text-slate-650 w-24">
           <span class="px-2 py-0.5 rounded-md border bg-slate-50 text-slate-650 border-slate-200 font-medium view-ast-mode-${id}">${escapeHTML(unit) || '-'}</span>
           <input type="text" id="edit-ast-unit-${id}" class="edit-input edit-ast-mode-${id} hidden w-full" value="${escapeHTML(unit)}">
         </td>

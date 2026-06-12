@@ -114,9 +114,9 @@ function renderCostGraphics() {
       let pct = totalCost > 0 ? ((val / totalCost) * 100).toFixed(1) : "0.0";
       tbodyCat.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition">
-          <td class="p-3 pl-4 font-semibold text-slate-800">${escapeHTML(catName)}</td>
+          <td class="p-3 pl-4 font-semibold text-slate-650">${escapeHTML(catName)}</td>
           <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}đ</td>
-          <td class="p-3 text-right text-xs font-bold text-slate-500">${pct}%</td>
+          <td class="p-3 text-right text-xs font-bold text-slate-650">${pct}%</td>
         </tr>
       `);
     });
@@ -131,9 +131,9 @@ function renderCostGraphics() {
       let pct = totalCost > 0 ? ((val / totalCost) * 100).toFixed(1) : "0.0";
       tbodySubcat.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition">
-          <td class="p-3 pl-4 font-semibold text-slate-800">${escapeHTML(subcatName)}</td>
+          <td class="p-3 pl-4 font-semibold text-slate-650">${escapeHTML(subcatName)}</td>
           <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}đ</td>
-          <td class="p-3 text-right text-xs font-bold text-slate-500">${pct}%</td>
+          <td class="p-3 text-right text-xs font-bold text-slate-650">${pct}%</td>
         </tr>
       `);
     });
@@ -148,7 +148,7 @@ function renderCostGraphics() {
       let val = monthlyExpenses[m];
       tbodyMonthly.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition">
-          <td class="p-3 pl-4 font-semibold text-slate-800">${escapeHTML(m)}</td>
+          <td class="p-3 pl-4 font-semibold text-slate-650">${escapeHTML(m)}</td>
           <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}đ</td>
         </tr>
       `);
@@ -251,7 +251,7 @@ export function buildTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-xs text-slate-500 w-36">
+        <td class="p-4 pl-6 font-semibold text-xs text-slate-650 w-36">
           <span class="view-mode-${id}">${escapeHTML(item.date)}</span>
           <input type="date" id="edit-date-${id}" class="edit-input edit-mode-${id} hidden w-full" value="${formatDateInput(item.date)}">
         </td>
