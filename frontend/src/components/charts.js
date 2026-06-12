@@ -149,9 +149,9 @@ export function renderSubcatBar(barLabels, barData, onClickCallback) {
       labels: barLabels,
       datasets: [{
         data: barData,
-        backgroundColor: barLabels.map(cat => cat === "Uncategorized" ? '#94a3b8' : '#3b82f6'),
+        backgroundColor: barLabels.map(cat => cat === "Uncategorized" ? '#94a3b8' : '#5a8bee'),
         borderRadius: 8,
-        hoverBackgroundColor: barLabels.map(cat => cat === "Uncategorized" ? '#64748b' : '#2563eb')
+        hoverBackgroundColor: barLabels.map(cat => cat === "Uncategorized" ? '#64748b' : '#4372d6')
       }]
     },
     options: {
@@ -194,9 +194,9 @@ export function renderMonthlyExpensesBar(labels, data) {
       labels: labels,
       datasets: [{
         data: data,
-        backgroundColor: '#3b82f6',
+        backgroundColor: '#5a8bee',
         borderRadius: 8,
-        hoverBackgroundColor: '#1d4ed8'
+        hoverBackgroundColor: '#4372d6'
       }]
     },
     options: {
@@ -376,9 +376,9 @@ export function renderExpenseBar(barLabels, barData, onClickCallback) {
       labels: barLabels,
       datasets: [{
         data: barData,
-        backgroundColor: barLabels.map(cat => costColorsMap[cat] || 'rgba(99, 102, 241, 0.85)'),
+        backgroundColor: '#5a8bee',
         borderRadius: 8,
-        hoverBackgroundColor: barLabels.map(cat => costColorsMap[cat] || '#4f46e5')
+        hoverBackgroundColor: '#4372d6'
       }]
     },
     options: {
