@@ -22,6 +22,62 @@ const costColorsMap = {
   "Nice to have": '#34d399'
 };
 
+const subcatColorsMap = {
+  "Uncategorized": '#94a3b8',   // Slate gray
+  "Học tập": '#a78bfa',         // Soft purple
+  "Ăn uống": '#f87171',         // Soft red
+  "Sinh hoạt": '#fbbf24',       // Soft yellow
+  "Đầu tư": '#60a5fa',          // Soft blue
+  "Xăng xe": '#f472b6',         // Soft pink
+  "Quà tặng": '#2dd4bf',        // Soft teal
+  "Giải trí": '#34d399',        // Soft green
+  "Khác": '#cbd5e1'             // Light gray
+};
+
+const subcatColorsHoverMap = {
+  "Uncategorized": '#64748b',   // Slate gray hover
+  "Học tập": '#8b5cf6',         // Purple hover
+  "Ăn uống": '#ef4444',         // Red hover
+  "Sinh hoạt": '#d97706',       // Yellow hover
+  "Đầu tư": '#2563eb',          // Blue hover
+  "Xăng xe": '#ec4899',         // Pink hover
+  "Quà tặng": '#0d9488',        // Teal hover
+  "Giải trí": '#10b981',        // Green hover
+  "Khác": '#94a3b8'             // Gray hover
+};
+
+const fallbackColors = [
+  '#60a5fa', '#f87171', '#34d399', '#fbbf24', '#a78bfa',
+  '#f472b6', '#2dd4bf', '#fb923c', '#fb7185', '#a3e635',
+  '#818cf8', '#fb7185', '#38bdf8', '#c084fc', '#fb923c'
+];
+
+const fallbackHoverColors = [
+  '#2563eb', '#dc2626', '#059669', '#d97706', '#7c3aed',
+  '#db2777', '#0d9488', '#ea580c', '#e11d48', '#65a30d',
+  '#4f46e5', '#e11d48', '#0284c7', '#a855f7', '#ea580c'
+];
+
+export function getSubcatColor(label) {
+  if (subcatColorsMap[label]) return subcatColorsMap[label];
+  let hash = 0;
+  for (let i = 0; i < label.length; i++) {
+    hash = label.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % fallbackColors.length;
+  return fallbackColors[index];
+}
+
+export function getSubcatHoverColor(label) {
+  if (subcatColorsHoverMap[label]) return subcatColorsHoverMap[label];
+  let hash = 0;
+  for (let i = 0; i < label.length; i++) {
+    hash = label.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % fallbackHoverColors.length;
+  return fallbackHoverColors[index];
+}
+
 const incomeColorsMap = {
   "Salary": '#34d399',
   "Return": '#60a5fa',
@@ -44,10 +100,7 @@ export function renderSubcatPie(subcategories, onClickCallback) {
       labels: labels,
       datasets: [{
         data: data,
-        backgroundColor: labels.map((_, idx) => {
-          const colors = ['#60a5fa', '#f87171', '#34d399', '#fbbf24', '#a78bfa', '#f472b6', '#2dd4bf', '#fb923c', '#fb7185', '#a3e635'];
-          return colors[idx % colors.length];
-        }),
+        backgroundColor: labels.map(cat => getSubcatColor(cat)),
         borderColor: '#ffffff',
         borderWidth: 2
       }]
@@ -93,18 +146,13 @@ export function renderSubcatBar(barLabels, barData, onClickCallback) {
       labels: barLabels,
       datasets: [{
         data: barData,
-        backgroundColor: barLabels.map((_, idx) => {
-          const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#f43f5e', '#84cc16'];
-          return colors[idx % colors.length];
-        }),
+        backgroundColor: barLabels.map(cat => getSubcatColor(cat)),
         borderRadius: 8,
-        hoverBackgroundColor: barLabels.map((_, idx) => {
-          const colors = ['#2563eb', '#dc2626', '#059669', '#d97706', '#7c3aed', '#db2777', '#0d9488', '#ea580c', '#e11d48', '#65a30d'];
-          return colors[idx % colors.length];
-        })
+        hoverBackgroundColor: barLabels.map(cat => getSubcatHoverColor(cat))
       }]
     },
     options: {
+      indexAxis: 'y',
       onClick: (e, el) => {
         if (el.length > 0 && onClickCallback) {
           const clickedLabel = subcatBarChartInstance.data.labels[el[0].index];
@@ -112,14 +160,14 @@ export function renderSubcatBar(barLabels, barData, onClickCallback) {
         }
       },
       scales: {
-        y: { beginAtZero: true, grace: '15%', grid: { color: 'rgba(0, 0, 0, 0.04)' }, ticks: { display: false } },
-        x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 } } }
+        x: { beginAtZero: true, grace: '15%', grid: { color: 'rgba(0, 0, 0, 0.04)' }, ticks: { display: false } },
+        y: { grid: { display: false }, ticks: { color: '#64748b', font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 } } }
       },
       plugins: {
         legend: { display: false },
         datalabels: {
           anchor: 'end',
-          align: 'top',
+          align: 'right',
           formatter: (v) => v.toLocaleString('vi-VN') + "đ",
           font: { weight: 'bold', family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 },
           color: '#0f172a'

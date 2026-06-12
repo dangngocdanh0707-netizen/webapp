@@ -80,7 +80,7 @@
 
       <div data-tab="assets-tab" onclick="app.switchTab('assets-tab', this)" class="nav-link">
 
-        <i class="fa-solid fa-briefcase text-base"></i> <span>Assets</span>
+        <i class="fa-solid fa-piggy-bank text-base"></i> <span>Assets</span>
 
       </div>
 
@@ -242,7 +242,7 @@
                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
 
                 <i
-                  class="fa-solid fa-briefcase text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+                  class="fa-solid fa-piggy-bank text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
 
               </div>
 
@@ -516,22 +516,22 @@
 
             <div class="flex-2 min-w-[180px]">
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">ASSET NAME</label>
-              <input type="text" id="ins-ast-name" class="form-input font-semibold" placeholder="e.g. Gold, Cash, Bitcoin">
+              <input type="text" id="ins-ast-name" class="form-input font-semibold">
             </div>
 
             <div class="flex-1">
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">QUANTITY</label>
-              <input type="number" step="any" id="ins-ast-quantity" class="form-input text-right" placeholder="0">
+              <input type="number" step="any" id="ins-ast-quantity" class="form-input text-right">
             </div>
 
             <div class="flex-1">
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">UNIT</label>
-              <input type="text" id="ins-ast-unit" class="form-input text-center" placeholder="e.g. Ounce, USD, BTC">
+              <input type="text" id="ins-ast-unit" class="form-input text-center">
             </div>
 
             <div class="flex-1.5">
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">PRICE</label>
-              <input type="text" id="ins-ast-price" class="form-input text-right font-bold" placeholder="0">
+              <input type="text" id="ins-ast-price" class="form-input text-right font-bold">
             </div>
 
             <button onclick="app.assets.addAssetRow()"
