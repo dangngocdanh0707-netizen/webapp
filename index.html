@@ -46,8 +46,8 @@
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <script type="module" crossorigin src="/webapp_project/assets/index-y_XTDQnz.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-5lv-ELJc.css">
+  <script type="module" crossorigin src="/webapp_project/assets/index-BINhOKqi.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp_project/assets/index-DKY9sxmP.css">
 </head>
 
 
@@ -76,6 +76,12 @@
       <div data-tab="home-tab" onclick="app.switchTab('home-tab', this)" class="nav-link active">
 
         <i class="fa-solid fa-house text-base"></i> <span>Home</span>
+
+      </div>
+
+      <div data-tab="assets-tab" onclick="app.switchTab('assets-tab', this)" class="nav-link">
+
+        <i class="fa-solid fa-briefcase text-base"></i> <span>Assets</span>
 
       </div>
 
@@ -228,13 +234,31 @@
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-10 items-center justify-center py-6 px-4">
 
+            <!-- App Card: Assets -->
+
+            <div onclick="app.launchApp('assets-tab')"
+              class="flex flex-col items-center justify-center group cursor-pointer transition">
+
+              <div
+                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
+
+                <i
+                  class="fa-solid fa-briefcase text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+
+              </div>
+
+              <span
+                class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition font-semibold">Assets</span>
+
+            </div>
+
             <!-- App Card: Incomes -->
 
             <div onclick="app.launchApp('incomes-tab')"
               class="flex flex-col items-center justify-center group cursor-pointer transition">
 
               <div
-                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-emerald-600 group-hover:to-teal-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(16,185,129,0.22)]">
+                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-blue-600 group-hover:to-sky-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(37,99,235,0.22)]">
 
                 <i
                   class="fa-solid fa-coins text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
@@ -242,7 +266,7 @@
               </div>
 
               <span
-                class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-emerald-600 transition font-semibold">Incomes</span>
+                class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-blue-600 transition font-semibold">Incomes</span>
 
             </div>
 
@@ -455,6 +479,151 @@
 
 
 
+      <div id="assets-tab" class="tab-content">
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+
+          <div class="flex items-center gap-3">
+
+            <button onclick="app.launchApp('home-tab')"
+              class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+
+              <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+
+            </button>
+
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Assets</h1>
+
+          </div>
+
+          <div class="glass-card px-5 py-4 min-w-[200px] transition">
+
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL ASSETS VALUE</span>
+
+            <p id="total-assets" class="text-2xl font-black text-slate-900 mt-1">0đ</p>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="glass-card p-6 mb-8">
+
+          <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
+              class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
+
+          <div class="flex flex-col md:flex-row items-end gap-4">
+
+            <div class="flex-2 min-w-[180px]">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">ASSET NAME</label>
+              <input type="text" id="ins-ast-name" class="form-input font-semibold" placeholder="e.g. Gold, Cash, Bitcoin">
+            </div>
+
+            <div class="flex-1">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">QUANTITY</label>
+              <input type="number" step="any" id="ins-ast-quantity" class="form-input text-right" placeholder="0">
+            </div>
+
+            <div class="flex-1">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">UNIT</label>
+              <input type="text" id="ins-ast-unit" class="form-input text-center" placeholder="e.g. Ounce, USD, BTC">
+            </div>
+
+            <div class="flex-1.5">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">PRICE</label>
+              <input type="text" id="ins-ast-price" class="form-input text-right font-bold" placeholder="0">
+            </div>
+
+            <button onclick="app.assets.addAssetRow()"
+              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+
+          <div class="glass-card p-6 flex flex-col">
+
+            <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
+                class="fa-solid fa-chart-pie text-blue-500"></i> % Asset Allocation</h3>
+
+            <div class="h-[320px] w-full flex items-center justify-center"><canvas id="assetPieChart"></canvas></div>
+
+          </div>
+
+          <div class="glass-card p-6 flex flex-col">
+
+            <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
+                class="fa-solid fa-chart-simple text-blue-500"></i> Analytics Breakdown</h3>
+
+            <div class="h-[320px] w-full"><canvas id="assetBarChart"></canvas></div>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="glass-card overflow-hidden">
+
+          <div
+            class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+
+            <div>
+
+              <h3 class="font-bold text-slate-800 text-base">All Assets</h3>
+
+            </div>
+
+            <div class="flex items-center gap-2 bg-white px-3 rounded-xl border border-slate-200 shadow-2xs h-9">
+              <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
+              <input type="text" id="assetSearch" placeholder="Search assets..."
+                class="text-xs font-semibold text-slate-650 bg-transparent outline-none h-full py-0 min-w-[150px]">
+            </div>
+
+          </div>
+
+          <div class="overflow-x-auto">
+
+            <table class="w-full text-left border-collapse" id="table-assets">
+
+              <thead>
+
+                <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+
+                  <th class="p-4 pl-6 w-48">ASSET</th>
+
+                  <th class="p-4 text-right w-28">QUANTITY</th>
+
+                  <th class="p-4 text-center w-24">UNIT</th>
+
+                  <th class="p-4 text-right w-36">PRICE</th>
+
+                  <th class="p-4 text-right w-36">TOTAL VALUE</th>
+
+                  <th class="p-4 text-center w-36">ACTION</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody class="text-sm text-slate-650 divide-y divide-slate-100"></tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
       <div id="incomes-tab" class="tab-content">
 
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -462,7 +631,7 @@
           <div class="flex items-center gap-3">
 
             <button onclick="app.launchApp('home-tab')"
-              class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-emerald-600 hover:border-emerald-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+              class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-blue-600 hover:border-blue-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
 
               <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
 
@@ -487,7 +656,7 @@
         <div class="glass-card p-6 mb-8">
 
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
-              class="fa-solid fa-circle-plus text-emerald-500"></i> Add New</h4>
+              class="fa-solid fa-circle-plus text-blue-500"></i> Add New</h4>
 
           <div class="flex flex-col md:flex-row items-end gap-4">
 
@@ -514,7 +683,7 @@
                 type="text" id="ins-inc-note" class="form-input"></div>
 
             <button onclick="app.incomes.addIncomeRow()"
-              class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i
+              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i
                 class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
 
           </div>
@@ -529,7 +698,7 @@
           <div class="glass-card p-6 flex flex-col">
 
             <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
-                class="fa-solid fa-chart-pie text-emerald-500"></i> % Income Allocation</h3>
+                class="fa-solid fa-chart-pie text-blue-500"></i> % Income Allocation</h3>
 
             <div class="h-[320px] w-full flex items-center justify-center"><canvas id="incomePieChart"></canvas></div>
 
@@ -538,7 +707,7 @@
           <div class="glass-card p-6 flex flex-col">
 
             <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
-                class="fa-solid fa-chart-simple text-emerald-500"></i> Analytics Breakdown</h3>
+                class="fa-solid fa-chart-simple text-blue-500"></i> Analytics Breakdown</h3>
 
             <div class="h-[320px] w-full"><canvas id="incomeBarChart"></canvas></div>
 
@@ -711,6 +880,41 @@
                 class="fa-solid fa-chart-simple text-blue-500"></i> Analytics Breakdown</h3>
 
             <div class="h-[320px] w-full"><canvas id="barChart"></canvas></div>
+
+          </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+
+          <div class="glass-card p-6 flex flex-col">
+
+            <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
+                class="fa-solid fa-chart-pie text-blue-500"></i> % Subcategory Allocation</h3>
+
+            <div class="h-[320px] w-full flex items-center justify-center"><canvas id="subcatPieChart"></canvas></div>
+
+          </div>
+
+          <div class="glass-card p-6 flex flex-col">
+
+            <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
+                class="fa-solid fa-chart-simple text-blue-500"></i> Subcategory Breakdown</h3>
+
+            <div class="h-[320px] w-full"><canvas id="subcatBarChart"></canvas></div>
+
+          </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 gap-8 mb-8">
+
+          <div class="glass-card p-6 flex flex-col">
+
+            <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
+                class="fa-solid fa-chart-bar text-blue-500"></i> Monthly Expenses Trend</h3>
+
+            <div class="h-[320px] w-full"><canvas id="monthlyExpensesChart"></canvas></div>
 
           </div>
 
