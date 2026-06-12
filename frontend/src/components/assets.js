@@ -77,29 +77,6 @@ function renderAssetGraphics() {
       `);
     });
   }
-
-  // Populate Asset Statistics
-  const countEl = document.getElementById('stat-asset-count');
-  const topEl = document.getElementById('stat-asset-top');
-  const avgEl = document.getElementById('stat-asset-avg');
-
-  const uniqueCount = Object.keys(assetsMap).length;
-  if (countEl) countEl.innerText = uniqueCount;
-
-  if (topEl) {
-    if (uniqueCount > 0) {
-      let sortedAssetArray = Object.entries(assetsMap).sort((a, b) => b[1] - a[1]);
-      let topAsset = sortedAssetArray[0];
-      topEl.innerText = `${topAsset[0]} (${topAsset[1].toLocaleString('vi-VN')}đ)`;
-    } else {
-      topEl.innerText = "-";
-    }
-  }
-
-  if (avgEl) {
-    let avgVal = uniqueCount > 0 ? totalAssetsVal / uniqueCount : 0;
-    avgEl.innerText = avgVal.toLocaleString('vi-VN') + "đ";
-  }
 }
 
 export function buildAssetTable() {
