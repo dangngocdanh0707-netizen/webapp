@@ -112,7 +112,7 @@ var Gc=Object.defineProperty;var Yc=(n,t,e)=>t in n?Gc(n,t,{enumerable:!0,config
           <span class="view-ast-mode-${l}">${a.toLocaleString("vi-VN")}đ</span>
           <input type="text" id="edit-ast-price-${l}" class="edit-input text-right font-bold edit-ast-mode-${l} hidden w-full" value="${a}">
         </td>
-        <td class="p-4 text-right font-bold text-blue-600 w-36">
+        <td class="p-4 text-right font-bold text-slate-900 w-36">
           <span>${r.toLocaleString("vi-VN")}đ</span>
         </td>
         
