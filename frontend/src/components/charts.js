@@ -149,9 +149,9 @@ export function renderSubcatBar(barLabels, barData, onClickCallback) {
       labels: barLabels,
       datasets: [{
         data: barData,
-        backgroundColor: barLabels.map(cat => cat === "Uncategorized" ? '#94a3b8' : '#5a8bee'),
+        backgroundColor: '#5a8bee',
         borderRadius: 8,
-        hoverBackgroundColor: barLabels.map(cat => cat === "Uncategorized" ? '#64748b' : '#4372d6')
+        hoverBackgroundColor: '#4372d6'
       }]
     },
     options: {
