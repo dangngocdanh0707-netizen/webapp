@@ -1,4 +1,5 @@
 window.app = {
+  assets: {},
   incomes: {},
   expenses: {},
   vocab: {},

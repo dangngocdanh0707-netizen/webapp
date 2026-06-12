@@ -292,11 +292,12 @@ async function resolveAllTabs(spreadsheetId) {
     const sheets = response.result.sheets || [];
     const existingTitles = sheets.map(s => s.properties.title);
 
-    const targetTabs = ['incomes', 'cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections', 'grammar_diary', 'chat_history'];
+    const targetTabs = ['assets', 'incomes', 'cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections', 'grammar_diary', 'chat_history'];
     const mappings = {};
 
     // Bước 1: Khớp trực tiếp và hỗ trợ các biến thể/tên thay thế phổ biến (ví dụ số nhiều, từ đồng nghĩa)
     const alternativeNames = {
+      assets: ['assets', 'assests', 'asset', 'assest', 'tài sản'],
       incomes: ['incomes', 'income', 'thu nhập'],
       cost: ['expenses', 'expense', 'cost', 'costs', 'chi tiêu'],
       vocabulary: ['vocabulary', 'vocabularies', 'vocab', 'vocabs', 'từ vựng'],
@@ -354,7 +355,14 @@ async function resolveAllTabs(spreadsheetId) {
         for (const title of unmappedSheets) {
           const headers = sheetHeaders[title] || [];
 
-          if (target === 'incomes') {
+          if (target === 'assets') {
+            const hasAssets = headers.includes('assets') || headers.includes('tài sản') || headers.includes('assests') || headers.some(h => h.includes('assets') || h.includes('tài sản'));
+            const hasQuantity = headers.includes('quantity') || headers.includes('số lượng') || headers.includes('qty');
+            if (hasAssets && hasQuantity) {
+              bestMatch = title;
+              break;
+            }
+          } else if (target === 'incomes') {
             const hasDate = headers.includes('date') || headers.includes('ngày') || headers.some(h => h.includes('date') || h.includes('ngày'));
             const hasAmount = headers.includes('amount') || headers.includes('số tiền') || headers.includes('tiền') || headers.some(h => h.includes('amount') || h.includes('tiền'));
             const hasCategory = headers.includes('category') || headers.includes('danh mục') || headers.some(h => h.includes('category') || h.includes('danh mục'));
@@ -455,7 +463,8 @@ async function resolveAllTabs(spreadsheetId) {
     // Bước 3: Đặt mặc định nếu vẫn không tìm thấy
     targetTabs.forEach(target => {
       if (!mappings[target]) {
-        if (target === 'incomes') mappings[target] = 'incomes';
+        if (target === 'assets') mappings[target] = 'assets';
+        else if (target === 'incomes') mappings[target] = 'incomes';
         else if (target === 'cost') mappings[target] = 'expenses';
         else if (target === 'habit_tracker') mappings[target] = 'habits';
         else if (target === 'link') mappings[target] = 'links';
@@ -476,6 +485,7 @@ async function resolveAllTabs(spreadsheetId) {
   } catch (err) {
     console.error("[api.js] Lỗi tự động khớp các Sheet tab:", err);
     return {
+      assets: 'assets',
       incomes: 'incomes',
       cost: 'cost',
       vocabulary: 'vocabulary',
@@ -495,7 +505,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
   const mappings = await resolveAllTabs(spreadsheetId);
   const response = await gapi.client.sheets.spreadsheets.get({ spreadsheetId });
   const existingTitles = response.result.sheets.map(s => s.properties.title);
-  const targetTabs = ['incomes', 'cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections', 'grammar_diary', 'chat_history'];
+  const targetTabs = ['assets', 'incomes', 'cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections', 'grammar_diary', 'chat_history'];
 
   const missingTabs = targetTabs.filter(target => {
     const mappedName = mappings[target];
@@ -516,6 +526,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
 
     // Tạo tiêu đề cột cho các tab mới tạo
     const headersData = [
+      { range: `${mappings['assets'] || 'assets'}!A1:E1`, values: [['assets', 'quantity', 'unit', 'price', 'total']] },
       { range: `${mappings['incomes'] || 'incomes'}!A1:D1`, values: [['Date', 'Category', 'Amount', 'Note']] },
       { range: `${mappings['cost'] || 'expenses'}!A1:E1`, values: [['Date', 'Category', 'Subcategory', 'Amount', 'Note']] },
       { range: `${mappings['vocabulary'] || 'vocabulary'}!A1:J1`, values: [['Content', 'Transcription', 'Category', 'Topic', 'Level', 'Meaning', 'Status', 'Next Review', 'Ease Factor', 'Interval']] },
@@ -568,6 +579,7 @@ export function callServer(methodName, args) {
 
       // Phân giải tên các tab thực tế bằng bộ máy tự động phát hiện cột (Thông minh & Hiệu suất cao)
       const mappings = await resolveAllTabs(spreadsheetId);
+      const assetsTab = mappings['assets'];
       const incomesTab = mappings['incomes'];
       const costTab = mappings['cost'];
       const vocabTab = mappings['vocabulary'];
@@ -592,6 +604,7 @@ export function callServer(methodName, args) {
         const response = await gapi.client.sheets.spreadsheets.values.batchGet({
           spreadsheetId,
           ranges: [
+            `${assetsTab}!A2:E`,
             `${incomesTab}!A2:D`,
             `${costTab}!A2:E`,
             `${vocabTab}!A2:J`,
@@ -611,7 +624,20 @@ export function callServer(methodName, args) {
         const getRows = (vr) => (vr && vr.values) ? vr.values : [];
 
         resolve({
-          incomes: getRows(valueRanges[0]).map((row, idx) => ({
+          assets: getRows(valueRanges[0]).map((row, idx) => {
+            const quantity = Number(row[1]) || 0;
+            const price = Number(row[3]) || 0;
+            return {
+              rowNumber: idx + 2,
+              asset: row[0] || "",
+              quantity: quantity,
+              unit: row[2] || "",
+              price: price,
+              total: quantity * price
+            };
+          }).filter(item => item.asset),
+
+          incomes: getRows(valueRanges[1]).map((row, idx) => ({
             rowNumber: idx + 2,
             date: cleanDateValue(row[0]),
             category: row[1] || "",
@@ -619,7 +645,7 @@ export function callServer(methodName, args) {
             note: row[3] || ""
           })).filter(item => item.date || item.category || item.note),
 
-          cost: getRows(valueRanges[1]).map((row, idx) => ({
+          cost: getRows(valueRanges[2]).map((row, idx) => ({
             rowNumber: idx + 2,
             date: cleanDateValue(row[0]),
             category: row[1] || "",
@@ -628,7 +654,7 @@ export function callServer(methodName, args) {
             note: row[4] || ""
           })).filter(item => item.date || item.category || item.note),
 
-          vocabulary: getRows(valueRanges[2]).map((row, idx) => ({
+          vocabulary: getRows(valueRanges[3]).map((row, idx) => ({
             rowNumber: idx + 2,
             content: row[0] || "",
             transcription: row[1] || "",
@@ -642,28 +668,28 @@ export function callServer(methodName, args) {
             interval: Number(row[9]) || 0
           })).filter(item => item.content),
 
-          habit_tracker: getRows(valueRanges[3]).map((row, idx) => ({
+          habit_tracker: getRows(valueRanges[4]).map((row, idx) => ({
             rowNumber: idx + 2,
             date: cleanDateValue(row[0]),
             habit: row[1] || "",
             status: row[2] === "TRUE" || row[2] === true || row[2] === "true"
           })).filter(item => item.habit),
 
-          link: getRows(valueRanges[4]).map((row, idx) => ({
+          link: getRows(valueRanges[5]).map((row, idx) => ({
             rowNumber: idx + 2,
             title: row[0] || "",
             category: row[1] || "",
             content: row[2] || ""
           })).filter(item => item.title),
 
-          prompt: getRows(valueRanges[5]).map((row, idx) => ({
+          prompt: getRows(valueRanges[6]).map((row, idx) => ({
             rowNumber: idx + 2,
             title: row[0] || "",
             category: row[1] || "",
             content: row[2] || ""
           })).filter(item => item.title),
 
-          goal: getRows(valueRanges[6]).map((row, idx) => ({
+          goal: getRows(valueRanges[7]).map((row, idx) => ({
             rowNumber: idx + 2,
             goal_name: row[0] || "",
             start_date: cleanDateValue(row[1]),
@@ -672,7 +698,7 @@ export function callServer(methodName, args) {
             target_value: parseAmount(row[4])
           })).filter(item => item.goal_name),
 
-          task: getRows(valueRanges[7]).map((row, idx) => ({
+          task: getRows(valueRanges[8]).map((row, idx) => ({
             rowNumber: idx + 2,
             date: cleanDateValue(row[0]),
             task: row[1] || "",
@@ -681,7 +707,7 @@ export function callServer(methodName, args) {
             status: row[4] === "TRUE" || row[4] === true || row[4] === "true" || row[4] === "v" || row[4] === "checked"
           })).filter(item => item.task),
           
-          google_map: getRows(valueRanges[8]).map((row, idx) => ({
+          google_map: getRows(valueRanges[9]).map((row, idx) => ({
             rowNumber: idx + 2,
             place: row[0] || "",
             city: row[1] || "",
@@ -689,14 +715,14 @@ export function callServer(methodName, args) {
             address: row[3] || ""
           })).filter(item => item.place),
 
-          collections: getRows(valueRanges[9]).map((row, idx) => ({
+          collections: getRows(valueRanges[10]).map((row, idx) => ({
             rowNumber: idx + 2,
             item: row[0] || "",
             brand: row[1] || "",
             category: row[2] || ""
           })).filter(item => item.item),
 
-          grammar_diary: getRows(valueRanges[10]).map((row, idx) => ({
+          grammar_diary: getRows(valueRanges[11]).map((row, idx) => ({
             rowNumber: idx + 2,
             date: cleanDateValue(row[0]),
             scenario: row[1] || "",
@@ -706,7 +732,7 @@ export function callServer(methodName, args) {
             status: row[5] === "TRUE" || row[5] === true || row[5] === "true"
           })).filter(item => (item.user_sentence || item.corrected_sentence) && !item.status),
 
-          chat_history: getRows(valueRanges[11]).map((row, idx) => ({
+          chat_history: getRows(valueRanges[12]).map((row, idx) => ({
             rowNumber: idx + 2,
             date: cleanDateValue(row[0]),
             scenario: row[1] || "",
@@ -714,6 +740,54 @@ export function callServer(methodName, args) {
             text: row[3] || ""
           })).filter(item => item.scenario && item.role && item.text)
         });
+        return;
+      }
+
+      // 2a. Nghiệp vụ TÀI SẢN (Assets CRUD)
+      if (methodName === "insertAssetRow") {
+        const [asset, quantity, unit, price] = args;
+        const total = (Number(quantity) || 0) * (Number(price) || 0);
+        await gapi.client.sheets.spreadsheets.values.append({
+          spreadsheetId,
+          range: `${assetsTab}!A:E`,
+          valueInputOption: 'USER_ENTERED',
+          insertDataOption: 'OVERWRITE',
+          resource: { values: [[asset, Number(quantity) || 0, unit, Number(price) || 0, total]] }
+        });
+        resolve("Thành công");
+        return;
+      }
+      if (methodName === "updateAssetRow") {
+        const [rowNumber, asset, quantity, unit, price] = args;
+        const total = (Number(quantity) || 0) * (Number(price) || 0);
+        await gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${assetsTab}!A${rowNumber}:E${rowNumber}`,
+          valueInputOption: 'USER_ENTERED',
+          resource: { values: [[asset, Number(quantity) || 0, unit, Number(price) || 0, total]] }
+        });
+        resolve("Thành công");
+        return;
+      }
+      if (methodName === "deleteAssetRow") {
+        const [rowNumber] = args;
+        const sheetId = await getSheetId(assetsTab, spreadsheetId);
+        await gapi.client.sheets.spreadsheets.batchUpdate({
+          spreadsheetId,
+          resource: {
+            requests: [{
+              deleteDimension: {
+                range: {
+                  sheetId,
+                  dimension: 'ROWS',
+                  startIndex: rowNumber - 1,
+                  endIndex: rowNumber
+                }
+              }
+            }]
+          }
+        });
+        resolve("Thành công");
         return;
       }
 

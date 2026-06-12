@@ -14,6 +14,7 @@ import {
 import { initSortableSidebar, initResizeSidebar } from './components/sidebar.js';
 import { initCostModule } from './components/expenses.js';
 import { initIncomesModule } from './components/incomes.js';
+import { initAssetsModule } from './components/assets.js';
 import { initVocabModule } from './components/vocabulary.js';
 import { initSrsModule } from './components/srs.js';
 import { initAiChatModule } from './components/ai_chat.js';
@@ -129,7 +130,10 @@ async function initApp() {
 
       // 1. Dành cho các ô THÊM MỚI (Mã bắt đầu bằng 'ins-')
       if (id.startsWith('ins-')) {
-        if (id.startsWith('ins-inc-') && window.app && window.app.incomes && typeof window.app.incomes.addIncomeRow === 'function') {
+        if (id.startsWith('ins-ast-') && window.app && window.app.assets && typeof window.app.assets.addAssetRow === 'function') {
+          e.preventDefault();
+          window.app.assets.addAssetRow();
+        } else if (id.startsWith('ins-inc-') && window.app && window.app.incomes && typeof window.app.incomes.addIncomeRow === 'function') {
           e.preventDefault();
           window.app.incomes.addIncomeRow();
         } else if (id.startsWith('ins-cost-') && window.app && window.app.expenses && typeof window.app.expenses.addCostRow === 'function') {
@@ -163,12 +167,15 @@ async function initApp() {
         const rowId = id.split('-').pop(); // Lấy số dòng (rowNumber) ở cuối ID
         if (!rowId || isNaN(rowId)) return;
 
-        if (id.startsWith('edit-') && !id.startsWith('edit-inc-') && window.app && window.app.expenses && typeof window.app.expenses.saveRow === 'function') {
+        if (id.startsWith('edit-') && !id.startsWith('edit-inc-') && !id.startsWith('edit-ast-') && window.app && window.app.expenses && typeof window.app.expenses.saveRow === 'function') {
           e.preventDefault();
           window.app.expenses.saveRow(rowId);
         } else if (id.startsWith('edit-inc-') && window.app && window.app.incomes && typeof window.app.incomes.saveIncomeRow === 'function') {
           e.preventDefault();
           window.app.incomes.saveIncomeRow(rowId);
+        } else if (id.startsWith('edit-ast-') && window.app && window.app.assets && typeof window.app.assets.saveAssetRow === 'function') {
+          e.preventDefault();
+          window.app.assets.saveAssetRow(rowId);
         } else if (id.startsWith('v-edit-') && window.app && window.app.vocab && typeof window.app.vocab.saveVocab === 'function') {
           e.preventDefault();
           window.app.vocab.saveVocab(rowId);
@@ -286,6 +293,7 @@ function loadDataFromServer(silent = false) {
         }
         
         renderDashboard({
+          assets: [],
           incomes: [],
           cost: [],
           vocabulary: [],
@@ -320,6 +328,7 @@ function handleScriptError(err) {
   
   // Tự động chuyển qua hiển thị giao diện chính với dữ liệu trống để người dùng có thể tự do bấm Connect Google Sheets trong Sidebar
   renderDashboard({
+    assets: [],
     incomes: [],
     cost: [],
     vocabulary: [],
@@ -343,6 +352,7 @@ function renderDashboard(data) {
     if (dashboardContent) dashboardContent.classList.remove('hidden');
 
     // 1. Phân bổ dữ liệu về các mô-đun con
+    initAssetsModule(data.assets, loadDataFromServer);
     initIncomesModule(data.incomes, loadDataFromServer);
     initCostModule(data.cost, loadDataFromServer);
     initVocabModule(data.vocabulary, loadDataFromServer);

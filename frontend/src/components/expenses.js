@@ -1,5 +1,5 @@
 import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString } from '../services/api.js';
-import { renderExpensePie, renderExpenseBar } from './charts.js';
+import { renderExpensePie, renderExpenseBar, renderSubcatPie, renderSubcatBar, renderMonthlyExpensesBar } from './charts.js';
 
 
 let allCostData = [];
@@ -75,11 +75,14 @@ function renderCostGraphics() {
   }
 
   let categories = {};
+  let subcategories = {};
   filteredData.forEach(item => {
     let rawAmount = item.amount !== undefined && item.amount !== null ? item.amount : 0;
     let amount = parseFloat(rawAmount.toString().replace(/[^\d]/g, '') || 0);
     let cat = item.category || "Uncategorized";
+    let subcat = item.subcategory || "Uncategorized";
     categories[cat] = (categories[cat] || 0) + amount;
+    subcategories[subcat] = (subcategories[subcat] || 0) + amount;
   });
 
   // Calculate total sum
@@ -110,6 +113,31 @@ function renderCostGraphics() {
       buildTable();
     }
   });
+
+  // Draw Subcategory Pie Chart
+  renderSubcatPie(subcategories);
+
+  // Draw Subcategory Bar Chart
+  let sortedSubcatArray = Object.entries(subcategories).sort((a, b) => b[1] - a[1]);
+  let subcatBarLabels = sortedSubcatArray.map(item => item[0]);
+  let subcatBarData = sortedSubcatArray.map(item => item[1]);
+  renderSubcatBar(subcatBarLabels, subcatBarData);
+
+  // Group monthly expenses from allCostData
+  let monthlyExpenses = {};
+  allCostData.forEach(item => {
+    if (item.date && item.date.length >= 7) {
+      let month = item.date.substring(0, 7); // yyyy-MM
+      let rawAmount = item.amount !== undefined && item.amount !== null ? item.amount : 0;
+      let amount = parseFloat(rawAmount.toString().replace(/[^\d]/g, '') || 0);
+      monthlyExpenses[month] = (monthlyExpenses[month] || 0) + amount;
+    }
+  });
+
+  let sortedMonths = Object.keys(monthlyExpenses).sort();
+  let monthLabels = sortedMonths;
+  let monthData = sortedMonths.map(m => monthlyExpenses[m]);
+  renderMonthlyExpensesBar(monthLabels, monthData);
 }
 
 function populateCostMonths() {
@@ -185,7 +213,7 @@ export function buildTable() {
           </select>
         </td>
         <td class="p-4 w-36">
-          <span class="view-mode-${id} text-xs text-slate-650 font-semibold">${escapeHTML(item.subcategory || '-')}</span>
+          <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-mode-${id}">${escapeHTML(item.subcategory || '-')}</span>
           <input type="text" id="edit-subcat-${id}" class="edit-input edit-mode-${id} hidden w-full" value="${escapeHTML(item.subcategory || '')}">
         </td>
         <td class="p-4 text-right font-bold text-slate-900 w-40">
