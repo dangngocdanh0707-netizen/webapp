@@ -116,6 +116,7 @@ export function renderIncomePie(categories, onClickCallback) {
 
   const labels = Object.keys(categories);
   const data = Object.values(categories);
+  const bgColors = labels.map(cat => incomeColorsMap[cat] || '#818cf8');
 
   incomePieChartInstance = new Chart(canvas, {
     type: 'doughnut',
@@ -123,9 +124,11 @@ export function renderIncomePie(categories, onClickCallback) {
       labels: labels,
       datasets: [{
         data: data,
-        backgroundColor: labels.map(cat => incomeColorsMap[cat] || '#818cf8'),
+        backgroundColor: bgColors,
+        hoverBackgroundColor: bgColors,
         borderColor: '#ffffff',
-        borderWidth: 2
+        borderWidth: 2,
+        hoverOffset: 0
       }]
     },
     options: {
@@ -314,6 +317,10 @@ export function renderAssetPie(assetsMap, onClickCallback) {
 
   const labels = Object.keys(assetsMap);
   const data = Object.values(assetsMap);
+  const bgColors = labels.map((_, idx) => {
+    const colors = ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#f87171'];
+    return colors[idx % colors.length];
+  });
 
   assetPieChartInstance = new Chart(canvas, {
     type: 'doughnut',
@@ -321,12 +328,11 @@ export function renderAssetPie(assetsMap, onClickCallback) {
       labels: labels,
       datasets: [{
         data: data,
-        backgroundColor: labels.map((_, idx) => {
-          const colors = ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#f87171'];
-          return colors[idx % colors.length];
-        }),
+        backgroundColor: bgColors,
+        hoverBackgroundColor: bgColors,
         borderColor: '#ffffff',
-        borderWidth: 2
+        borderWidth: 2,
+        hoverOffset: 0
       }]
     },
     options: {
