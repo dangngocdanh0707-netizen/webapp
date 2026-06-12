@@ -149,9 +149,9 @@ export function renderSubcatBar(barLabels, barData, onClickCallback) {
       labels: barLabels,
       datasets: [{
         data: barData,
-        backgroundColor: '#5a8bee',
+        backgroundColor: '#60a5fa',
         borderRadius: 8,
-        hoverBackgroundColor: '#4372d6'
+        hoverBackgroundColor: '#3b82f6'
       }]
     },
     options: {
@@ -194,9 +194,9 @@ export function renderMonthlyExpensesBar(labels, data) {
       labels: labels,
       datasets: [{
         data: data,
-        backgroundColor: '#5a8bee',
+        backgroundColor: '#60a5fa',
         borderRadius: 8,
-        hoverBackgroundColor: '#4372d6'
+        hoverBackgroundColor: '#3b82f6'
       }]
     },
     options: {
@@ -376,9 +376,9 @@ export function renderExpenseBar(barLabels, barData, onClickCallback) {
       labels: barLabels,
       datasets: [{
         data: barData,
-        backgroundColor: '#5a8bee',
+        backgroundColor: '#60a5fa',
         borderRadius: 8,
-        hoverBackgroundColor: '#4372d6'
+        hoverBackgroundColor: '#3b82f6'
       }]
     },
     options: {
@@ -482,7 +482,7 @@ export function renderAssetPie(assetsMap, onClickCallback) {
       datasets: [{
         data: data,
         backgroundColor: labels.map((_, idx) => {
-          const colors = ['#3b82f6', '#60a5fa', '#1d4ed8', '#93c5fd', '#1e3a8a', '#2563eb', '#38bdf8', '#0284c7', '#0369a1', '#075985'];
+          const colors = ['#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#f87171'];
           return colors[idx % colors.length];
         }),
         borderColor: '#ffffff',
@@ -531,15 +531,9 @@ export function renderAssetBar(barLabels, barData, onClickCallback) {
       labels: barLabels,
       datasets: [{
         data: barData,
-        backgroundColor: barLabels.map((_, idx) => {
-          const colors = ['#3b82f6', '#2563eb', '#1d4ed8', '#1e40af', '#60a5fa', '#93c5fd', '#38bdf8', '#0284c7', '#0369a1', '#075985'];
-          return colors[idx % colors.length];
-        }),
+        backgroundColor: '#60a5fa',
         borderRadius: 8,
-        hoverBackgroundColor: barLabels.map((_, idx) => {
-          const colors = ['#1d4ed8', '#1e40af', '#172554', '#1e3a8a', '#2563eb', '#3b82f6', '#0284c7', '#0369a1', '#075985', '#0c4a6e'];
-          return colors[idx % colors.length];
-        })
+        hoverBackgroundColor: '#3b82f6'
       }]
     },
     options: {
