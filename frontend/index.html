@@ -905,7 +905,7 @@
             <div class="flex flex-wrap items-center gap-2">
               <div class="flex items-center gap-2 bg-white px-3 rounded-xl border border-slate-200 shadow-2xs h-9">
                 <i class="fa-solid fa-calendar-day text-slate-400 text-xs pl-1"></i>
-                <select id="dayFilter" onchange="filterTableByDropdown('dayFilter')"
+                <select id="dayFilter" onchange="app.expenses.filterTableByDropdown('dayFilter')"
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none h-full py-0 min-w-[100px]">
                   <option value="All">All Days</option>
                   <option value="Today">Today</option>
@@ -914,14 +914,14 @@
               </div>
               <div class="flex items-center gap-2 bg-white px-3 rounded-xl border border-slate-200 shadow-2xs h-9">
                 <i class="fa-solid fa-calendar text-slate-400 text-xs pl-1"></i>
-                <select id="monthFilter" onchange="filterTableByDropdown('monthFilter')"
+                <select id="monthFilter" onchange="app.expenses.filterTableByDropdown('monthFilter')"
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none h-full py-0 min-w-[100px]">
                   <option value="All">All Months</option>
                 </select>
               </div>
               <div class="flex items-center gap-2 bg-white px-3 rounded-xl border border-slate-200 shadow-2xs h-9">
                 <i class="fa-solid fa-filter text-slate-400 text-xs pl-1"></i>
-                <select id="categoryFilter" onchange="filterTableByDropdown('categoryFilter')"
+                <select id="categoryFilter" onchange="app.expenses.filterTableByDropdown('categoryFilter')"
                   class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none h-full py-0 min-w-[120px]">
                   <option value="All">All Categories</option>
                 </select>
