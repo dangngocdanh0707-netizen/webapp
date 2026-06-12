@@ -8,76 +8,14 @@ Chart.register(ChartDataLabels);
 // Vô hiệu hóa tooltip toàn cục cho tất cả biểu đồ
 Chart.defaults.plugins.tooltip.enabled = false;
 
-export let pieChartInstance = null;
 export let barChartInstance = null;
 export let habitLineChartInstance = null;
 export let incomePieChartInstance = null;
 export let incomeBarChartInstance = null;
-export let subcatPieChartInstance = null;
 export let subcatBarChartInstance = null;
 export let monthlyExpensesChartInstance = null;
 export let assetPieChartInstance = null;
 export let assetBarChartInstance = null;
-
-const costColorsMap = {
-  "Must have": '#60a5fa',
-  "Wasted": '#f87171',
-  "Nice to have": '#34d399'
-};
-
-const subcatColorsMap = {
-  "Uncategorized": '#94a3b8',   // Slate gray
-  "Học tập": '#1e3a8a',         // Dark blue
-  "Ăn uống": '#2563eb',         // Royal blue
-  "Sinh hoạt": '#3b82f6',       // Blue
-  "Đầu tư": '#60a5fa',          // Sky blue
-  "Xăng xe": '#93c5fd',         // Light blue
-  "Quà tặng": '#bfdbfe',        // Very light blue
-  "Giải trí": '#cbd5e1',        // Slate light gray
-  "Khác": '#cbd5e1'             // Slate light gray
-};
-
-const subcatColorsHoverMap = {
-  "Uncategorized": '#64748b',   // Slate gray hover
-  "Học tập": '#172554',         // Navy hover
-  "Ăn uống": '#1d4ed8',         // Royal blue hover
-  "Sinh hoạt": '#2563eb',       // Blue hover
-  "Đầu tư": '#3b82f6',          // Sky blue hover
-  "Xăng xe": '#60a5fa',         // Light blue hover
-  "Quà tặng": '#93c5fd',        // Very light blue hover
-  "Giải trí": '#94a3b8',        // Slate light gray hover
-  "Khác": '#94a3b8'
-};
-
-const fallbackColors = [
-  '#2563eb', '#3b82f6', '#60a5fa', '#1d4ed8', '#1e40af',
-  '#1e3a8a', '#93c5fd', '#bfdbfe', '#cbd5e1', '#94a3b8'
-];
-
-const fallbackHoverColors = [
-  '#1d4ed8', '#2563eb', '#3b82f6', '#1e3a8a', '#172554',
-  '#172554', '#60a5fa', '#93c5fd', '#94a3b8', '#64748b'
-];
-
-export function getSubcatColor(label) {
-  if (subcatColorsMap[label]) return subcatColorsMap[label];
-  let hash = 0;
-  for (let i = 0; i < label.length; i++) {
-    hash = label.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash) % fallbackColors.length;
-  return fallbackColors[index];
-}
-
-export function getSubcatHoverColor(label) {
-  if (subcatColorsHoverMap[label]) return subcatColorsHoverMap[label];
-  let hash = 0;
-  for (let i = 0; i < label.length; i++) {
-    hash = label.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash) % fallbackHoverColors.length;
-  return fallbackHoverColors[index];
-}
 
 const incomeColorsMap = {
   "Salary": '#34d399',
@@ -86,56 +24,6 @@ const incomeColorsMap = {
   "Investment": '#a78bfa'
 };
 
-export function renderSubcatPie(subcategories, onClickCallback) {
-  const canvas = document.getElementById('subcatPieChart');
-  if (!canvas) return;
-
-  if (subcatPieChartInstance) subcatPieChartInstance.destroy();
-
-  const labels = Object.keys(subcategories);
-  const data = Object.values(subcategories);
-
-  subcatPieChartInstance = new Chart(canvas, {
-    type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: data,
-        backgroundColor: labels.map(cat => getSubcatColor(cat)),
-        borderColor: '#ffffff',
-        borderWidth: 2
-      }]
-    },
-    options: {
-      onClick: (e, el) => {
-        if (el.length > 0 && onClickCallback) {
-          const clickedLabel = subcatPieChartInstance.data.labels[el[0].index];
-          onClickCallback(clickedLabel);
-        }
-      },
-      plugins: {
-        tooltip: { enabled: false },
-        legend: {
-          position: 'bottom',
-          labels: {
-            color: '#475569',
-            font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 12 }
-          }
-        },
-        datalabels: {
-          formatter: (v, ctx) => {
-            const sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
-            const pct = sum > 0 ? Math.round((v / sum) * 100) : 0;
-            return pct >= 5 ? pct + "%" : "";
-          },
-          color: '#fff',
-          font: { weight: 'bold', family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 12 }
-        }
-      },
-      maintainAspectRatio: false
-    }
-  });
-}
 
 export function renderSubcatBar(barLabels, barData, onClickCallback) {
   const canvas = document.getElementById('subcatBarChart');
@@ -314,55 +202,7 @@ export function renderIncomeBar(barLabels, barData, onClickCallback) {
   });
 }
 
-export function renderExpensePie(categories, onClickCallback) {
-  const canvas = document.getElementById('pieChart');
-  if (!canvas) return;
 
-  if (pieChartInstance) pieChartInstance.destroy();
-
-  const labels = Object.keys(categories);
-  const data = Object.values(categories);
-
-  pieChartInstance = new Chart(canvas, {
-    type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: data,
-        backgroundColor: labels.map(cat => costColorsMap[cat] || '#a78bfa'),
-        borderColor: '#ffffff',
-        borderWidth: 2
-      }]
-    },
-    options: {
-      onClick: (e, el) => {
-        if (el.length > 0 && onClickCallback) {
-          const clickedLabel = pieChartInstance.data.labels[el[0].index];
-          onClickCallback(clickedLabel);
-        }
-      },
-      plugins: {
-        tooltip: { enabled: false },
-        legend: {
-          position: 'bottom',
-          labels: {
-            color: '#475569',
-            font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 12 }
-          }
-        },
-        datalabels: {
-          formatter: (v, ctx) => {
-            const sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
-            return sum > 0 ? Math.round((v / sum) * 100) + "%" : "0%";
-          },
-          color: '#fff',
-          font: { weight: 'bold', family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 12 }
-        }
-      },
-      maintainAspectRatio: false
-    }
-  });
-}
 
 export function renderExpenseBar(barLabels, barData, onClickCallback) {
   const canvas = document.getElementById('barChart');

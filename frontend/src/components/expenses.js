@@ -1,5 +1,5 @@
 import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString } from '../services/api.js';
-import { renderExpensePie, renderExpenseBar, renderSubcatPie, renderSubcatBar, renderMonthlyExpensesBar } from './charts.js';
+import { renderExpenseBar, renderSubcatBar, renderMonthlyExpensesBar } from './charts.js';
 
 
 let allCostData = [];
@@ -92,14 +92,7 @@ function renderCostGraphics() {
     totalCostEl.innerText = totalCost.toLocaleString('vi-VN') + "đ";
   }
 
-  // Draw Pie Chart (Removed from UI)
-  // renderExpensePie(categories, (clickedLabel) => {
-  //   const filterSelect = document.getElementById('categoryFilter');
-  //   if (filterSelect) {
-  //     filterSelect.value = clickedLabel;
-  //     buildTable();
-  //   }
-  // });
+
 
   // Draw Bar Chart
   let sortedCostArray = Object.entries(categories).sort((a, b) => b[1] - a[1]);
@@ -114,8 +107,7 @@ function renderCostGraphics() {
     }
   });
 
-  // Draw Subcategory Pie Chart (Removed from UI)
-  // renderSubcatPie(subcategories);
+
 
   // Draw Subcategory Bar Chart
   let sortedSubcatArray = Object.entries(subcategories).sort((a, b) => b[1] - a[1]);
