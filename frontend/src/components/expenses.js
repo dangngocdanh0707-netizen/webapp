@@ -1,5 +1,4 @@
 import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString } from '../services/api.js';
-import { renderExpenseBar, renderSubcatBar, renderMonthlyExpensesBar } from './charts.js';
 
 
 let allCostData = [];
@@ -95,29 +94,6 @@ function renderCostGraphics() {
     totalCostEl.innerText = totalCost.toLocaleString('vi-VN') + "đ";
   }
 
-
-
-  // Draw Bar Chart
-  let sortedCostArray = Object.entries(categories).sort((a, b) => b[1] - a[1]);
-  let barLabels = sortedCostArray.map(item => item[0]);
-  let barData = sortedCostArray.map(item => item[1]);
-
-  renderExpenseBar(barLabels, barData, (clickedLabel) => {
-    const filterSelect = document.getElementById('categoryFilter');
-    if (filterSelect) {
-      filterSelect.value = clickedLabel;
-      buildTable();
-    }
-  });
-
-
-
-  // Draw Subcategory Bar Chart
-  let sortedSubcatArray = Object.entries(subcategories).sort((a, b) => b[1] - a[1]);
-  let subcatBarLabels = sortedSubcatArray.map(item => item[0]);
-  let subcatBarData = sortedSubcatArray.map(item => item[1]);
-  renderSubcatBar(subcatBarLabels, subcatBarData);
-
   // Group monthly expenses from allCostData
   let monthlyExpenses = {};
   allCostData.forEach(item => {
@@ -129,10 +105,55 @@ function renderCostGraphics() {
     }
   });
 
-  let sortedMonths = Object.keys(monthlyExpenses).sort();
-  let monthLabels = sortedMonths;
-  let monthData = sortedMonths.map(m => monthlyExpenses[m]);
-  renderMonthlyExpensesBar(monthLabels, monthData);
+  // Populate Category Table
+  const tbodyCat = document.querySelector('#table-cost-category tbody');
+  if (tbodyCat) {
+    tbodyCat.innerHTML = "";
+    let sortedCostArray = Object.entries(categories).sort((a, b) => b[1] - a[1]);
+    sortedCostArray.forEach(([catName, val]) => {
+      let pct = totalCost > 0 ? ((val / totalCost) * 100).toFixed(1) : "0.0";
+      tbodyCat.insertAdjacentHTML('beforeend', `
+        <tr class="hover:bg-slate-900/5 transition">
+          <td class="p-3 pl-4 font-semibold text-slate-800">${escapeHTML(catName)}</td>
+          <td class="p-3 text-right font-bold text-slate-900">${val.toLocaleString('vi-VN')}đ</td>
+          <td class="p-3 text-right text-xs font-bold text-slate-500">${pct}%</td>
+        </tr>
+      `);
+    });
+  }
+
+  // Populate Subcategory Table
+  const tbodySubcat = document.querySelector('#table-cost-subcat tbody');
+  if (tbodySubcat) {
+    tbodySubcat.innerHTML = "";
+    let sortedSubcatArray = Object.entries(subcategories).sort((a, b) => b[1] - a[1]);
+    sortedSubcatArray.forEach(([subcatName, val]) => {
+      let pct = totalCost > 0 ? ((val / totalCost) * 100).toFixed(1) : "0.0";
+      tbodySubcat.insertAdjacentHTML('beforeend', `
+        <tr class="hover:bg-slate-900/5 transition">
+          <td class="p-3 pl-4 font-semibold text-slate-800">${escapeHTML(subcatName)}</td>
+          <td class="p-3 text-right font-bold text-slate-900">${val.toLocaleString('vi-VN')}đ</td>
+          <td class="p-3 text-right text-xs font-bold text-slate-500">${pct}%</td>
+        </tr>
+      `);
+    });
+  }
+
+  // Populate Monthly Table
+  const tbodyMonthly = document.querySelector('#table-cost-monthly tbody');
+  if (tbodyMonthly) {
+    tbodyMonthly.innerHTML = "";
+    let sortedMonths = Object.keys(monthlyExpenses).sort((a, b) => b.localeCompare(a));
+    sortedMonths.forEach(m => {
+      let val = monthlyExpenses[m];
+      tbodyMonthly.insertAdjacentHTML('beforeend', `
+        <tr class="hover:bg-slate-900/5 transition">
+          <td class="p-3 pl-4 font-semibold text-slate-800">${escapeHTML(m)}</td>
+          <td class="p-3 text-right font-bold text-slate-900">${val.toLocaleString('vi-VN')}đ</td>
+        </tr>
+      `);
+    });
+  }
 }
 
 function populateCostMonths() {

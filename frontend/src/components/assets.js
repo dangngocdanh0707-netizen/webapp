@@ -1,5 +1,4 @@
 import { callServer, escapeHTML } from '../services/api.js';
-import { renderAssetPie, renderAssetBar } from './charts.js';
 
 let allAssetData = [];
 let onSyncNeeded = null;
@@ -34,14 +33,6 @@ export function initAssetsModule(data, onSync) {
     });
   }
 
-  // Setup search event listener
-  const searchInput = document.getElementById('assetSearch');
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      buildAssetTable();
-    });
-  }
-
   // RENDER GRAPHICS
   renderAssetGraphics();
 
@@ -69,27 +60,46 @@ function renderAssetGraphics() {
     totalAssetsEl.innerText = totalAssetsVal.toLocaleString('vi-VN') + "đ";
   }
 
-  // Draw Pie Chart
-  renderAssetPie(assetsMap, (clickedLabel) => {
-    const searchInput = document.getElementById('assetSearch');
-    if (searchInput) {
-      searchInput.value = clickedLabel;
-      buildAssetTable();
-    }
-  });
+  // Populate Asset Allocation Table
+  const tbody = document.querySelector('#table-asset-alloc tbody');
+  if (tbody) {
+    tbody.innerHTML = "";
+    let sortedAssetArray = Object.entries(assetsMap).sort((a, b) => b[1] - a[1]);
+    
+    sortedAssetArray.forEach(([assetName, val]) => {
+      let pct = totalAssetsVal > 0 ? ((val / totalAssetsVal) * 100).toFixed(1) : "0.0";
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr class="hover:bg-slate-900/5 transition">
+          <td class="p-3 pl-4 font-semibold text-slate-800">${escapeHTML(assetName)}</td>
+          <td class="p-3 text-right font-bold text-slate-900">${val.toLocaleString('vi-VN')}đ</td>
+          <td class="p-3 text-right text-xs font-bold text-slate-500">${pct}%</td>
+        </tr>
+      `);
+    });
+  }
 
-  // Draw Bar Chart
-  let sortedAssetArray = Object.entries(assetsMap).sort((a, b) => b[1] - a[1]);
-  let barLabels = sortedAssetArray.map(item => item[0]);
-  let barData = sortedAssetArray.map(item => item[1]);
+  // Populate Asset Statistics
+  const countEl = document.getElementById('stat-asset-count');
+  const topEl = document.getElementById('stat-asset-top');
+  const avgEl = document.getElementById('stat-asset-avg');
 
-  renderAssetBar(barLabels, barData, (clickedLabel) => {
-    const searchInput = document.getElementById('assetSearch');
-    if (searchInput) {
-      searchInput.value = clickedLabel;
-      buildAssetTable();
+  const uniqueCount = Object.keys(assetsMap).length;
+  if (countEl) countEl.innerText = uniqueCount;
+
+  if (topEl) {
+    if (uniqueCount > 0) {
+      let sortedAssetArray = Object.entries(assetsMap).sort((a, b) => b[1] - a[1]);
+      let topAsset = sortedAssetArray[0];
+      topEl.innerText = `${topAsset[0]} (${topAsset[1].toLocaleString('vi-VN')}đ)`;
+    } else {
+      topEl.innerText = "-";
     }
-  });
+  }
+
+  if (avgEl) {
+    let avgVal = uniqueCount > 0 ? totalAssetsVal / uniqueCount : 0;
+    avgEl.innerText = avgVal.toLocaleString('vi-VN') + "đ";
+  }
 }
 
 export function buildAssetTable() {

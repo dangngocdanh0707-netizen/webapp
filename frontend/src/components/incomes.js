@@ -1,5 +1,4 @@
 import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString } from '../services/api.js';
-import { renderIncomePie, renderIncomeBar } from './charts.js';
 
 let allIncomeData = [];
 let onSyncNeeded = null;
@@ -88,27 +87,49 @@ function renderIncomeGraphics() {
     totalIncomeEl.innerText = totalIncome.toLocaleString('vi-VN') + "đ";
   }
 
-  // Draw Pie Chart
-  renderIncomePie(categories, (clickedLabel) => {
-    const filterSelect = document.getElementById('incomeCategoryFilter');
-    if (filterSelect) {
-      filterSelect.value = clickedLabel;
-      buildIncomeTable();
+  // Group monthly incomes from allIncomeData
+  let monthlyIncomes = {};
+  allIncomeData.forEach(item => {
+    if (item.date && item.date.length >= 7) {
+      let month = item.date.substring(0, 7); // yyyy-MM
+      let rawAmount = item.amount !== undefined && item.amount !== null ? item.amount : 0;
+      let amount = parseFloat(rawAmount.toString().replace(/[^\d]/g, '') || 0);
+      monthlyIncomes[month] = (monthlyIncomes[month] || 0) + amount;
     }
   });
 
-  // Draw Bar Chart
-  let sortedIncomeArray = Object.entries(categories).sort((a, b) => b[1] - a[1]);
-  let barLabels = sortedIncomeArray.map(item => item[0]);
-  let barData = sortedIncomeArray.map(item => item[1]);
+  // Populate Income Allocation Table
+  const tbodyAlloc = document.querySelector('#table-income-alloc tbody');
+  if (tbodyAlloc) {
+    tbodyAlloc.innerHTML = "";
+    let sortedIncomeArray = Object.entries(categories).sort((a, b) => b[1] - a[1]);
+    sortedIncomeArray.forEach(([catName, val]) => {
+      let pct = totalIncome > 0 ? ((val / totalIncome) * 100).toFixed(1) : "0.0";
+      tbodyAlloc.insertAdjacentHTML('beforeend', `
+        <tr class="hover:bg-slate-900/5 transition">
+          <td class="p-3 pl-4 font-semibold text-slate-800">${escapeHTML(catName)}</td>
+          <td class="p-3 text-right font-bold text-slate-900">${val.toLocaleString('vi-VN')}đ</td>
+          <td class="p-3 text-right text-xs font-bold text-slate-500">${pct}%</td>
+        </tr>
+      `);
+    });
+  }
 
-  renderIncomeBar(barLabels, barData, (clickedLabel) => {
-    const filterSelect = document.getElementById('incomeCategoryFilter');
-    if (filterSelect) {
-      filterSelect.value = clickedLabel;
-      buildIncomeTable();
-    }
-  });
+  // Populate Monthly Income Trend Table
+  const tbodyMonthly = document.querySelector('#table-income-monthly tbody');
+  if (tbodyMonthly) {
+    tbodyMonthly.innerHTML = "";
+    let sortedMonths = Object.keys(monthlyIncomes).sort((a, b) => b.localeCompare(a));
+    sortedMonths.forEach(m => {
+      let val = monthlyIncomes[m];
+      tbodyMonthly.insertAdjacentHTML('beforeend', `
+        <tr class="hover:bg-slate-900/5 transition">
+          <td class="p-3 pl-4 font-semibold text-slate-800">${escapeHTML(m)}</td>
+          <td class="p-3 text-right font-bold text-slate-900">${val.toLocaleString('vi-VN')}đ</td>
+        </tr>
+      `);
+    });
+  }
 }
 
 function populateIncomeMonths() {

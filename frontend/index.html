@@ -548,17 +548,41 @@
 
           <div class="glass-card p-6 flex flex-col">
 
-            <h3 class="font-semibold text-slate-800 text-sm mb-4">% Asset Allocation</h3>
+            <h3 class="font-semibold text-slate-800 text-sm mb-4">Asset Allocation</h3>
 
-            <div class="h-[320px] w-full flex items-center justify-center"><canvas id="assetPieChart"></canvas></div>
+            <div class="overflow-x-auto flex-1 max-h-[320px]">
+              <table class="w-full text-left border-collapse" id="table-asset-alloc">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-500 text-[10px] font-bold uppercase border-b border-slate-200/60">
+                    <th class="p-3 pl-4">ASSET</th>
+                    <th class="p-3 text-right">TOTAL VALUE</th>
+                    <th class="p-3 text-right">PERCENTAGE</th>
+                  </tr>
+                </thead>
+                <tbody class="text-xs text-slate-650 divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
 
           </div>
 
           <div class="glass-card p-6 flex flex-col">
 
-            <h3 class="font-semibold text-slate-800 text-sm mb-4">Analytics Breakdown</h3>
+            <h3 class="font-semibold text-slate-800 text-sm mb-4">Asset Statistics</h3>
 
-            <div class="h-[320px] w-full"><canvas id="assetBarChart"></canvas></div>
+            <div class="flex-1 flex flex-col justify-center gap-6 py-4" id="asset-stats-card">
+              <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Unique Assets Count</span>
+                <span class="text-sm font-bold text-slate-800" id="stat-asset-count">-</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Top Value Asset</span>
+                <span class="text-sm font-bold text-slate-800" id="stat-asset-top">-</span>
+              </div>
+              <div class="flex justify-between items-center pb-1">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Average Asset Value</span>
+                <span class="text-sm font-bold text-slate-800" id="stat-asset-avg">-</span>
+              </div>
+            </div>
 
           </div>
 
@@ -575,12 +599,6 @@
 
               <h3 class="font-bold text-slate-800 text-base">All Assets</h3>
 
-            </div>
-
-            <div class="flex items-center gap-2 bg-white px-3 rounded-xl border border-slate-200 shadow-2xs h-9">
-              <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs pl-1"></i>
-              <input type="text" id="assetSearch" placeholder="Search assets..."
-                class="text-xs font-semibold text-slate-650 bg-transparent outline-none h-full py-0 min-w-[150px]">
             </div>
 
           </div>
@@ -694,17 +712,38 @@
 
           <div class="glass-card p-6 flex flex-col">
 
-            <h3 class="font-semibold text-slate-800 text-sm mb-4">% Income Allocation</h3>
+            <h3 class="font-semibold text-slate-800 text-sm mb-4">Income Allocation</h3>
 
-            <div class="h-[320px] w-full flex items-center justify-center"><canvas id="incomePieChart"></canvas></div>
+            <div class="overflow-x-auto flex-1 max-h-[320px]">
+              <table class="w-full text-left border-collapse" id="table-income-alloc">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-500 text-[10px] font-bold uppercase border-b border-slate-200/60">
+                    <th class="p-3 pl-4">CATEGORY</th>
+                    <th class="p-3 text-right">TOTAL INCOME</th>
+                    <th class="p-3 text-right">PERCENTAGE</th>
+                  </tr>
+                </thead>
+                <tbody class="text-xs text-slate-650 divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
 
           </div>
 
           <div class="glass-card p-6 flex flex-col">
 
-            <h3 class="font-semibold text-slate-800 text-sm mb-4">Analytics Breakdown</h3>
+            <h3 class="font-semibold text-slate-800 text-sm mb-4">Monthly Income Trend</h3>
 
-            <div class="h-[320px] w-full"><canvas id="incomeBarChart"></canvas></div>
+            <div class="overflow-x-auto flex-1 max-h-[320px]">
+              <table class="w-full text-left border-collapse" id="table-income-monthly">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-500 text-[10px] font-bold uppercase border-b border-slate-200/60">
+                    <th class="p-3 pl-4">MONTH</th>
+                    <th class="p-3 text-right">TOTAL INCOME</th>
+                  </tr>
+                </thead>
+                <tbody class="text-xs text-slate-650 divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
 
           </div>
 
@@ -861,9 +900,20 @@
 
           <div class="glass-card p-6 flex flex-col">
 
-            <h3 class="font-semibold text-slate-800 text-sm mb-4">Analytics Breakdown</h3>
+            <h3 class="font-semibold text-slate-800 text-sm mb-4">Category Breakdown</h3>
 
-            <div class="h-[320px] w-full"><canvas id="barChart"></canvas></div>
+            <div class="overflow-x-auto flex-1 max-h-[320px]">
+              <table class="w-full text-left border-collapse" id="table-cost-category">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-500 text-[10px] font-bold uppercase border-b border-slate-200/60">
+                    <th class="p-3 pl-4">CATEGORY</th>
+                    <th class="p-3 text-right">TOTAL SPENT</th>
+                    <th class="p-3 text-right">PERCENTAGE</th>
+                  </tr>
+                </thead>
+                <tbody class="text-xs text-slate-650 divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
 
           </div>
 
@@ -871,7 +921,18 @@
 
             <h3 class="font-semibold text-slate-800 text-sm mb-4">Subcategory Breakdown</h3>
 
-            <div class="h-[320px] w-full"><canvas id="subcatBarChart"></canvas></div>
+            <div class="overflow-x-auto flex-1 max-h-[320px]">
+              <table class="w-full text-left border-collapse" id="table-cost-subcat">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-500 text-[10px] font-bold uppercase border-b border-slate-200/60">
+                    <th class="p-3 pl-4">SUBCATEGORY</th>
+                    <th class="p-3 text-right">TOTAL SPENT</th>
+                    <th class="p-3 text-right">PERCENTAGE</th>
+                  </tr>
+                </thead>
+                <tbody class="text-xs text-slate-650 divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
 
           </div>
 
@@ -879,7 +940,17 @@
 
             <h3 class="font-semibold text-slate-800 text-sm mb-4">Monthly Expenses Trend</h3>
 
-            <div class="h-[320px] w-full"><canvas id="monthlyExpensesChart"></canvas></div>
+            <div class="overflow-x-auto flex-1 max-h-[320px]">
+              <table class="w-full text-left border-collapse" id="table-cost-monthly">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-500 text-[10px] font-bold uppercase border-b border-slate-200/60">
+                    <th class="p-3 pl-4">MONTH</th>
+                    <th class="p-3 text-right">TOTAL SPENT</th>
+                  </tr>
+                </thead>
+                <tbody class="text-xs text-slate-650 divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
 
           </div>
 
