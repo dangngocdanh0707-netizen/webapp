@@ -222,9 +222,9 @@ export function buildTable() {
           <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-mode-${id}">${escapeHTML(item.subcategory || '-')}</span>
           <input type="text" id="edit-subcat-${id}" class="edit-input edit-mode-${id} hidden w-full" value="${escapeHTML(item.subcategory || '')}">
         </td>
-        <td class="p-4 text-right font-bold text-slate-900 w-40">
+        <td class="p-4 text-right text-xs font-bold text-slate-900 w-40">
           <span class="view-mode-${id}">${amount.toLocaleString('vi-VN')}đ</span>
-          <input type="text" id="edit-amount-${id}" class="edit-input text-right font-bold edit-mode-${id} hidden w-full" value="${amount}">
+          <input type="text" id="edit-amount-${id}" class="edit-input text-right text-xs font-bold edit-mode-${id} hidden w-full" value="${amount}">
         </td>
         <td class="p-4">
           <span class="view-mode-${id} text-xs text-slate-650">${escapeHTML(item.note) || '-'}</span>

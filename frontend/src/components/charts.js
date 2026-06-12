@@ -39,7 +39,7 @@ export function renderSubcatBar(barLabels, barData, onClickCallback) {
         data: barData,
         backgroundColor: '#60a5fa',
         borderRadius: 8,
-        hoverBackgroundColor: '#3b82f6'
+        hoverBackgroundColor: '#60a5fa'
       }]
     },
     options: {
@@ -84,7 +84,7 @@ export function renderMonthlyExpensesBar(labels, data) {
         data: data,
         backgroundColor: '#60a5fa',
         borderRadius: 8,
-        hoverBackgroundColor: '#3b82f6'
+        hoverBackgroundColor: '#60a5fa'
       }]
     },
     options: {
@@ -167,15 +167,17 @@ export function renderIncomeBar(barLabels, barData, onClickCallback) {
 
   if (incomeBarChartInstance) incomeBarChartInstance.destroy();
 
+  const bgColors = barLabels.map(cat => incomeColorsMap[cat] || 'rgba(99, 102, 241, 0.85)');
+
   incomeBarChartInstance = new Chart(canvas, {
     type: 'bar',
     data: {
       labels: barLabels,
       datasets: [{
         data: barData,
-        backgroundColor: barLabels.map(cat => incomeColorsMap[cat] || 'rgba(99, 102, 241, 0.85)'),
+        backgroundColor: bgColors,
         borderRadius: 8,
-        hoverBackgroundColor: barLabels.map(cat => incomeColorsMap[cat] || '#4f46e5')
+        hoverBackgroundColor: bgColors
       }]
     },
     options: {
@@ -221,7 +223,7 @@ export function renderExpenseBar(barLabels, barData, onClickCallback) {
         data: barData,
         backgroundColor: '#60a5fa',
         borderRadius: 8,
-        hoverBackgroundColor: '#3b82f6'
+        hoverBackgroundColor: '#60a5fa'
       }]
     },
     options: {
@@ -272,7 +274,7 @@ export function renderHabitLine(habitDates, performanceDataPerDay, onClickCallba
         pointBorderColor: '#ffffff',
         pointBorderWidth: 2,
         pointRadius: 4,
-        pointHoverRadius: 6
+        pointHoverRadius: 4
       }]
     },
     options: {
@@ -379,7 +381,7 @@ export function renderAssetBar(barLabels, barData, onClickCallback) {
         data: barData,
         backgroundColor: '#60a5fa',
         borderRadius: 8,
-        hoverBackgroundColor: '#3b82f6'
+        hoverBackgroundColor: '#60a5fa'
       }]
     },
     options: {

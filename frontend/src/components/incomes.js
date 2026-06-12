@@ -196,9 +196,9 @@ export function buildIncomeTable() {
             ).join('')}
           </select>
         </td>
-        <td class="p-4 text-right font-bold text-slate-900 w-40">
+        <td class="p-4 text-right text-xs font-bold text-slate-900 w-40">
           <span class="view-inc-mode-${id}">${amount.toLocaleString('vi-VN')}đ</span>
-          <input type="text" id="edit-inc-amount-${id}" class="edit-input text-right font-bold edit-inc-mode-${id} hidden w-full" value="${amount}">
+          <input type="text" id="edit-inc-amount-${id}" class="edit-input text-right text-xs font-bold edit-inc-mode-${id} hidden w-full" value="${amount}">
         </td>
         <td class="p-4">
           <span class="view-inc-mode-${id} text-xs text-slate-650">${escapeHTML(item.note) || '-'}</span>
