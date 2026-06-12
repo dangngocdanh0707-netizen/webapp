@@ -160,8 +160,7 @@ export function buildTable() {
   displayCostData.sort((a, b) => {
     return parseDateToTimestamp(b.date) - parseDateToTimestamp(a.date);
   });
-
-  displayCostData.forEach(item => {
+    displayCostData.forEach(item => {
     let cat = item.category || "Uncategorized";
     if (categoryFilterVal !== "All" && cat !== categoryFilterVal) return;
     if (monthFilterVal !== "All" && (!item.date || !item.date.startsWith(monthFilterVal))) return;
@@ -184,6 +183,10 @@ export function buildTable() {
             <option value="Wasted" ${cat == 'Wasted' ? 'selected' : ''}>Wasted</option>
             <option value="Nice to have" ${cat == 'Nice to have' ? 'selected' : ''}>Nice to have</option>
           </select>
+        </td>
+        <td class="p-4 w-36">
+          <span class="view-mode-${id} text-xs text-slate-650 font-semibold">${escapeHTML(item.subcategory || '-')}</span>
+          <input type="text" id="edit-subcat-${id}" class="edit-input edit-mode-${id} hidden w-full" value="${escapeHTML(item.subcategory || '')}">
         </td>
         <td class="p-4 text-right font-bold text-slate-900 w-40">
           <span class="view-mode-${id}">${amount.toLocaleString('vi-VN')}đ</span>
@@ -260,6 +263,7 @@ window.app.expenses.addCostRow = function () {
   let dateVal = document.getElementById('ins-cost-date').value;
   let date = formatDateDb(dateVal);
   let cat = document.getElementById('ins-cost-cat').value;
+  let subcat = document.getElementById('ins-cost-subcat').value;
   let amountRaw = document.getElementById('ins-cost-amount').value;
   let amount = parseInt(amountRaw.replace(/[^\d]/g, ''), 10) || 0;
   let note = document.getElementById('ins-cost-note').value;
@@ -275,6 +279,7 @@ window.app.expenses.addCostRow = function () {
     rowNumber: newRowNumber,
     date: date,
     category: cat,
+    subcategory: subcat,
     amount: amount,
     note: note
   };
@@ -295,9 +300,10 @@ window.app.expenses.addCostRow = function () {
   // Clear inputs
   document.getElementById('ins-cost-amount').value = "";
   document.getElementById('ins-cost-note').value = "";
+  document.getElementById('ins-cost-subcat').value = "";
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
-  callServer("insertCostRow", [date, cat, amount, note])
+  callServer("insertCostRow", [date, cat, subcat, amount, note])
     .then(res => {
       if (res !== "Thành công") {
         rollback(res);
@@ -319,6 +325,7 @@ window.app.expenses.addCostRow = function () {
 
     document.getElementById('ins-cost-amount').value = formatNumberString(amount.toString());
     document.getElementById('ins-cost-note').value = note;
+    document.getElementById('ins-cost-subcat').value = subcat;
     console.error("Lỗi đồng bộ chi tiêu: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
@@ -327,6 +334,7 @@ window.app.expenses.saveRow = function (id) {
   let dateVal = document.getElementById(`edit-date-${id}`).value;
   let date = formatDateDb(dateVal);
   let cat = document.getElementById(`edit-cat-${id}`).value;
+  let subcat = document.getElementById(`edit-subcat-${id}`).value;
   let amountRaw = document.getElementById(`edit-amount-${id}`).value;
   let amount = parseInt(amountRaw.replace(/[^\d]/g, ''), 10) || 0;
   let note = document.getElementById(`edit-note-${id}`).value;
@@ -338,6 +346,7 @@ window.app.expenses.saveRow = function (id) {
   let oldObj = { ...allCostData[idx] };
   allCostData[idx].date = date;
   allCostData[idx].category = cat;
+  allCostData[idx].subcategory = subcat;
   allCostData[idx].amount = amount;
   allCostData[idx].note = note;
 
@@ -355,7 +364,7 @@ window.app.expenses.saveRow = function (id) {
   console.log("Đã cập nhật khoản chi tiêu thành công!");
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
-  callServer("updateCostRow", [id, date, cat, amount, note])
+  callServer("updateCostRow", [id, date, cat, subcat, amount, note])
     .then(res => {
       if (res !== "Thành công") {
         rollback(res);

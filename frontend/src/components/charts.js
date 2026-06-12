@@ -8,12 +8,113 @@ Chart.register(ChartDataLabels);
 export let pieChartInstance = null;
 export let barChartInstance = null;
 export let habitLineChartInstance = null;
+export let incomePieChartInstance = null;
+export let incomeBarChartInstance = null;
 
 const costColorsMap = {
   "Must have": '#60a5fa',
   "Wasted": '#f87171',
   "Nice to have": '#34d399'
 };
+
+const incomeColorsMap = {
+  "Salary": '#34d399',
+  "Return": '#60a5fa',
+  "Bonus": '#fbbf24',
+  "Investment": '#a78bfa'
+};
+
+export function renderIncomePie(categories, onClickCallback) {
+  const canvas = document.getElementById('incomePieChart');
+  if (!canvas) return;
+
+  if (incomePieChartInstance) incomePieChartInstance.destroy();
+
+  const labels = Object.keys(categories);
+  const data = Object.values(categories);
+
+  incomePieChartInstance = new Chart(canvas, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: labels.map(cat => incomeColorsMap[cat] || '#818cf8'),
+        borderColor: '#ffffff',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      onClick: (e, el) => {
+        if (el.length > 0 && onClickCallback) {
+          const clickedLabel = incomePieChartInstance.data.labels[el[0].index];
+          onClickCallback(clickedLabel);
+        }
+      },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: '#475569',
+            font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 12 }
+          }
+        },
+        datalabels: {
+          formatter: (v, ctx) => {
+            const sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
+            return sum > 0 ? Math.round((v / sum) * 100) + "%" : "0%";
+          },
+          color: '#fff',
+          font: { weight: 'bold', family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 12 }
+        }
+      },
+      maintainAspectRatio: false
+    }
+  });
+}
+
+export function renderIncomeBar(barLabels, barData, onClickCallback) {
+  const canvas = document.getElementById('incomeBarChart');
+  if (!canvas) return;
+
+  if (incomeBarChartInstance) incomeBarChartInstance.destroy();
+
+  incomeBarChartInstance = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: barLabels,
+      datasets: [{
+        data: barData,
+        backgroundColor: barLabels.map(cat => incomeColorsMap[cat] || 'rgba(99, 102, 241, 0.85)'),
+        borderRadius: 8,
+        hoverBackgroundColor: barLabels.map(cat => incomeColorsMap[cat] || '#4f46e5')
+      }]
+    },
+    options: {
+      onClick: (e, el) => {
+        if (el.length > 0 && onClickCallback) {
+          const clickedLabel = incomeBarChartInstance.data.labels[el[0].index];
+          onClickCallback(clickedLabel);
+        }
+      },
+      scales: {
+        y: { beginAtZero: true, grace: '15%', grid: { color: 'rgba(0, 0, 0, 0.04)' }, ticks: { display: false } },
+        x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 } } }
+      },
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          anchor: 'end',
+          align: 'top',
+          formatter: (v) => v.toLocaleString('vi-VN') + "đ",
+          font: { weight: 'bold', family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 },
+          color: '#0f172a'
+        }
+      },
+      maintainAspectRatio: false
+    }
+  });
+}
 
 export function renderExpensePie(categories, onClickCallback) {
   const canvas = document.getElementById('pieChart');

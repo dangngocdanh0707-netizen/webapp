@@ -78,6 +78,12 @@
 
       </div>
 
+      <div data-tab="incomes-tab" onclick="app.switchTab('incomes-tab', this)" class="nav-link">
+
+        <i class="fa-solid fa-coins text-base"></i> <span>Incomes</span>
+
+      </div>
+
       <div data-tab="cost-tab" onclick="app.switchTab('cost-tab', this)" class="nav-link">
 
         <i class="fa-solid fa-wallet text-base"></i> <span>Expenses</span>
@@ -220,6 +226,24 @@
 
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-10 items-center justify-center py-6 px-4">
+
+            <!-- App Card: Incomes -->
+
+            <div onclick="app.launchApp('incomes-tab')"
+              class="flex flex-col items-center justify-center group cursor-pointer transition">
+
+              <div
+                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 flex items-center justify-center shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1.5 group-hover:from-emerald-600 group-hover:to-teal-500 group-hover:bg-gradient-to-tr group-hover:border-transparent group-hover:shadow-[0_15px_30px_rgba(16,185,129,0.22)]">
+
+                <i
+                  class="fa-solid fa-coins text-2xl sm:text-3xl text-slate-600 transition-colors duration-300 group-hover:text-white"></i>
+
+              </div>
+
+              <span
+                class="text-slate-700 text-xs sm:text-sm font-semibold mt-2.5 group-hover:text-emerald-600 transition font-semibold">Incomes</span>
+
+            </div>
 
             <!-- App Card: Expenses -->
 
@@ -430,6 +454,172 @@
 
 
 
+      <div id="incomes-tab" class="tab-content">
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+
+          <div class="flex items-center gap-3">
+
+            <button onclick="app.launchApp('home-tab')"
+              class="group/home flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-500 hover:text-emerald-600 hover:border-emerald-200/80 hover:bg-white shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer">
+
+              <i class="fa-solid fa-house text-sm group-hover/home:scale-105 transition-transform"></i>
+
+            </button>
+
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Incomes</h1>
+
+          </div>
+
+          <div class="glass-card px-5 py-4 min-w-[200px] transition">
+
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL INCOMES</span>
+
+            <p id="total-income" class="text-2xl font-black text-slate-900 mt-1">0đ</p>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="glass-card p-6 mb-8">
+
+          <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><i
+              class="fa-solid fa-circle-plus text-emerald-500"></i> Add New</h4>
+
+          <div class="flex flex-col md:flex-row items-end gap-4">
+
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">DATE</label><input
+                type="date" id="ins-inc-date" class="form-input"></div>
+
+            <div class="flex-1">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">CATEGORY</label>
+              <select id="ins-inc-cat" class="form-input font-semibold">
+                <option value="Salary">Salary</option>
+                <option value="Return">Return</option>
+                <option value="Bonus">Bonus</option>
+                <option value="Investment">Investment</option>
+              </select>
+            </div>
+
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">AMOUNT</label><input
+                type="text" id="ins-inc-amount" class="form-input font-bold"></div>
+
+            <div class="flex-1"><label
+                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">NOTE</label><input
+                type="text" id="ins-inc-note" class="form-input"></div>
+
+            <button onclick="app.incomes.addIncomeRow()"
+              class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]"><i
+                class="fa-solid fa-floppy-disk mr-1"></i> Save</button>
+
+          </div>
+
+
+        </div>
+
+
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+
+          <div class="glass-card p-6 flex flex-col">
+
+            <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
+                class="fa-solid fa-chart-pie text-emerald-500"></i> % Income Allocation</h3>
+
+            <div class="h-[320px] w-full flex items-center justify-center"><canvas id="incomePieChart"></canvas></div>
+
+          </div>
+
+          <div class="glass-card p-6 flex flex-col">
+
+            <h3 class="font-semibold text-slate-800 text-sm mb-4 flex items-center gap-2"><i
+                class="fa-solid fa-chart-simple text-emerald-500"></i> Analytics Breakdown</h3>
+
+            <div class="h-[320px] w-full"><canvas id="incomeBarChart"></canvas></div>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="glass-card overflow-hidden">
+
+          <div
+            class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+
+            <div>
+
+              <h3 class="font-bold text-slate-800 text-base">All</h3>
+
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="flex items-center gap-2 bg-white px-3 rounded-xl border border-slate-200 shadow-2xs h-9">
+                <i class="fa-solid fa-calendar-day text-slate-400 text-xs pl-1"></i>
+                <select id="incomeDayFilter" onchange="app.incomes.filterTableByDropdown('incomeDayFilter')"
+                  class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none h-full py-0 min-w-[100px]">
+                  <option value="All">All Days</option>
+                  <option value="Today">Today</option>
+                  <option value="Yesterday">Yesterday</option>
+                </select>
+              </div>
+              <div class="flex items-center gap-2 bg-white px-3 rounded-xl border border-slate-200 shadow-2xs h-9">
+                <i class="fa-solid fa-calendar text-slate-400 text-xs pl-1"></i>
+                <select id="incomeMonthFilter" onchange="app.incomes.filterTableByDropdown('incomeMonthFilter')"
+                  class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none h-full py-0 min-w-[100px]">
+                  <option value="All">All Months</option>
+                </select>
+              </div>
+              <div class="flex items-center gap-2 bg-white px-3 rounded-xl border border-slate-200 shadow-2xs h-9">
+                <i class="fa-solid fa-filter text-slate-400 text-xs pl-1"></i>
+                <select id="incomeCategoryFilter" onchange="app.incomes.filterTableByDropdown('incomeCategoryFilter')"
+                  class="text-xs font-semibold text-slate-600 bg-transparent cursor-pointer outline-none h-full py-0 min-w-[120px]">
+                  <option value="All">All Categories</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="overflow-x-auto">
+
+            <table class="w-full text-left border-collapse" id="table-income">
+
+              <thead>
+
+                <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
+
+                  <th class="p-4 pl-6 w-36">DATE</th>
+
+                  <th class="p-4 w-36">CATEGORY</th>
+
+                  <th class="p-4 text-right w-40">AMOUNT</th>
+
+                  <th class="p-4">NOTE</th>
+
+                  <th class="p-4 text-center w-36">ACTION</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody class="text-sm text-slate-650 divide-y divide-slate-100"></tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
       <div id="cost-tab" class="tab-content">
 
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -477,6 +667,11 @@
                 <option value="Wasted">Wasted</option>
                 <option value="Nice to have">Nice to have</option>
               </select>
+            </div>
+
+            <div class="flex-1">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">SUBCATEGORY</label>
+              <input type="text" id="ins-cost-subcat" class="form-input">
             </div>
 
             <div class="flex-1"><label
@@ -572,6 +767,8 @@
                   <th class="p-4 pl-6 w-36">DATE</th>
 
                   <th class="p-4 w-36">CATEGORY</th>
+
+                  <th class="p-4 w-36">SUBCATEGORY</th>
 
                   <th class="p-4 text-right w-40">AMOUNT</th>
 
