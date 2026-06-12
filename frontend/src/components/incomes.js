@@ -108,7 +108,7 @@ function renderIncomeGraphics() {
       tbodyAlloc.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition">
           <td class="p-3 pl-4 font-semibold text-slate-800">${escapeHTML(catName)}</td>
-          <td class="p-3 text-right font-bold text-slate-900">${val.toLocaleString('vi-VN')}đ</td>
+          <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}đ</td>
           <td class="p-3 text-right text-xs font-bold text-slate-500">${pct}%</td>
         </tr>
       `);
@@ -125,7 +125,7 @@ function renderIncomeGraphics() {
       tbodyMonthly.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition">
           <td class="p-3 pl-4 font-semibold text-slate-800">${escapeHTML(m)}</td>
-          <td class="p-3 text-right font-bold text-slate-900">${val.toLocaleString('vi-VN')}đ</td>
+          <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}đ</td>
         </tr>
       `);
     });
@@ -217,7 +217,7 @@ export function buildIncomeTable() {
             ).join('')}
           </select>
         </td>
-        <td class="p-4 text-right text-xs font-bold text-slate-900 w-40">
+        <td class="p-4 text-right text-xs font-bold text-slate-650 w-40">
           <span class="view-inc-mode-${id}">${amount.toLocaleString('vi-VN')}đ</span>
           <input type="text" id="edit-inc-amount-${id}" class="edit-input text-xs font-bold edit-inc-mode-${id} hidden w-full" value="${amount}">
         </td>

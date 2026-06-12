@@ -71,7 +71,7 @@ function renderAssetGraphics() {
       tbody.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition">
           <td class="p-3 pl-4 font-semibold text-slate-800">${escapeHTML(assetName)}</td>
-          <td class="p-3 text-right font-bold text-slate-900">${val.toLocaleString('vi-VN')}đ</td>
+          <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}đ</td>
           <td class="p-3 text-right text-xs font-bold text-slate-500">${pct}%</td>
         </tr>
       `);
@@ -137,11 +137,11 @@ export function buildAssetTable() {
           <span class="px-2 py-0.5 rounded-md border bg-slate-50 text-slate-650 border-slate-200 font-medium view-ast-mode-${id}">${escapeHTML(unit) || '-'}</span>
           <input type="text" id="edit-ast-unit-${id}" class="edit-input edit-ast-mode-${id} hidden w-full" value="${escapeHTML(unit)}">
         </td>
-        <td class="p-4 text-right text-xs font-bold text-slate-900 w-36">
+        <td class="p-4 text-right text-xs font-bold text-slate-650 w-36">
           <span class="view-ast-mode-${id}">${price.toLocaleString('vi-VN')}đ</span>
           <input type="text" id="edit-ast-price-${id}" class="edit-input text-xs font-bold edit-ast-mode-${id} hidden w-full" value="${price}">
         </td>
-        <td class="p-4 text-right text-xs font-bold text-slate-900 w-36">
+        <td class="p-4 text-right text-xs font-bold text-slate-650 w-36">
           <span>${total.toLocaleString('vi-VN')}đ</span>
         </td>
         
