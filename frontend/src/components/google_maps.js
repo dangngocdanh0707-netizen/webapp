@@ -95,14 +95,10 @@ export function buildMapGrid() {
             </a>
           </td>
           <td class="p-4 map-view-${id}">
-            <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
-              ${escapeHTML(city)}
-            </span>
+            ${city ? `<span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">${escapeHTML(city)}</span>` : '-'}
           </td>
           <td class="p-4 map-view-${id}">
-            <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
-              ${escapeHTML(category)}
-            </span>
+            ${category ? `<span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">${escapeHTML(category)}</span>` : '-'}
           </td>
           <td class="p-4 pl-12 text-left map-view-${id}">
             <label class="inline-flex items-center gap-3 cursor-pointer select-none">
@@ -110,11 +106,11 @@ export function buildMapGrid() {
               <span id="map-lbl-${id}" class="text-xs font-semibold tracking-wide ${status ? 'text-emerald-600' : 'text-slate-400'}">${status ? 'Completed' : 'Pending'}</span>
             </label>
           </td>
-
+ 
           <!-- Edit inputs -->
-          <td class="p-4 pl-6 hidden map-edit-${id}"><input type="text" id="map-edit-place-${id}" class="edit-input font-bold" value="${escapeHTML(placeName)}"></td>
-          <td class="p-4 hidden map-edit-${id}"><input type="text" id="map-edit-city-${id}" class="edit-input" value="${escapeHTML(city)}"></td>
-          <td class="p-4 hidden map-edit-${id}"><input type="text" id="map-edit-cat-${id}" class="edit-input" value="${escapeHTML(category)}"></td>
+          <td class="p-4 pl-6 hidden map-edit-${id}"><input type="text" id="map-edit-place-${id}" class="edit-input font-bold w-full" value="${escapeHTML(placeName)}"></td>
+          <td class="p-4 hidden map-edit-${id}"><input type="text" id="map-edit-city-${id}" class="edit-input w-full" value="${escapeHTML(city)}"></td>
+          <td class="p-4 hidden map-edit-${id}"><input type="text" id="map-edit-cat-${id}" class="edit-input w-full" value="${escapeHTML(category)}"></td>
           <td class="p-4 hidden map-edit-${id}">
             <label class="inline-flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" id="map-edit-status-${id}" class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer" ${status ? 'checked' : ''}>
