@@ -94,16 +94,6 @@ export function buildTaskTable() {
           </div>
           <div class="hidden task-edit-${id} flex flex-col sm:flex-row gap-3 items-start sm:items-center">
             <input type="text" id="task-edit-desc-${id}" class="edit-input font-bold w-full" value="${escapeHTML(taskText)}">
-            <div class="flex items-center gap-3 shrink-0 select-none pb-1">
-              <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                <input type="checkbox" id="task-edit-urgent-${id}" class="w-3.5 h-3.5 cursor-pointer" ${isUrgent ? 'checked' : ''}>
-                <span class="text-xs font-bold text-slate-650">Urgent</span>
-              </label>
-              <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                <input type="checkbox" id="task-edit-important-${id}" class="w-3.5 h-3.5 cursor-pointer" ${isImportant ? 'checked' : ''}>
-                <span class="text-xs font-bold text-slate-650">Important</span>
-              </label>
-            </div>
           </div>
         </td>
 
@@ -240,8 +230,6 @@ window.app.tasks.saveTask = function (id) {
   let desc = document.getElementById(`task-edit-desc-${id}`).value.trim();
   let chk = document.getElementById(`task-chk-${id}`);
   let statusVal = chk ? chk.checked : false;
-  let urgentVal = document.getElementById(`task-edit-urgent-${id}`) ? document.getElementById(`task-edit-urgent-${id}`).checked : false;
-  let importantVal = document.getElementById(`task-edit-important-${id}`) ? document.getElementById(`task-edit-important-${id}`).checked : false;
 
   if (!date || !desc) {
     console.warn("Vui lòng điền cả Ngày và Mô tả công việc!");
@@ -253,6 +241,9 @@ window.app.tasks.saveTask = function (id) {
   if (idx === -1) return;
 
   let oldObj = { ...allTaskData[idx] };
+  let urgentVal = oldObj.urgent;
+  let importantVal = oldObj.important;
+
   allTaskData[idx].date = date;
   allTaskData[idx].task = desc;
   allTaskData[idx].urgent = urgentVal;
