@@ -191,8 +191,8 @@ window.app.tasks.addTaskRow = function () {
   let dateVal = document.getElementById('ins-task-date').value;
   let date = formatDateDb(dateVal);
   let desc = document.getElementById('ins-task-desc').value.trim();
-  let urgentVal = document.getElementById('ins-task-urgent') ? document.getElementById('ins-task-urgent').checked : false;
-  let importantVal = document.getElementById('ins-task-important') ? document.getElementById('ins-task-important').checked : false;
+  let urgentVal = false; // Mặc định là false, người dùng sẽ tự tick trực tiếp trong danh sách bảng sau.
+  let importantVal = false; // Mặc định là false, người dùng sẽ tự tick trực tiếp trong danh sách bảng sau.
 
   if (!date || !desc) {
     console.warn("Vui lòng điền cả Ngày và Mô tả công việc!");
@@ -214,8 +214,6 @@ window.app.tasks.addTaskRow = function () {
   buildTaskTable();
 
   document.getElementById('ins-task-desc').value = "";
-  if (document.getElementById('ins-task-urgent')) document.getElementById('ins-task-urgent').checked = false;
-  if (document.getElementById('ins-task-important')) document.getElementById('ins-task-important').checked = false;
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertTaskRow", [date, desc, urgentVal, importantVal, false])
@@ -232,8 +230,6 @@ window.app.tasks.addTaskRow = function () {
     allTaskData = allTaskData.filter(t => t.rowNumber !== newRowNumber);
     buildTaskTable();
     document.getElementById('ins-task-desc').value = desc;
-    if (document.getElementById('ins-task-urgent')) document.getElementById('ins-task-urgent').checked = urgentVal;
-    if (document.getElementById('ins-task-important')) document.getElementById('ins-task-important').checked = importantVal;
     console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };

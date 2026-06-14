@@ -22,18 +22,32 @@ export function initMapModule(data, onSync) {
   });
 
   const citySelect = document.getElementById('mapCityFilter');
+  const insCitySelect = document.getElementById('ins-map-city');
   if (citySelect) {
     citySelect.innerHTML = '<option value="All">All Cities</option>';
     cities.forEach(city => {
       citySelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(city)}">${escapeHTML(city)}</option>`);
     });
   }
-
+  if (insCitySelect) {
+    insCitySelect.innerHTML = '<option value="">Chọn Thành phố</option>';
+    cities.forEach(city => {
+      insCitySelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(city)}">${escapeHTML(city)}</option>`);
+    });
+  }
+ 
   const catSelect = document.getElementById('mapCategoryFilter');
+  const insCatSelect = document.getElementById('ins-map-cat');
   if (catSelect) {
     catSelect.innerHTML = '<option value="All">All Categories</option>';
     categories.forEach(cat => {
       catSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`);
+    });
+  }
+  if (insCatSelect) {
+    insCatSelect.innerHTML = '<option value="">Chọn Danh mục</option>';
+    categories.forEach(cat => {
+      insCatSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`);
     });
   }
 
