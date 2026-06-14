@@ -20,11 +20,11 @@ function scheduleTokenSilentRefresh(expiresIn) {
   if (tokenRefreshTimeout) {
     clearTimeout(tokenRefreshTimeout);
   }
-  
+
   // Gia hạn trước khi hết hạn 5 phút (ví dụ 55 phút nếu hết hạn sau 60 phút)
   const delayMs = (expiresIn - 300) * 1000;
   if (delayMs <= 0) return;
-  
+
   tokenRefreshTimeout = setTimeout(() => {
     if (tokenClient && isGoogleConnected()) {
       console.log("[api.js] Token sắp hết hạn, đang tự động làm mới ngầm...");
@@ -179,7 +179,7 @@ export function initGoogleAuth() {
               const cachedToken = JSON.parse(cachedTokenStr);
               // Kiểm tra xem token đã hết hạn chưa (3600 giây - trừ 5 phút dự phòng)
               const isExpired = cachedToken.timestamp && (Date.now() - cachedToken.timestamp > (cachedToken.expires_in - 300) * 1000);
-              
+
               if (isExpired) {
                 console.log("[api.js] Token đã hết hạn, đang tự động làm mới ngầm...");
                 try {
@@ -191,7 +191,7 @@ export function initGoogleAuth() {
                       resolve(false);
                     }
                   }, 5000);
-                  
+
                   tokenClient.requestAccessToken({ prompt: 'none' });
                 } catch (e) {
                   console.warn("Tự động làm mới token thất bại:", e);
@@ -315,14 +315,14 @@ async function resolveAllTabs(spreadsheetId) {
     targetTabs.forEach(target => {
       // Thử khớp trực tiếp không phân biệt chữ hoa/thường
       let match = existingTitles.find(t => t.toLowerCase() === target.toLowerCase());
-      
+
       // Nếu không khớp trực tiếp, thử khớp với danh sách tên thay thế phổ biến
       if (!match && alternativeNames[target]) {
-        match = existingTitles.find(t => 
+        match = existingTitles.find(t =>
           alternativeNames[target].some(alt => t.toLowerCase() === alt.toLowerCase())
         );
       }
-      
+
       if (match) {
         mappings[target] = match;
       }
@@ -535,7 +535,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
       { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
       { range: `${mappings['task'] || 'tasks'}!A1:E1`, values: [['Date', 'Task', 'Urgent', 'Important', 'Status']] },
-      { range: `${mappings['google_map'] || 'google_maps'}!A1:D1`, values: [['place', 'city', 'category', 'address']] },
+      { range: `${mappings['google_map'] || 'google_maps'}!A1:D1`, values: [['place', 'city', 'category', 'status']] },
       { range: `${mappings['collections'] || 'collections'}!A1:C1`, values: [['item', 'brand', 'category']] },
       { range: `${mappings['grammar_diary'] || 'grammar_diaries'}!A1:F1`, values: [['date', 'scenario', 'user_sentence', 'corrected_sentence', 'explanation', 'status']] },
       { range: `${mappings['chat_history'] || 'chat_histories'}!A1:D1`, values: [['date', 'scenario', 'role', 'content']] }
@@ -706,13 +706,13 @@ export function callServer(methodName, args) {
             important: row[3] === "TRUE" || row[3] === true || row[3] === "true" || row[3] === "v" || row[3] === "checked",
             status: row[4] === "TRUE" || row[4] === true || row[4] === "true" || row[4] === "v" || row[4] === "checked"
           })).filter(item => item.task),
-          
+
           google_map: getRows(valueRanges[9]).map((row, idx) => ({
             rowNumber: idx + 2,
             place: row[0] || "",
             city: row[1] || "",
             category: row[2] || "",
-            address: row[3] || ""
+            status: row[3] === "TRUE" || row[3] === true || row[3] === "true" || row[3] === "v" || row[3] === "checked"
           })).filter(item => item.place),
 
           collections: getRows(valueRanges[10]).map((row, idx) => ({
@@ -891,18 +891,20 @@ export function callServer(methodName, args) {
           range: `${vocabTab}!A:J`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[
-            content,
-            transcription || "",
-            category || "",
-            topic || "",
-            level || "",
-            meaning || "",
-            "New",
-            "",
-            2.5,
-            0
-          ]] }
+          resource: {
+            values: [[
+              content,
+              transcription || "",
+              category || "",
+              topic || "",
+              level || "",
+              meaning || "",
+              "New",
+              "",
+              2.5,
+              0
+            ]]
+          }
         });
         resolve("Thành công");
         return;
@@ -970,38 +972,52 @@ export function callServer(methodName, args) {
           range: `${habitTab}!A:C`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[
-            date,
-            habitName,
-            status === true || status === "TRUE" ? "TRUE" : "FALSE"
-          ]] }
+          resource: {
+            values: [[
+              date,
+              habitName,
+              status === true || status === "TRUE" ? "TRUE" : "FALSE"
+            ]]
+          }
         });
         resolve("Thành công");
         return;
       }
-      
+
       // 9. Nghiệp vụ BẢN ĐỒ (Google Maps Explorer)
       if (methodName === "updateMapRow") {
-        const [rowNumber, place, city, category, address] = args;
+        const [rowNumber, place, city, category, status] = args;
         const mapTab = mappings['google_map'];
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${mapTab}!A${rowNumber}:D${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[place, city, category, address]] }
+          resource: { values: [[place, city, category, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
         });
         resolve("Thành công");
         return;
       }
       if (methodName === "insertMapRow") {
-        const [place, city, category, address] = args;
+        const [place, city, category, status] = args;
         const mapTab = mappings['google_map'];
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
           range: `${mapTab}!A:D`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[place, city, category, address]] }
+          resource: { values: [[place, city, category, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
+        });
+        resolve("Thành công");
+        return;
+      }
+      if (methodName === "updateMapStatusRow") {
+        const [rowNumber, isChecked] = args;
+        const mapTab = mappings['google_map'];
+        await gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${mapTab}!D${rowNumber}`,
+          valueInputOption: 'USER_ENTERED',
+          resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
         });
         resolve("Thành công");
         return;
@@ -1224,13 +1240,15 @@ export function callServer(methodName, args) {
           range: `${taskTab}!A:E`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[
-            date,
-            taskDesc,
-            urgent === true || urgent === "TRUE" ? "TRUE" : "FALSE",
-            important === true || important === "TRUE" ? "TRUE" : "FALSE",
-            status === true || status === "TRUE" ? "TRUE" : "FALSE"
-          ]] }
+          resource: {
+            values: [[
+              date,
+              taskDesc,
+              urgent === true || urgent === "TRUE" ? "TRUE" : "FALSE",
+              important === true || important === "TRUE" ? "TRUE" : "FALSE",
+              status === true || status === "TRUE" ? "TRUE" : "FALSE"
+            ]]
+          }
         });
         resolve("Thành công");
         return;
@@ -1241,13 +1259,15 @@ export function callServer(methodName, args) {
           spreadsheetId,
           range: `${taskTab}!A${rowNumber}:E${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[
-            date,
-            taskDesc,
-            urgent === true || urgent === "TRUE" ? "TRUE" : "FALSE",
-            important === true || important === "TRUE" ? "TRUE" : "FALSE",
-            status === true || status === "TRUE" ? "TRUE" : "FALSE"
-          ]] }
+          resource: {
+            values: [[
+              date,
+              taskDesc,
+              urgent === true || urgent === "TRUE" ? "TRUE" : "FALSE",
+              important === true || important === "TRUE" ? "TRUE" : "FALSE",
+              status === true || status === "TRUE" ? "TRUE" : "FALSE"
+            ]]
+          }
         });
         resolve("Thành công");
         return;
@@ -1402,7 +1422,7 @@ export function escapeHTML(str) {
 // 1. Chuẩn hóa ngày nhận được từ Google Sheets thành định dạng yyyy-MM-dd
 export function cleanDateValue(val) {
   if (val === undefined || val === null) return "";
-  
+
   if (typeof val === 'number') {
     // Convert Google Sheets serial number to Date (base: Dec 30, 1899 in UTC)
     const baseDate = Date.UTC(1899, 11, 30);
@@ -1412,7 +1432,7 @@ export function cleanDateValue(val) {
     const year = date.getUTCFullYear();
     return `${year}-${month}-${day}`;
   }
-  
+
   let str = val.toString().trim();
   if (str.startsWith("'")) str = str.substring(1);
   if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
