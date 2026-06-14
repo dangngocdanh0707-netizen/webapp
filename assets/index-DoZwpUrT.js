@@ -595,7 +595,6 @@ If the user is just saying hello, asking a general question, or the request is a
           <td class="p-4 hidden map-edit-${o}">
             <label class="inline-flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" id="map-edit-status-${o}" class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer" ${c?"checked":""}>
-              <span class="text-xs font-bold text-slate-700">Completed</span>
             </label>
           </td>
 
