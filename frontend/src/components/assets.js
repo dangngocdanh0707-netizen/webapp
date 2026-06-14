@@ -1,17 +1,7 @@
-import { callServer, escapeHTML, formatCompactCurrency } from '../services/api.js';
+import { callServer, escapeHTML, formatCompactCurrency, formatNumberString } from '../services/api.js';
 
 let allAssetData = [];
 let onSyncNeeded = null;
-
-// Utility function to format numbers with dot as thousands separator
-function formatNumberString(val) {
-  if (val === undefined || val === null) return '';
-  // Remove all non-digit characters
-  let cleaned = val.toString().replace(/[^\d]/g, '');
-  if (!cleaned) return '';
-  // Format with dots as thousands separators
-  return parseInt(cleaned, 10).toLocaleString('vi-VN');
-}
 
 export function initAssetsModule(data, onSync) {
   allAssetData = data || [];

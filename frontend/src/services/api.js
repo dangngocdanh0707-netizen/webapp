@@ -1566,3 +1566,11 @@ export function formatCompactCurrency(val) {
   return sign + formatted;
 }
 
+// 9. Chuẩn hóa chuỗi số phân cách phần nghìn bằng dấu chấm (vi-VN)
+export function formatNumberString(val) {
+  if (val === undefined || val === null) return '';
+  let cleaned = val.toString().replace(/[^\d]/g, '');
+  if (!cleaned) return '';
+  return parseInt(cleaned, 10).toLocaleString('vi-VN');
+}
+
