@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString } from '../services/api.js';
+import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString, formatCompactCurrency } from '../services/api.js';
 
 let allIncomeData = [];
 let onSyncNeeded = null;
@@ -84,7 +84,7 @@ function renderIncomeGraphics() {
   let totalIncome = Object.values(categories).reduce((a, b) => a + b, 0);
   const totalIncomeEl = document.getElementById('total-income');
   if (totalIncomeEl) {
-    totalIncomeEl.innerText = totalIncome.toLocaleString('vi-VN') + "đ";
+    totalIncomeEl.innerText = formatCompactCurrency(totalIncome);
   }
 
   // Group monthly incomes from allIncomeData

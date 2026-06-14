@@ -1,4 +1,4 @@
-import { callServer, escapeHTML } from '../services/api.js';
+import { callServer, escapeHTML, formatCompactCurrency } from '../services/api.js';
 
 let allAssetData = [];
 let onSyncNeeded = null;
@@ -57,7 +57,7 @@ function renderAssetGraphics() {
   let totalAssetsVal = Object.values(assetsMap).reduce((a, b) => a + b, 0);
   const totalAssetsEl = document.getElementById('total-assets');
   if (totalAssetsEl) {
-    totalAssetsEl.innerText = totalAssetsVal.toLocaleString('vi-VN') + "đ";
+    totalAssetsEl.innerText = formatCompactCurrency(totalAssetsVal);
   }
 
   // Calculate unique assets count

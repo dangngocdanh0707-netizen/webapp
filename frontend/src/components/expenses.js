@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString } from '../services/api.js';
+import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString, formatCompactCurrency } from '../services/api.js';
 
 
 let allCostData = [];
@@ -91,7 +91,7 @@ function renderCostGraphics() {
   let totalCost = Object.values(categories).reduce((a, b) => a + b, 0);
   const totalCostEl = document.getElementById('total-cost');
   if (totalCostEl) {
-    totalCostEl.innerText = totalCost.toLocaleString('vi-VN') + "đ";
+    totalCostEl.innerText = formatCompactCurrency(totalCost);
   }
 
   // Group monthly expenses from allCostData

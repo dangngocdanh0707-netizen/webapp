@@ -1545,3 +1545,24 @@ export function getTodayDateString(offsetDays = 0) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+// 8. Định dạng rút gọn số tiền theo phong cách nước ngoài (K, M, B)
+export function formatCompactCurrency(val) {
+  if (val === undefined || val === null) return '0 đ';
+  let num = parseFloat(val.toString().replace(/[^\d.-]/g, '')) || 0;
+  let sign = num < 0 ? '-' : '';
+  num = Math.abs(num);
+  
+  let formatted = '';
+  if (num >= 1e9) {
+    formatted = (num / 1e9).toFixed(2).replace(/\.00$/, '').replace(/(\.[0-9])0$/, '$1') + 'B';
+  } else if (num >= 1e6) {
+    formatted = (num / 1e6).toFixed(2).replace(/\.00$/, '').replace(/(\.[0-9])0$/, '$1') + 'M';
+  } else if (num >= 1e3) {
+    formatted = (num / 1e3).toFixed(2).replace(/\.00$/, '').replace(/(\.[0-9])0$/, '$1') + 'K';
+  } else {
+    formatted = num.toString();
+  }
+  
+  return sign + formatted + ' đ';
+}
+
