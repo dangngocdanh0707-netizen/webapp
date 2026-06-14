@@ -1547,7 +1547,7 @@ export function getTodayDateString(offsetDays = 0) {
 
 // 8. Định dạng rút gọn số tiền theo phong cách nước ngoài (K, M, B)
 export function formatCompactCurrency(val) {
-  if (val === undefined || val === null) return '0 đ';
+  if (val === undefined || val === null) return '0';
   let num = parseFloat(val.toString().replace(/[^\d.-]/g, '')) || 0;
   let sign = num < 0 ? '-' : '';
   num = Math.abs(num);
@@ -1563,6 +1563,6 @@ export function formatCompactCurrency(val) {
     formatted = num.toString();
   }
   
-  return sign + formatted + ' đ';
+  return sign + formatted;
 }
 
