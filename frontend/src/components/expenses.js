@@ -193,7 +193,7 @@ function populateCostCategories() {
   }
 
   if (insertSelect) {
-    insertSelect.innerHTML = "";
+    insertSelect.innerHTML = '<option value=""></option>';
     costCategories.forEach(cat => {
       insertSelect.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`);
     });
@@ -211,7 +211,7 @@ function populateCostSubcategories() {
     if (item.subcategory) costSubcategories.add(item.subcategory.trim());
   });
 
-  insertSelect.innerHTML = "";
+  insertSelect.innerHTML = '<option value=""></option>';
   costSubcategories.forEach(subcat => {
     insertSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(subcat)}">${escapeHTML(subcat)}</option>`);
   });

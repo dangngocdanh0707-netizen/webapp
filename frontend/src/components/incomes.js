@@ -168,7 +168,7 @@ function populateIncomeCategories() {
   }
 
   if (insertSelect) {
-    insertSelect.innerHTML = "";
+    insertSelect.innerHTML = '<option value=""></option>';
     incomeCategories.forEach(cat => {
       insertSelect.insertAdjacentHTML('beforeend', `<option value="${cat}">${cat}</option>`);
     });
