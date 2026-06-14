@@ -30,7 +30,7 @@ export function initMapModule(data, onSync) {
     });
   }
   if (insCitySelect) {
-    insCitySelect.innerHTML = '<option value="">Chọn Thành phố</option>';
+    insCitySelect.innerHTML = '<option value=""></option>';
     cities.forEach(city => {
       insCitySelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(city)}">${escapeHTML(city)}</option>`);
     });
@@ -45,7 +45,7 @@ export function initMapModule(data, onSync) {
     });
   }
   if (insCatSelect) {
-    insCatSelect.innerHTML = '<option value="">Chọn Danh mục</option>';
+    insCatSelect.innerHTML = '<option value=""></option>';
     categories.forEach(cat => {
       insCatSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`);
     });
