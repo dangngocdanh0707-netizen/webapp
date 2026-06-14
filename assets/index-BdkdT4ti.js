@@ -22,21 +22,21 @@ var Hc=Object.defineProperty;var jc=(n,t,e)=>t in n?Hc(n,t,{enumerable:!0,config
         </tr>
       `)}))}function mn(){const n=document.getElementById("monthFilter");if(!n)return;const t=new Set;J.forEach(i=>{i.date&&i.date.length>=7&&t.add(i.date.substring(0,7))});const e=Array.from(t).sort((i,s)=>s.localeCompare(i));n.innerHTML='<option value="All">All Months</option>',e.forEach(i=>{n.insertAdjacentHTML("beforeend",`<option value="${i}">${i}</option>`)})}function bn(){const n=document.getElementById("categoryFilter"),t=document.getElementById("ins-cost-cat");if(!n&&!t)return;const e=new Set;J.forEach(i=>{i.category&&e.add(i.category)}),n&&(n.innerHTML='<option value="All">All Categories</option>',e.forEach(i=>{n.insertAdjacentHTML("beforeend",`<option value="${i}">${i}</option>`)})),t&&(t.innerHTML='<option value=""></option>',e.forEach(i=>{t.insertAdjacentHTML("beforeend",`<option value="${i}">${i}</option>`)}))}function yn(){const n=document.getElementById("ins-cost-subcat");if(!n)return;const t=n.value,e=new Set;J.forEach(i=>{i.subcategory&&e.add(i.subcategory.trim())}),n.innerHTML='<option value=""></option>',e.forEach(i=>{n.insertAdjacentHTML("beforeend",`<option value="${S(i)}">${S(i)}</option>`)}),t&&Array.from(n.options).some(i=>i.value===t)&&(n.value=t)}function Ne(){const n=document.querySelector("#table-cost tbody");if(!n)return;n.innerHTML="";const t=document.getElementById("categoryFilter")?document.getElementById("categoryFilter").value:"All",e=document.getElementById("monthFilter")?document.getElementById("monthFilter").value:"All",i=document.getElementById("dayFilter")?document.getElementById("dayFilter").value:"All",s=Ot(),o=Ot(-1);let a=[...J];a.sort((r,l)=>ft(l.date)-ft(r.date)),a.forEach(r=>{let l=r.category||"Uncategorized";if(t!=="All"&&l!==t||e!=="All"&&(!r.date||!r.date.startsWith(e))||i==="Today"&&r.date!==s||i==="Yesterday"&&r.date!==o)return;let c=parseFloat(r.amount.toString().replace(/[^\d]/g,"")||0),d=r.rowNumber;n.insertAdjacentHTML("beforeend",`
       <tr id="row-${d}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-xs text-slate-650 w-36">
+        <td class="p-4 pl-6 font-semibold text-xs text-slate-650">
           <span class="view-mode-${d}">${S(r.date)}</span>
           <input type="date" id="edit-date-${d}" class="edit-input edit-mode-${d} hidden w-full" value="${Vn(r.date)}">
         </td>
-        <td class="p-4 w-36">
+        <td class="p-4">
           <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-mode-${d}">${S(l)}</span>
           <select id="edit-cat-${d}" class="edit-input font-bold edit-mode-${d} hidden w-full">
             ${Array.from(new Set(J.map(u=>u.category).filter(Boolean))).map(u=>`<option value="${u}" ${l===u?"selected":""}>${S(u)}</option>`).join("")}
           </select>
         </td>
-        <td class="p-4 w-36">
+        <td class="p-4">
           <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-mode-${d}">${S(r.subcategory||"-")}</span>
           <input type="text" id="edit-subcat-${d}" class="edit-input edit-mode-${d} hidden w-full" value="${S(r.subcategory||"")}">
         </td>
-        <td class="p-4 text-right text-xs font-bold text-slate-650 w-40">
+        <td class="p-4 text-right text-xs font-bold text-slate-650">
           <span class="view-mode-${d}">${c.toLocaleString("vi-VN")}đ</span>
           <input type="text" id="edit-amount-${d}" class="edit-input text-xs font-bold edit-mode-${d} hidden w-full" value="${c}">
         </td>
@@ -45,7 +45,7 @@ var Hc=Object.defineProperty;var jc=(n,t,e)=>t in n?Hc(n,t,{enumerable:!0,config
           <input type="text" id="edit-note-${d}" class="edit-input edit-mode-${d} hidden w-full" value="${S(r.note)}">
         </td>
         
-        <td class="p-4 text-center w-36">
+        <td class="p-4 text-center">
           <div class="view-mode-${d} flex justify-center gap-2">
             <button onclick="app.expenses.enterEditMode(${d})" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="app.expenses.deleteRow(${d})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
@@ -69,17 +69,17 @@ var Hc=Object.defineProperty;var jc=(n,t,e)=>t in n?Hc(n,t,{enumerable:!0,config
         </tr>
       `)}))}function xn(){const n=document.getElementById("incomeMonthFilter");if(!n)return;const t=new Set;ot.forEach(i=>{i.date&&i.date.length>=7&&t.add(i.date.substring(0,7))});const e=Array.from(t).sort((i,s)=>s.localeCompare(i));n.innerHTML='<option value="All">All Months</option>',e.forEach(i=>{n.insertAdjacentHTML("beforeend",`<option value="${i}">${i}</option>`)})}function vn(){const n=document.getElementById("incomeCategoryFilter"),t=document.getElementById("ins-inc-cat"),e=new Set;ot.forEach(i=>{i.category&&e.add(i.category)}),n&&(n.innerHTML='<option value="All">All Categories</option>',e.forEach(i=>{n.insertAdjacentHTML("beforeend",`<option value="${i}">${i}</option>`)})),t&&(t.innerHTML='<option value=""></option>',e.forEach(i=>{t.insertAdjacentHTML("beforeend",`<option value="${i}">${i}</option>`)}))}function He(){const n=document.querySelector("#table-income tbody");if(!n)return;n.innerHTML="";const t=document.getElementById("incomeCategoryFilter")?document.getElementById("incomeCategoryFilter").value:"All",e=document.getElementById("incomeMonthFilter")?document.getElementById("incomeMonthFilter").value:"All",i=document.getElementById("incomeDayFilter")?document.getElementById("incomeDayFilter").value:"All",s=Ot(),o=Ot(-1);let a=[...ot];a.sort((r,l)=>ft(l.date)-ft(r.date)),a.forEach(r=>{let l=r.category||"Uncategorized";if(t!=="All"&&l!==t||e!=="All"&&(!r.date||!r.date.startsWith(e))||i==="Today"&&r.date!==s||i==="Yesterday"&&r.date!==o)return;let c=parseFloat(r.amount.toString().replace(/[^\d]/g,"")||0),d=r.rowNumber;n.insertAdjacentHTML("beforeend",`
       <tr id="income-row-${d}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-xs text-slate-650 w-36">
+        <td class="p-4 pl-6 font-semibold text-xs text-slate-650">
           <span class="view-inc-mode-${d}">${S(r.date)}</span>
           <input type="date" id="edit-inc-date-${d}" class="edit-input edit-inc-mode-${d} hidden w-full" value="${Vn(r.date)}">
         </td>
-        <td class="p-4 w-36">
+        <td class="p-4">
           <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-inc-mode-${d}">${S(l)}</span>
           <select id="edit-inc-cat-${d}" class="edit-input font-bold edit-inc-mode-${d} hidden w-full">
             ${Array.from(new Set(ot.map(u=>u.category).filter(Boolean))).map(u=>`<option value="${u}" ${l===u?"selected":""}>${S(u)}</option>`).join("")}
           </select>
         </td>
-        <td class="p-4 text-right text-xs font-bold text-slate-650 w-40">
+        <td class="p-4 text-right text-xs font-bold text-slate-650">
           <span class="view-inc-mode-${d}">${c.toLocaleString("vi-VN")}đ</span>
           <input type="text" id="edit-inc-amount-${d}" class="edit-input text-xs font-bold edit-inc-mode-${d} hidden w-full" value="${c}">
         </td>
@@ -88,7 +88,7 @@ var Hc=Object.defineProperty;var jc=(n,t,e)=>t in n?Hc(n,t,{enumerable:!0,config
           <input type="text" id="edit-inc-note-${d}" class="edit-input edit-inc-mode-${d} hidden w-full" value="${S(r.note)}">
         </td>
         
-        <td class="p-4 text-center w-36">
+        <td class="p-4 text-center">
           <div class="view-inc-mode-${d} flex justify-center gap-2">
             <button onclick="app.incomes.enterEditMode(${d})" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="app.incomes.deleteRow(${d})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
@@ -107,27 +107,27 @@ var Hc=Object.defineProperty;var jc=(n,t,e)=>t in n?Hc(n,t,{enumerable:!0,config
         </tr>
       `)}))}function _n(){const n=document.querySelector("#table-assets tbody");if(!n)return;n.innerHTML="";const t=document.getElementById("assetSearch")?document.getElementById("assetSearch").value.toLowerCase().trim():"";let e=[...ut];e.sort((i,s)=>(i.asset||"").localeCompare(s.asset||"")),e.forEach(i=>{let s=i.asset||"";if(t&&!s.toLowerCase().includes(t))return;let o=Number(i.quantity)||0,a=Number(i.price)||0,r=o*a,l=i.rowNumber,c=i.unit||"";n.insertAdjacentHTML("beforeend",`
       <tr id="asset-row-${l}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-650 w-48">
+        <td class="p-4 pl-6 font-semibold text-slate-650">
           <span class="view-ast-mode-${l}">${S(s)}</span>
           <input type="text" id="edit-ast-name-${l}" class="edit-input edit-ast-mode-${l} hidden w-full font-semibold" value="${S(s)}">
         </td>
-        <td class="p-4 text-right font-medium text-slate-650 w-28">
+        <td class="p-4 text-right font-medium text-slate-650">
           <span class="view-ast-mode-${l}">${o}</span>
           <input type="number" step="any" id="edit-ast-quantity-${l}" class="edit-input edit-ast-mode-${l} hidden w-full" value="${o}">
         </td>
-        <td class="p-4 text-center text-xs text-slate-650 w-24">
+        <td class="p-4 text-center text-xs text-slate-650">
           <span class="px-2 py-0.5 rounded-md border bg-slate-50 text-slate-650 border-slate-200 font-medium view-ast-mode-${l}">${S(c)||"-"}</span>
           <input type="text" id="edit-ast-unit-${l}" class="edit-input edit-ast-mode-${l} hidden w-full" value="${S(c)}">
         </td>
-        <td class="p-4 text-right text-xs font-bold text-slate-650 w-36">
+        <td class="p-4 text-right text-xs font-bold text-slate-650">
           <span class="view-ast-mode-${l}">${a.toLocaleString("vi-VN")}đ</span>
           <input type="text" id="edit-ast-price-${l}" class="edit-input text-xs font-bold edit-ast-mode-${l} hidden w-full" value="${a}">
         </td>
-        <td class="p-4 text-right text-xs font-bold text-slate-650 w-36">
+        <td class="p-4 text-right text-xs font-bold text-slate-650">
           <span>${r.toLocaleString("vi-VN")}đ</span>
         </td>
         
-        <td class="p-4 text-center w-36">
+        <td class="p-4 text-center">
           <div class="view-ast-mode-${l} flex justify-center gap-2">
             <button onclick="app.assets.enterEditMode(${l})" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="app.assets.deleteRow(${l})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
