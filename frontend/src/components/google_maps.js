@@ -118,7 +118,6 @@ export function buildMapGrid() {
           <td class="p-4 hidden map-edit-${id}">
             <label class="inline-flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" id="map-edit-status-${id}" class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer" ${status ? 'checked' : ''}>
-              <span class="text-xs font-bold text-slate-700">Completed</span>
             </label>
           </td>
 
