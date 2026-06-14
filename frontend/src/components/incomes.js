@@ -205,11 +205,11 @@ export function buildIncomeTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="income-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-xs text-slate-650 w-36">
+        <td class="p-4 pl-6 font-semibold text-xs text-slate-650">
           <span class="view-inc-mode-${id}">${escapeHTML(item.date)}</span>
           <input type="date" id="edit-inc-date-${id}" class="edit-input edit-inc-mode-${id} hidden w-full" value="${formatDateInput(item.date)}">
         </td>
-        <td class="p-4 w-36">
+        <td class="p-4">
           <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-inc-mode-${id}">${escapeHTML(cat)}</span>
           <select id="edit-inc-cat-${id}" class="edit-input font-bold edit-inc-mode-${id} hidden w-full">
             ${Array.from(new Set(allIncomeData.map(d => d.category).filter(Boolean))).map(c => 
@@ -217,7 +217,7 @@ export function buildIncomeTable() {
             ).join('')}
           </select>
         </td>
-        <td class="p-4 text-right text-xs font-bold text-slate-650 w-40">
+        <td class="p-4 text-right text-xs font-bold text-slate-650">
           <span class="view-inc-mode-${id}">${amount.toLocaleString('vi-VN')}đ</span>
           <input type="text" id="edit-inc-amount-${id}" class="edit-input text-xs font-bold edit-inc-mode-${id} hidden w-full" value="${amount}">
         </td>
@@ -226,7 +226,7 @@ export function buildIncomeTable() {
           <input type="text" id="edit-inc-note-${id}" class="edit-input edit-inc-mode-${id} hidden w-full" value="${escapeHTML(item.note)}">
         </td>
         
-        <td class="p-4 text-center w-36">
+        <td class="p-4 text-center">
           <div class="view-inc-mode-${id} flex justify-center gap-2">
             <button onclick="app.incomes.enterEditMode(${id})" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="app.incomes.deleteRow(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>

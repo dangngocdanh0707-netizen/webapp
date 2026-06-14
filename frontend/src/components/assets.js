@@ -109,27 +109,27 @@ export function buildAssetTable() {
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="asset-row-${id}" class="hover:bg-slate-900/5 transition">
-        <td class="p-4 pl-6 font-semibold text-slate-650 w-48">
+        <td class="p-4 pl-6 font-semibold text-slate-650">
           <span class="view-ast-mode-${id}">${escapeHTML(name)}</span>
           <input type="text" id="edit-ast-name-${id}" class="edit-input edit-ast-mode-${id} hidden w-full font-semibold" value="${escapeHTML(name)}">
         </td>
-        <td class="p-4 text-right font-medium text-slate-650 w-28">
+        <td class="p-4 text-right font-medium text-slate-650">
           <span class="view-ast-mode-${id}">${quantity}</span>
           <input type="number" step="any" id="edit-ast-quantity-${id}" class="edit-input edit-ast-mode-${id} hidden w-full" value="${quantity}">
         </td>
-        <td class="p-4 text-center text-xs text-slate-650 w-24">
+        <td class="p-4 text-center text-xs text-slate-650">
           <span class="px-2 py-0.5 rounded-md border bg-slate-50 text-slate-650 border-slate-200 font-medium view-ast-mode-${id}">${escapeHTML(unit) || '-'}</span>
           <input type="text" id="edit-ast-unit-${id}" class="edit-input edit-ast-mode-${id} hidden w-full" value="${escapeHTML(unit)}">
         </td>
-        <td class="p-4 text-right text-xs font-bold text-slate-650 w-36">
+        <td class="p-4 text-right text-xs font-bold text-slate-650">
           <span class="view-ast-mode-${id}">${price.toLocaleString('vi-VN')}đ</span>
           <input type="text" id="edit-ast-price-${id}" class="edit-input text-xs font-bold edit-ast-mode-${id} hidden w-full" value="${price}">
         </td>
-        <td class="p-4 text-right text-xs font-bold text-slate-650 w-36">
+        <td class="p-4 text-right text-xs font-bold text-slate-650">
           <span>${total.toLocaleString('vi-VN')}đ</span>
         </td>
         
-        <td class="p-4 text-center w-36">
+        <td class="p-4 text-center">
           <div class="view-ast-mode-${id} flex justify-center gap-2">
             <button onclick="app.assets.enterEditMode(${id})" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="app.assets.deleteRow(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
