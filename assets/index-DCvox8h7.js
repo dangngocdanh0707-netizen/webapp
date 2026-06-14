@@ -572,14 +572,10 @@ If the user is just saying hello, asking a general question, or the request is a
             </a>
           </td>
           <td class="p-4 map-view-${o}">
-            <span class="px-2 py-0.5 rounded-md text-xs border ${u}">
-              ${S(r)}
-            </span>
+            ${r?`<span class="px-2 py-0.5 rounded-md text-xs border ${u}">${S(r)}</span>`:"-"}
           </td>
           <td class="p-4 map-view-${o}">
-            <span class="px-2 py-0.5 rounded-md text-xs border ${u}">
-              ${S(l)}
-            </span>
+            ${l?`<span class="px-2 py-0.5 rounded-md text-xs border ${u}">${S(l)}</span>`:"-"}
           </td>
           <td class="p-4 pl-12 text-left map-view-${o}">
             <label class="inline-flex items-center gap-3 cursor-pointer select-none">
@@ -587,11 +583,11 @@ If the user is just saying hello, asking a general question, or the request is a
               <span id="map-lbl-${o}" class="text-xs font-semibold tracking-wide ${c?"text-emerald-600":"text-slate-400"}">${c?"Completed":"Pending"}</span>
             </label>
           </td>
-
+ 
           <!-- Edit inputs -->
-          <td class="p-4 pl-6 hidden map-edit-${o}"><input type="text" id="map-edit-place-${o}" class="edit-input font-bold" value="${S(a)}"></td>
-          <td class="p-4 hidden map-edit-${o}"><input type="text" id="map-edit-city-${o}" class="edit-input" value="${S(r)}"></td>
-          <td class="p-4 hidden map-edit-${o}"><input type="text" id="map-edit-cat-${o}" class="edit-input" value="${S(l)}"></td>
+          <td class="p-4 pl-6 hidden map-edit-${o}"><input type="text" id="map-edit-place-${o}" class="edit-input font-bold w-full" value="${S(a)}"></td>
+          <td class="p-4 hidden map-edit-${o}"><input type="text" id="map-edit-city-${o}" class="edit-input w-full" value="${S(r)}"></td>
+          <td class="p-4 hidden map-edit-${o}"><input type="text" id="map-edit-cat-${o}" class="edit-input w-full" value="${S(l)}"></td>
           <td class="p-4 hidden map-edit-${o}">
             <label class="inline-flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" id="map-edit-status-${o}" class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer" ${c?"checked":""}>
