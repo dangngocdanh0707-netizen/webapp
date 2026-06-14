@@ -118,19 +118,27 @@ export function buildVocabTable() {
           </div>
         </td>
         <td class="p-4 font-mono text-slate-500 italic text-sm v-view-${id}">${escapeHTML(item.transcription) || '-'}</td>
-        <td class="p-4 hidden v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(cat)}</span></td>
-        <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(topic)}</span></td>
-        <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(item.level) || '-'}</span></td>
+        <td class="p-4 hidden v-view-${id}">
+          ${(cat && cat !== "-") ? `<span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(cat)}</span>` : '-'}
+        </td>
+        <td class="p-4 v-view-${id}">
+          ${(topic && topic !== "-") ? `<span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(topic)}</span>` : '-'}
+        </td>
+        <td class="p-4 v-view-${id}">
+          ${(item.level && item.level !== "-") ? `<span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(item.level)}</span>` : '-'}
+        </td>
         <td class="p-4 text-xs text-slate-650 v-view-${id}">${escapeHTML(item.meaning) || ''}</td>
-        <td class="p-4 v-view-${id}"><span class="px-2 py-0.5 rounded-md text-xs border ${statusBadgeStyle}">${escapeHTML(statusStr)}</span></td>
+        <td class="p-4 v-view-${id}">
+          ${statusStr ? `<span class="px-2 py-0.5 rounded-md text-xs border ${statusBadgeStyle}">${escapeHTML(statusStr)}</span>` : '-'}
+        </td>
         <td class="p-4 font-semibold text-xs text-slate-500 v-view-${id}">${nextReviewView}</td>
         
-        <td class="p-4 pl-6 hidden v-edit-${id}"><input type="text" id="v-edit-content-${id}" class="edit-input font-bold" value="${escapeHTML(item.content)}"></td>
-        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-transcription-${id}" class="edit-input font-mono italic" value="${escapeHTML(item.transcription || '')}" placeholder="/.../"></td>
-        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-cat-${id}" class="edit-input" value="${escapeHTML(cat)}"></td>
-        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-topic-${id}" class="edit-input" value="${escapeHTML(topic)}"></td>
-        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-level-${id}" class="edit-input font-mono" value="${escapeHTML(item.level)}"></td>
-        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-mean-${id}" class="edit-input" value="${escapeHTML(item.meaning)}"></td>
+        <td class="p-4 pl-6 hidden v-edit-${id}"><input type="text" id="v-edit-content-${id}" class="edit-input font-bold w-full" value="${escapeHTML(item.content)}"></td>
+        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-transcription-${id}" class="edit-input font-mono italic w-full" value="${escapeHTML(item.transcription || '')}" placeholder="/.../"></td>
+        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-cat-${id}" class="edit-input w-full" value="${escapeHTML(cat)}"></td>
+        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-topic-${id}" class="edit-input w-full" value="${escapeHTML(topic)}"></td>
+        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-level-${id}" class="edit-input font-mono w-full" value="${escapeHTML(item.level)}"></td>
+        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-mean-${id}" class="edit-input w-full" value="${escapeHTML(item.meaning)}"></td>
         <td class="p-4 hidden v-edit-${id}" colspan="2"><span class="text-xs italic text-slate-400">Status locked inside reviewer engine</span></td>
         
         <td class="p-4 text-center">

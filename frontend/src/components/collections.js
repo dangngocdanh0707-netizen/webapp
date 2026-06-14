@@ -95,20 +95,16 @@ export function buildCollectionsGrid() {
             </a>
           </td>
           <td class="p-4 col-view-${id}">
-            <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
-              ${escapeHTML(brand)}
-            </span>
+            ${brand ? `<span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">${escapeHTML(brand)}</span>` : '-'}
           </td>
           <td class="p-4 col-view-${id}">
-            <span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">
-              ${escapeHTML(formattedCategory)}
-            </span>
+            ${formattedCategory ? `<span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">${escapeHTML(formattedCategory)}</span>` : '-'}
           </td>
 
           <!-- Edit inputs -->
-          <td class="p-4 pl-6 hidden col-edit-${id}"><input type="text" id="col-edit-item-${id}" class="edit-input font-bold" value="${escapeHTML(name)}"></td>
-          <td class="p-4 hidden col-edit-${id}"><input type="text" id="col-edit-brand-${id}" class="edit-input" value="${escapeHTML(brand)}"></td>
-          <td class="p-4 hidden col-edit-${id}"><input type="text" id="col-edit-cat-${id}" class="edit-input" value="${escapeHTML(formattedCategory)}"></td>
+          <td class="p-4 pl-6 hidden col-edit-${id}"><input type="text" id="col-edit-item-${id}" class="edit-input font-bold w-full" value="${escapeHTML(name)}"></td>
+          <td class="p-4 hidden col-edit-${id}"><input type="text" id="col-edit-brand-${id}" class="edit-input w-full" value="${escapeHTML(brand)}"></td>
+          <td class="p-4 hidden col-edit-${id}"><input type="text" id="col-edit-cat-${id}" class="edit-input w-full" value="${escapeHTML(formattedCategory)}"></td>
 
           <td class="p-4 pr-6 text-center">
             <div class="col-view-${id} flex items-center justify-center gap-2">
