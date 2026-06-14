@@ -208,19 +208,27 @@ If the user is just saying hello, asking a general question, or the request is a
           </div>
         </td>
         <td class="p-4 font-mono text-slate-500 italic text-sm v-view-${y}">${S(c.transcription)||"-"}</td>
-        <td class="p-4 hidden v-view-${y}"><span class="px-2 py-0.5 rounded-md text-xs border ${w}">${S(h)}</span></td>
-        <td class="p-4 v-view-${y}"><span class="px-2 py-0.5 rounded-md text-xs border ${w}">${S(f)}</span></td>
-        <td class="p-4 v-view-${y}"><span class="px-2 py-0.5 rounded-md text-xs border ${w}">${S(c.level)||"-"}</span></td>
+        <td class="p-4 hidden v-view-${y}">
+          ${h&&h!=="-"?`<span class="px-2 py-0.5 rounded-md text-xs border ${w}">${S(h)}</span>`:"-"}
+        </td>
+        <td class="p-4 v-view-${y}">
+          ${f&&f!=="-"?`<span class="px-2 py-0.5 rounded-md text-xs border ${w}">${S(f)}</span>`:"-"}
+        </td>
+        <td class="p-4 v-view-${y}">
+          ${c.level&&c.level!=="-"?`<span class="px-2 py-0.5 rounded-md text-xs border ${w}">${S(c.level)}</span>`:"-"}
+        </td>
         <td class="p-4 text-xs text-slate-650 v-view-${y}">${S(c.meaning)||""}</td>
-        <td class="p-4 v-view-${y}"><span class="px-2 py-0.5 rounded-md text-xs border ${E}">${S(p)}</span></td>
+        <td class="p-4 v-view-${y}">
+          ${p?`<span class="px-2 py-0.5 rounded-md text-xs border ${E}">${S(p)}</span>`:"-"}
+        </td>
         <td class="p-4 font-semibold text-xs text-slate-500 v-view-${y}">${m}</td>
         
-        <td class="p-4 pl-6 hidden v-edit-${y}"><input type="text" id="v-edit-content-${y}" class="edit-input font-bold" value="${S(c.content)}"></td>
-        <td class="p-4 hidden v-edit-${y}"><input type="text" id="v-edit-transcription-${y}" class="edit-input font-mono italic" value="${S(c.transcription||"")}" placeholder="/.../"></td>
-        <td class="p-4 hidden v-edit-${y}"><input type="text" id="v-edit-cat-${y}" class="edit-input" value="${S(h)}"></td>
-        <td class="p-4 hidden v-edit-${y}"><input type="text" id="v-edit-topic-${y}" class="edit-input" value="${S(f)}"></td>
-        <td class="p-4 hidden v-edit-${y}"><input type="text" id="v-edit-level-${y}" class="edit-input font-mono" value="${S(c.level)}"></td>
-        <td class="p-4 hidden v-edit-${y}"><input type="text" id="v-edit-mean-${y}" class="edit-input" value="${S(c.meaning)}"></td>
+        <td class="p-4 pl-6 hidden v-edit-${y}"><input type="text" id="v-edit-content-${y}" class="edit-input font-bold w-full" value="${S(c.content)}"></td>
+        <td class="p-4 hidden v-edit-${y}"><input type="text" id="v-edit-transcription-${y}" class="edit-input font-mono italic w-full" value="${S(c.transcription||"")}" placeholder="/.../"></td>
+        <td class="p-4 hidden v-edit-${y}"><input type="text" id="v-edit-cat-${y}" class="edit-input w-full" value="${S(h)}"></td>
+        <td class="p-4 hidden v-edit-${y}"><input type="text" id="v-edit-topic-${y}" class="edit-input w-full" value="${S(f)}"></td>
+        <td class="p-4 hidden v-edit-${y}"><input type="text" id="v-edit-level-${y}" class="edit-input font-mono w-full" value="${S(c.level)}"></td>
+        <td class="p-4 hidden v-edit-${y}"><input type="text" id="v-edit-mean-${y}" class="edit-input w-full" value="${S(c.meaning)}"></td>
         <td class="p-4 hidden v-edit-${y}" colspan="2"><span class="text-xs italic text-slate-400">Status locked inside reviewer engine</span></td>
         
         <td class="p-4 text-center">
@@ -623,20 +631,16 @@ If the user is just saying hello, asking a general question, or the request is a
             </a>
           </td>
           <td class="p-4 col-view-${a}">
-            <span class="px-2 py-0.5 rounded-md text-xs border ${d}">
-              ${S(l)}
-            </span>
+            ${l?`<span class="px-2 py-0.5 rounded-md text-xs border ${d}">${S(l)}</span>`:"-"}
           </td>
           <td class="p-4 col-view-${a}">
-            <span class="px-2 py-0.5 rounded-md text-xs border ${d}">
-              ${S(h)}
-            </span>
+            ${h?`<span class="px-2 py-0.5 rounded-md text-xs border ${d}">${S(h)}</span>`:"-"}
           </td>
 
           <!-- Edit inputs -->
-          <td class="p-4 pl-6 hidden col-edit-${a}"><input type="text" id="col-edit-item-${a}" class="edit-input font-bold" value="${S(r)}"></td>
-          <td class="p-4 hidden col-edit-${a}"><input type="text" id="col-edit-brand-${a}" class="edit-input" value="${S(l)}"></td>
-          <td class="p-4 hidden col-edit-${a}"><input type="text" id="col-edit-cat-${a}" class="edit-input" value="${S(h)}"></td>
+          <td class="p-4 pl-6 hidden col-edit-${a}"><input type="text" id="col-edit-item-${a}" class="edit-input font-bold w-full" value="${S(r)}"></td>
+          <td class="p-4 hidden col-edit-${a}"><input type="text" id="col-edit-brand-${a}" class="edit-input w-full" value="${S(l)}"></td>
+          <td class="p-4 hidden col-edit-${a}"><input type="text" id="col-edit-cat-${a}" class="edit-input w-full" value="${S(h)}"></td>
 
           <td class="p-4 pr-6 text-center">
             <div class="col-view-${a} flex items-center justify-center gap-2">
