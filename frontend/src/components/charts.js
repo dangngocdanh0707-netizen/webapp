@@ -60,7 +60,7 @@ export function renderSubcatBar(barLabels, barData, onClickCallback) {
         datalabels: {
           anchor: 'end',
           align: 'right',
-          formatter: (v) => v.toLocaleString('vi-VN') + "đ",
+          formatter: (v) => v.toLocaleString('vi-VN'),
           font: { weight: 'bold', family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 },
           color: '#0f172a'
         }
@@ -98,7 +98,7 @@ export function renderMonthlyExpensesBar(labels, data) {
         datalabels: {
           anchor: 'end',
           align: 'top',
-          formatter: (v) => v.toLocaleString('vi-VN') + "đ",
+          formatter: (v) => v.toLocaleString('vi-VN'),
           font: { weight: 'bold', family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 },
           color: '#0f172a'
         }
@@ -197,7 +197,7 @@ export function renderIncomeBar(barLabels, barData, onClickCallback) {
         datalabels: {
           anchor: 'end',
           align: 'top',
-          formatter: (v) => v.toLocaleString('vi-VN') + "đ",
+          formatter: (v) => v.toLocaleString('vi-VN'),
           font: { weight: 'bold', family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 },
           color: '#0f172a'
         }
@@ -243,7 +243,7 @@ export function renderExpenseBar(barLabels, barData, onClickCallback) {
         datalabels: {
           anchor: 'end',
           align: 'top',
-          formatter: (v) => v.toLocaleString('vi-VN') + "đ",
+          formatter: (v) => v.toLocaleString('vi-VN'),
           font: { weight: 'bold', family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 },
           color: '#0f172a'
         }
@@ -401,7 +401,7 @@ export function renderAssetBar(barLabels, barData, onClickCallback) {
         datalabels: {
           anchor: 'end',
           align: 'top',
-          formatter: (v) => v.toLocaleString('vi-VN') + "đ",
+          formatter: (v) => v.toLocaleString('vi-VN'),
           font: { weight: 'bold', family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 },
           color: '#0f172a'
         }

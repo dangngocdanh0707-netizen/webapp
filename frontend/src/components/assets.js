@@ -9,7 +9,7 @@ export function initAssetsModule(data, onSync) {
 
   // Setup auto-formatting event listener on new asset price input
   const priceInput = document.getElementById('ins-ast-price');
-  if (priceInput) {
+  if (priceInput && !priceInput.dataset.listenerAttached) {
     priceInput.addEventListener('input', (e) => {
       let cursorPosition = e.target.selectionStart;
       let originalLength = e.target.value.length;
@@ -21,6 +21,7 @@ export function initAssetsModule(data, onSync) {
       let lengthDiff = newLength - originalLength;
       e.target.setSelectionRange(cursorPosition + lengthDiff, cursorPosition + lengthDiff);
     });
+    priceInput.dataset.listenerAttached = 'true';
   }
 
   // RENDER GRAPHICS
@@ -68,7 +69,7 @@ function renderAssetGraphics() {
       tbody.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition">
           <td class="p-3 pl-4 font-semibold text-slate-650">${escapeHTML(assetName)}</td>
-          <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}đ</td>
+          <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}</td>
           <td class="p-3 text-right text-xs font-bold text-slate-650">${pct}%</td>
         </tr>
       `);
@@ -112,11 +113,11 @@ export function buildAssetTable() {
           <input type="text" id="edit-ast-unit-${id}" class="edit-input edit-ast-mode-${id} hidden w-full" value="${escapeHTML(unit)}">
         </td>
         <td class="p-4 text-right text-xs font-bold text-slate-650">
-          <span class="view-ast-mode-${id}">${price.toLocaleString('vi-VN')}đ</span>
+          <span class="view-ast-mode-${id}">${price.toLocaleString('vi-VN')}</span>
           <input type="text" id="edit-ast-price-${id}" class="edit-input text-xs font-bold edit-ast-mode-${id} hidden w-full" value="${price}">
         </td>
         <td class="p-4 text-right text-xs font-bold text-slate-650">
-          <span>${total.toLocaleString('vi-VN')}đ</span>
+          <span>${total.toLocaleString('vi-VN')}</span>
         </td>
         
         <td class="p-4 text-center">
@@ -143,17 +144,20 @@ window.app.assets.enterEditMode = function (id) {
   const editPriceInput = document.getElementById(`edit-ast-price-${id}`);
   if (editPriceInput) {
     editPriceInput.value = formatNumberString(editPriceInput.value);
-    editPriceInput.addEventListener('input', (e) => {
-      let cursorPosition = e.target.selectionStart;
-      let originalLength = e.target.value.length;
+    if (!editPriceInput.dataset.listenerAttached) {
+      editPriceInput.addEventListener('input', (e) => {
+        let cursorPosition = e.target.selectionStart;
+        let originalLength = e.target.value.length;
 
-      let formatted = formatNumberString(e.target.value);
-      e.target.value = formatted;
+        let formatted = formatNumberString(e.target.value);
+        e.target.value = formatted;
 
-      let newLength = formatted.length;
-      let lengthDiff = newLength - originalLength;
-      e.target.setSelectionRange(cursorPosition + lengthDiff, cursorPosition + lengthDiff);
-    });
+        let newLength = formatted.length;
+        let lengthDiff = newLength - originalLength;
+        e.target.setSelectionRange(cursorPosition + lengthDiff, cursorPosition + lengthDiff);
+      });
+      editPriceInput.dataset.listenerAttached = 'true';
+    }
   }
 };
 

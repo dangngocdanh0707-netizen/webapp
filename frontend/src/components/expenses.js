@@ -25,7 +25,7 @@ export function initCostModule(data, onSync) {
 
   // Setup auto-formatting event listener on new cost amount input
   const amountInput = document.getElementById('ins-cost-amount');
-  if (amountInput) {
+  if (amountInput && !amountInput.dataset.listenerAttached) {
     amountInput.addEventListener('input', (e) => {
       let cursorPosition = e.target.selectionStart;
       let originalLength = e.target.value.length;
@@ -37,6 +37,7 @@ export function initCostModule(data, onSync) {
       let lengthDiff = newLength - originalLength;
       e.target.setSelectionRange(cursorPosition + lengthDiff, cursorPosition + lengthDiff);
     });
+    amountInput.dataset.listenerAttached = 'true';
   }
 
   // RENDER GRAPHICS
@@ -105,7 +106,7 @@ function renderCostGraphics() {
       tbodyCat.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition">
           <td class="p-3 pl-4 font-semibold text-slate-650">${escapeHTML(catName)}</td>
-          <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}đ</td>
+          <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}</td>
           <td class="p-3 text-right text-xs font-bold text-slate-650">${pct}%</td>
         </tr>
       `);
@@ -122,7 +123,7 @@ function renderCostGraphics() {
       tbodySubcat.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition">
           <td class="p-3 pl-4 font-semibold text-slate-650">${escapeHTML(subcatName)}</td>
-          <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}đ</td>
+          <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}</td>
           <td class="p-3 text-right text-xs font-bold text-slate-650">${pct}%</td>
         </tr>
       `);
@@ -139,7 +140,7 @@ function renderCostGraphics() {
       tbodyMonthly.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition">
           <td class="p-3 pl-4 font-semibold text-slate-650">${escapeHTML(m)}</td>
-          <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}đ</td>
+          <td class="p-3 text-right font-bold text-slate-650">${val.toLocaleString('vi-VN')}</td>
         </tr>
       `);
     });
@@ -258,7 +259,7 @@ export function buildTable() {
           <input type="text" id="edit-subcat-${id}" class="edit-input edit-mode-${id} hidden w-full" value="${escapeHTML(item.subcategory || '')}">
         </td>
         <td class="p-4 text-right text-xs font-bold text-slate-650">
-          <span class="view-mode-${id}">${amount.toLocaleString('vi-VN')}đ</span>
+          <span class="view-mode-${id}">${amount.toLocaleString('vi-VN')}</span>
           <input type="text" id="edit-amount-${id}" class="edit-input text-xs font-bold edit-mode-${id} hidden w-full" value="${amount}">
         </td>
         <td class="p-4">
@@ -291,17 +292,20 @@ window.app.expenses.enterEditMode = function (id) {
   const editAmountInput = document.getElementById(`edit-amount-${id}`);
   if (editAmountInput) {
     editAmountInput.value = formatNumberString(editAmountInput.value);
-    editAmountInput.addEventListener('input', (e) => {
-      let cursorPosition = e.target.selectionStart;
-      let originalLength = e.target.value.length;
+    if (!editAmountInput.dataset.listenerAttached) {
+      editAmountInput.addEventListener('input', (e) => {
+        let cursorPosition = e.target.selectionStart;
+        let originalLength = e.target.value.length;
 
-      let formatted = formatNumberString(e.target.value);
-      e.target.value = formatted;
+        let formatted = formatNumberString(e.target.value);
+        e.target.value = formatted;
 
-      let newLength = formatted.length;
-      let lengthDiff = newLength - originalLength;
-      e.target.setSelectionRange(cursorPosition + lengthDiff, cursorPosition + lengthDiff);
-    });
+        let newLength = formatted.length;
+        let lengthDiff = newLength - originalLength;
+        e.target.setSelectionRange(cursorPosition + lengthDiff, cursorPosition + lengthDiff);
+      });
+      editAmountInput.dataset.listenerAttached = 'true';
+    }
   }
 };
 
