@@ -156,14 +156,13 @@ window.app.maps.addMapRow = function() {
   const placeInput = document.getElementById('ins-map-place');
   const cityInput = document.getElementById('ins-map-city');
   const catInput = document.getElementById('ins-map-cat');
-  const statusInput = document.getElementById('ins-map-status');
  
   if (!placeInput || !cityInput) return;
  
   const place = placeInput.value.trim();
   const city = cityInput.value.trim();
   const category = catInput ? catInput.value.trim() : "";
-  const status = statusInput ? statusInput.checked : false;
+  const status = false; // Mặc định là Pending, người dùng sẽ tự click chọn trực tiếp trong bảng sau.
  
   if (!place || !city) {
     console.warn("Vui lòng nhập Tên địa điểm và Thành phố!");
@@ -187,7 +186,6 @@ window.app.maps.addMapRow = function() {
   placeInput.value = "";
   cityInput.value = "";
   if (catInput) catInput.value = "";
-  if (statusInput) statusInput.checked = false;
  
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertMapRow", [place, city, category, status])
@@ -206,7 +204,6 @@ window.app.maps.addMapRow = function() {
     placeInput.value = place;
     cityInput.value = city;
     if (catInput) catInput.value = category;
-    if (statusInput) statusInput.checked = status;
     console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
 };
