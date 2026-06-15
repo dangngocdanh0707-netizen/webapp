@@ -277,14 +277,14 @@ window.app.srs.triggerRandomVocab = function () {
       inputEl.onkeydown = function (e) {
         if (e.key === "Enter") {
           e.preventDefault();
-          checkTypingAnswer();
+          app.srs.checkTypingAnswer();
         }
       };
       inputEl.oninput = function () {
         const userAns = inputEl.value;
         const targetAns = currentPracticeWord.content || "";
         if (normalizeEnglishText(userAns) === normalizeEnglishText(targetAns)) {
-          checkTypingAnswer();
+          app.srs.checkTypingAnswer();
         }
       };
       setTimeout(() => inputEl.focus(), 100);
@@ -407,7 +407,7 @@ window.app.srs.onScrambleDrop = function (event, targetTileId) {
       }).join(" ");
 
       if (normalizeEnglishText(userSentence) === normalizeEnglishText(targetText)) {
-        checkScrambleAnswer();
+        app.srs.checkScrambleAnswer();
       }
     }
   }
@@ -439,7 +439,7 @@ window.app.srs.shiftScrambleTile = function (tileId, direction) {
     }).join(" ");
 
     if (normalizeEnglishText(userSentence) === normalizeEnglishText(targetText)) {
-      checkScrambleAnswer();
+      app.srs.checkScrambleAnswer();
     }
   }
 };
@@ -505,7 +505,7 @@ window.app.srs.selectScrambleTile = function (tileId) {
     }).join(" ");
 
     if (normalizeEnglishText(userSentence) === normalizeEnglishText(targetText)) {
-      checkScrambleAnswer();
+      app.srs.checkScrambleAnswer();
     }
   }
 };
@@ -559,7 +559,7 @@ window.app.srs.checkScrambleAnswer = function () {
     }
   }
 
-  revealPracticeMeaning();
+  app.srs.revealPracticeMeaning();
   highlightSrsButton(isCorrect);
 };
 
@@ -585,7 +585,7 @@ window.app.srs.checkTypingAnswer = function () {
     }, 1000);
   }
 
-  revealPracticeMeaning();
+  app.srs.revealPracticeMeaning();
   highlightSrsButton(isCorrect);
 };
 
@@ -716,14 +716,14 @@ document.addEventListener('keydown', function (e) {
 
     if (scrambleMode && !scrambleMode.classList.contains('hidden') && actionMetrics && actionMetrics.classList.contains('hidden')) {
       e.preventDefault();
-      checkScrambleAnswer();
+      app.srs.checkScrambleAnswer();
       return;
     }
 
     const btnReveal = document.getElementById('btn-practice-reveal');
     if (btnReveal && !btnReveal.classList.contains('hidden')) {
       e.preventDefault();
-      revealPracticeMeaning();
+      app.srs.revealPracticeMeaning();
       return;
     }
   }

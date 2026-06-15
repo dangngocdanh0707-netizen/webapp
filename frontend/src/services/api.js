@@ -1528,7 +1528,9 @@ export function parseDateToTimestamp(dateStr) {
 export function normalizeEnglishText(str) {
   if (!str) return "";
   return str.toLowerCase()
-    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?']/g, "")
+    .replace(/[\u2018\u2019\u201b\u2032’‘'`]/g, "") // remove all single quotes, smart apostrophes, backticks
+    .replace(/[\u201c\u201d\u2033“”"]/g, "")       // remove all double quotes, smart double quotes
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_~()?]/g, "")   // remove other punctuation
     .replace(/\s+/g, " ")
     .trim();
 }
