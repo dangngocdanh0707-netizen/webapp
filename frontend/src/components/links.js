@@ -10,7 +10,14 @@ export function initLinksModule(data, onSync) {
   const totalLinksEl = document.getElementById('total-links');
   if (totalLinksEl) totalLinksEl.innerText = allLinkData.length;
   
-  // Categorize and populate select options
+  buildLinkTable();
+}
+
+export function populateLinkCategories() {
+  const filterSelect = document.getElementById('linkCategoryFilter');
+  const insertSelect = document.getElementById('ins-link-cat');
+  if (!filterSelect && !insertSelect) return;
+
   let linkCategories = new Set();
   allLinkData.forEach(item => {
     if (item.category) {
@@ -18,25 +25,37 @@ export function initLinksModule(data, onSync) {
       if (catName !== "") linkCategories.add(catName);
     }
   });
-  
-  const linkCatSelect = document.getElementById('linkCategoryFilter');
-  if (linkCatSelect) {
-    const prevSelected = linkCatSelect.value;
-    linkCatSelect.innerHTML = '<option value="All">All Categories</option>';
+
+  if (filterSelect) {
+    const prevSelected = filterSelect.value;
+    filterSelect.innerHTML = '<option value="All">All Categories</option>';
     linkCategories.forEach(cat => {
-      linkCatSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`);
+      filterSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`);
     });
     if (Array.from(linkCategories).includes(prevSelected)) {
-      linkCatSelect.value = prevSelected;
+      filterSelect.value = prevSelected;
     } else {
-      linkCatSelect.value = "All";
+      filterSelect.value = "All";
     }
   }
-  
-  buildLinkTable();
+
+  if (insertSelect) {
+    const prevSelected = insertSelect.value;
+    insertSelect.innerHTML = '<option value=""></option>';
+    linkCategories.forEach(cat => {
+      insertSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`);
+    });
+    if (Array.from(linkCategories).includes(prevSelected)) {
+      insertSelect.value = prevSelected;
+    } else {
+      insertSelect.value = "";
+    }
+  }
 }
 
 export function buildLinkTable() {
+  populateLinkCategories();
+
   const tbody = document.querySelector('#table-link tbody');
   if (!tbody) return;
   tbody.innerHTML = "";
