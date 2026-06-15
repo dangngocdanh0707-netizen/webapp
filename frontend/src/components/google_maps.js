@@ -214,15 +214,15 @@ window.app.maps.addMapRow = function() {
   const cityInput = document.getElementById('ins-map-city');
   const catInput = document.getElementById('ins-map-cat');
  
-  if (!placeInput || !cityInput) return;
+  if (!placeInput) return;
  
   const place = placeInput.value.trim();
-  const city = cityInput.value.trim();
+  const city = cityInput ? cityInput.value.trim() : "";
   const category = catInput ? catInput.value.trim() : "";
   const status = false; // Mặc định là Pending, người dùng sẽ tự click chọn trực tiếp trong bảng sau.
  
-  if (!place || !city) {
-    console.warn("Vui lòng nhập Tên địa điểm và Thành phố!");
+  if (!place) {
+    console.warn("Vui lòng nhập Tên địa điểm!");
     return;
   }
  
@@ -258,8 +258,8 @@ window.app.maps.addMapRow = function() {
   function rollback(errorMessage) {
     allMapData = allMapData.filter(m => m.rowNumber !== newRowNumber);
     buildMapGrid();
-    placeInput.value = place;
-    cityInput.value = city;
+    if (placeInput) placeInput.value = place;
+    if (cityInput) cityInput.value = city;
     if (catInput) catInput.value = category;
     console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
   }
@@ -356,14 +356,18 @@ window.app.maps.toggleMapEdit = function (id, isEdit) {
 };
 
 window.app.maps.saveMapPlace = function(id) {
-  const place = document.getElementById(`map-edit-place-${id}`).value.trim();
-  const city = document.getElementById(`map-edit-city-${id}`).value.trim();
-  const category = document.getElementById(`map-edit-cat-${id}`).value.trim();
+  const placeInput = document.getElementById(`map-edit-place-${id}`);
+  const cityInput = document.getElementById(`map-edit-city-${id}`);
+  const catInput = document.getElementById(`map-edit-cat-${id}`);
+  
+  const place = placeInput ? placeInput.value.trim() : "";
+  const city = cityInput ? cityInput.value.trim() : "";
+  const category = catInput ? catInput.value.trim() : "";
   const statusEl = document.getElementById(`map-edit-status-${id}`);
   const status = statusEl ? statusEl.checked : false;
  
-  if (!place || !city) {
-    console.warn("Vui lòng nhập Tên địa điểm và Thành phố!");
+  if (!place) {
+    console.warn("Vui lòng nhập Tên địa điểm!");
     return;
   }
  
