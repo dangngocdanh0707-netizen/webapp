@@ -51,6 +51,12 @@ export function initMapModule(data, onSync) {
     });
   }
 
+  // Set default status filter value to Pending
+  const statusFilter = document.getElementById('mapStatusFilter');
+  if (statusFilter) {
+    statusFilter.value = "Pending";
+  }
+
   // 2. Build the initial adventure list
   buildMapGrid();
 }

@@ -31,6 +31,10 @@ export function initHabitsModule(data, onSync) {
   });
 
   const dateSelect = document.getElementById('habitDateFilter');
+  const statusSelect = document.getElementById('habitStatusFilter');
+  if (statusSelect) {
+    statusSelect.value = "Pending";
+  }
   if (dateSelect) {
     dateSelect.innerHTML = '<option value="All">All Days</option>';
     let sortedHabitDatesForFilter = [...habitDates].sort((a, b) => {
