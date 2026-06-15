@@ -1000,13 +1000,51 @@ export function callServer(methodName, args) {
       if (methodName === "insertMapRow") {
         const [place, city, category, status] = args;
         const mapTab = mappings['google_map'];
-        await gapi.client.sheets.spreadsheets.values.append({
+        const appendRes = await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
           range: `${mapTab}!A:D`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
           resource: { values: [[place, city, category, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
         });
+
+        try {
+          const updatedRange = appendRes.result.updates?.updatedRange;
+          if (updatedRange) {
+            const parts = updatedRange.split('!');
+            const rangePart = parts[parts.length - 1]; // e.g. "A8:D8"
+            const rowMatch = rangePart.match(/\d+/);
+            if (rowMatch) {
+              const rowNumber = parseInt(rowMatch[0], 10);
+              const sheetId = await getSheetId(mapTab, spreadsheetId);
+              await gapi.client.sheets.spreadsheets.batchUpdate({
+                spreadsheetId,
+                resource: {
+                  requests: [{
+                    setDataValidation: {
+                      range: {
+                        sheetId: sheetId,
+                        startRowIndex: rowNumber - 1,
+                        endRowIndex: rowNumber,
+                        startColumnIndex: 3, // Column D (index 3)
+                        endColumnIndex: 4
+                      },
+                      rule: {
+                        condition: {
+                          type: 'BOOLEAN'
+                        },
+                        showCustomUi: true
+                      }
+                    }
+                  }]
+                }
+              });
+            }
+          }
+        } catch (validationErr) {
+          console.warn("Lỗi tự động cấu hình checkbox cho Google Maps:", validationErr);
+        }
+
         resolve("Thành công");
         return;
       }
