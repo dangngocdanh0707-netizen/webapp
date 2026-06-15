@@ -51,19 +51,34 @@ export function initMapModule(data, onSync) {
     });
   }
 
-  // Update stats cards
-  const totalPlacesEl = document.getElementById('total-map-places');
-  const totalCatsEl = document.getElementById('total-map-categories');
-
-  const validPlaces = allMapData.filter(item => item && item.place);
-  if (totalPlacesEl) totalPlacesEl.innerText = validPlaces.length;
-  if (totalCatsEl) totalCatsEl.innerText = categories.size;
-
   // 2. Build the initial adventure list
   buildMapGrid();
 }
 
+export function updateMapStats() {
+  const totalPlacesEl = document.getElementById('total-map-places');
+  const totalCompletedEl = document.getElementById('total-map-completed');
+  const totalCatsEl = document.getElementById('total-map-categories');
+
+  if (!totalPlacesEl && !totalCompletedEl && !totalCatsEl) return;
+
+  let categories = new Set();
+  const validPlaces = allMapData.filter(item => {
+    if (!item || !item.place) return false;
+    if (item.category) categories.add(String(item.category).trim());
+    return true;
+  });
+
+  const completedPlaces = validPlaces.filter(item => item.status === true || item.status === "TRUE");
+
+  if (totalPlacesEl) totalPlacesEl.innerText = validPlaces.length;
+  if (totalCompletedEl) totalCompletedEl.innerText = completedPlaces.length;
+  if (totalCatsEl) totalCatsEl.innerText = categories.size;
+}
+
 export function buildMapGrid() {
+  updateMapStats();
+
   const tableBody = document.getElementById('map-places-table-body');
   if (!tableBody) return;
   tableBody.innerHTML = "";
@@ -73,27 +88,48 @@ export function buildMapGrid() {
   const cityVal = document.getElementById('mapCityFilter') ? document.getElementById('mapCityFilter').value : "All";
   const catVal = document.getElementById('mapCategoryFilter') ? document.getElementById('mapCategoryFilter').value : "All";
 
-  // 3. Render Rows (Defensive 5-column mapping)
-  allMapData.forEach(item => {
-    if (!item || !item.place) return;
+  // 3. Filter and Sort Rows
+  const filteredData = allMapData.filter(item => {
+    if (!item || !item.place) return false;
 
+    const city = String(item.city || "").trim();
+    const category = String(item.category || "").trim();
+    const placeName = String(item.place || "").trim();
+
+    // Apply Filter constraints
+    if (cityVal !== "All" && city !== cityVal) return false;
+    if (catVal !== "All" && category !== catVal) return false;
+
+    if (searchVal !== "") {
+      const match = placeName.toLowerCase().includes(searchVal) ||
+        category.toLowerCase().includes(searchVal) ||
+        city.toLowerCase().includes(searchVal);
+      if (!match) return false;
+    }
+
+    return true;
+  });
+
+  // Sort: Pending first (status === false), Completed last (status === true).
+  // If status is the same, sort by rowNumber ascending to keep original sequence.
+  const sortedData = filteredData.sort((a, b) => {
+    const statusA = a.status === true || a.status === "TRUE";
+    const statusB = b.status === true || b.status === "TRUE";
+
+    if (statusA !== statusB) {
+      return statusA ? 1 : -1;
+    }
+    return a.rowNumber - b.rowNumber;
+  });
+
+  // 4. Render Rows (Defensive 5-column mapping)
+  sortedData.forEach(item => {
     try {
       const id = item.rowNumber;
       const placeName = String(item.place || "").trim();
       const city = String(item.city || "").trim();
       const category = String(item.category || "").trim();
       const status = item.status === true || item.status === "TRUE";
-
-      // Apply Filter constraints
-      if (cityVal !== "All" && city !== cityVal) return;
-      if (catVal !== "All" && category !== catVal) return;
-
-      if (searchVal !== "") {
-        const match = placeName.toLowerCase().includes(searchVal) ||
-          category.toLowerCase().includes(searchVal) ||
-          city.toLowerCase().includes(searchVal);
-        if (!match) return;
-      }
 
       // Direct Google Search URL generation (matching Explore in Collections page)
       const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(placeName + ' ' + city)}`;
