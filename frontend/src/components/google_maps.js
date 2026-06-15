@@ -123,9 +123,19 @@ export function buildMapGrid() {
     return true;
   });
 
-  // Sort: Pending first (status === false), Completed last (status === true).
-  // If status is the same, sort by rowNumber ascending to keep original sequence.
+  // Sort: Group by City first (alphabetically).
+  // Within the same City, sort Pending first (status === false), Completed last (status === true).
+  // If city and status are the same, sort by rowNumber ascending to keep original sequence.
   const sortedData = filteredData.sort((a, b) => {
+    const cityA = String(a.city || "").trim();
+    const cityB = String(b.city || "").trim();
+
+    if (cityA !== cityB) {
+      if (cityA === "") return 1;  // empty city to bottom
+      if (cityB === "") return -1; // empty city to bottom
+      return cityA.localeCompare(cityB, 'vi', { sensitivity: 'base' });
+    }
+
     const statusA = a.status === true || a.status === "TRUE";
     const statusB = b.status === true || b.status === "TRUE";
 
