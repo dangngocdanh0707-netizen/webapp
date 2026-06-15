@@ -187,6 +187,9 @@ export function buildHabitTable(filterValue) {
 
   if (allHabitData.length === 0) return;
 
+  const statusFilter = document.getElementById('habitStatusFilter');
+  const statusVal = statusFilter ? statusFilter.value : "All";
+
   let displayHabitData = [...allHabitData];
   displayHabitData.sort((a, b) => {
     let tsA = parseDateToTimestamp(a.date);
@@ -205,8 +208,13 @@ export function buildHabitTable(filterValue) {
   displayHabitData.forEach(item => {
     if (filterValue !== "All" && item.date !== filterValue) return;
 
-    let id = item.rowNumber;
     let isDone = item.status === true || item.status === "TRUE" || item.status === "√" || item.status === "checked";
+
+    // Apply Status Filter constraints
+    if (statusVal === "Completed" && !isDone) return;
+    if (statusVal === "Pending" && isDone) return;
+
+    let id = item.rowNumber;
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr class="hover:bg-slate-900/5 transition">

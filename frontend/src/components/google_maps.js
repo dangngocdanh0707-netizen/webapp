@@ -87,6 +87,8 @@ export function buildMapGrid() {
   const searchVal = document.getElementById('mapSearchInput') ? document.getElementById('mapSearchInput').value.toLowerCase().trim() : "";
   const cityVal = document.getElementById('mapCityFilter') ? document.getElementById('mapCityFilter').value : "All";
   const catVal = document.getElementById('mapCategoryFilter') ? document.getElementById('mapCategoryFilter').value : "All";
+  const statusFilter = document.getElementById('mapStatusFilter');
+  const statusVal = statusFilter ? statusFilter.value : "All";
 
   // 3. Filter and Sort Rows
   const filteredData = allMapData.filter(item => {
@@ -95,10 +97,15 @@ export function buildMapGrid() {
     const city = String(item.city || "").trim();
     const category = String(item.category || "").trim();
     const placeName = String(item.place || "").trim();
+    const status = item.status === true || item.status === "TRUE";
 
     // Apply Filter constraints
     if (cityVal !== "All" && city !== cityVal) return false;
     if (catVal !== "All" && category !== catVal) return false;
+
+    // Apply Status Filter constraints
+    if (statusVal === "Completed" && !status) return false;
+    if (statusVal === "Pending" && status) return false;
 
     if (searchVal !== "") {
       const match = placeName.toLowerCase().includes(searchVal) ||
