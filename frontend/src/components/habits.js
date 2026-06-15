@@ -117,12 +117,32 @@ export function buildHabitGrid() {
 
   // 2. Build rows for each unique habit
   tbody.innerHTML = "";
-  const uniqueHabits = [...new Set(allHabitData.map(h => h.habit).filter(h => h && h.trim() !== ''))].sort();
+  const uniqueHabits = [...new Set(allHabitData.map(h => h.habit).filter(h => h && h.trim() !== ''))];
 
   if (uniqueHabits.length === 0) {
     tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-500 italic">No habits added. Create one above!</td></tr>`;
     return;
   }
+
+  // Sắp xếp các thói quen theo số lượng hoàn thành từ ít đến nhiều trong 7 ngày qua
+  const habitCompletionCounts = {};
+  uniqueHabits.forEach(habitName => {
+    let count = 0;
+    last7Days.forEach(day => {
+      const record = allHabitData.find(h => h.habit === habitName && h.date === day.dateStr);
+      if (record) {
+        const isDone = record.status === true || record.status === "TRUE" || record.status === "√" || record.status === "checked";
+        if (isDone) count++;
+      }
+    });
+    habitCompletionCounts[habitName] = count;
+  });
+
+  uniqueHabits.sort((a, b) => {
+    const diff = habitCompletionCounts[a] - habitCompletionCounts[b];
+    if (diff !== 0) return diff;
+    return a.localeCompare(b);
+  });
 
   uniqueHabits.forEach(habitName => {
     let rowHtml = `
