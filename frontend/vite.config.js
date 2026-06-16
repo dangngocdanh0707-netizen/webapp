@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/webapp_project/',
+  base: '/webapp/',
   build: {
     outDir: 'dist',
     minify: 'esbuild',
