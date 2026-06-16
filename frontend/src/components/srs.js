@@ -672,16 +672,33 @@ document.addEventListener('keydown', function (e) {
     return;
   }
 
-  if (e.key === "Enter") {
-    const scrambleMode = document.getElementById('practice-mode-scramble');
-    const actionMetrics = document.getElementById('practice-action-metrics');
+  const actionMetrics = document.getElementById('practice-action-metrics');
+  const isMetricsVisible = actionMetrics && !actionMetrics.classList.contains('hidden');
 
-    if (scrambleMode && !scrambleMode.classList.contains('hidden') && actionMetrics && actionMetrics.classList.contains('hidden')) {
+  if (isMetricsVisible) {
+    if (e.key === "1") {
       e.preventDefault();
-      app.srs.checkScrambleAnswer();
+      window.app.srs.logPracticeAction('again');
       return;
     }
+    if (e.key === "2") {
+      e.preventDefault();
+      window.app.srs.logPracticeAction('hard');
+      return;
+    }
+    if (e.key === "3") {
+      e.preventDefault();
+      window.app.srs.logPracticeAction('good');
+      return;
+    }
+    if (e.key === "4") {
+      e.preventDefault();
+      window.app.srs.logPracticeAction('easy');
+      return;
+    }
+  }
 
+  if (e.key === "Enter") {
     const btnReveal = document.getElementById('btn-practice-reveal');
     if (btnReveal && !btnReveal.classList.contains('hidden')) {
       e.preventDefault();
