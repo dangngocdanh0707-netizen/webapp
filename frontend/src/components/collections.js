@@ -7,7 +7,11 @@ export function initCollectionsModule(data, onSync) {
   allCollectionData = data || [];
   onSyncNeeded = onSync;
 
-  // 1. Populate Dropdown Filters dynamically based on unique values
+  // Render Grid, Stats & Metrics Panel (which will populate dropdowns and update stats)
+  buildCollectionsGrid();
+}
+
+function populateCollectionDropdowns() {
   let brands = new Set();
   let categories = new Set();
 
@@ -18,41 +22,89 @@ export function initCollectionsModule(data, onSync) {
   });
 
   const brandSelect = document.getElementById('collectionBrandFilter');
+  const insBrandSelect = document.getElementById('ins-col-brand');
+  const catSelect = document.getElementById('collectionCategoryFilter');
+  const insCatSelect = document.getElementById('ins-col-category');
+
   if (brandSelect) {
+    const prevVal = brandSelect.value;
     brandSelect.innerHTML = '<option value="All">All Brands</option>';
     brands.forEach(b => {
       brandSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(b)}">${escapeHTML(b)}</option>`);
     });
+    if (Array.from(brands).includes(prevVal)) {
+      brandSelect.value = prevVal;
+    } else {
+      brandSelect.value = "All";
+    }
   }
 
-  const catSelect = document.getElementById('collectionCategoryFilter');
+  if (insBrandSelect) {
+    const prevVal = insBrandSelect.value;
+    insBrandSelect.innerHTML = '<option value=""></option>';
+    brands.forEach(b => {
+      insBrandSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(b)}">${escapeHTML(b)}</option>`);
+    });
+    if (Array.from(brands).includes(prevVal)) {
+      insBrandSelect.value = prevVal;
+    } else {
+      insBrandSelect.value = "";
+    }
+  }
+
   if (catSelect) {
+    const prevVal = catSelect.value;
     catSelect.innerHTML = '<option value="All">All Categories</option>';
     categories.forEach(c => {
       catSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`);
     });
+    if (Array.from(categories).includes(prevVal)) {
+      catSelect.value = prevVal;
+    } else {
+      catSelect.value = "All";
+    }
   }
 
-  // Update stats cards
+  if (insCatSelect) {
+    const prevVal = insCatSelect.value;
+    insCatSelect.innerHTML = '<option value=""></option>';
+    categories.forEach(c => {
+      insCatSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`);
+    });
+    if (Array.from(categories).includes(prevVal)) {
+      insCatSelect.value = prevVal;
+    } else {
+      insCatSelect.value = "";
+    }
+  }
+}
+
+export function buildCollectionsGrid() {
+  // 1. Populate dropdowns and stats dynamically
+  populateCollectionDropdowns();
+
   const totalItemsEl = document.getElementById('total-col-items');
   const totalBrandsEl = document.getElementById('total-col-brands');
   const totalCatsEl = document.getElementById('total-col-categories');
-  
+
+  let brands = new Set();
+  let categories = new Set();
+  allCollectionData.forEach(item => {
+    if (!item) return;
+    if (item.brand) brands.add(String(item.brand).trim());
+    if (item.category) categories.add(String(item.category).trim());
+  });
+
   const validItems = allCollectionData.filter(item => item && item.item);
   if (totalItemsEl) totalItemsEl.innerText = validItems.length;
   if (totalBrandsEl) totalBrandsEl.innerText = brands.size;
   if (totalCatsEl) totalCatsEl.innerText = categories.size;
 
-  // 2. Render Grid, Stats & Metrics Panel
-  buildCollectionsGrid();
-}
-
-export function buildCollectionsGrid() {
   const tableBody = document.getElementById('collections-table-body');
   if (!tableBody) return;
   tableBody.innerHTML = "";
 
-  // 1. Filter Data
+  // 2. Filter Data
   const searchVal = document.getElementById('collectionSearchInput') ? document.getElementById('collectionSearchInput').value.toLowerCase().trim() : "";
   const brandVal = document.getElementById('collectionBrandFilter') ? document.getElementById('collectionBrandFilter').value : "All";
   const catVal = document.getElementById('collectionCategoryFilter') ? document.getElementById('collectionCategoryFilter').value : "All";
@@ -71,7 +123,7 @@ export function buildCollectionsGrid() {
     return true;
   });
 
-  // 2. Render Rows to Table
+  // 3. Render Rows to Table
   filteredData.forEach(item => {
     try {
       const id = item.rowNumber;
@@ -82,7 +134,8 @@ export function buildCollectionsGrid() {
       // Uniform minimalist gray pill badge styling matching expenses category badge
       const styleClass = "bg-slate-50 text-slate-650 border-slate-200 font-semibold";
 
-      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(brand + ' ' + name)}`;
+      // Search ONLY by item name as requested
+      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(name)}`;
 
       // Capitalize first letter of category and lowercase the rest
       const formattedCategory = category ? (category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()) : "";
@@ -135,7 +188,6 @@ export function buildCollectionsGrid() {
   });
 }
 
-
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
 window.app.collections.filterCollectionGrid = function() {
@@ -147,14 +199,14 @@ window.app.collections.saveNewCollection = function() {
   const brandInput = document.getElementById('ins-col-brand');
   const catInput = document.getElementById('ins-col-category');
 
-  if (!itemInput || !brandInput) return;
+  if (!itemInput) return;
 
   const item = itemInput.value.trim();
-  const brand = brandInput.value.trim();
-  const category = catInput ? catInput.value.trim() : "General";
+  const brand = brandInput ? brandInput.value.trim() : "";
+  const category = catInput ? catInput.value.trim() : "";
 
-  if (!item || !brand) {
-    console.warn("Please fill in Name and Brand!");
+  if (!item) {
+    console.warn("Please enter Item Name!");
     return;
   }
 
@@ -172,7 +224,7 @@ window.app.collections.saveNewCollection = function() {
 
   // Clear inputs
   itemInput.value = "";
-  brandInput.value = "";
+  if (brandInput) brandInput.value = "";
   if (catInput) catInput.value = "";
 
   // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
@@ -190,7 +242,7 @@ window.app.collections.saveNewCollection = function() {
     allCollectionData = allCollectionData.filter(c => c.rowNumber !== newRowNumber);
     buildCollectionsGrid();
     itemInput.value = item;
-    brandInput.value = brand;
+    if (brandInput) brandInput.value = brand;
     if (catInput) catInput.value = category;
     console.error("Add failed: " + errorMessage + ". Reverted changes.");
   }
@@ -250,8 +302,8 @@ window.app.collections.saveCollectionItem = function(id) {
   const brand = document.getElementById(`col-edit-brand-${id}`).value.trim();
   const category = document.getElementById(`col-edit-cat-${id}`).value.trim();
 
-  if (!item || !brand) {
-    console.warn("Please fill in Name and Brand!");
+  if (!item) {
+    console.warn("Please enter Item Name!");
     return;
   }
 
