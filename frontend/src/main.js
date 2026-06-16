@@ -1,11 +1,11 @@
 import './init.js';
-import { 
-  callServer, 
-  initGoogleAuth, 
-  signInWithGoogle, 
-  signOutFromGoogle, 
-  getCredentials, 
-  saveCredentials, 
+import {
+  callServer,
+  initGoogleAuth,
+  signInWithGoogle,
+  signOutFromGoogle,
+  getCredentials,
+  saveCredentials,
   isGoogleConnected,
   getAiCredentials,
   saveAiCredentials
@@ -161,7 +161,7 @@ async function initApp() {
           e.preventDefault();
           window.app.collections.saveNewCollection();
         }
-      } 
+      }
       // 2. Dành cho các ô CHỈNH SỬA dòng (Mã chứa '-edit-' hoặc 'edit-')
       else {
         const rowId = id.split('-').pop(); // Lấy số dòng (rowNumber) ở cuối ID
@@ -201,29 +201,29 @@ async function initApp() {
       }
     }
   });
-  
+
   // Tự động làm sạch ô tìm kiếm sau 15 giây không tương tác
   const searchTimeoutMap = new Map();
   document.addEventListener('input', (e) => {
     const target = e.target;
     if (target && target.tagName.toLowerCase() === 'input' && target.id && target.id.toLowerCase().includes('search')) {
       const inputId = target.id;
-      
+
       // Hủy bỏ timeout cũ nếu người dùng vẫn đang nhập liệu
       if (searchTimeoutMap.has(inputId)) {
         clearTimeout(searchTimeoutMap.get(inputId));
       }
-      
+
       if (target.value === '') {
         searchTimeoutMap.delete(inputId);
         return;
       }
-      
+
       // Thiết lập timeout mới sau 15 giây (15000ms)
       const timeoutId = setTimeout(() => {
         if (target.value !== '') {
           target.value = '';
-          
+
           // Gửi các sự kiện để kích hoạt trình lắng nghe tự động của ô tìm kiếm
           target.dispatchEvent(new Event('input', { bubbles: true }));
           target.dispatchEvent(new Event('keyup', { bubbles: true }));
@@ -231,7 +231,7 @@ async function initApp() {
         }
         searchTimeoutMap.delete(inputId);
       }, 15000);
-      
+
       searchTimeoutMap.set(inputId, timeoutId);
     }
   });
@@ -239,7 +239,7 @@ async function initApp() {
   // Khởi tạo các SDK Google API/GIS
   const initialized = await initGoogleAuth();
   updateAuthButtonsState();
-  
+
   loadDataFromServer();
 }
 
@@ -253,9 +253,9 @@ if (document.readyState === 'loading') {
 function updateAuthButtonsState() {
   const btnLogin = document.getElementById('btn-google-login');
   const btnLogout = document.getElementById('btn-google-logout');
-  
+
   if (!btnLogin || !btnLogout) return;
-  
+
   const connected = isGoogleConnected();
   if (connected) {
     btnLogin.classList.add('hidden');
@@ -271,7 +271,7 @@ function updateAuthButtonsState() {
 function loadDataFromServer(silent = false) {
   const loading = document.getElementById('loading');
   const dashboardContent = document.getElementById('dashboard-content');
-  
+
   if (!silent) {
     if (loading) loading.style.display = 'flex';
     if (dashboardContent) dashboardContent.classList.add('hidden');
@@ -279,19 +279,19 @@ function loadDataFromServer(silent = false) {
 
   // Đặt timeout 4 giây phòng khi API bị chậm
   if (serverSyncTimeout) clearTimeout(serverSyncTimeout);
-  
+
   if (!silent) {
     serverSyncTimeout = setTimeout(() => {
       if (loading && loading.querySelector('.animate-spin')) {
         const creds = getCredentials();
         const needsSetup = !creds.spreadsheetId || !creds.clientId || !creds.apiKey;
-        
+
         if (needsSetup) {
           console.warn("Chưa cấu hình Google Sheets API. Vui lòng nhấn Thiết lập Credentials ở góc dưới bên trái.");
         } else {
           console.info("Đồng bộ lâu hơn dự kiến. Vui lòng kiểm tra lại kết nối mạng.");
         }
-        
+
         renderDashboard({
           assets: [],
           incomes: [],
@@ -325,7 +325,7 @@ function loadDataFromServer(silent = false) {
 function handleScriptError(err) {
   console.error("Sync Failure:", err);
   let errMsg = err.message || err.toString();
-  
+
   // Tự động chuyển qua hiển thị giao diện chính với dữ liệu trống để người dùng có thể tự do bấm Connect Google Sheets trong Sidebar
   renderDashboard({
     assets: [],
@@ -378,16 +378,16 @@ function renderDashboard(data) {
 
 // ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
 
-window.app.switchTab = function(tabId, btn) {
+window.app.switchTab = function (tabId, btn) {
   // Reset scroll position to top of the page so that tab headers are fully visible
   window.scrollTo(0, 0);
 
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  
+
   const targetTab = document.getElementById(tabId);
   if (targetTab) targetTab.classList.add('active');
-  
+
   if (btn) {
     btn.classList.add('active');
   } else {
@@ -403,7 +403,7 @@ window.app.switchTab = function(tabId, btn) {
   }
 };
 
-window.app.launchApp = function(tabId) {
+window.app.launchApp = function (tabId) {
   window.app.switchTab(tabId);
 };
 
@@ -411,12 +411,12 @@ window.app.launchApp = function(tabId) {
 window.app.signInWithGoogle = signInWithGoogle;
 window.app.signOutFromGoogle = signOutFromGoogle;
 
-window.app.updateSettingsModelOptions = function(provider, currentModel = '') {
+window.app.updateSettingsModelOptions = function (provider, currentModel = '') {
   const modelSelect = document.getElementById('settings-ai-model');
   if (!modelSelect) return;
-  
+
   modelSelect.innerHTML = '';
-  
+
   const models = {
     gemini: [
       { value: 'gemini-2.0-flash', label: 'gemini-2.0-flash (Khuyên dùng)' },
@@ -430,7 +430,7 @@ window.app.updateSettingsModelOptions = function(provider, currentModel = '') {
       { value: 'gpt-3.5-turbo', label: 'gpt-3.5-turbo' }
     ]
   };
-  
+
   const providerModels = models[provider] || [];
   providerModels.forEach(m => {
     const opt = document.createElement('option');
@@ -438,14 +438,14 @@ window.app.updateSettingsModelOptions = function(provider, currentModel = '') {
     opt.textContent = m.label;
     modelSelect.appendChild(opt);
   });
-  
+
   if (currentModel && !providerModels.some(m => m.value === currentModel)) {
     const opt = document.createElement('option');
     opt.value = currentModel;
     opt.textContent = `${currentModel} (Tùy chỉnh)`;
     modelSelect.appendChild(opt);
   }
-  
+
   if (currentModel) {
     modelSelect.value = currentModel;
   } else if (providerModels.length > 0) {
@@ -454,49 +454,49 @@ window.app.updateSettingsModelOptions = function(provider, currentModel = '') {
 };
 
 // Điều khiển Settings Modal
-window.app.openSettingsModal = function() {
+window.app.openSettingsModal = function () {
   const modal = document.getElementById('settings-modal');
   if (modal) {
     const creds = getCredentials();
     document.getElementById('settings-spreadsheet-id').value = creds.spreadsheetId;
     document.getElementById('settings-api-key').value = creds.apiKey;
     document.getElementById('settings-client-id').value = creds.clientId;
-    
+
     const aiCreds = getAiCredentials();
     document.getElementById('settings-ai-provider').value = aiCreds.provider;
     document.getElementById('settings-gemini-key').value = aiCreds.geminiKey;
     document.getElementById('settings-openai-key').value = aiCreds.openaiKey;
-    
+
     // Khởi tạo/cập nhật danh sách model theo provider đã lưu
     window.app.updateSettingsModelOptions(aiCreds.provider, aiCreds.model);
-    
+
     modal.classList.remove('hidden');
   }
 };
 
-window.app.closeSettingsModal = function() {
+window.app.closeSettingsModal = function () {
   const modal = document.getElementById('settings-modal');
   if (modal) {
     modal.classList.add('hidden');
   }
 };
 
-window.app.saveSettingsCredentials = function() {
+window.app.saveSettingsCredentials = function () {
   const spreadsheetId = document.getElementById('settings-spreadsheet-id').value;
   const apiKey = document.getElementById('settings-api-key').value;
   const clientId = document.getElementById('settings-client-id').value;
-  
+
   const aiProvider = document.getElementById('settings-ai-provider').value;
   const aiGeminiKey = document.getElementById('settings-gemini-key').value;
   const aiOpenaiKey = document.getElementById('settings-openai-key').value;
   const aiModel = document.getElementById('settings-ai-model').value;
-  
+
   if (!spreadsheetId.trim() || !apiKey.trim() || !clientId.trim()) {
     return;
   }
-  
+
   saveCredentials(spreadsheetId, apiKey, clientId);
   saveAiCredentials(aiProvider, aiGeminiKey, aiOpenaiKey, aiModel);
-  
+
   window.location.reload();
 };

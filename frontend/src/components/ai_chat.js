@@ -340,11 +340,8 @@ window.app.ai.sendAiChatMessage = async function () {
     // Phát âm câu thoại của AI nếu bật chế độ Auto-TTS
     const autoTts = document.getElementById('ai-chat-auto-tts');
     if (autoTts && autoTts.checked) {
-      speakAiResponse(result.reply);
+      speakEnglishText(result.reply);
     }
-
-
-
   } catch (error) {
     console.error("Lỗi chat AI:", error);
     console.error(error.message || "Lỗi giao tiếp với AI.");

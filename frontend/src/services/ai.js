@@ -577,10 +577,7 @@ export function speakEnglishText(text) {
       }
     }
 
-    window.speechSynthesis.speak(utterance);
   } catch (e) {
     console.warn("TTS Speech failed:", e);
   }
 }
-
-
