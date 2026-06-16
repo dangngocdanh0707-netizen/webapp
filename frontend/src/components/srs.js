@@ -266,61 +266,34 @@ window.app.srs.triggerRandomVocab = function () {
   const srsButtons = document.querySelectorAll('#practice-action-metrics button');
   srsButtons.forEach(btn => btn.classList.remove('ring-4', 'ring-blue-500', 'border-blue-500', 'bg-blue-50'));
 
-  if (isSingleWord(currentPracticeWord)) {
-    document.getElementById('practice-mode-typing').classList.remove('hidden');
-    const inputEl = document.getElementById('practice-typing-input');
-    if (inputEl) {
-      inputEl.value = "";
-      inputEl.placeholder = "";
-      inputEl.disabled = false;
-      inputEl.className = "practice-typing-input";
-      inputEl.onkeydown = function (e) {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          app.srs.checkTypingAnswer();
-        }
-      };
-      inputEl.oninput = function () {
-        const userAns = inputEl.value;
-        const targetAns = currentPracticeWord.content || "";
-        if (normalizeEnglishText(userAns) === normalizeEnglishText(targetAns)) {
-          app.srs.checkTypingAnswer();
-        }
-      };
-      setTimeout(() => inputEl.focus(), 100);
-    }
-  } else {
-    document.getElementById('practice-mode-scramble').classList.remove('hidden');
-    const outputContainer = document.getElementById('practice-scramble-output');
-    if (outputContainer) {
-      outputContainer.className = "practice-interactive-box";
-    }
-    const poolContainer = document.getElementById('practice-scramble-pool');
-    if (poolContainer) poolContainer.classList.remove('hidden', 'invisible');
-    const rawWords = wordContent
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "")
-      .split(/\s+/)
-      .filter(w => w.trim() !== "");
-
-    let shuffled = [...rawWords].sort(() => Math.random() - 0.5);
-    if (shuffled.length > 1 && shuffled.join(" ") === rawWords.join(" ")) {
-      shuffled = [...rawWords].sort(() => Math.random() - 0.5);
-    }
-
-    scrambleTiles = shuffled.map((word, idx) => ({
-      id: `tile-${idx}`,
-      word: word,
-      selected: false
-    }));
-    scrambleUserOrder = [];
-    updateScrambleUI();
+  document.getElementById('practice-mode-typing').classList.remove('hidden');
+  const inputEl = document.getElementById('practice-typing-input');
+  if (inputEl) {
+    inputEl.value = "";
+    inputEl.placeholder = "";
+    inputEl.disabled = false;
+    inputEl.className = "practice-typing-input";
+    inputEl.onkeydown = function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        app.srs.checkTypingAnswer();
+      }
+    };
+    inputEl.oninput = function () {
+      const userAns = inputEl.value;
+      const targetAns = currentPracticeWord.content || "";
+      if (normalizeEnglishText(userAns) === normalizeEnglishText(targetAns)) {
+        app.srs.checkTypingAnswer();
+      }
+    };
+    setTimeout(() => inputEl.focus(), 100);
   }
 
   // Display meaning as the prompt, fallback to standard hint if meaning is empty
   if (currentPracticeWord.meaning && currentPracticeWord.meaning.trim() !== "") {
     if (wordDisplay) wordDisplay.innerText = currentPracticeWord.meaning;
   } else {
-    if (wordDisplay) wordDisplay.innerText = isSingleWord(currentPracticeWord) ? "Listen & Write..." : "Listen & Arrange...";
+    if (wordDisplay) wordDisplay.innerText = "Listen & Write...";
   }
 
   // Auto play TTS triggers automatically on card loading
@@ -602,22 +575,11 @@ window.app.srs.revealPracticeMeaning = function () {
 
   if (currentPracticeWord) {
     // Reveal correct answer inside interactive containers if not already correct
-    if (isSingleWord(currentPracticeWord)) {
-      const inputEl = document.getElementById('practice-typing-input');
-      if (inputEl && !inputEl.className.includes('practice-state-correct')) {
-        inputEl.value = currentPracticeWord.content || "";
-        inputEl.className = "practice-typing-input practice-state-revealed";
-        inputEl.disabled = true;
-      }
-    } else {
-      const outputContainer = document.getElementById('practice-scramble-output');
-      if (outputContainer && !outputContainer.className.includes('practice-state-correct')) {
-        const targetText = currentPracticeWord.content || "";
-        scrambleUserOrder = [];
-        updateScrambleUI();
-        outputContainer.className = "practice-interactive-box practice-state-revealed";
-        outputContainer.innerHTML = `<span class="font-semibold text-lg text-slate-700">${escapeHTML(targetText)}</span>`;
-      }
+    const inputEl = document.getElementById('practice-typing-input');
+    if (inputEl && !inputEl.className.includes('practice-state-correct')) {
+      inputEl.value = currentPracticeWord.content || "";
+      inputEl.className = "practice-typing-input practice-state-revealed";
+      inputEl.disabled = true;
     }
   }
 
