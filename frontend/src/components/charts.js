@@ -285,7 +285,7 @@ export function renderHabitLine(habitDates, performanceDataPerDay, onClickCallba
         }
       },
       scales: {
-        y: { min: 0, max: 100, ticks: { display: false }, grid: { color: 'rgba(0, 0, 0, 0.04)' } },
+        y: { min: 0, max: 100, ticks: { display: false }, grid: { display: false } },
         x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 11 } } }
       },
       plugins: {
