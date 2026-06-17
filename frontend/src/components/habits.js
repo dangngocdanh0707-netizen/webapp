@@ -93,15 +93,10 @@ export function buildHabitPerformanceTable() {
     let completedTasks = dayTasks.filter(h => h.status === true || h.status === "TRUE" || h.status === "√" || h.status === "checked");
     let percent = dayTasks.length > 0 ? Math.round((completedTasks.length / dayTasks.length) * 100) : 0;
 
-    let performanceColor = "text-slate-500 font-bold";
-    if (percent >= 80) performanceColor = "text-emerald-600 font-bold";
-    else if (percent >= 50) performanceColor = "text-blue-600 font-bold";
-    else if (percent > 0) performanceColor = "text-amber-600 font-bold";
-
     tbody.insertAdjacentHTML('beforeend', `
       <tr class="hover:bg-slate-900/5 transition">
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500">${formatDateView(day.dateStr)}</td>
-        <td class="p-4 font-semibold text-sm ${performanceColor}">${percent}%</td>
+        <td class="p-4 font-bold text-sm text-slate-500">${percent}%</td>
       </tr>
     `);
   });
