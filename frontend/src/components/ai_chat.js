@@ -8,10 +8,14 @@ let chatHistories = {}; // Cấu trúc: { [scenarioKey]: [{role: 'user'|'ai', te
 let refreshDataCallback = null;
 let isInitialized = false;
 let translationCache = {}; // Cache dịch theo index: { [msgIndex]: string }
+let globalMaxRowNumber = 0;
 
 // ---------------- KHỞI TẠO MÔ-ĐUN ----------------
 export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
   refreshDataCallback = refreshCb;
+
+  // Track global max row number for session clearing
+  globalMaxRowNumber = Math.max(...(initialChatHistory || []).map(item => item.rowNumber || 0), 1);
 
   // 1. Tải lịch sử chat từ Google Sheets (luôn chạy để cập nhật dữ liệu mới)
   chatHistories = {};
@@ -24,10 +28,18 @@ export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
       if (!matchedKey) {
         matchedKey = "casual";
       }
+
+      // Filter out messages that are locally cleared
+      const clearLimit = parseInt(localStorage.getItem(`chat_clear_limit_${matchedKey}`) || "0", 10);
+      if (item.rowNumber <= clearLimit) {
+        return;
+      }
+
       if (!chatHistories[matchedKey]) {
         chatHistories[matchedKey] = [];
       }
       chatHistories[matchedKey].push({
+        rowNumber: item.rowNumber,
         role: item.role,
         text: item.text
       });
@@ -142,6 +154,17 @@ function initializeActiveScenario() {
 }
 
 window.app.ai.clearAiChatHistory = function () {
+  const currentHistory = chatHistories[activeScenario] || [];
+  let maxRow = 0;
+  if (currentHistory.length > 0) {
+    maxRow = Math.max(...currentHistory.map(m => m.rowNumber || 0));
+  }
+
+  if (maxRow > 0) {
+    localStorage.setItem(`chat_clear_limit_${activeScenario}`, maxRow.toString());
+  }
+
+  // Cập nhật giao diện
   chatHistories[activeScenario] = [];
   initializeActiveScenario();
 };
@@ -298,7 +321,9 @@ window.app.ai.sendAiChatMessage = async function () {
   if (!chatHistories[activeScenario]) {
     chatHistories[activeScenario] = [];
   }
+  globalMaxRowNumber++;
   chatHistories[activeScenario].push({
+    rowNumber: globalMaxRowNumber,
     role: "user",
     text: userText
   });
@@ -323,7 +348,9 @@ window.app.ai.sendAiChatMessage = async function () {
     const result = await callAiApi(userText, historyContext, aiCreds, activeScenario);
 
     // Thêm phản hồi của AI vào lịch sử
+    globalMaxRowNumber++;
     chatHistories[activeScenario].push({
+      rowNumber: globalMaxRowNumber,
       role: "ai",
       text: result.reply
     });

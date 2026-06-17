@@ -202,8 +202,10 @@ function populateCostSubcategories() {
     if (item.subcategory) costSubcategories.add(item.subcategory.trim());
   });
 
+  const sortedSubcategories = Array.from(costSubcategories).sort((a, b) => a.localeCompare(b, 'vi'));
+
   insertSelect.innerHTML = '<option value=""></option>';
-  costSubcategories.forEach(subcat => {
+  sortedSubcategories.forEach(subcat => {
     insertSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(subcat)}">${escapeHTML(subcat)}</option>`);
   });
 
