@@ -1463,7 +1463,7 @@
                   <div class="flex items-center gap-3">
                     <input type="text" id="ai-chat-quick-vocab-word"
                       class="bg-white border border-slate-200 text-slate-700 text-[10px] font-semibold rounded-lg px-2.5 py-1 focus:outline-none focus:border-blue-500 w-60 sm:w-72"
-                      placeholder="" onkeydown="if(event.key === 'Enter') window.saveQuickVocabWord()">
+                      placeholder="" onkeydown="if(event.key === 'Enter') app.ai.saveQuickVocabWord()">
 
                     <select id="ai-chat-scenario-select" onchange="app.ai.setAiScenario(this.value)"
                       class="bg-slate-50 border border-slate-200 text-slate-650 font-bold text-[10px] uppercase tracking-wider rounded-lg px-2.5 py-1 focus:outline-none focus:border-blue-500 cursor-pointer">

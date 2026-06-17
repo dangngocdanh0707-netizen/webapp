@@ -43,10 +43,10 @@ You MUST respond ONLY with a valid JSON object. Do not include markdown code blo
 The JSON structure must match this schema exactly:
 {
   "reply": "Your natural conversational reply to the user in English",
-  "isCorrect": true, // Set to true if the user's sentence is grammatically correct and has no spelling mistakes, even if it is simple or could be phrased differently. Set to false ONLY if there is an actual grammatical error, typo, spelling mistake, or completely wrong word choice.
-  "correctText": "A grammatically corrected version of the user's input. If the user's input has no grammar or spelling errors, you MUST set 'isCorrect' to true and return an empty string or the exact same sentence here. Do NOT rewrite correct sentences just to suggest synonyms or advanced vocabulary.",
+  "isCorrect": true, // Set to true if the user's sentence is grammatically correct and has no spelling mistakes, even if it is simple, lacks proper capitalization, or lacks ending punctuation. Set to false ONLY if there is an actual grammatical error, typo, spelling mistake, or completely wrong word choice.
+  "correctText": "A grammatically corrected and properly formatted version of the user's input (always ensuring the first letter is capitalized and there is a proper ending punctuation mark like a period or question mark, even if the user's sentence was correct). Do NOT rewrite correct sentences just to suggest synonyms or advanced vocabulary.",
   "corrections": "Explanation of actual grammar/spelling mistakes in Vietnamese. If the user made no errors, write 'Không có lỗi ngữ pháp!' or 'Không có'. Important: Only comment on actual errors present in the user's latest message. Do not hallucinate corrections for words that are not in their message."
-}`;
+}`
 
   if (provider === "gemini") {
     if (!geminiKey) {
