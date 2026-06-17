@@ -86,9 +86,8 @@ export function buildHabitPerformanceTable() {
   tbody.innerHTML = "";
 
   const last7Days = getLast7Days();
-  const sortedLast7Days = [...last7Days].reverse();
 
-  sortedLast7Days.forEach(day => {
+  last7Days.forEach(day => {
     let dayTasks = allHabitData.filter(h => h.date === day.dateStr);
     let completedTasks = dayTasks.filter(h => h.status === true || h.status === "TRUE" || h.status === "√" || h.status === "checked");
     let percent = dayTasks.length > 0 ? Math.round((completedTasks.length / dayTasks.length) * 100) : 0;
