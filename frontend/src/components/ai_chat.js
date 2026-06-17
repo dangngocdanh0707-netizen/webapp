@@ -17,7 +17,7 @@ export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
   // Track global max row number for session clearing
   globalMaxRowNumber = Math.max(...(initialChatHistory || []).map(item => item.rowNumber || 0), 1);
 
-  // 1. Tải lịch sử chat từ Google Sheets (luôn chạy để cập nhật dữ liệu mới)
+  // Tải lịch sử chat từ Google Sheets
   chatHistories = {};
   if (initialChatHistory && Array.isArray(initialChatHistory)) {
     initialChatHistory.forEach(item => {
@@ -47,7 +47,6 @@ export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
   }
 
   if (isInitialized) {
-    // Nếu tab hiện tại đang active là AI chat, cập nhật lại bong bóng chat trên giao diện
     const activeTab = document.querySelector('.tab-content.active');
     if (activeTab && activeTab.id === 'practice-tab') {
       const aichatContainer = document.getElementById('practice-aichat-container');
@@ -59,13 +58,12 @@ export function initAiChatModule(allVocabulary, initialChatHistory, refreshCb) {
   }
   isInitialized = true;
 
-  // Xóa cache cũ nếu có
   localStorage.removeItem("AI_CHAT_HISTORIES_V1");
 
-  // 2. Cài đặt các giọng đọc Speech Synthesis (TTS)
+  // Khởi tạo danh sách giọng đọc
   setupTtsVoiceSelector();
 
-  // 4. Nếu tab hiện tại đang active là AI chat, khởi chạy kịch bản mặc định
+  // Khởi chạy kịch bản mặc định nếu tab AI chat đang hoạt động
   const activeTab = document.querySelector('.tab-content.active');
   if (activeTab && activeTab.id === 'practice-tab') {
     const aichatContainer = document.getElementById('practice-aichat-container');
@@ -179,7 +177,6 @@ function renderAiChatBubbles() {
   historyContainer.innerHTML = history.map((msg, index) => {
     const isUser = msg.role === "user";
 
-    // Bubble cho người dùng
     if (isUser) {
       return `
         <div class="flex flex-col items-end animate-in fade-in slide-in-from-bottom-2 duration-200">
@@ -207,7 +204,6 @@ function renderAiChatBubbles() {
       `;
     }
 
-    // Bubble cho AI
     return `
       <div class="flex flex-col items-start animate-in fade-in slide-in-from-bottom-2 duration-200">
         <div class="flex items-start gap-1.5 max-w-[85%]">
@@ -234,7 +230,6 @@ function renderAiChatBubbles() {
     `;
   }).join("");
 
-  // Tự động cuộn xuống cuối
   setTimeout(() => {
     historyContainer.scrollTop = historyContainer.scrollHeight;
   }, 100);
@@ -299,7 +294,6 @@ window.app.ai.sendAiChatMessage = async function () {
   const userText = inputEl.value.trim();
   if (!userText) return;
 
-  // Lấy credentials cấu hình AI
   const aiCreds = getAiCredentials();
   const hasCreds = aiCreds.provider === "gemini" ? aiCreds.geminiKey : aiCreds.openaiKey;
   if (!hasCreds) {
@@ -310,14 +304,12 @@ window.app.ai.sendAiChatMessage = async function () {
     return;
   }
 
-  // Xóa trống ô input và khóa tạm thời để tránh bấm đúp
   inputEl.value = "";
   inputEl.disabled = true;
 
   const btnSend = document.getElementById('btn-ai-chat-send');
   if (btnSend) btnSend.disabled = true;
 
-  // Thêm tin nhắn của User vào history
   if (!chatHistories[activeScenario]) {
     chatHistories[activeScenario] = [];
   }
@@ -329,25 +321,19 @@ window.app.ai.sendAiChatMessage = async function () {
   });
   renderAiChatBubbles();
 
-  // Định nghĩa ngày giờ và kịch bản hội thoại để dùng chung cho việc lưu trữ
   const dateStr = getTodayDateString();
   const scenarioTitle = SCENARIOS[activeScenario]?.title || activeScenario;
 
-  // Reset UI feedback cũ khi gửi câu mới
   resetGrammarFeedbackUI();
 
-  // Hiển thị trạng thái AI đang trả lời
   const statusEl = document.getElementById('ai-chat-status');
   if (statusEl) statusEl.classList.remove('hidden');
 
   try {
-    // Lấy lịch sử (không tính tin nhắn user vừa thêm để truyền riêng làm prompt)
     const historyContext = chatHistories[activeScenario].slice(0, -1);
 
-    // Gọi API tích hợp AI (Gemini hoặc OpenAI)
     const result = await callAiApi(userText, historyContext, aiCreds, activeScenario);
 
-    // Thêm phản hồi của AI vào lịch sử
     globalMaxRowNumber++;
     chatHistories[activeScenario].push({
       rowNumber: globalMaxRowNumber,
@@ -356,15 +342,12 @@ window.app.ai.sendAiChatMessage = async function () {
     });
     renderAiChatBubbles();
 
-    // Đồng bộ tin nhắn (User và AI) tuần tự lên Google Sheets sau khi AI phản hồi thành công
     callServer("insertChatHistoryRow", [dateStr, scenarioTitle, "user", userText])
       .then(() => callServer("insertChatHistoryRow", [dateStr, scenarioTitle, "ai", result.reply]))
       .catch(err => console.error("[ai_chat.js] Lỗi lưu lịch sử chat vào Google Sheet:", err));
 
-    // Hiển thị phân tích lỗi ngữ pháp & nâng cấp câu lên thanh bên phải
     renderGrammarFeedbackUI(userText, result);
 
-    // Phát âm câu thoại của AI nếu bật chế độ Auto-TTS
     const autoTts = document.getElementById('ai-chat-auto-tts');
     if (autoTts && autoTts.checked) {
       speakEnglishText(result.reply);
@@ -372,11 +355,9 @@ window.app.ai.sendAiChatMessage = async function () {
   } catch (error) {
     console.error("Lỗi chat AI:", error);
     console.error(error.message || "Lỗi giao tiếp với AI.");
-    // Xóa tin nhắn vừa lỗi khỏi giao diện để tránh kẹt lịch sử
     chatHistories[activeScenario].pop();
     renderAiChatBubbles();
   } finally {
-    // Mở khóa ô input
     inputEl.disabled = false;
     if (btnSend) btnSend.disabled = false;
     if (statusEl) statusEl.classList.add('hidden');

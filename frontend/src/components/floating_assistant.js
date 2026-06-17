@@ -131,22 +131,20 @@ export function initFloatingAssistant(reloadDataCb) {
     if (!pane.classList.contains('hidden')) {
       inputEl.focus();
       renderInitialGreeting();
-      resetInactivityTimer(); // Đếm ngược tự động đóng khi mở
+      resetInactivityTimer();
     } else {
-      clearInactivityTimer(); // Hủy đếm ngược khi đóng
+      clearInactivityTimer();
     }
   };
 
-  // Toggle mở/đóng khung chat
   bubble.addEventListener('click', window.app.floating.toggleFloatingAssistant);
 
   closeBtn.addEventListener('click', () => {
     pane.classList.add('hidden');
     pane.classList.remove('active');
-    clearInactivityTimer(); // Hủy đếm ngược khi đóng
+    clearInactivityTimer();
   });
 
-  // Sự kiện gửi tin nhắn
   sendBtn.addEventListener('click', sendAssistantMessage);
   inputEl.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
@@ -154,7 +152,6 @@ export function initFloatingAssistant(reloadDataCb) {
     }
   });
 
-  // Đăng ký các sự kiện tương tác để reset lại bộ đếm thời gian
   pane.addEventListener('click', resetInactivityTimer);
   inputEl.addEventListener('input', resetInactivityTimer);
   inputEl.addEventListener('focus', resetInactivityTimer);
@@ -182,17 +179,13 @@ async function sendAssistantMessage() {
   const userText = inputEl.value.trim();
   if (!userText) return;
 
-  // Reset đếm ngược không hoạt động khi gửi tin nhắn
   resetInactivityTimer();
 
-  // Xóa nội dung input và focus lại
   inputEl.value = "";
 
-  // 1. Thêm tin nhắn của User vào giao diện chat
   const userMsgId = appendMessage('user', userText);
   assistantHistory.push({ id: userMsgId, role: 'user', text: userText });
 
-  // 2. Kiểm tra các câu lệnh chuyển trang cục bộ (Local Navigation Filter)
   const matchedTab = matchLocalTab(userText);
   if (matchedTab) {
     if (window.app && typeof window.app.switchTab === 'function') {
@@ -208,7 +201,6 @@ async function sendAssistantMessage() {
     return;
   }
 
-  // 3. Nếu không khớp cục bộ, gọi AI để phân tích ý định (AI Agentic Action Parser)
   const aiCreds = getAiCredentials();
   const hasCreds = aiCreds.provider === "gemini" ? aiCreds.geminiKey : aiCreds.openaiKey;
 
@@ -221,7 +213,6 @@ async function sendAssistantMessage() {
 
   try {
     const links = typeof getAllLinks === 'function' ? getAllLinks() : [];
-    // Only pass title and category with index to save tokens & ensure privacy
     const optimizedLinks = links.map((l, idx) => ({
       index: idx,
       title: l.title,
@@ -231,13 +222,11 @@ async function sendAssistantMessage() {
     const result = await callAiNavigatorApi(userText, assistantHistory.slice(-5), aiCreds, optimizedLinks);
     removeLoadingIndicator(loadingId);
 
-    // Hiển thị phản hồi từ AI
     const aiReplyId = appendMessage('ai', result.reply);
     assistantHistory.push({ id: aiReplyId, role: 'ai', text: result.reply });
 
     const intent = result.intent || { action: "none" };
 
-    // A. Ý định chuyển trang
     if (intent.action === 'switch_tab' && intent.target) {
       const targetTab = intent.target;
       if (tabNamesMap[targetTab]) {
@@ -246,7 +235,6 @@ async function sendAssistantMessage() {
         }
       }
     }
-    // B. Ý định mở liên kết
     else if (intent.action === 'open_link' && intent.target !== undefined && intent.target !== null && intent.target !== "") {
       const index = parseInt(intent.target, 10);
       if (!isNaN(index) && links[index]) {

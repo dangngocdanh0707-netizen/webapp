@@ -24,10 +24,7 @@ export function initAssetsModule(data, onSync) {
     priceInput.dataset.listenerAttached = 'true';
   }
 
-  // RENDER GRAPHICS
   renderAssetGraphics();
-
-  // RENDER TABLE
   buildAssetTable();
 }
 
@@ -135,7 +132,7 @@ export function buildAssetTable() {
   });
 }
 
-// ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
+
 
 window.app.assets.enterEditMode = function (id) {
   document.querySelectorAll(`.view-ast-mode-${id}`).forEach(el => el.classList.add('hidden'));
@@ -179,7 +176,6 @@ window.app.assets.addAssetRow = function () {
     return;
   }
 
-  // 1. Optimistic Update
   let newRowNumber = Math.max(...allAssetData.map(c => c.rowNumber), 1) + 1;
   let newObj = {
     rowNumber: newRowNumber,
@@ -195,13 +191,11 @@ window.app.assets.addAssetRow = function () {
   buildAssetTable();
   renderAssetGraphics();
 
-  // Clear inputs
   document.getElementById('ins-ast-name').value = "";
   document.getElementById('ins-ast-quantity').value = "";
   document.getElementById('ins-ast-unit').value = "";
   document.getElementById('ins-ast-price').value = "";
 
-  // 2. Sync with Server
   callServer("insertAssetRow", [assetName, quantity, unit, price])
     .then(res => {
       if (res !== "Thành công") {
@@ -237,7 +231,6 @@ window.app.assets.saveAssetRow = function (id) {
     return;
   }
 
-  // 1. Optimistic Update
   let idx = allAssetData.findIndex(c => c.rowNumber == id);
   if (idx === -1) return;
 
@@ -253,7 +246,6 @@ window.app.assets.saveAssetRow = function (id) {
   renderAssetGraphics();
   console.log("Đã cập nhật tài sản thành công!");
 
-  // 2. Sync with Server
   callServer("updateAssetRow", [id, assetName, quantity, unit, price])
     .then(res => {
       if (res !== "Thành công") {
@@ -276,7 +268,6 @@ window.app.assets.saveAssetRow = function (id) {
 };
 
 window.app.assets.deleteRow = function (id) {
-  // 1. Optimistic Update
   let idx = allAssetData.findIndex(c => c.rowNumber == id);
   if (idx === -1) return;
 
@@ -285,7 +276,6 @@ window.app.assets.deleteRow = function (id) {
 
   allAssetData.splice(idx, 1);
 
-  // shift row numbers
   allAssetData.forEach(item => {
     if (item.rowNumber > id) {
       item.rowNumber--;
@@ -296,7 +286,6 @@ window.app.assets.deleteRow = function (id) {
   renderAssetGraphics();
   console.log("Đã xóa tài sản thành công!");
 
-  // 2. Sync with Server
   callServer("deleteAssetRow", [id])
     .then(res => {
       if (res !== "Thành công") {

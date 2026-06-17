@@ -14,16 +14,10 @@ export function initCostModule(data, onSync) {
     dateInput.value = getTodayDateString();
   }
 
-  // POPULATE MONTHS IN FILTER DROPDOWN
   populateCostMonths();
-
-  // POPULATE CATEGORIES IN FILTER DROPDOWN
   populateCostCategories();
-
-  // POPULATE SUBCATEGORIES IN FILTER DROPDOWN
   populateCostSubcategories();
 
-  // Setup auto-formatting event listener on new cost amount input
   const amountInput = document.getElementById('ins-cost-amount');
   if (amountInput && !amountInput.dataset.listenerAttached) {
     amountInput.addEventListener('input', (e) => {
@@ -40,10 +34,7 @@ export function initCostModule(data, onSync) {
     amountInput.dataset.listenerAttached = 'true';
   }
 
-  // RENDER GRAPHICS
   renderCostGraphics();
-
-  // RENDER TABLE
   buildTable();
 }
 
@@ -285,7 +276,7 @@ export function buildTable() {
 }
 
 
-// ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
+
 
 window.app.expenses.enterEditMode = function (id) {
   document.querySelectorAll(`.view-mode-${id}`).forEach(el => el.classList.add('hidden'));
@@ -348,7 +339,6 @@ window.app.expenses.addCostRow = function () {
     return;
   }
 
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let newRowNumber = Math.max(...allCostData.map(c => c.rowNumber), 1) + 1;
   let newObj = {
     rowNumber: newRowNumber,
@@ -361,7 +351,6 @@ window.app.expenses.addCostRow = function () {
 
   allCostData.push(newObj);
 
-  // Update month filter dropdown and preserve current month filter selection
   const currentMonthFilter = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : "All";
   populateCostMonths();
   populateCostCategories();
@@ -374,12 +363,10 @@ window.app.expenses.addCostRow = function () {
   buildTable();
   renderCostGraphics();
 
-  // Clear inputs
   document.getElementById('ins-cost-amount').value = "";
   document.getElementById('ins-cost-note').value = "";
   document.getElementById('ins-cost-subcat').value = "";
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertCostRow", [date, cat, subcat, amount, note])
     .then(res => {
       if (res !== "Thành công") {
@@ -418,7 +405,6 @@ window.app.expenses.saveRow = function (id) {
   let amount = parseInt(amountRaw.replace(/[^\d]/g, ''), 10) || 0;
   let note = document.getElementById(`edit-note-${id}`).value;
 
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allCostData.findIndex(c => c.rowNumber == id);
   if (idx === -1) return;
 
@@ -429,7 +415,6 @@ window.app.expenses.saveRow = function (id) {
   allCostData[idx].amount = amount;
   allCostData[idx].note = note;
 
-  // Store current selection of filters
   const currentMonthFilter = document.getElementById('monthFilter') ? document.getElementById('monthFilter').value : "All";
   populateCostMonths();
   populateCostCategories();
@@ -444,7 +429,6 @@ window.app.expenses.saveRow = function (id) {
   renderCostGraphics();
   console.log("Đã cập nhật khoản chi tiêu thành công!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateCostRow", [id, date, cat, subcat, amount, note])
     .then(res => {
       if (res !== "Thành công") {
@@ -474,7 +458,6 @@ window.app.expenses.saveRow = function (id) {
 };
 
 window.app.expenses.deleteRow = function (id) {
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allCostData.findIndex(c => c.rowNumber == id);
   if (idx === -1) return;
 
@@ -483,7 +466,6 @@ window.app.expenses.deleteRow = function (id) {
 
   allCostData.splice(idx, 1);
 
-  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
   allCostData.forEach(item => {
     if (item.rowNumber > id) {
       item.rowNumber--;
@@ -503,7 +485,6 @@ window.app.expenses.deleteRow = function (id) {
   renderCostGraphics();
   console.log("Đã xóa khoản chi tiêu thành công!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteCostRow", [id])
     .then(res => {
       if (res !== "Thành công") {
@@ -515,7 +496,6 @@ window.app.expenses.deleteRow = function (id) {
     });
 
   function rollback(errorMessage) {
-    // Khôi phục lại dòng bị xóa và tăng lại rowNumber của các dòng phía sau
     allCostData.forEach(item => {
       if (item.rowNumber >= id) {
         item.rowNumber++;

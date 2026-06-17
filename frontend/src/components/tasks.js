@@ -120,12 +120,12 @@ export function buildTaskTable() {
     `);
   });
 
-  // Cập nhật giao diện Ma trận 2x2 khi bảng thay đổi
+  // Update the 2x2 Matrix view
   buildTaskMatrix();
 }
 
 
-// ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
+
 
 window.app.tasks.filterTaskTable = function () {
   buildTaskTable();
@@ -140,7 +140,6 @@ window.app.tasks.toggleTaskStatusDirectly = function (rowNumber, checkboxEl) {
   let isChecked = checkboxEl.checked;
   let labelEl = document.getElementById(`task-lbl-${rowNumber}`);
 
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   labelEl.innerText = isChecked ? "Completed" : "Pending";
   labelEl.className = isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
 
@@ -151,10 +150,9 @@ window.app.tasks.toggleTaskStatusDirectly = function (rowNumber, checkboxEl) {
     allTaskData[idx].status = isChecked;
   }
 
-  console.log(isChecked ? "Đã đánh dấu hoàn thành công việc!" : "Đã đặt công việc thành Chưa hoàn thành");
+  console.log(isChecked ? "Task completed!" : "Task marked as pending");
   buildTaskTable();
 
-  // 2. Gửi yêu cầu ngầm lên Google Sheets
   callServer("updateTaskStatusRow", [rowNumber, isChecked])
     .then(res => {
       if (res !== "Thành công") {
@@ -173,7 +171,7 @@ window.app.tasks.toggleTaskStatusDirectly = function (rowNumber, checkboxEl) {
     labelEl.innerText = oldStatus ? "Completed" : "Pending";
     labelEl.className = oldStatus ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
     buildTaskTable();
-    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
+    console.error("Sync error: " + errorMessage);
   }
 };
 
@@ -181,15 +179,14 @@ window.app.tasks.addTaskRow = function () {
   let dateVal = document.getElementById('ins-task-date').value;
   let date = formatDateDb(dateVal);
   let desc = document.getElementById('ins-task-desc').value.trim();
-  let urgentVal = false; // Mặc định là false, người dùng sẽ tự tick trực tiếp trong danh sách bảng sau.
-  let importantVal = false; // Mặc định là false, người dùng sẽ tự tick trực tiếp trong danh sách bảng sau.
+  let urgentVal = false;
+  let importantVal = false;
 
   if (!date || !desc) {
-    console.warn("Vui lòng điền cả Ngày và Mô tả công việc!");
+    console.warn("Please enter both date and task description!");
     return;
   }
 
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let newRowNumber = Math.max(...allTaskData.map(t => t.rowNumber), 1) + 1;
   let newObj = {
     rowNumber: newRowNumber,
@@ -205,7 +202,6 @@ window.app.tasks.addTaskRow = function () {
 
   document.getElementById('ins-task-desc').value = "";
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertTaskRow", [date, desc, urgentVal, importantVal, false])
     .then(res => {
       if (res !== "Thành công") {
@@ -220,7 +216,7 @@ window.app.tasks.addTaskRow = function () {
     allTaskData = allTaskData.filter(t => t.rowNumber !== newRowNumber);
     buildTaskTable();
     document.getElementById('ins-task-desc').value = desc;
-    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
+    console.error("Sync error: " + errorMessage);
   }
 };
 
@@ -232,11 +228,10 @@ window.app.tasks.saveTask = function (id) {
   let statusVal = chk ? chk.checked : false;
 
   if (!date || !desc) {
-    console.warn("Vui lòng điền cả Ngày và Mô tả công việc!");
+    console.warn("Please enter both date and task description!");
     return;
   }
 
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allTaskData.findIndex(t => t.rowNumber == id);
   if (idx === -1) return;
 
@@ -252,9 +247,8 @@ window.app.tasks.saveTask = function (id) {
 
   window.app.tasks.toggleTaskEdit(id, false);
   buildTaskTable();
-  console.log("Đã cập nhật công việc thành công!");
+  console.log("Task updated successfully!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateTaskRow", [id, date, desc, urgentVal, importantVal, statusVal])
     .then(res => {
       if (res !== "Thành công") {
@@ -271,12 +265,11 @@ window.app.tasks.saveTask = function (id) {
     }
     buildTaskTable();
     window.app.tasks.toggleTaskEdit(id, true);
-    console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
+    console.error("Update error: " + errorMessage);
   }
 };
 
 window.app.tasks.deleteTask = function (id) {
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allTaskData.findIndex(t => t.rowNumber == id);
   if (idx === -1) return;
 
@@ -285,7 +278,6 @@ window.app.tasks.deleteTask = function (id) {
 
   allTaskData.splice(idx, 1);
   
-  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
   allTaskData.forEach(item => {
     if (item.rowNumber > id) {
       item.rowNumber--;
@@ -293,9 +285,8 @@ window.app.tasks.deleteTask = function (id) {
   });
 
   buildTaskTable();
-  console.log("Đã xóa công việc thành công!");
+  console.log("Task deleted successfully!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteTaskRow", [id])
     .then(res => {
       if (res !== "Thành công") {
@@ -315,11 +306,11 @@ window.app.tasks.deleteTask = function (id) {
     });
     allTaskData.splice(deletedIndex, 0, deletedItem);
     buildTaskTable();
-    console.error("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
+    console.error("Delete error: " + errorMessage);
   }
 };
 
-// ---- EISENHOWER MATRIX METHODS ----
+
 
 export function buildTaskMatrix() {
   const q1List = document.getElementById('matrix-q1-list');
@@ -374,7 +365,7 @@ export function buildTaskMatrix() {
       </li>
     `;
 
-    // Phân loại vào 4 ô phần tư ma trận
+
     if (isUrgent && isImportant) {
       q1List.insertAdjacentHTML('beforeend', listItemHtml);
     } else if (!isUrgent && isImportant) {
@@ -419,12 +410,10 @@ window.app.tasks.toggleTaskUrgent = function (rowNumber) {
   let isChecked = !allTaskData[idx].urgent;
   let oldUrgent = allTaskData[idx].urgent;
 
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   allTaskData[idx].urgent = isChecked;
   buildTaskTable();
   console.log(isChecked ? "Đã đánh dấu Khẩn cấp! ⚡" : "Đã bỏ đánh dấu Khẩn cấp");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateTaskUrgentRow", [rowNumber, isChecked])
     .then(res => {
       if (res !== "Thành công") {
@@ -449,12 +438,10 @@ window.app.tasks.toggleTaskImportant = function (rowNumber) {
   let isChecked = !allTaskData[idx].important;
   let oldImportant = allTaskData[idx].important;
 
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   allTaskData[idx].important = isChecked;
   buildTaskTable();
   console.log(isChecked ? "Đã đánh dấu Quan trọng! ⭐" : "Đã bỏ đánh dấu Quan trọng");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateTaskImportantRow", [rowNumber, isChecked])
     .then(res => {
       if (res !== "Thành công") {

@@ -1,5 +1,5 @@
 import { callServer, escapeHTML, parseDateToTimestamp, formatDateView, getTodayDateString } from '../services/api.js';
-import { renderHabitLine, updateHabitChartData } from './charts.js';
+
 
 let allHabitData = [];
 let onSyncNeeded = null;
@@ -15,7 +15,7 @@ export function initHabitsModule(data, onSync) {
   });
   onSyncNeeded = onSync;
 
-  // Tính và hiển thị tổng số thói quen độc lập khác nhau
+  // Unique habits count
   const uniqueHabits = [...new Set(allHabitData.map(h => h.habit).filter(h => h && h.trim() !== ''))];
   const totalHabitsEl = document.getElementById('total-unique-habits');
   if (totalHabitsEl) {
@@ -47,7 +47,6 @@ export function initHabitsModule(data, onSync) {
     let defaultSelectVal = sortedHabitDatesForFilter[0] || todayStr;
     dateSelect.value = defaultSelectVal;
 
-    // Mặc định khởi chạy giao diện xem lưới và xem danh sách
     buildHabitGrid();
     buildHabitTable(defaultSelectVal);
   }
@@ -55,6 +54,7 @@ export function initHabitsModule(data, onSync) {
   if (allHabitData.length === 0) {
     const perfEl = document.getElementById('avg-habit-performance');
     if (perfEl) perfEl.innerText = "0%";
+    buildHabitPerformanceTable();
     return;
   }
 
@@ -77,13 +77,33 @@ export function initHabitsModule(data, onSync) {
     perfEl.innerText = (activeDates.length > 0 ? Math.round(totalPerformanceSum / activeDates.length) : 0) + "%";
   }
 
-  // Draw Habits Line Chart
-  renderHabitLine(activeDates, performanceDataPerDay, (clickedDate) => {
-    // Khi click vào chart, tự động đổi view về list để xem chi tiết ngày đó
-    if (dateSelect) {
-      dateSelect.value = clickedDate;
-      window.app.habits.switchHabitView('list');
-    }
+  buildHabitPerformanceTable();
+}
+
+export function buildHabitPerformanceTable() {
+  const tbody = document.querySelector('#table-habit-performance tbody');
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  const last7Days = getLast7Days();
+  const sortedLast7Days = [...last7Days].reverse();
+
+  sortedLast7Days.forEach(day => {
+    let dayTasks = allHabitData.filter(h => h.date === day.dateStr);
+    let completedTasks = dayTasks.filter(h => h.status === true || h.status === "TRUE" || h.status === "√" || h.status === "checked");
+    let percent = dayTasks.length > 0 ? Math.round((completedTasks.length / dayTasks.length) * 100) : 0;
+
+    let performanceColor = "text-slate-500 font-bold";
+    if (percent >= 80) performanceColor = "text-emerald-600 font-bold";
+    else if (percent >= 50) performanceColor = "text-blue-600 font-bold";
+    else if (percent > 0) performanceColor = "text-amber-600 font-bold";
+
+    tbody.insertAdjacentHTML('beforeend', `
+      <tr class="hover:bg-slate-900/5 transition">
+        <td class="p-4 pl-6 font-semibold text-xs text-slate-500">${formatDateView(day.dateStr)}</td>
+        <td class="p-4 font-semibold text-sm ${performanceColor}">${percent}%</td>
+      </tr>
+    `);
   });
 }
 
@@ -112,14 +132,14 @@ export function buildHabitGrid() {
   const tbody = table.querySelector('tbody');
   if (!theadRow || !tbody) return;
 
-  // 1. Build headers for last 7 days
+  // Build headers for last 7 days
   const last7Days = getLast7Days();
   theadRow.innerHTML = `<th class="p-4 pl-6 text-left">HABIT</th>`;
   last7Days.forEach(day => {
     theadRow.insertAdjacentHTML('beforeend', `<th class="p-4 text-center w-24 text-slate-500 font-semibold text-xs">${day.label}</th>`);
   });
 
-  // 2. Build rows for each unique habit
+  // Build rows for each unique habit
   tbody.innerHTML = "";
   const uniqueHabits = [...new Set(allHabitData.map(h => h.habit).filter(h => h && h.trim() !== ''))];
 
@@ -128,7 +148,7 @@ export function buildHabitGrid() {
     return;
   }
 
-  // Sắp xếp các thói quen theo số lượng hoàn thành từ ít đến nhiều trong 7 ngày qua
+  // Sort habits by completion count
   const habitCompletionCounts = {};
   uniqueHabits.forEach(habitName => {
     let count = 0;
@@ -261,12 +281,11 @@ function recalculateHabitChartOnly() {
     totalHabitsEl.innerText = uniqueHabits.length;
   }
 
-  updateHabitChartData(performanceDataPerDay);
+  buildHabitPerformanceTable();
 }
 
 
-// ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
-
+// Expose to window scope
 window.app.habits.filterHabitTable = function () {
   const dateSelect = document.getElementById('habitDateFilter');
   if (dateSelect) {
@@ -320,7 +339,6 @@ window.app.habits.toggleHabitStatusDirectly = function (rowNumber, checkboxEl) {
   if (dateSelect) buildHabitTable(dateSelect.value);
   console.log(isChecked ? "Completed habit!" : "Marked habit as pending");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateHabitStatusRow", [rowNumber, isChecked])
     .then(res => {
       if (res !== "Thành công") {
@@ -381,7 +399,7 @@ window.app.habits.toggleHabitCell = function (rowNumber, dateStr, habitName, che
       console.error("Sync error: " + errorMessage);
     }
   } else {
-    // Tạo dòng mới
+    // Create new entry
     let tempRowNumber = Math.max(...allHabitData.map(h => h.rowNumber), 1) + 1;
     let newObj = {
       rowNumber: tempRowNumber,
@@ -437,14 +455,14 @@ window.app.habits.addHabitDirectly = function () {
   const dd = String(today.getDate()).padStart(2, '0');
   const dateStr = `${yyyy}-${mm}-${dd}`;
 
-  // Kiểm tra xem thói quen này đã tồn tại trong ngày chưa
+  // Check if habit is already tracked today
   const exists = allHabitData.some(h => h.habit.toLowerCase() === habitName.toLowerCase() && h.date === dateStr);
   if (exists) {
     console.warn("This habit is already tracked for today!");
     return;
   }
 
-  // Cập nhật lạc quan
+  // Optimistic update
   let tempRowNumber = Math.max(...allHabitData.map(h => h.rowNumber), 1) + 1;
   let newObj = {
     rowNumber: tempRowNumber,

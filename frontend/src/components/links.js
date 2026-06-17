@@ -101,7 +101,7 @@ export function buildLinkTable() {
   });
 }
 
-// ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
+// Expose to window scope
 
 window.app.links.filterLinkTable = function() {
   buildLinkTable();
@@ -114,7 +114,7 @@ window.app.links.copyLinkText = function(id, text) {
       icon.className = "fa-solid fa-check text-emerald-500";
       setTimeout(() => { icon.className = "fa-solid fa-copy"; }, 1500);
     }
-  }).catch(err => { console.error('Không thể sao chép: ', err); });
+  }).catch(err => { console.error('Failed to copy: ', err); });
 };
 
 window.app.links.toggleLinkEdit = function(id, isEdit) {
@@ -127,11 +127,11 @@ window.app.links.addLinkRow = function() {
   let cat = document.getElementById('ins-link-cat').value.trim();
   let content = document.getElementById('ins-link-content').value.trim();
   if (!title || !content) {
-    console.warn("Vui lòng điền cả Tiêu đề và Nội dung liên kết!");
+    console.warn("Please fill in both title and content!");
     return;
   }
   
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  // Optimistic update
   let newRowNumber = Math.max(...allLinkData.map(l => l.rowNumber), 1) + 1;
   let newObj = {
     rowNumber: newRowNumber,
@@ -148,7 +148,6 @@ window.app.links.addLinkRow = function() {
   document.getElementById('ins-link-cat').value = "";
   document.getElementById('ins-link-content').value = "";
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertLinkRow", [title, cat, content])
     .then(res => {
       if (res !== "Thành công") {
@@ -165,7 +164,7 @@ window.app.links.addLinkRow = function() {
     document.getElementById('ins-link-title').value = title;
     document.getElementById('ins-link-cat').value = cat;
     document.getElementById('ins-link-content').value = content;
-    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
+    console.error("Sync error: " + errorMessage);
   }
 };
 
@@ -174,7 +173,7 @@ window.app.links.saveLink = function(id) {
   let cat = document.getElementById(`link-edit-cat-${id}`).value.trim();
   let content = document.getElementById(`link-edit-content-${id}`).value.trim();
   
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  // Optimistic update
   let idx = allLinkData.findIndex(l => l.rowNumber == id);
   if (idx === -1) return;
 
@@ -185,9 +184,8 @@ window.app.links.saveLink = function(id) {
 
   window.app.links.toggleLinkEdit(id, false);
   buildLinkTable();
-  console.log("Đã cập nhật liên kết thành công!");
+  console.log("Link updated!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateLinkRow", [id, title, cat, content])
     .then(res => {
       if (res !== "Thành công") {
@@ -204,12 +202,12 @@ window.app.links.saveLink = function(id) {
     }
     buildLinkTable();
     window.app.links.toggleLinkEdit(id, true);
-    console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
+    console.error("Update error: " + errorMessage);
   }
 };
 
 window.app.links.deleteLink = function(id) {
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  // Optimistic update
   let idx = allLinkData.findIndex(l => l.rowNumber == id);
   if (idx === -1) return;
 
@@ -218,7 +216,7 @@ window.app.links.deleteLink = function(id) {
 
   allLinkData.splice(idx, 1);
   
-  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
+  // Adjust row numbers for remaining entries
   allLinkData.forEach(item => {
     if (item.rowNumber > id) {
       item.rowNumber--;
@@ -226,9 +224,8 @@ window.app.links.deleteLink = function(id) {
   });
 
   buildLinkTable();
-  console.log("Đã xóa liên kết thành công!");
+  console.log("Link deleted!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteLinkRow", [id])
     .then(res => {
       if (res !== "Thành công") {
@@ -247,7 +244,7 @@ window.app.links.deleteLink = function(id) {
     });
     allLinkData.splice(deletedIndex, 0, deletedItem);
     buildLinkTable();
-    console.error("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
+    console.error("Delete error: " + errorMessage);
   }
 };
 

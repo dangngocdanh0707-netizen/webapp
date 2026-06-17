@@ -8,7 +8,7 @@ export function initGrammarDiaryModule(grammarData, refreshCb) {
   currentData = grammarData || [];
   refreshCallback = refreshCb;
 
-  // Cập nhật số lượng thống kê
+  // Update statistic counts
   const totalCountEl = document.getElementById('grammar-total-count');
   if (totalCountEl) {
     totalCountEl.innerText = currentData.length;
@@ -105,7 +105,7 @@ function renderGrammarCards() {
 }
 
 
-// Ẩn/Hiện vùng luyện viết
+// Toggle practice input view
 window.app.grammar.toggleGrammarPracticeMode = function(rowNumber) {
   const infoZone = document.getElementById(`info-zone-${rowNumber}`);
   const practiceZone = document.getElementById(`practice-zone-${rowNumber}`);
@@ -137,7 +137,7 @@ window.app.grammar.toggleGrammarPracticeMode = function(rowNumber) {
   }
 };
 
-// So khớp và kiểm tra câu luyện viết
+// Check practice answer
 window.app.grammar.checkGrammarPractice = async function(rowNumber, correctSentence) {
   const input = document.getElementById(`practice-input-${rowNumber}`);
   const btn = document.getElementById(`btn-practice-check-${rowNumber}`);
@@ -146,11 +146,10 @@ window.app.grammar.checkGrammarPractice = async function(rowNumber, correctSente
 
   const userText = input.value.trim();
   if (!userText) {
-    console.warn("Vui lòng nhập câu trả lời!");
+    console.warn("Please enter an answer!");
     return;
   }
 
-  // Khóa tạm thời input
   input.disabled = true;
 
   const originalBtnContent = btn ? btn.innerHTML : '';
@@ -165,14 +164,14 @@ window.app.grammar.checkGrammarPractice = async function(rowNumber, correctSente
     }
   };
 
-  // Bước 1: So khớp chuỗi nhanh (Client-side String Matching)
+  // Client-side string matching
   const cleanUser = normalizeEnglishText(userText);
   const cleanCorrect = normalizeEnglishText(correctSentence);
 
   let isMatch = (cleanUser === cleanCorrect);
 
   if (!isMatch) {
-    // Bước 2: AI chấm điểm thông minh (AI Fallback Check)
+    // AI fallback check
     setChecking(true);
     try {
       const aiCreds = getAiCredentials();
@@ -188,17 +187,15 @@ window.app.grammar.checkGrammarPractice = async function(rowNumber, correctSente
   }
 
   if (isMatch) {
-    // Gõ ĐÚNG: Nháy viền xanh, tự động đánh dấu đã thuộc và đồng bộ ngầm
     input.className = "form-input text-xs font-semibold py-2 px-3 rounded-lg border border-emerald-500 bg-emerald-50 text-emerald-800 shadow-[0_0_10px_rgba(16,185,129,0.15)] w-full";
-    console.log("Chính xác! Đã tự động đánh dấu đã thuộc.");
+    console.log("Correct!");
     
-    // Tạo hiệu ứng ẩn thẻ
     card.style.transition = 'all 0.4s ease';
     card.style.opacity = '0';
     card.style.transform = 'scale(0.9)';
 
     setTimeout(() => {
-      // Optimistic local state update + FLIP animation
+      // Optimistic local update + FLIP animation
       animateGridReflow(() => {
         currentData = currentData.filter(item => String(item.rowNumber) !== String(rowNumber));
         const totalCountEl = document.getElementById('grammar-total-count');
@@ -223,7 +220,7 @@ window.app.grammar.checkGrammarPractice = async function(rowNumber, correctSente
         });
     }, 400);
   } else {
-    // Gõ SAI: Nháy viền đỏ và lắc card
+    // Incorrect: trigger visual feedback
     input.disabled = false;
     input.className = "form-input text-xs font-semibold py-2 px-3 rounded-lg border border-rose-500 bg-rose-50 text-rose-800 shadow-[0_0_10px_rgba(244,63,94,0.15)] w-full";
     card.classList.add('practice-state-incorrect');
@@ -258,7 +255,7 @@ window.app.grammar.deleteGrammarCard = function(rowNumber) {
   }
 
   setTimeout(() => {
-    // Optimistic local state update + FLIP animation
+    // Optimistic local update + FLIP animation
     animateGridReflow(() => {
       currentData = currentData.filter(item => Number(item.rowNumber) !== idNum);
       currentData.forEach(item => {
@@ -276,7 +273,7 @@ window.app.grammar.deleteGrammarCard = function(rowNumber) {
     callServer("deleteGrammarDiaryRow", [idNum])
       .then(res => {
         if (res === "Thành công") {
-          console.log("Đã xóa bản ghi lỗi ngữ pháp thành công!");
+          console.log("Grammar record deleted!");
           if (typeof refreshCallback === 'function') {
             refreshCallback(true); // silent reload
           }
@@ -302,12 +299,12 @@ window.app.grammar.deleteGrammarCard = function(rowNumber) {
         totalCountEl.innerText = currentData.length;
       }
       renderGrammarCards();
-      console.error("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
+      console.error("Delete error: " + errorMessage);
     }
   }, 400);
 };
 
-// Hàm hỗ trợ hiệu ứng chuyển động mượt mà khi xếp lại lưới thẻ (FLIP animation)
+// FLIP animation helper for grid reflow
 function animateGridReflow(actionFn) {
   const gridEl = document.getElementById('grammar-cards-grid');
   if (!gridEl) {
@@ -315,7 +312,7 @@ function animateGridReflow(actionFn) {
     return;
   }
 
-  // 1. First: Ghi lại vị trí ban đầu của các thẻ hiện tại
+  // Record initial positions
   const cards = Array.from(gridEl.children);
   const firstPositions = cards.map(card => {
     return {
@@ -324,10 +321,10 @@ function animateGridReflow(actionFn) {
     };
   });
 
-  // 2. Thực hiện cập nhật dữ liệu và render lại lưới DOM
+  // Perform DOM updates
   actionFn();
 
-  // 3. Last: Ghi lại vị trí mới của các thẻ sau khi cập nhật
+  // Record final positions
   const newCards = Array.from(gridEl.children);
   const lastPositions = newCards.map(card => {
     return {
@@ -336,27 +333,23 @@ function animateGridReflow(actionFn) {
     };
   });
 
-  // 4. Invert & Play: Di chuyển ngược về vị trí cũ và chạy transition
+  // Invert & Play transition
   lastPositions.forEach(({ element, rect: lastRect }) => {
     const cardId = element.id;
     const firstPos = firstPositions.find(p => p.id === cardId);
-    if (!firstPos) return; // Thẻ mới được thêm hoặc không tồn tại trước đó
+    if (!firstPos) return;
 
     const deltaX = firstPos.rect.left - lastRect.left;
     const deltaY = firstPos.rect.top - lastRect.top;
 
     if (deltaX !== 0 || deltaY !== 0) {
-      // Invert: đặt lại vị trí tức thời mà không có transition
       element.style.transition = 'none';
       element.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
 
-      // Kích hoạt repaint để trình duyệt nhận diện thay đổi style tức thì
       element.offsetHeight;
 
-      // Play: xóa transform và kích hoạt hiệu ứng trượt mượt mà
       element.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
       element.style.transform = '';
     }
   });
 }
-

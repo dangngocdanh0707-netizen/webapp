@@ -11,7 +11,7 @@ export function initMapModule(data, onSync) {
   }));
   onSyncNeeded = onSync;
 
-  // 1. Populate Filter Dropdowns dynamically
+  // Populate Filter Dropdowns dynamically
   let categories = new Set();
   let cities = new Set();
 
@@ -57,7 +57,7 @@ export function initMapModule(data, onSync) {
     statusFilter.value = "Pending";
   }
 
-  // 2. Build the initial adventure list
+  // Build the initial adventure list
   buildMapGrid();
 }
 
@@ -89,14 +89,14 @@ export function buildMapGrid() {
   if (!tableBody) return;
   tableBody.innerHTML = "";
 
-  // 2. Read Active Filters
+  // Read Active Filters
   const searchVal = document.getElementById('mapSearchInput') ? document.getElementById('mapSearchInput').value.toLowerCase().trim() : "";
   const cityVal = document.getElementById('mapCityFilter') ? document.getElementById('mapCityFilter').value : "All";
   const catVal = document.getElementById('mapCategoryFilter') ? document.getElementById('mapCategoryFilter').value : "All";
   const statusFilter = document.getElementById('mapStatusFilter');
   const statusVal = statusFilter ? statusFilter.value : "All";
 
-  // 3. Filter and Sort Rows
+  // Filter and Sort Rows
   const filteredData = allMapData.filter(item => {
     if (!item || !item.place) return false;
 
@@ -145,7 +145,7 @@ export function buildMapGrid() {
     return a.rowNumber - b.rowNumber;
   });
 
-  // 4. Render Rows (Defensive 5-column mapping)
+  // Render Rows
   sortedData.forEach(item => {
     try {
       const id = item.rowNumber;
@@ -211,7 +211,7 @@ export function buildMapGrid() {
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="bg-rose-50/10">
           <td colspan="5" class="p-4 pl-6 text-xs text-rose-800 font-medium">
-            ⚠️ Lỗi dữ liệu dòng #${item.rowNumber || '?'}: ${escapeHTML(rowError.message)}
+            ⚠️ Data error for row #${item.rowNumber || '?'}: ${escapeHTML(rowError.message)}
           </td>
         </tr>
       `);
@@ -219,7 +219,7 @@ export function buildMapGrid() {
   });
 }
 
-// ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
+// Expose to window scope
 
 window.app.maps.filterMapGrid = function () {
   buildMapGrid();
@@ -238,11 +238,11 @@ window.app.maps.addMapRow = function() {
   const status = false; // Mặc định là Pending, người dùng sẽ tự click chọn trực tiếp trong bảng sau.
  
   if (!place) {
-    console.warn("Vui lòng nhập Tên địa điểm!");
+    console.warn("Please enter a place name!");
     return;
   }
  
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  // Optimistic update
   let newRowNumber = Math.max(...allMapData.map(m => m.rowNumber), 1) + 1;
   let newObj = {
     rowNumber: newRowNumber,
@@ -260,7 +260,6 @@ window.app.maps.addMapRow = function() {
   cityInput.value = "";
   if (catInput) catInput.value = "";
  
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertMapRow", [place, city, category, status])
     .then(res => {
       if (res !== "Thành công") {
@@ -277,7 +276,7 @@ window.app.maps.addMapRow = function() {
     if (placeInput) placeInput.value = place;
     if (cityInput) cityInput.value = city;
     if (catInput) catInput.value = category;
-    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
+    console.error("Sync error: " + errorMessage);
   }
 };
  
@@ -285,7 +284,7 @@ window.app.maps.toggleMapStatusDirectly = function (rowNumber, checkboxEl) {
   let isChecked = checkboxEl.checked;
   let labelEl = document.getElementById(`map-lbl-${rowNumber}`);
  
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  // Optimistic update
   labelEl.innerText = isChecked ? "Completed" : "Pending";
   labelEl.className = isChecked ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
  
@@ -296,10 +295,9 @@ window.app.maps.toggleMapStatusDirectly = function (rowNumber, checkboxEl) {
     allMapData[idx].status = isChecked;
   }
  
-  console.log(isChecked ? "Đã đánh dấu hoàn thành địa điểm!" : "Đã đặt địa điểm thành Chưa hoàn thành");
+  console.log(isChecked ? "Place marked as completed!" : "Place marked as pending");
   buildMapGrid();
  
-  // 2. Gửi yêu cầu ngầm lên Google Sheets
   callServer("updateMapStatusRow", [rowNumber, isChecked])
     .then(res => {
       if (res !== "Thành công") {
@@ -318,12 +316,12 @@ window.app.maps.toggleMapStatusDirectly = function (rowNumber, checkboxEl) {
     labelEl.innerText = oldStatus ? "Completed" : "Pending";
     labelEl.className = oldStatus ? "text-xs font-semibold text-emerald-600" : "text-xs font-semibold text-slate-400";
     buildMapGrid();
-    console.error("Lỗi đồng bộ: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
+    console.error("Sync error: " + errorMessage);
   }
 };
 
 window.app.maps.deleteMapPlace = function (id) {
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  // Optimistic update
   let idx = allMapData.findIndex(m => m.rowNumber == id);
   if (idx === -1) return;
 
@@ -332,7 +330,7 @@ window.app.maps.deleteMapPlace = function (id) {
 
   allMapData.splice(idx, 1);
 
-  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
+  // Adjust row numbers for remaining entries
   allMapData.forEach(item => {
     if (item.rowNumber > id) {
       item.rowNumber--;
@@ -340,9 +338,8 @@ window.app.maps.deleteMapPlace = function (id) {
   });
 
   buildMapGrid();
-  console.log("Đã xóa địa điểm thành công!");
+  console.log("Place deleted!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteMapRow", [id])
     .then(res => {
       if (res !== "Thành công") {
@@ -362,7 +359,7 @@ window.app.maps.deleteMapPlace = function (id) {
     });
     allMapData.splice(deletedIndex, 0, deletedItem);
     buildMapGrid();
-    console.error("Lỗi xóa: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
+    console.error("Delete error: " + errorMessage);
   }
 };
 
@@ -383,11 +380,11 @@ window.app.maps.saveMapPlace = function(id) {
   const status = statusEl ? statusEl.checked : false;
  
   if (!place) {
-    console.warn("Vui lòng nhập Tên địa điểm!");
+    console.warn("Please enter a place name!");
     return;
   }
  
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  // Optimistic update
   let idx = allMapData.findIndex(m => m.rowNumber == id);
   if (idx === -1) return;
  
@@ -399,9 +396,8 @@ window.app.maps.saveMapPlace = function(id) {
  
   window.app.maps.toggleMapEdit(id, false);
   buildMapGrid();
-  console.log("Đã cập nhật địa điểm thành công! 🎉");
+  console.log("Place updated!");
  
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateMapRow", [id, place, city, category, status])
     .then(res => {
       if (res !== "Thành công") {
@@ -418,6 +414,6 @@ window.app.maps.saveMapPlace = function(id) {
     }
     buildMapGrid();
     window.app.maps.toggleMapEdit(id, true);
-    console.error("Lỗi cập nhật: " + errorMessage + ". Đã khôi phục trạng thái cũ.");
+    console.error("Update error: " + errorMessage);
   }
 };

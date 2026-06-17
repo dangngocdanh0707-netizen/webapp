@@ -38,14 +38,14 @@ export async function callAiApi(prompt, history, aiCreds, scenarioKey) {
 
   const finalSystemInstruction = `${scenario.systemInstruction}
 
-CRITICAL INSTRUCTION: You must analyze the user's latest message for any grammar or spelling mistakes. 
+CRITICAL INSTRUCTION: You must analyze ONLY the user's LATEST message (the very last message in the input) for any grammar or spelling mistakes. Do NOT look at or evaluate any previous messages in the conversation history for grammar checking.
 You MUST respond ONLY with a valid JSON object. Do not include markdown code block formatting (like \`\`\`json ... \`\`\`) in your raw response, return only the raw JSON.
 The JSON structure must match this schema exactly:
 {
   "reply": "Your natural conversational reply to the user in English",
   "isCorrect": true, // Set to true if the user's sentence is grammatically correct and has no spelling mistakes, even if it is simple or could be phrased differently. Set to false ONLY if there is an actual grammatical error, typo, spelling mistake, or completely wrong word choice.
   "correctText": "A grammatically corrected version of the user's input. If the user's input has no grammar or spelling errors, you MUST set 'isCorrect' to true and return an empty string or the exact same sentence here. Do NOT rewrite correct sentences just to suggest synonyms or advanced vocabulary.",
-  "corrections": "Explanation of actual grammar/spelling mistakes in Vietnamese. If the user made no errors, write 'Không có lỗi ngữ pháp!' or 'Không có'."
+  "corrections": "Explanation of actual grammar/spelling mistakes in Vietnamese. If the user made no errors, write 'Không có lỗi ngữ pháp!' or 'Không có'. Important: Only comment on actual errors present in the user's latest message. Do not hallucinate corrections for words that are not in their message."
 }`;
 
   if (provider === "gemini") {
@@ -71,10 +71,8 @@ The JSON structure must match this schema exactly:
 async function callGeminiAPI(prompt, history, apiKey, model, systemInstruction) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-  // Định dạng lịch sử hội thoại cho Gemini
   const contents = [];
 
-  // Thêm lịch sử (giới hạn 10 câu gần nhất để tiết kiệm token và giữ hiệu năng)
   const recentHistory = history.slice(-10);
   recentHistory.forEach(msg => {
     contents.push({
@@ -83,7 +81,6 @@ async function callGeminiAPI(prompt, history, apiKey, model, systemInstruction) 
     });
   });
 
-  // Thêm câu thoại hiện tại của người dùng
   contents.push({
     role: "user",
     parts: [{ text: prompt }]
@@ -96,7 +93,7 @@ async function callGeminiAPI(prompt, history, apiKey, model, systemInstruction) 
     },
     generationConfig: {
       responseMimeType: "application/json",
-      temperature: 0.7,
+      temperature: 0.3,
       maxOutputTokens: 800
     }
   };
@@ -131,12 +128,10 @@ async function callGeminiAPI(prompt, history, apiKey, model, systemInstruction) 
 async function callOpenaiAPI(prompt, history, apiKey, model, systemInstruction) {
   const url = "https://api.openai.com/v1/chat/completions";
 
-  // Định dạng lịch sử hội thoại cho OpenAI
   const messages = [
     { role: "system", content: systemInstruction }
   ];
 
-  // Thêm lịch sử (giới hạn 10 câu gần nhất)
   const recentHistory = history.slice(-10);
   recentHistory.forEach(msg => {
     messages.push({
@@ -145,7 +140,6 @@ async function callOpenaiAPI(prompt, history, apiKey, model, systemInstruction) 
     });
   });
 
-  // Thêm câu thoại hiện tại của người dùng
   messages.push({
     role: "user",
     content: prompt
@@ -155,7 +149,7 @@ async function callOpenaiAPI(prompt, history, apiKey, model, systemInstruction) 
     model: model,
     messages: messages,
     response_format: { type: "json_object" },
-    temperature: 0.7,
+    temperature: 0.3,
     max_tokens: 800
   };
 
@@ -550,24 +544,20 @@ export function speakEnglishText(text) {
   }
 
   try {
-    // Dừng mọi âm thanh đang đọc dở dang
     window.speechSynthesis.cancel();
 
-    // Làm sạch text khỏi mã markdown để đọc mượt mà
     const cleanText = text.replace(/[*_`]/g, "").trim();
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = "en-US";
 
-    // Lấy cài đặt tốc độ đọc nếu tồn tại phần tử cấu hình của AI Chat
     const speedEl = document.getElementById('ai-chat-tts-speed');
     if (speedEl) {
       utterance.rate = parseFloat(speedEl.value) || 0.95;
     } else {
-      utterance.rate = 0.85; // tốc độ ôn tập từ vựng/SRS tiêu chuẩn
+      utterance.rate = 0.85;
     }
 
-    // Lấy cài đặt giọng đọc
     const voiceSelect = document.getElementById('ai-chat-tts-voice');
     if (voiceSelect && voiceSelect.value !== "default") {
       const voices = window.speechSynthesis.getVoices();
@@ -576,6 +566,8 @@ export function speakEnglishText(text) {
         utterance.voice = selectedVoice;
       }
     }
+
+    window.speechSynthesis.speak(utterance);
 
   } catch (e) {
     console.warn("TTS Speech failed:", e);

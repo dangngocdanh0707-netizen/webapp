@@ -13,13 +13,9 @@ export function initIncomesModule(data, onSync) {
     dateInput.value = getTodayDateString();
   }
 
-  // POPULATE MONTHS IN FILTER DROPDOWN
   populateIncomeMonths();
-
-  // POPULATE CATEGORIES IN FILTER DROPDOWN
   populateIncomeCategories();
 
-  // Setup auto-formatting event listener on new income amount input
   const amountInput = document.getElementById('ins-inc-amount');
   if (amountInput && !amountInput.dataset.listenerAttached) {
     amountInput.addEventListener('input', (e) => {
@@ -36,10 +32,7 @@ export function initIncomesModule(data, onSync) {
     amountInput.dataset.listenerAttached = 'true';
   }
 
-  // RENDER GRAPHICS
   renderIncomeGraphics();
-
-  // RENDER TABLE
   buildIncomeTable();
 }
 
@@ -232,7 +225,7 @@ export function buildIncomeTable() {
   });
 }
 
-// ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
+
 
 window.app.incomes.enterEditMode = function (id) {
   document.querySelectorAll(`.view-inc-mode-${id}`).forEach(el => el.classList.add('hidden'));
@@ -294,7 +287,6 @@ window.app.incomes.addIncomeRow = function () {
     return;
   }
 
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let newRowNumber = Math.max(...allIncomeData.map(c => c.rowNumber), 1) + 1;
   let newObj = {
     rowNumber: newRowNumber,
@@ -306,7 +298,6 @@ window.app.incomes.addIncomeRow = function () {
 
   allIncomeData.push(newObj);
 
-  // Update month filter dropdown and preserve selection
   const currentMonthFilter = document.getElementById('incomeMonthFilter') ? document.getElementById('incomeMonthFilter').value : "All";
   populateIncomeMonths();
   populateIncomeCategories();
@@ -318,11 +309,9 @@ window.app.incomes.addIncomeRow = function () {
   buildIncomeTable();
   renderIncomeGraphics();
 
-  // Clear inputs
   document.getElementById('ins-inc-amount').value = "";
   document.getElementById('ins-inc-note').value = "";
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertIncomeRow", [date, cat, amount, note])
     .then(res => {
       if (res !== "Thành công") {
@@ -358,7 +347,6 @@ window.app.incomes.saveIncomeRow = function (id) {
   let amount = parseInt(amountRaw.replace(/[^\d]/g, ''), 10) || 0;
   let note = document.getElementById(`edit-inc-note-${id}`).value;
 
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allIncomeData.findIndex(c => c.rowNumber == id);
   if (idx === -1) return;
 
@@ -368,7 +356,6 @@ window.app.incomes.saveIncomeRow = function (id) {
   allIncomeData[idx].amount = amount;
   allIncomeData[idx].note = note;
 
-  // Store current selection of filters
   const currentMonthFilter = document.getElementById('incomeMonthFilter') ? document.getElementById('incomeMonthFilter').value : "All";
   populateIncomeMonths();
   populateIncomeCategories();
@@ -382,7 +369,6 @@ window.app.incomes.saveIncomeRow = function (id) {
   renderIncomeGraphics();
   console.log("Đã cập nhật khoản thu nhập thành công!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateIncomeRow", [id, date, cat, amount, note])
     .then(res => {
       if (res !== "Thành công") {
@@ -411,7 +397,6 @@ window.app.incomes.saveIncomeRow = function (id) {
 };
 
 window.app.incomes.deleteRow = function (id) {
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allIncomeData.findIndex(c => c.rowNumber == id);
   if (idx === -1) return;
 
@@ -420,7 +405,6 @@ window.app.incomes.deleteRow = function (id) {
 
   allIncomeData.splice(idx, 1);
 
-  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
   allIncomeData.forEach(item => {
     if (item.rowNumber > id) {
       item.rowNumber--;
@@ -439,7 +423,6 @@ window.app.incomes.deleteRow = function (id) {
   renderIncomeGraphics();
   console.log("Đã xóa khoản thu nhập thành công!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteIncomeRow", [id])
     .then(res => {
       if (res !== "Thành công") {

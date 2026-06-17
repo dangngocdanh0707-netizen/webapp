@@ -156,7 +156,7 @@ export function buildVocabTable() {
   });
 }
 
-// ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
+// Expose to window scope
 
 window.app.vocab.toggleVocabEdit = function(id, isEdit) {
   document.querySelectorAll(`.v-view-${id}`).forEach(el => isEdit ? el.classList.add('hidden') : el.classList.remove('hidden'));
@@ -175,7 +175,7 @@ window.app.vocab.addVocabRow = function() {
     return;
   }
   
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  // Optimistic update
   let newRowNumber = Math.max(...allVocabData.map(v => v.rowNumber), 1) + 1;
   let newObj = {
     rowNumber: newRowNumber,
@@ -197,7 +197,6 @@ window.app.vocab.addVocabRow = function() {
   // Clear inputs
   document.getElementById('ins-v-content').value = "";
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertVocabRow", [content, ""])
     .then(res => {
       if (res !== "Thành công") {
@@ -212,7 +211,7 @@ window.app.vocab.addVocabRow = function() {
     allVocabData = allVocabData.filter(v => v.rowNumber !== newRowNumber);
     buildVocabTable();
     document.getElementById('ins-v-content').value = content;
-    console.error("Lỗi đồng bộ: " + errorMessage);
+    console.error("Sync error: " + errorMessage);
   }
 };
 
@@ -228,7 +227,7 @@ window.app.vocab.saveVocab = function(id) {
     return;
   } 
   
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  // Optimistic update
   let idx = allVocabData.findIndex(v => v.rowNumber == id);
   if (idx === -1) return;
 
@@ -243,7 +242,6 @@ window.app.vocab.saveVocab = function(id) {
   window.app.vocab.toggleVocabEdit(id, false);
   buildVocabTable();
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateVocabRow", [id, content, transcription, cat, topic, level, meaning])
     .then(res => {
       if (res !== "Thành công") {
@@ -260,12 +258,12 @@ window.app.vocab.saveVocab = function(id) {
     }
     buildVocabTable();
     window.app.vocab.toggleVocabEdit(id, true);
-    console.error("Lỗi cập nhật: " + errorMessage);
+    console.error("Update error: " + errorMessage);
   }
 };
 
 window.app.vocab.deleteVocab = function(id) {
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  // Optimistic update
   let idx = allVocabData.findIndex(v => v.rowNumber == id);
   if (idx === -1) return;
 
@@ -274,7 +272,7 @@ window.app.vocab.deleteVocab = function(id) {
 
   allVocabData.splice(idx, 1);
   
-  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
+  // Adjust row numbers for remaining entries
   allVocabData.forEach(item => {
     if (item.rowNumber > id) {
       item.rowNumber--;
@@ -283,7 +281,6 @@ window.app.vocab.deleteVocab = function(id) {
 
   buildVocabTable();
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteVocabRow", [id])
     .then(res => {
       if (res !== "Thành công") {
@@ -302,7 +299,7 @@ window.app.vocab.deleteVocab = function(id) {
     });
     allVocabData.splice(deletedIndex, 0, deletedItem);
     buildVocabTable();
-    console.error("Lỗi xóa: " + errorMessage);
+    console.error("Delete error: " + errorMessage);
   }
 };
 

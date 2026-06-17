@@ -30,7 +30,7 @@ function getAnkiNextState(interval, easeFactor, delayDays, action, status, prevI
   let newEase = easeFactor;
   let newInterval = 0;
 
-  // Chuẩn hóa trạng thái thẻ
+  // Normalize card status
   const cardStatus = (status || "").toString().trim();
   const isNew = (cardStatus === "New" || interval === 0 && cardStatus !== "Relearning");
   const isRelearning = (cardStatus === "Relearning");
@@ -140,7 +140,7 @@ export function initSrsModule(vocabData, onSync) {
   today.setHours(0, 0, 0, 0);
   let todayTs = today.getTime();
 
-  // 1. Lọc tất cả thẻ cũ cần ôn tập (due cards) hoặc thẻ đang học lại (Relearning)
+  // Filter due cards or relearning cards
   let dueCards = allVocabData.filter(v => {
     let nr = v.next_review ? v.next_review.toString().trim() : "";
     let status = (v.status || "").toString().trim();
@@ -150,14 +150,13 @@ export function initSrsModule(vocabData, onSync) {
     return nrTs <= todayTs || status === "Relearning";
   });
 
-  // 2. Lọc thẻ mới (New) giới hạn tối đa 50 thẻ mỗi ngày
+  // Filter new cards (max 50/day)
   let newCards = allVocabData.filter(v => {
     let status = (v.status || "New").toString().trim();
     let nr = v.next_review ? v.next_review.toString().trim() : "";
     return status === "New" || nr === "";
   }).slice(0, 50);
 
-  // Hàng chờ ôn tập tổng hợp
   reviewQueue = [...dueCards, ...newCards];
   activeQueue = [];
   fillActiveQueue();
@@ -201,7 +200,7 @@ function highlightSrsButton(scoreOrSuccess) {
   // No highlight rings, user prefers a clean layout
 }
 
-// ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
+// Expose to window scope
 
 window.app.srs.playPracticeTTS = function () {
   if (currentPracticeWord && currentPracticeWord.content) {
@@ -228,7 +227,7 @@ window.app.srs.triggerRandomVocab = function () {
   }
 
   if (activeQueue.length === 0) {
-    console.info("Hộp từ vựng ôn tập của bạn đã trống! Hãy thêm từ mới hoặc quay lại vào ngày mai nhé.");
+    console.info("Review queue is empty!");
     return;
   }
 
@@ -522,7 +521,7 @@ window.app.srs.checkScrambleAnswer = function () {
     }
     showInteractiveFeedback(true, "");
   } else {
-    showInteractiveFeedback(false, `❌ Chưa đúng! Đáp án đúng là: "${targetText}"`);
+    showInteractiveFeedback(false, `❌ Incorrect! Answer: "${targetText}"`);
     const outputContainer = document.getElementById('practice-scramble-output');
     if (outputContainer) {
       outputContainer.classList.add('practice-state-incorrect');
@@ -551,7 +550,7 @@ window.app.srs.checkTypingAnswer = function () {
     inputEl.disabled = true;
     showInteractiveFeedback(true, "");
   } else {
-    showInteractiveFeedback(false, `❌ Chưa đúng! Đáp án đúng là: "${targetAns}"`);
+    showInteractiveFeedback(false, `❌ Incorrect! Answer: "${targetAns}"`);
     inputEl.classList.add('practice-state-incorrect');
     setTimeout(() => {
       inputEl.classList.remove('practice-state-incorrect');
@@ -603,10 +602,10 @@ window.app.srs.logPracticeAction = function (action) {
   let finalEase = nextState.easeFactor;
   let finalStatus = finalInterval === 0 ? "Relearning" : (finalInterval >= 21 ? "Mastered" : "Learning");
 
-  // Tính chuỗi ngày ôn tiếp theo
+  // Calculate next review date
   const nextReviewStr = getTodayDateString(finalInterval);
 
-  // Cập nhật thông tin trực tiếp trên thẻ từ vựng cục bộ
+  // Update card metadata locally
   if (currentPracticeWord.interval > 0 && (currentPracticeWord.prevInterval === undefined || currentPracticeWord.prevInterval === null)) {
     currentPracticeWord.prevInterval = currentPracticeWord.interval;
   }
@@ -615,19 +614,18 @@ window.app.srs.logPracticeAction = function (action) {
   currentPracticeWord.ease_factor = finalEase;
   currentPracticeWord.next_review = nextReviewStr;
 
-  // 1. Cập nhật hàng chờ cục bộ
+  // Update local queue
   if (action !== "again") {
-    // Nếu chọn đúng (hard/good/easy), loại bỏ thẻ khỏi activeQueue
     activeQueue = activeQueue.filter(v => v.rowNumber !== rowNumber);
     fillActiveQueue();
   }
 
   let totalDue = reviewQueue.length + activeQueue.length;
 
-  // 2. Cập nhật số lượng đếm trên giao diện ngay lập tức
+  // Update counts in UI
   updateSrsCounts();
 
-  // 3. Hiển thị từ tiếp theo hoặc trạng thái hoàn thành ngay lập tức
+  // Trigger next word or display completion state
   const cardContent = document.getElementById('practice-card-content');
   const emptyState = document.getElementById('practice-empty-state');
   const btnTrigger = document.getElementById('btn-practice-trigger');
@@ -645,18 +643,16 @@ window.app.srs.logPracticeAction = function (action) {
     if (btnTrigger) btnTrigger.classList.remove('hidden');
   }
 
-  // 4. Đồng bộ dữ liệu lên Google Sheets ở chế độ ngầm (Background Sync)
-  // Gửi trực tiếp các giá trị đã tính toán xong để server ghi đè thẳng xuống Sheet, không cần đọc lại
+  // Background sync to Google Sheets
   callServer("logVocabReviewAction", [rowNumber, finalStatus, nextReviewStr, finalEase, finalInterval])
     .then(res => {
-      // Chỉ tải lại toàn bộ dữ liệu từ server khi phiên học hiện tại đã hoàn thành (tổng số lượng hàng chờ trống)
       if (totalDue === 0 && onSyncNeeded) {
         onSyncNeeded();
       }
     })
     .catch(err => {
       console.error("Background sync failed for row " + rowNumber, err);
-      console.error("Lỗi đồng bộ ôn tập: " + err.message);
+      console.error("Review sync error: " + err.message);
     });
 };
 

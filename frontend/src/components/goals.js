@@ -65,7 +65,7 @@ export function buildGoalTable() {
 }
 
 
-// ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
+
 
 window.app.goals.toggleGoalEdit = function(id, isEdit) {
   document.querySelectorAll(`.goal-view-${id}`).forEach(el => isEdit ? el.classList.add('hidden') : el.classList.remove('hidden'));
@@ -86,7 +86,6 @@ window.app.goals.addGoalRow = function() {
     return;
   }
   
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let newRowNumber = Math.max(...allGoalData.map(g => g.rowNumber), 1) + 1;
   let newObj = {
     rowNumber: newRowNumber,
@@ -100,13 +99,11 @@ window.app.goals.addGoalRow = function() {
   allGoalData.push(newObj);
   buildGoalTable();
 
-  // Clear inputs
   document.getElementById('ins-goal-name').value = "";
   document.getElementById('ins-goal-end').value = "";
   document.getElementById('ins-goal-current').value = "0";
   document.getElementById('ins-goal-target').value = "";
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertGoalRow", [name, start, end, current, target])
     .then(res => {
       if (res !== "Thành công") {
@@ -137,7 +134,6 @@ window.app.goals.saveGoal = function(id) {
   let current = document.getElementById(`goal-edit-current-${id}`).value; 
   let target = document.getElementById(`goal-edit-target-${id}`).value;
   
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allGoalData.findIndex(g => g.rowNumber == id);
   if (idx === -1) return;
 
@@ -152,7 +148,6 @@ window.app.goals.saveGoal = function(id) {
   buildGoalTable();
   console.log("Đã cập nhật mục tiêu thành công!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateGoalRow", [id, name, start, end, current, target])
     .then(res => {
       if (res !== "Thành công") {
@@ -174,7 +169,6 @@ window.app.goals.saveGoal = function(id) {
 };
 
 window.app.goals.deleteGoal = function(id) {
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allGoalData.findIndex(g => g.rowNumber == id);
   if (idx === -1) return;
 
@@ -183,7 +177,6 @@ window.app.goals.deleteGoal = function(id) {
 
   allGoalData.splice(idx, 1);
   
-  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
   allGoalData.forEach(item => {
     if (item.rowNumber > id) {
       item.rowNumber--;
@@ -193,7 +186,6 @@ window.app.goals.deleteGoal = function(id) {
   buildGoalTable();
   console.log("Đã xóa mục tiêu thành công!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteGoalRow", [id])
     .then(res => {
       if (res !== "Thành công") {

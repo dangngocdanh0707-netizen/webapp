@@ -2,10 +2,10 @@ import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { formatDateView } from '../services/api.js';
 
-// Đăng ký bổ sung plugin vẽ nhãn dữ liệu
+// Register plugin for rendering data labels
 Chart.register(ChartDataLabels);
 
-// Vô hiệu hóa tooltip toàn cục cho tất cả biểu đồ
+// Disable tooltips globally for all charts
 Chart.defaults.plugins.tooltip.enabled = false;
 
 export let barChartInstance = null;

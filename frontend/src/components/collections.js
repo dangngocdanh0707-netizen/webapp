@@ -180,7 +180,7 @@ export function buildCollectionsGrid() {
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="bg-rose-50/10">
           <td colspan="4" class="p-4 pl-6 text-xs text-rose-800 font-medium">
-            ⚠️ Lỗi dữ liệu dòng #${item.rowNumber || '?'}: ${escapeHTML(rowError.message)}
+            ⚠️ Data error for row #${item.rowNumber || '?'}: ${escapeHTML(rowError.message)}
           </td>
         </tr>
       `);
@@ -188,7 +188,7 @@ export function buildCollectionsGrid() {
   });
 }
 
-// ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
+// Expose to window scope
 
 window.app.collections.filterCollectionGrid = function() {
   buildCollectionsGrid();
@@ -210,7 +210,7 @@ window.app.collections.saveNewCollection = function() {
     return;
   }
 
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  // Optimistic update
   let newRowNumber = Math.max(...allCollectionData.map(c => c.rowNumber), 1) + 1;
   let newObj = {
     rowNumber: newRowNumber,
@@ -227,7 +227,6 @@ window.app.collections.saveNewCollection = function() {
   if (brandInput) brandInput.value = "";
   if (catInput) catInput.value = "";
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertCollectionRow", [item, brand, category])
     .then(res => {
       if (res !== "Thành công") {
@@ -249,7 +248,7 @@ window.app.collections.saveNewCollection = function() {
 };
 
 window.app.collections.deleteCollectionItem = function(id) {
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  // Optimistic update
   let idx = allCollectionData.findIndex(c => c.rowNumber == id);
   if (idx === -1) return;
 
@@ -258,7 +257,7 @@ window.app.collections.deleteCollectionItem = function(id) {
 
   allCollectionData.splice(idx, 1);
   
-  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
+  // Adjust row numbers for remaining entries
   allCollectionData.forEach(item => {
     if (item.rowNumber > id) {
       item.rowNumber--;
@@ -268,7 +267,6 @@ window.app.collections.deleteCollectionItem = function(id) {
   buildCollectionsGrid();
   console.log("Asset successfully deleted from collection!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deleteCollectionRow", [id])
     .then(res => {
       if (res !== "Thành công") {
@@ -307,7 +305,7 @@ window.app.collections.saveCollectionItem = function(id) {
     return;
   }
 
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
+  // Optimistic update
   let idx = allCollectionData.findIndex(c => c.rowNumber == id);
   if (idx === -1) return;
 
@@ -320,7 +318,6 @@ window.app.collections.saveCollectionItem = function(id) {
   buildCollectionsGrid();
   console.log("Asset successfully updated! 🎉");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updateCollectionRow", [id, item, brand, category])
     .then(res => {
       if (res !== "Thành công") {

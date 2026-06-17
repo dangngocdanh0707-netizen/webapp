@@ -76,7 +76,7 @@ export function buildPromptTable() {
   });
 }
 
-// ---- BRIDGING ACTIONS TO WINDOW SCOPE ----
+
 
 window.app.prompts.filterPromptTable = function() {
   buildPromptTable();
@@ -111,7 +111,6 @@ window.app.prompts.addPromptRow = function() {
     return;
   }
   
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let newRowNumber = Math.max(...allPromptData.map(p => p.rowNumber), 1) + 1;
   let newObj = {
     rowNumber: newRowNumber,
@@ -127,7 +126,6 @@ window.app.prompts.addPromptRow = function() {
   document.getElementById('ins-prompt-content').value = "";
   document.getElementById('ins-prompt-cat').value = "";
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("insertPromptRow", [title, content, category])
     .then(res => {
       if (res !== "Thành công") {
@@ -153,7 +151,6 @@ window.app.prompts.savePrompt = function(id) {
   let content = document.getElementById(`prompt-edit-content-${id}`).value.trim();
   let category = document.getElementById(`prompt-edit-cat-${id}`).value.trim();
   
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allPromptData.findIndex(p => p.rowNumber == id);
   if (idx === -1) return;
 
@@ -166,7 +163,6 @@ window.app.prompts.savePrompt = function(id) {
   buildPromptTable();
   console.log("Đã cập nhật mẫu Prompt thành công!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("updatePromptRow", [id, title, content, category])
     .then(res => {
       if (res !== "Thành công") {
@@ -188,7 +184,6 @@ window.app.prompts.savePrompt = function(id) {
 };
 
 window.app.prompts.deletePrompt = function(id) {
-  // 1. Cập nhật giao diện lập tức (Optimistic Update)
   let idx = allPromptData.findIndex(p => p.rowNumber == id);
   if (idx === -1) return;
 
@@ -197,7 +192,6 @@ window.app.prompts.deletePrompt = function(id) {
 
   allPromptData.splice(idx, 1);
   
-  // Co giãn số dòng cho toàn bộ các dòng phía sau dòng bị xóa
   allPromptData.forEach(item => {
     if (item.rowNumber > id) {
       item.rowNumber--;
@@ -207,7 +201,6 @@ window.app.prompts.deletePrompt = function(id) {
   buildPromptTable();
   console.log("Đã xóa mẫu Prompt thành công!");
 
-  // 2. Gửi yêu cầu lưu ngầm lên Google Sheets
   callServer("deletePromptRow", [id])
     .then(res => {
       if (res !== "Thành công") {

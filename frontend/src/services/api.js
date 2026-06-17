@@ -1,13 +1,11 @@
-// DỊCH VỤ ĐỒNG BỘ DỮ LIỆU - API & LOCAL STORAGE SERVICE
-// Lớp cơ sở dữ liệu kết nối an toàn trực tiếp với Google Sheets API v4
+// Google Sheets API & Local Storage Service
 
-
-// Cấu hình phím lưu trữ trong localStorage
+// LocalStorage key configurations
 const KEY_SPREADSHEET_ID = "GOOGLE_SPREADSHEET_ID";
 const KEY_API_KEY = "GOOGLE_API_KEY";
 const KEY_CLIENT_ID = "GOOGLE_CLIENT_ID";
 
-// Biến lưu trạng thái SDK toàn cục
+// Global SDK state variables
 let tokenClient = null;
 let gapiInitialized = false;
 let isManualLogin = false;
@@ -15,7 +13,7 @@ let sheetIdMap = {}; // Cache tên sheet -> sheetId để xóa dòng
 let resolvedTabsCache = {}; // Cache ánh xạ tên tab tự động phân giải
 let tokenRefreshTimeout = null;
 
-// Tự động gia hạn token ngầm trước khi hết hạn
+// Auto silent token refresh
 function scheduleTokenSilentRefresh(expiresIn) {
   if (tokenRefreshTimeout) {
     clearTimeout(tokenRefreshTimeout);
@@ -27,17 +25,17 @@ function scheduleTokenSilentRefresh(expiresIn) {
 
   tokenRefreshTimeout = setTimeout(() => {
     if (tokenClient && isGoogleConnected()) {
-      console.log("[api.js] Token sắp hết hạn, đang tự động làm mới ngầm...");
+      console.log("[api.js] Token expiring, performing silent refresh...");
       try {
         tokenClient.requestAccessToken({ prompt: 'none' });
       } catch (e) {
-        console.warn("[api.js] Tự động làm mới ngầm định kỳ thất bại:", e);
+        console.warn("[api.js] Silent refresh failed:", e);
       }
     }
   }, delayMs);
 }
 
-// Lấy thông tin cấu hình credentials từ localStorage
+// Get credentials from localStorage
 export function getCredentials() {
   return {
     spreadsheetId: localStorage.getItem(KEY_SPREADSHEET_ID) || import.meta.env.VITE_SPREADSHEET_ID || "",
@@ -46,7 +44,7 @@ export function getCredentials() {
   };
 }
 
-// Lưu thông tin credentials vào localStorage
+// Save credentials to localStorage
 export function saveCredentials(spreadsheetId, apiKey, clientId) {
   localStorage.setItem(KEY_SPREADSHEET_ID, spreadsheetId.trim());
   localStorage.setItem(KEY_API_KEY, apiKey.trim());
@@ -54,7 +52,7 @@ export function saveCredentials(spreadsheetId, apiKey, clientId) {
   resolvedTabsCache = {}; // Reset cache khi đổi credentials
 }
 
-// Xóa cấu hình credentials
+// Clear credentials
 export function clearCredentials() {
   localStorage.removeItem(KEY_SPREADSHEET_ID);
   localStorage.removeItem(KEY_API_KEY);
@@ -62,7 +60,7 @@ export function clearCredentials() {
   localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
 }
 
-// Cấu hình AI credentials trong localStorage
+// AI credentials configurations
 const KEY_AI_PROVIDER = "AI_PROVIDER";
 const KEY_GEMINI_KEY = "AI_GEMINI_KEY";
 const KEY_OPENAI_KEY = "AI_OPENAI_KEY";
@@ -91,7 +89,7 @@ export function clearAiCredentials() {
   localStorage.removeItem(KEY_AI_MODEL);
 }
 
-// Kiểm tra xem đã kết nối thành công và có token hợp lệ chưa
+// Check if connected with a valid token
 export function isGoogleConnected() {
   const creds = getCredentials();
   const hasCreds = creds.spreadsheetId && creds.clientId && creds.apiKey;
@@ -99,19 +97,19 @@ export function isGoogleConnected() {
   return !!(hasCreds && hasToken);
 }
 
-// Kiểm tra xem đồng bộ Google Sheets có đang hoạt động thực tế hay không (GAPI đã tải xong)
+// Check if Google Sheets sync is active (GAPI initialized)
 export function isGoogleSheetsActive() {
   const creds = getCredentials();
   const hasToken = localStorage.getItem("GOOGLE_ACCESS_TOKEN") !== null;
   return !!(creds.spreadsheetId && hasToken && gapiInitialized);
 }
 
-// Khởi tạo các SDK Google API và GIS
+// Initialize Google API and GIS SDKs
 export function initGoogleAuth() {
   return new Promise((resolve) => {
     const creds = getCredentials();
     if (!creds.spreadsheetId || !creds.clientId || !creds.apiKey) {
-      console.log("[api.js] Thiếu cấu hình Google Credentials.");
+      console.log("[api.js] Missing Google Credentials.");
       resolve(false);
       return;
     }
@@ -119,7 +117,7 @@ export function initGoogleAuth() {
     let checkAttempts = 0;
     function checkSDKsLoaded() {
       if (typeof gapi !== 'undefined' && typeof google !== 'undefined') {
-        // 1. Khởi tạo GAPI Client
+        // Initialize GAPI Client
         gapi.load('client', async () => {
           try {
             await gapi.client.init({
@@ -127,22 +125,21 @@ export function initGoogleAuth() {
               discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
             });
             gapiInitialized = true;
-            console.log("[api.js] Google API Client (GAPI) đã khởi tạo.");
+            console.log("[api.js] Google API Client (GAPI) initialized.");
 
             let authResolved = false;
 
-            // 2. Khởi tạo GIS Token Client trước
+            // Initialize GIS Token Client
             tokenClient = google.accounts.oauth2.initTokenClient({
               client_id: creds.clientId,
               scope: 'https://www.googleapis.com/auth/spreadsheets',
               callback: (tokenResponse) => {
                 if (tokenResponse.error !== undefined) {
-                  console.error("[api.js] Lỗi xác thực OAuth:", tokenResponse);
+                  console.error("[api.js] OAuth verification error:", tokenResponse);
                   if (tokenResponse.error === 'consent_required' || tokenResponse.error === 'interaction_required') {
-                    // Lỗi tự động refresh ngầm thất bại (do hết hạn session Google), không hiển thị toast lỗi
                     localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
                   } else {
-                    console.error("Lỗi kết nối Google:", tokenResponse.error);
+                    console.error("Google connection error:", tokenResponse.error);
                   }
                   if (!authResolved) {
                     authResolved = true;
@@ -150,8 +147,8 @@ export function initGoogleAuth() {
                   }
                   return;
                 }
-                console.log("[api.js] Nhận token thành công:", tokenResponse);
-                tokenResponse.timestamp = Date.now(); // Lưu thời gian tạo token
+                console.log("[api.js] Token received successfully:", tokenResponse);
+                tokenResponse.timestamp = Date.now();
                 localStorage.setItem("GOOGLE_ACCESS_TOKEN", JSON.stringify(tokenResponse));
                 gapi.client.setToken(tokenResponse);
 
@@ -164,7 +161,7 @@ export function initGoogleAuth() {
                   // Đăng nhập thủ công thì tải lại trang để nạp lại dữ liệu Sheets
                   window.location.reload();
                 } else {
-                  console.log("[api.js] Tự động làm mới token thành công.");
+                  console.log("[api.js] Silent token refresh successful.");
                   if (!authResolved) {
                     authResolved = true;
                     resolve(true);
@@ -173,7 +170,7 @@ export function initGoogleAuth() {
               }
             });
 
-            // 3. Phục hồi token từ localStorage nếu có và chưa hết hạn
+            // Restore token from localStorage if valid
             const cachedTokenStr = localStorage.getItem("GOOGLE_ACCESS_TOKEN");
             if (cachedTokenStr) {
               const cachedToken = JSON.parse(cachedTokenStr);
@@ -181,12 +178,12 @@ export function initGoogleAuth() {
               const isExpired = cachedToken.timestamp && (Date.now() - cachedToken.timestamp > (cachedToken.expires_in - 300) * 1000);
 
               if (isExpired) {
-                console.log("[api.js] Token đã hết hạn, đang tự động làm mới ngầm...");
+                console.log("[api.js] Token expired, requesting silent refresh...");
                 try {
                   // Đặt cơ chế tự hủy timeout phòng trường hợp API bị treo
                   setTimeout(() => {
                     if (!authResolved) {
-                      console.warn("[api.js] Hết thời gian chờ làm mới token.");
+                      console.warn("[api.js] Token refresh timeout.");
                       authResolved = true;
                       resolve(false);
                     }
@@ -194,7 +191,7 @@ export function initGoogleAuth() {
 
                   tokenClient.requestAccessToken({ prompt: 'none' });
                 } catch (e) {
-                  console.warn("Tự động làm mới token thất bại:", e);
+                  console.warn("Silent token refresh failed:", e);
                   if (!authResolved) {
                     authResolved = true;
                     resolve(false);
@@ -220,14 +217,14 @@ export function initGoogleAuth() {
             }
 
           } catch (err) {
-            console.error("[api.js] Lỗi khởi tạo GAPI Client:", err);
+            console.error("[api.js] GAPI Client initialization error:", err);
             resolve(false);
           }
         });
       } else {
         checkAttempts++;
         if (checkAttempts > 50) { // 5 giây (50 * 100ms)
-          console.warn("[api.js] Không thể tải Google SDKs (gapi/google). Hủy kích hoạt chế độ Online.");
+          console.warn("[api.js] Failed to load Google SDKs. Disabling online features.");
           resolve(false);
           return;
         }
@@ -238,7 +235,7 @@ export function initGoogleAuth() {
   });
 }
 
-// Thực hiện đăng nhập Google OAuth
+// Sign in with Google OAuth
 export function signInWithGoogle() {
   if (!tokenClient) {
     if (window.app && typeof window.app.openSettingsModal === 'function') {
@@ -250,13 +247,13 @@ export function signInWithGoogle() {
   tokenClient.requestAccessToken({ prompt: '' }); // Lược bỏ việc bắt buộc duyệt quyền (prompt: 'consent' -> prompt: '')
 }
 
-// Đăng xuất và xóa token
+// Sign out and clear token
 export function signOutFromGoogle() {
   const token = gapi.client?.getToken();
   if (token) {
     try {
       google.accounts.oauth2.revoke(token.access_token, () => {
-        console.log("[api.js] Đã thu hồi Access Token.");
+        console.log("[api.js] Access token revoked.");
       });
     } catch (e) {
       console.warn(e);
@@ -268,7 +265,7 @@ export function signOutFromGoogle() {
   window.location.reload();
 }
 
-// Lấy Sheet ID từ tên tab (cần thiết cho các lệnh batchUpdate như delete row)
+// Get Sheet ID by name
 async function getSheetId(sheetName, spreadsheetId) {
   if (sheetIdMap[sheetName] !== undefined) {
     return sheetIdMap[sheetName];
@@ -280,14 +277,14 @@ async function getSheetId(sheetName, spreadsheetId) {
   return sheetIdMap[sheetName];
 }
 
-// Tự động phân giải tất cả tên tab dựa trên khớp tên hoặc phân tích dòng tiêu đề (Headers)
+// Automatically resolve sheet names based on header signatures or names
 async function resolveAllTabs(spreadsheetId) {
   if (Object.keys(resolvedTabsCache).length > 0) {
     return resolvedTabsCache;
   }
 
   try {
-    console.log("[api.js] Đang tự động phân tích cấu trúc các Sheet tab...");
+    console.log("[api.js] Resolving sheet tabs structure...");
     const response = await gapi.client.sheets.spreadsheets.get({ spreadsheetId });
     const sheets = response.result.sheets || [];
     const existingTitles = sheets.map(s => s.properties.title);
@@ -295,7 +292,7 @@ async function resolveAllTabs(spreadsheetId) {
     const targetTabs = ['assets', 'incomes', 'cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections', 'grammar_diary', 'chat_history'];
     const mappings = {};
 
-    // Bước 1: Khớp trực tiếp và hỗ trợ các biến thể/tên thay thế phổ biến (ví dụ số nhiều, từ đồng nghĩa)
+    // Phase 1: Direct matching with standard fallback alternatives
     const alternativeNames = {
       assets: ['assets', 'assests', 'asset', 'assest', 'tài sản'],
       incomes: ['incomes', 'income', 'thu nhập'],
@@ -328,7 +325,7 @@ async function resolveAllTabs(spreadsheetId) {
       }
     });
 
-    // Bước 2: Với các tab chưa khớp trực tiếp, tải dòng đầu (Header) của các sheet còn lại để phân tích cột
+    // Phase 2: Resolve remaining tabs using column header analysis
     const missingTargets = targetTabs.filter(t => !mappings[t]);
 
     if (missingTargets.length > 0 && existingTitles.length > 0) {
@@ -460,7 +457,7 @@ async function resolveAllTabs(spreadsheetId) {
       });
     }
 
-    // Bước 3: Đặt mặc định nếu vẫn không tìm thấy
+    // Phase 3: Set defaults for unresolved tabs
     targetTabs.forEach(target => {
       if (!mappings[target]) {
         if (target === 'assets') mappings[target] = 'assets';
@@ -480,10 +477,10 @@ async function resolveAllTabs(spreadsheetId) {
     });
 
     resolvedTabsCache = mappings;
-    console.log("[api.js] Tự động khớp các Sheet tab thành công:", resolvedTabsCache);
+    console.log("[api.js] Sheet tabs successfully resolved:", resolvedTabsCache);
     return resolvedTabsCache;
   } catch (err) {
-    console.error("[api.js] Lỗi tự động khớp các Sheet tab:", err);
+    console.error("[api.js] Error resolving sheet tabs:", err);
     return {
       assets: 'assets',
       incomes: 'incomes',
@@ -500,7 +497,7 @@ async function resolveAllTabs(spreadsheetId) {
   }
 }
 
-// Tự động kiểm tra và khởi tạo các Tab dữ liệu thiếu trên Google Sheet
+// Ensure required sheet tabs exist
 async function ensureSheetTabsExist(spreadsheetId) {
   const mappings = await resolveAllTabs(spreadsheetId);
   const response = await gapi.client.sheets.spreadsheets.get({ spreadsheetId });
@@ -513,7 +510,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
   });
 
   if (missingTabs.length > 0) {
-    console.log("[api.js] Đang tự động tạo các sheet tab bị thiếu:", missingTabs);
+    console.log("[api.js] Creating missing sheet tabs:", missingTabs);
     const requests = missingTabs.map(target => ({
       addSheet: {
         properties: { title: mappings[target] || target }
@@ -524,7 +521,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
       resource: { requests }
     });
 
-    // Tạo tiêu đề cột cho các tab mới tạo
+    // Add column headers for newly created tabs
     const headersData = [
       { range: `${mappings['assets'] || 'assets'}!A1:E1`, values: [['assets', 'quantity', 'unit', 'price', 'total']] },
       { range: `${mappings['incomes'] || 'incomes'}!A1:D1`, values: [['Date', 'Category', 'Amount', 'Note']] },
@@ -554,30 +551,27 @@ async function ensureSheetTabsExist(spreadsheetId) {
       });
     }
 
-    // Xóa cache và khớp lại để lấy tên tab mới tạo
+    // Reset cache and re-resolve tabs
     resolvedTabsCache = {};
     await resolveAllTabs(spreadsheetId);
   }
 }
 
-// ---------------- CALL SERVER ENGINE (DIRECT SHEETS REST OR LOCAL-FIRST ROUTER) ----------------
+// Call Server engine (Direct Google Sheets API router)
 
 export function callServer(methodName, args) {
   return new Promise(async (resolve, reject) => {
     const creds = getCredentials();
     const hasToken = localStorage.getItem("GOOGLE_ACCESS_TOKEN") !== null;
 
-    // Yêu cầu kết nối Google Sheets (Online)
     if (!creds.spreadsheetId || !hasToken || !gapiInitialized) {
-      reject(new Error("Ứng dụng chạy chế độ Online. Vui lòng cấu hình Credentials và kết nối Google Sheets trong Sidebar."));
+      reject(new Error("Online mode requires credentials and a valid Google Sheets connection. Please configure this in the Sidebar."));
       return;
     }
 
-    // CHẾ ĐỘ ONLINE: Đọc/Ghi trực tiếp Google Sheets API v4
     try {
       const spreadsheetId = creds.spreadsheetId;
 
-      // Phân giải tên các tab thực tế bằng bộ máy tự động phát hiện cột (Thông minh & Hiệu suất cao)
       const mappings = await resolveAllTabs(spreadsheetId);
       const assetsTab = mappings['assets'];
       const incomesTab = mappings['incomes'];
@@ -591,14 +585,14 @@ export function callServer(methodName, args) {
       const grammarTab = mappings['grammar_diary'];
       const chatTab = mappings['chat_history'];
 
-      // Hàm chuyển đổi chuỗi tiền tệ phức tạp (Ví dụ: "₫40,000" hay "40.000đ") thành số thực cực kỳ mạnh mẽ
+      // Convert formatted currency value to number
       const parseAmount = (val) => {
         if (val === undefined || val === null) return 0;
         const cleaned = val.toString().replace(/[^\d-]/g, '');
         return Number(cleaned) || 0;
       };
 
-      // 1. Nghiệp vụ LẤY TOÀN BỘ DỮ LIỆU (Read all tabs)
+      // Get all dashboard data
       if (methodName === "getAllDashboardData") {
         await ensureSheetTabsExist(spreadsheetId);
         const response = await gapi.client.sheets.spreadsheets.values.batchGet({
@@ -743,7 +737,7 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // 2a. Nghiệp vụ TÀI SẢN (Assets CRUD)
+      // Assets CRUD
       if (methodName === "insertAssetRow") {
         const [asset, quantity, unit, price] = args;
         const total = (Number(quantity) || 0) * (Number(price) || 0);
@@ -791,7 +785,7 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // 2b. Nghiệp vụ THU NHẬP (Incomes CRUD)
+      // Incomes CRUD
       if (methodName === "insertIncomeRow") {
         const [date, category, amount, note] = args;
         await gapi.client.sheets.spreadsheets.values.append({
@@ -837,7 +831,7 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // 2. Nghiệp vụ CHI TIÊU (Expenses CRUD)
+      // Expenses CRUD
       if (methodName === "insertCostRow") {
         const [date, category, subcategory, amount, note] = args;
         await gapi.client.sheets.spreadsheets.values.append({
@@ -883,7 +877,7 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // 3. Nghiệp vụ TỪ VỰNG (Vocabulary & Anki SRS)
+      // Vocabulary & Anki SRS CRUD
       if (methodName === "insertVocabRow") {
         const [content, transcription, category, topic, level, meaning] = args;
         await gapi.client.sheets.spreadsheets.values.append({
@@ -953,7 +947,7 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // 4. Nghiệp vụ THÓI QUEN (Habits)
+      // Habits CRUD
       if (methodName === "updateHabitStatusRow") {
         const [rowNumber, isChecked] = args;
         await gapi.client.sheets.spreadsheets.values.update({
@@ -984,7 +978,7 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // 9. Nghiệp vụ BẢN ĐỒ (Google Maps Explorer)
+      // Google Maps Explorer CRUD
       if (methodName === "updateMapRow") {
         const [rowNumber, place, city, category, status] = args;
         const mapTab = mappings['google_map'];
@@ -1042,7 +1036,7 @@ export function callServer(methodName, args) {
             }
           }
         } catch (validationErr) {
-          console.warn("Lỗi tự động cấu hình checkbox cho Google Maps:", validationErr);
+          console.warn("Failed to auto-configure Google Maps checkbox validation:", validationErr);
         }
 
         resolve("Thành công");
@@ -1083,7 +1077,7 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // 10. Nghiệp vụ SƯU TẬP (Collections CRUD)
+      // Collections CRUD
       if (methodName === "insertCollectionRow") {
         const [item, brand, category] = args;
         const colTab = mappings['collections'] || 'collections';
@@ -1132,7 +1126,7 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // 5. Nghiệp vụ LIÊN KẾT (Links)
+      // Links CRUD
       if (methodName === "insertLinkRow") {
         const [title, category, content] = args;
         await gapi.client.sheets.spreadsheets.values.append({
@@ -1178,7 +1172,7 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // 6. Nghiệp vụ PROMPT AI (Prompts)
+      // Prompts CRUD
       if (methodName === "insertPromptRow") {
         const [title, content, category] = args;
         await gapi.client.sheets.spreadsheets.values.append({
@@ -1224,7 +1218,7 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // 7. Nghiệp vụ MỤC TIÊU (Goals)
+      // Goals CRUD
       if (methodName === "insertGoalRow") {
         const [goal_name, start_date, end_date, current_value, target_value] = args;
         await gapi.client.sheets.spreadsheets.values.append({
@@ -1270,7 +1264,7 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // 8. Nghiệp vụ VIỆC CẦN LÀM (Tasks)
+      // Tasks CRUD
       if (methodName === "insertTaskRow") {
         const [date, taskDesc, urgent, important, status] = args;
         await gapi.client.sheets.spreadsheets.values.append({
@@ -1427,11 +1421,10 @@ export function callServer(methodName, args) {
 
       throw new Error(`Unknown method: ${methodName}`);
     } catch (err) {
-      console.error(`[Google Sheets API Error] Thất bại tại ${methodName}:`, err);
-      // Nếu lỗi do hết hạn token, báo người dùng
+      console.error(`[Google Sheets API Error] Failed at ${methodName}:`, err);
       if (err.status === 401) {
         localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
-        reject(new Error("Mã xác thực Google đã hết hạn hoặc không hợp lệ. Vui lòng kết nối lại trong thanh Sidebar."));
+        reject(new Error("Google authentication token expired. Please reconnect in the Sidebar."));
       } else {
         reject(err);
       }
@@ -1440,7 +1433,7 @@ export function callServer(methodName, args) {
 }
 
 
-// Hàm mã hóa bảo mật chống lỗ hổng XSS (Cross-Site Scripting)
+// Escape HTML to prevent XSS
 export function escapeHTML(str) {
   if (str === undefined || str === null) return '';
   return str.toString()
@@ -1451,9 +1444,7 @@ export function escapeHTML(str) {
     .replace(/'/g, '&#039;');
 }
 
-// ==========================================
-// HỆ THỐNG XỬ LÝ DATE CHUẨN HÓA TOÀN CẦU (Google Sheets Date & UI Sync)
-// Đảm bảo lưu đúng định dạng Date chuẩn trên Google Sheet để dùng các tính năng lọc/định dạng của Google Sheet,
+// Date utilities for Google Sheets & UI Sync
 // đồng thời hiển thị đúng định dạng dd/MM/yyyy và chỉnh sửa bằng thẻ <input type="date"> chuẩn.
 // ==========================================
 
