@@ -326,6 +326,9 @@ function handleScriptError(err) {
   console.error("Sync Failure:", err);
   let errMsg = err.message || err.toString();
 
+  // Cập nhật lại trạng thái nút trong sidebar (quay về nút Connect nếu mất token)
+  updateAuthButtonsState();
+
   // Tự động chuyển qua hiển thị giao diện chính với dữ liệu trống để người dùng có thể tự do bấm Connect Google Sheets trong Sidebar
   renderDashboard({
     assets: [],

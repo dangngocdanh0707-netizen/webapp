@@ -136,10 +136,10 @@ export function initGoogleAuth() {
               callback: (tokenResponse) => {
                 if (tokenResponse.error !== undefined) {
                   console.error("[api.js] OAuth verification error:", tokenResponse);
-                  if (tokenResponse.error === 'consent_required' || tokenResponse.error === 'interaction_required') {
-                    localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
-                  } else {
-                    console.error("Google connection error:", tokenResponse.error);
+                  // Bất kỳ lỗi nào khi lấy token đều có nghĩa là kết nối hiện tại không hợp lệ
+                  localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
+                  if (gapi && gapi.client) {
+                    gapi.client.setToken(null);
                   }
                   if (!authResolved) {
                     authResolved = true;
@@ -184,6 +184,10 @@ export function initGoogleAuth() {
                   setTimeout(() => {
                     if (!authResolved) {
                       console.warn("[api.js] Token refresh timeout.");
+                      localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
+                      if (gapi && gapi.client) {
+                        gapi.client.setToken(null);
+                      }
                       authResolved = true;
                       resolve(false);
                     }
@@ -192,6 +196,10 @@ export function initGoogleAuth() {
                   tokenClient.requestAccessToken({ prompt: 'none' });
                 } catch (e) {
                   console.warn("Silent token refresh failed:", e);
+                  localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
+                  if (gapi && gapi.client) {
+                    gapi.client.setToken(null);
+                  }
                   if (!authResolved) {
                     authResolved = true;
                     resolve(false);
@@ -1422,9 +1430,13 @@ export function callServer(methodName, args) {
       throw new Error(`Unknown method: ${methodName}`);
     } catch (err) {
       console.error(`[Google Sheets API Error] Failed at ${methodName}:`, err);
-      if (err.status === 401) {
+      const status = err.status || err.result?.error?.code;
+      if (status === 401 || status === 403 || err.message?.includes('401') || err.message?.includes('403')) {
         localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
-        reject(new Error("Google authentication token expired. Please reconnect in the Sidebar."));
+        if (gapi && gapi.client) {
+          gapi.client.setToken(null);
+        }
+        reject(new Error("Google authentication token expired or invalid. Please reconnect in the Sidebar."));
       } else {
         reject(err);
       }
