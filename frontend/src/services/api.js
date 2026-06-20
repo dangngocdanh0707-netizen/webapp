@@ -52,14 +52,6 @@ export function saveCredentials(spreadsheetId, apiKey, clientId) {
   resolvedTabsCache = {}; // Reset cache khi đổi credentials
 }
 
-// Clear credentials
-export function clearCredentials() {
-  localStorage.removeItem(KEY_SPREADSHEET_ID);
-  localStorage.removeItem(KEY_API_KEY);
-  localStorage.removeItem(KEY_CLIENT_ID);
-  localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
-}
-
 // AI credentials configurations
 const KEY_AI_PROVIDER = "AI_PROVIDER";
 const KEY_GEMINI_KEY = "AI_GEMINI_KEY";
@@ -82,26 +74,12 @@ export function saveAiCredentials(provider, geminiKey, openaiKey, model) {
   localStorage.setItem(KEY_AI_MODEL, model.trim());
 }
 
-export function clearAiCredentials() {
-  localStorage.removeItem(KEY_AI_PROVIDER);
-  localStorage.removeItem(KEY_GEMINI_KEY);
-  localStorage.removeItem(KEY_OPENAI_KEY);
-  localStorage.removeItem(KEY_AI_MODEL);
-}
-
 // Check if connected with a valid token
 export function isGoogleConnected() {
   const creds = getCredentials();
   const hasCreds = creds.spreadsheetId && creds.clientId && creds.apiKey;
   const hasToken = localStorage.getItem("GOOGLE_ACCESS_TOKEN") !== null;
   return !!(hasCreds && hasToken);
-}
-
-// Check if Google Sheets sync is active (GAPI initialized)
-export function isGoogleSheetsActive() {
-  const creds = getCredentials();
-  const hasToken = localStorage.getItem("GOOGLE_ACCESS_TOKEN") !== null;
-  return !!(creds.spreadsheetId && hasToken && gapiInitialized);
 }
 
 // Initialize Google API and GIS SDKs
