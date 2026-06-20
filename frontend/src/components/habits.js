@@ -58,23 +58,19 @@ export function initHabitsModule(data, onSync) {
     return;
   }
 
-  let performanceDataPerDay = [];
+  const last7Days = getLast7Days();
   let totalPerformanceSum = 0;
 
-  let activeDates = [...habitDates];
-  activeDates.sort((a, b) => parseDateToTimestamp(a) - parseDateToTimestamp(b));
-
-  activeDates.forEach(dateStr => {
-    let dayTasks = allHabitData.filter(h => h.date === dateStr);
+  last7Days.forEach(day => {
+    let dayTasks = allHabitData.filter(h => h.date === day.dateStr);
     let completedTasks = dayTasks.filter(h => h.status === true || h.status === "TRUE" || h.status === "√" || h.status === "checked");
     let percent = dayTasks.length > 0 ? Math.round((completedTasks.length / dayTasks.length) * 100) : 0;
-    performanceDataPerDay.push(percent);
     totalPerformanceSum += percent;
   });
 
   const perfEl = document.getElementById('avg-habit-performance');
   if (perfEl) {
-    perfEl.innerText = (activeDates.length > 0 ? Math.round(totalPerformanceSum / activeDates.length) : 0) + "%";
+    perfEl.innerText = Math.round(totalPerformanceSum / 7) + "%";
   }
 
   buildHabitPerformanceTable();
@@ -253,20 +249,19 @@ function recalculateHabitChartOnly() {
   let habitDates = [...new Set(allHabitData.map(h => h.date))].sort((a, b) => {
     return parseDateToTimestamp(a) - parseDateToTimestamp(b);
   });
-  let performanceDataPerDay = [];
+  const last7Days = getLast7Days();
   let totalPerformanceSum = 0;
 
-  habitDates.forEach(dateStr => {
-    let dayTasks = allHabitData.filter(h => h.date === dateStr);
+  last7Days.forEach(day => {
+    let dayTasks = allHabitData.filter(h => h.date === day.dateStr);
     let completedTasks = dayTasks.filter(h => h.status === true || h.status === "TRUE" || h.status === "√" || h.status === "checked");
     let percent = dayTasks.length > 0 ? Math.round((completedTasks.length / dayTasks.length) * 100) : 0;
-    performanceDataPerDay.push(percent);
     totalPerformanceSum += percent;
   });
 
   const perfEl = document.getElementById('avg-habit-performance');
   if (perfEl) {
-    perfEl.innerText = (habitDates.length > 0 ? Math.round(totalPerformanceSum / habitDates.length) : 0) + "%";
+    perfEl.innerText = Math.round(totalPerformanceSum / 7) + "%";
   }
 
   const uniqueHabits = [...new Set(allHabitData.map(h => h.habit).filter(h => h && h.trim() !== ''))];
