@@ -107,6 +107,30 @@ function matchLocalTab(text) {
   return null;
 }
 
+// Bộ lọc liên kết cục bộ để mở liên kết ngay lập tức (Không tốn token và chính xác 100%)
+function matchLocalLink(text, links) {
+  if (!links || links.length === 0) return null;
+
+  const normalized = removeVietnameseTones(text.toLowerCase().trim());
+
+  // Sắp xếp các link theo độ dài tiêu đề giảm dần để tránh khớp nhầm tiêu đề con ngắn nằm trong tiêu đề dài
+  const sortedLinks = [...links].sort((a, b) => (b.title || "").length - (a.title || "").length);
+
+  for (const link of sortedLinks) {
+    const title = (link.title || "").trim();
+    if (!title) continue;
+
+    const normalizedTitle = removeVietnameseTones(title.toLowerCase());
+
+    // Nếu tin nhắn người dùng chứa tiêu đề của liên kết (không phân biệt dấu và hoa thường)
+    if (normalized.includes(normalizedTitle)) {
+      return link;
+    }
+  }
+
+  return null;
+}
+
 export function initFloatingAssistant(reloadDataCb) {
   reloadDataCallback = reloadDataCb;
 
@@ -199,6 +223,23 @@ async function sendAssistantMessage() {
       assistantHistory.push({ id: localReplyId, role: 'ai', text: localReply });
     }, 150);
     return;
+  }
+
+  // Kiểm tra mở liên kết cục bộ (Không tốn token và chính xác 100%)
+  const links = typeof getAllLinks === 'function' ? getAllLinks() : [];
+  const matchedLink = matchLocalLink(userText, links);
+  if (matchedLink) {
+    const url = (matchedLink.content || "").trim();
+    if (url.startsWith('http')) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+      const localReply = `Đã tìm thấy và mở liên kết "${matchedLink.title}" cho bạn!`;
+
+      setTimeout(() => {
+        const localReplyId = appendMessage('ai', localReply);
+        assistantHistory.push({ id: localReplyId, role: 'ai', text: localReply });
+      }, 150);
+      return;
+    }
   }
 
   const aiCreds = getAiCredentials();
