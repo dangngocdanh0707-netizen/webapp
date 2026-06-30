@@ -244,7 +244,7 @@ export function buildTable() {
         </td>
         <td class="p-4">
           <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-mode-${id}">${escapeHTML(cat)}</span>
-          <select id="edit-cat-${id}" class="edit-input font-bold edit-mode-${id} hidden w-full">
+          <select id="edit-cat-${id}" class="edit-input edit-mode-${id} hidden w-full">
             ${uniqueCategories.map(c => 
               `<option value="${c}" ${cat === c ? 'selected' : ''}>${escapeHTML(c)}</option>`
             ).join('')}
