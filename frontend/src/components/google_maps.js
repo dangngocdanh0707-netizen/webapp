@@ -145,6 +145,9 @@ export function buildMapGrid() {
     return a.rowNumber - b.rowNumber;
   });
 
+  const uniqueCities = Array.from(new Set(allMapData.map(d => d.city).filter(Boolean).map(c => c.trim()))).sort((a, b) => a.localeCompare(b, 'vi'));
+  const uniqueCategories = Array.from(new Set(allMapData.map(d => d.category).filter(Boolean).map(c => c.trim()))).sort((a, b) => a.localeCompare(b, 'vi'));
+
   // Render Rows
   sortedData.forEach(item => {
     try {
@@ -182,8 +185,22 @@ export function buildMapGrid() {
  
           <!-- Edit inputs -->
           <td class="p-4 pl-6 hidden map-edit-${id}"><input type="text" id="map-edit-place-${id}" class="edit-input font-bold w-full" value="${escapeHTML(placeName)}"></td>
-          <td class="p-4 hidden map-edit-${id}"><input type="text" id="map-edit-city-${id}" class="edit-input w-full" value="${escapeHTML(city)}"></td>
-          <td class="p-4 hidden map-edit-${id}"><input type="text" id="map-edit-cat-${id}" class="edit-input w-full" value="${escapeHTML(category)}"></td>
+          <td class="p-4 hidden map-edit-${id}">
+            <select id="map-edit-city-${id}" class="edit-input w-full">
+              <option value=""></option>
+              ${uniqueCities.map(c => 
+                `<option value="${c}" ${city === c ? 'selected' : ''}>${escapeHTML(c)}</option>`
+              ).join('')}
+            </select>
+          </td>
+          <td class="p-4 hidden map-edit-${id}">
+            <select id="map-edit-cat-${id}" class="edit-input w-full">
+              <option value=""></option>
+              ${uniqueCategories.map(c => 
+                `<option value="${c}" ${category === c ? 'selected' : ''}>${escapeHTML(c)}</option>`
+              ).join('')}
+            </select>
+          </td>
           <td class="p-4 hidden map-edit-${id}">
             <label class="inline-flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" id="map-edit-status-${id}" class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer" ${status ? 'checked' : ''}>

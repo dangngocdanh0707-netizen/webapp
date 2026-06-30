@@ -223,7 +223,10 @@ export function buildTable() {
   displayCostData.sort((a, b) => {
     return parseDateToTimestamp(b.date) - parseDateToTimestamp(a.date);
   });
-    displayCostData.forEach(item => {
+  const uniqueCategories = Array.from(new Set(allCostData.map(d => d.category).filter(Boolean))).sort();
+  const uniqueSubcategories = Array.from(new Set(allCostData.map(d => d.subcategory).filter(Boolean).map(s => s.trim()))).sort((a, b) => a.localeCompare(b, 'vi'));
+
+  displayCostData.forEach(item => {
     let cat = item.category || "Uncategorized";
     if (categoryFilterVal !== "All" && cat !== categoryFilterVal) return;
     if (monthFilterVal !== "All" && (!item.date || !item.date.startsWith(monthFilterVal))) return;
@@ -242,14 +245,19 @@ export function buildTable() {
         <td class="p-4">
           <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-mode-${id}">${escapeHTML(cat)}</span>
           <select id="edit-cat-${id}" class="edit-input font-bold edit-mode-${id} hidden w-full">
-            ${Array.from(new Set(allCostData.map(d => d.category).filter(Boolean))).map(c => 
+            ${uniqueCategories.map(c => 
               `<option value="${c}" ${cat === c ? 'selected' : ''}>${escapeHTML(c)}</option>`
             ).join('')}
           </select>
         </td>
         <td class="p-4">
           <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-mode-${id}">${escapeHTML(item.subcategory || '-')}</span>
-          <input type="text" id="edit-subcat-${id}" class="edit-input edit-mode-${id} hidden w-full" value="${escapeHTML(item.subcategory || '')}">
+          <select id="edit-subcat-${id}" class="edit-input edit-mode-${id} hidden w-full">
+            <option value=""></option>
+            ${uniqueSubcategories.map(s => 
+              `<option value="${s}" ${(item.subcategory || '').trim() === s ? 'selected' : ''}>${escapeHTML(s)}</option>`
+            ).join('')}
+          </select>
         </td>
         <td class="p-4 text-right text-xs font-bold text-slate-650">
           <span class="view-mode-${id}">${amount.toLocaleString('vi-VN')}</span>

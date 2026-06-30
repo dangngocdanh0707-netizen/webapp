@@ -123,6 +123,12 @@ export function buildCollectionsGrid() {
     return true;
   });
 
+  const uniqueBrands = Array.from(new Set(allCollectionData.map(d => d.brand).filter(Boolean).map(b => b.trim()))).sort((a, b) => a.localeCompare(b, 'vi'));
+  const uniqueCats = Array.from(new Set(allCollectionData.map(d => d.category).filter(Boolean).map(c => {
+    let catStr = c.trim();
+    return catStr ? (catStr.charAt(0).toUpperCase() + catStr.slice(1).toLowerCase()) : "";
+  }).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'vi'));
+
   // 3. Render Rows to Table
   filteredData.forEach(item => {
     try {
@@ -156,8 +162,22 @@ export function buildCollectionsGrid() {
 
           <!-- Edit inputs -->
           <td class="p-4 pl-6 hidden col-edit-${id}"><input type="text" id="col-edit-item-${id}" class="edit-input font-bold w-full" value="${escapeHTML(name)}"></td>
-          <td class="p-4 hidden col-edit-${id}"><input type="text" id="col-edit-brand-${id}" class="edit-input w-full" value="${escapeHTML(brand)}"></td>
-          <td class="p-4 hidden col-edit-${id}"><input type="text" id="col-edit-cat-${id}" class="edit-input w-full" value="${escapeHTML(formattedCategory)}"></td>
+          <td class="p-4 hidden col-edit-${id}">
+            <select id="col-edit-brand-${id}" class="edit-input w-full">
+              <option value=""></option>
+              ${uniqueBrands.map(b => 
+                `<option value="${b}" ${brand === b ? 'selected' : ''}>${escapeHTML(b)}</option>`
+              ).join('')}
+            </select>
+          </td>
+          <td class="p-4 hidden col-edit-${id}">
+            <select id="col-edit-cat-${id}" class="edit-input w-full">
+              <option value=""></option>
+              ${uniqueCats.map(c => 
+                `<option value="${c}" ${formattedCategory === c ? 'selected' : ''}>${escapeHTML(c)}</option>`
+              ).join('')}
+            </select>
+          </td>
 
           <td class="p-4 pr-6 text-center">
             <div class="col-view-${id} flex items-center justify-center gap-2">

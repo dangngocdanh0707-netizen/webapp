@@ -63,7 +63,8 @@ export function buildLinkTable() {
   const catSelect = document.getElementById('linkCategoryFilter');
   let selectedCat = catSelect ? catSelect.value : "All";
   let keyword = document.getElementById('linkSearchInput') ? document.getElementById('linkSearchInput').value.toLowerCase().trim() : "";
-  
+  const uniqueCategories = Array.from(new Set(allLinkData.map(d => d.category).filter(Boolean).map(c => c.trim()))).sort((a, b) => a.localeCompare(b, 'vi'));
+
   allLinkData.forEach(item => {
     let titleText = (item.title || '').toString();
     let catText = (item.category || '').toString().trim();
@@ -83,7 +84,14 @@ export function buildLinkTable() {
         <td class="p-4 text-xs text-slate-650 link-view-${id}">${contentDisplay}</td>
         
         <td class="p-4 pl-6 hidden link-edit-${id}"><input type="text" id="link-edit-title-${id}" class="edit-input font-bold" value="${escapeHTML(titleText)}"></td>
-        <td class="p-4 hidden link-edit-${id}"><input type="text" id="link-edit-cat-${id}" class="edit-input font-semibold" value="${escapeHTML(catText)}"></td>
+        <td class="p-4 hidden link-edit-${id}">
+          <select id="link-edit-cat-${id}" class="edit-input font-semibold">
+            <option value=""></option>
+            ${uniqueCategories.map(c => 
+              `<option value="${c}" ${catText === c ? 'selected' : ''}>${escapeHTML(c)}</option>`
+            ).join('')}
+          </select>
+        </td>
         <td class="p-4 hidden link-edit-${id}"><input type="text" id="link-edit-content-${id}" class="edit-input" value="${escapeHTML(contentText)}"></td>
         
         <td class="p-4 text-center">

@@ -177,6 +177,8 @@ export function buildIncomeTable() {
     return parseDateToTimestamp(b.date) - parseDateToTimestamp(a.date);
   });
 
+  const uniqueCategories = Array.from(new Set(allIncomeData.map(d => d.category).filter(Boolean))).sort();
+
   displayIncomeData.forEach(item => {
     let cat = item.category || "Uncategorized";
     if (categoryFilterVal !== "All" && cat !== categoryFilterVal) return;
@@ -196,7 +198,7 @@ export function buildIncomeTable() {
         <td class="p-4">
           <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-inc-mode-${id}">${escapeHTML(cat)}</span>
           <select id="edit-inc-cat-${id}" class="edit-input font-bold edit-inc-mode-${id} hidden w-full">
-            ${Array.from(new Set(allIncomeData.map(d => d.category).filter(Boolean))).map(c => 
+            ${uniqueCategories.map(c => 
               `<option value="${c}" ${cat === c ? 'selected' : ''}>${escapeHTML(c)}</option>`
             ).join('')}
           </select>
@@ -216,7 +218,7 @@ export function buildIncomeTable() {
             <button onclick="app.incomes.deleteRow(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="edit-inc-mode-${id} hidden flex justify-center gap-2">
-            <button onclick="app.incomes.saveIncomeRow(${id})" class="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 text-xs border border-blue-200 rounded-md bg-blue-50 cursor-pointer transition">Save</button>
+            <button onclick="app.incomes.saveIncomeRow(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
             <button onclick="app.incomes.cancelEditMode(${id})" class="text-slate-500 hover:text-slate-700 text-xs px-2 py-1 cursor-pointer transition">Cancel</button>
           </div>
         </td>
