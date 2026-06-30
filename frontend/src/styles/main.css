@@ -300,6 +300,11 @@ select.form-input option {
   color: var(--text-primary);
 }
 
+select.edit-input,
+select.form-input {
+  transition: none !important;
+}
+
 .edit-input:focus,
 .form-input:focus {
   border-color: var(--accent-indigo);
