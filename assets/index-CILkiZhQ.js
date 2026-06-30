@@ -28,7 +28,7 @@
         </td>
         <td class="p-4">
           <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-mode-${p}">${w(u)}</span>
-          <select id="edit-cat-${p}" class="edit-input font-bold edit-mode-${p} hidden w-full">
+          <select id="edit-cat-${p}" class="edit-input edit-mode-${p} hidden w-full">
             ${r.map(m=>`<option value="${m}" ${u===m?"selected":""}>${w(m)}</option>`).join("")}
           </select>
         </td>
@@ -78,7 +78,7 @@
         </td>
         <td class="p-4">
           <span class="px-2 py-0.5 rounded-md text-xs border bg-slate-50 text-slate-650 border-slate-200 font-semibold view-inc-mode-${d}">${w(c)}</span>
-          <select id="edit-inc-cat-${d}" class="edit-input font-bold edit-inc-mode-${d} hidden w-full">
+          <select id="edit-inc-cat-${d}" class="edit-input edit-inc-mode-${d} hidden w-full">
             ${r.map(p=>`<option value="${p}" ${c===p?"selected":""}>${w(p)}</option>`).join("")}
           </select>
         </td>
