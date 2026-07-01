@@ -680,12 +680,10 @@ export function callServer(methodName, args) {
 
           task: getRows(valueRanges[8]).map((row, idx) => ({
             rowNumber: idx + 2,
-            start_date: row[0] !== undefined && row[0] !== null ? String(row[0]).trim() : "",
-            end_date: row[1] !== undefined && row[1] !== null ? String(row[1]).trim() : "",
+            start_date: cleanDateTimeValue(row[0]),
+            end_date: cleanDateTimeValue(row[1]),
             task: row[2] || "",
-            urgent: row[3] === "TRUE" || row[3] === true || row[3] === "true" || row[3] === "v" || row[3] === "checked",
-            important: row[4] === "TRUE" || row[4] === true || row[4] === "true" || row[4] === "v" || row[4] === "checked",
-            status: row[5] === "TRUE" || row[5] === true || row[5] === "true" || row[5] === "v" || row[5] === "checked"
+            status: row[3] === "TRUE" || row[3] === true || row[3] === "true" || row[3] === "v" || row[3] === "checked"
           })).filter(item => item.task),
 
           google_map: getRows(valueRanges[9]).map((row, idx) => ({
@@ -1508,6 +1506,37 @@ export function cleanDateValue(val) {
     return `${year}-${month}-${day}`;
   }
 
+  return str;
+}
+
+// 1a. Chuẩn hóa ngày giờ nhận được từ Google Sheets (bao gồm cả số serial datetime) thành yyyy-MM-dd HH:mm
+export function cleanDateTimeValue(val) {
+  if (val === undefined || val === null) return "";
+
+  if (typeof val === 'number') {
+    const baseDate = Date.UTC(1899, 11, 30);
+    const totalMs = baseDate + val * 24 * 60 * 60 * 1000;
+    const date = new Date(Math.round(totalMs / 60000) * 60000); // Làm tròn đến phút gần nhất
+    
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const hour = String(date.getUTCHours()).padStart(2, '0');
+    const minute = String(date.getUTCMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day} ${hour}:${minute}`;
+  }
+
+  let str = val.toString().trim();
+  if (str.startsWith("'")) str = str.substring(1);
+  if (str.startsWith('="') && str.endsWith('"')) str = str.substring(2, str.length - 1);
+  if (str === "" || str === "-") return str;
+
+  let formatted = formatDateTimeInput(str);
+  if (formatted.includes('T')) {
+    return formatted.replace('T', ' ');
+  }
+  
   return str;
 }
 
