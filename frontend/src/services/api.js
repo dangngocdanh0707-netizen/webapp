@@ -592,7 +592,7 @@ export function callServer(methodName, args) {
             `${linkTab}!A2:C`,
             `${promptTab}!A2:C`,
             `${goalTab}!A2:E`,
-            `${taskTab}!A2:F`,
+            `${taskTab}!A2:D`,
             `${mappings['google_map']}!A2:D`,
             `${mappings['collections'] || 'collections'}!A2:C`,
             `${grammarTab || 'grammar_diaries'}!A2:F`,
@@ -1251,10 +1251,10 @@ export function callServer(methodName, args) {
 
       // Tasks CRUD
       if (methodName === "insertTaskRow") {
-        const [startDate, endDate, taskDesc, urgent, important, status] = args;
+        const [startDate, endDate, taskDesc, status] = args;
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${taskTab}!A:F`,
+          range: `${taskTab}!A:D`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
           resource: {
@@ -1262,8 +1262,6 @@ export function callServer(methodName, args) {
               startDate,
               endDate || "",
               taskDesc,
-              urgent === true || urgent === "TRUE" ? "TRUE" : "FALSE",
-              important === true || important === "TRUE" ? "TRUE" : "FALSE",
               status === true || status === "TRUE" ? "TRUE" : "FALSE"
             ]]
           }
@@ -1272,18 +1270,16 @@ export function callServer(methodName, args) {
         return;
       }
       if (methodName === "updateTaskRow") {
-        const [rowNumber, startDate, endDate, taskDesc, urgent, important, status] = args;
+        const [rowNumber, startDate, endDate, taskDesc, status] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${taskTab}!A${rowNumber}:F${rowNumber}`,
+          range: `${taskTab}!A${rowNumber}:D${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: {
             values: [[
               startDate,
               endDate || "",
               taskDesc,
-              urgent === true || urgent === "TRUE" ? "TRUE" : "FALSE",
-              important === true || important === "TRUE" ? "TRUE" : "FALSE",
               status === true || status === "TRUE" ? "TRUE" : "FALSE"
             ]]
           }
@@ -1316,31 +1312,9 @@ export function callServer(methodName, args) {
         const [rowNumber, isChecked] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${taskTab}!F${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
-          resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
-        });
-        resolve("Thành công");
-        return;
-      }
-      if (methodName === "updateTaskUrgentRow") {
-        const [rowNumber, isUrgent] = args;
-        await gapi.client.sheets.spreadsheets.values.update({
-          spreadsheetId,
           range: `${taskTab}!D${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[isUrgent ? "TRUE" : "FALSE"]] }
-        });
-        resolve("Thành công");
-        return;
-      }
-      if (methodName === "updateTaskImportantRow") {
-        const [rowNumber, isImportant] = args;
-        await gapi.client.sheets.spreadsheets.values.update({
-          spreadsheetId,
-          range: `${taskTab}!E${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
-          resource: { values: [[isImportant ? "TRUE" : "FALSE"]] }
+          resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
         });
         resolve("Thành công");
         return;
