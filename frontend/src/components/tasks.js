@@ -62,7 +62,7 @@ export function buildTaskTable() {
       <tr id="task-row-${id}" class="hover:bg-slate-900/5 transition">
         <!-- Column 1: Start Date -->
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500">
-          <span class="task-view-${id}">${escapeHTML(startDateStr)}</span>
+          <span class="task-view-${id}">${formatTaskDateView(startDateStr)}</span>
           <div class="hidden task-edit-${id}">
             <input type="datetime-local" id="task-edit-start-date-${id}" class="edit-input w-full" value="${formatDateTimeInput(startDateStr)}">
           </div>
@@ -70,7 +70,7 @@ export function buildTaskTable() {
 
         <!-- Column 1b: End Date -->
         <td class="p-4 font-semibold text-xs text-slate-500">
-          <span class="task-view-${id}">${escapeHTML(endDateStr)}</span>
+          <span class="task-view-${id}">${formatTaskDateView(endDateStr)}</span>
           <div class="hidden task-edit-${id}">
             <input type="datetime-local" id="task-edit-end-date-${id}" class="edit-input w-full" value="${formatDateTimeInput(endDateStr)}">
           </div>
@@ -297,6 +297,15 @@ window.app.tasks.deleteTask = function (id) {
     console.error("Delete error: " + errorMessage);
   }
 };
+
+function formatTaskDateView(dateStr) {
+  if (!dateStr || dateStr === '-') return '-';
+  const parts = dateStr.split(' ');
+  if (parts.length === 2) {
+    return `${escapeHTML(parts[0])}<span class="text-slate-400 font-medium ml-2">${escapeHTML(parts[1])}</span>`;
+  }
+  return escapeHTML(dateStr);
+}
 
 
 
