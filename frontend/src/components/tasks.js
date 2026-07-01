@@ -40,7 +40,19 @@ export function buildTaskTable() {
 
   let displayTaskData = [...allTaskData];
   displayTaskData.sort((a, b) => {
-    return parseDateToTimestamp(b.start_date) - parseDateToTimestamp(a.start_date);
+    let tsA = parseDateToTimestamp(a.end_date);
+    let tsB = parseDateToTimestamp(b.end_date);
+
+    // Nếu cả hai đều không có end_date, sắp xếp theo start_date giảm dần
+    if (tsA === 0 && tsB === 0) {
+      return parseDateToTimestamp(b.start_date) - parseDateToTimestamp(a.start_date);
+    }
+    // Đẩy dòng không có end_date xuống dưới cùng
+    if (tsA === 0) return 1;
+    if (tsB === 0) return -1;
+
+    // Sắp xếp tăng dần theo end_date (sớm nhất lên đầu)
+    return tsA - tsB;
   });
 
   displayTaskData.forEach(item => {
