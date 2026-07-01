@@ -1624,7 +1624,7 @@ export function formatDateTimeInput(val) {
   return str;
 }
 
-// 5b. Convert "yyyy-MM-ddTHH:mm" to "dd/MM/yyyy HH:mm" for Google Sheets
+// 5b. Convert "yyyy-MM-ddTHH:mm" to "yyyy-MM-dd HH:mm" for Google Sheets
 export function formatDateTimeDb(val) {
   if (!val) return "";
   let str = val.toString().trim();
@@ -1636,7 +1636,7 @@ export function formatDateTimeDb(val) {
       const month = dateParts[1].padStart(2, '0');
       const day = dateParts[2].padStart(2, '0');
       const time = parts[1] || "00:00";
-      return `${day}/${month}/${year} ${time}`;
+      return `${year}-${month}-${day} ${time}`;
     }
   }
   return str;
