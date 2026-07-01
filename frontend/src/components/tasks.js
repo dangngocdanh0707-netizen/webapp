@@ -98,7 +98,7 @@ export function buildTaskTable() {
         <td class="p-4 text-center">
           <div class="task-view-${id} flex justify-center gap-2">
             <button onclick="app.tasks.toggleTaskEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="app.tasks.deleteTask(${id})" class="text-slate-450 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="app.tasks.deleteTask(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden task-edit-${id} flex justify-center gap-1.5">
             <button onclick="app.tasks.saveTask(${id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
