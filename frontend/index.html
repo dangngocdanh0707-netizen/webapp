@@ -2210,9 +2210,15 @@
 
           <div class="flex flex-col md:flex-row items-end gap-4">
 
-            <div class="shrink-0 w-36"><label
-                class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">DATE</label><input
-                type="date" id="ins-task-date" class="form-input"></div>
+            <div class="shrink-0 w-48">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">START DATE</label>
+              <input type="datetime-local" id="ins-task-start-date" class="form-input">
+            </div>
+
+            <div class="shrink-0 w-48">
+              <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">END DATE</label>
+              <input type="datetime-local" id="ins-task-end-date" class="form-input">
+            </div>
 
             <div class="flex-1"><label
                 class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">TASK</label><input
@@ -2300,11 +2306,13 @@
 
                 <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-200/60">
 
-                  <th class="p-4 pl-6 w-[20%]">DATE</th>
+                  <th class="p-4 pl-6 w-[18%]">START DATE</th>
 
-                  <th class="p-4 w-[45%]">TASK</th>
+                  <th class="p-4 w-[18%]">END DATE</th>
 
-                  <th class="p-4 pl-12 text-left w-[25%]">STATUS</th>
+                  <th class="p-4 w-[35%]">TASK</th>
+
+                  <th class="p-4 pl-12 text-left w-[15%]">STATUS</th>
 
                   <th class="p-4 text-center w-32">ACTION</th>
 

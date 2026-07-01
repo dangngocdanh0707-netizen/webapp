@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString } from '../services/api.js';
+import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString, formatDateTimeInput, formatDateTimeDb, getTodayDateTimeString } from '../services/api.js';
 
 let allTaskData = [];
 let onSyncNeeded = null;
@@ -16,9 +16,9 @@ export function initTasksModule(data, onSync) {
   if (totalTasksEl) totalTasksEl.innerText = allTaskData.length;
 
   // Set default date input to today's date
-  const dateInput = document.getElementById('ins-task-date');
-  if (dateInput) {
-    dateInput.value = getTodayDateString();
+  const startInput = document.getElementById('ins-task-start-date');
+  if (startInput) {
+    startInput.value = getTodayDateTimeString();
   }
 
   // Khởi chạy đồng bộ view Tasks (nếu đang ở Matrix View thì hiển thị đúng)
@@ -42,7 +42,7 @@ export function buildTaskTable() {
 
   let displayTaskData = [...allTaskData];
   displayTaskData.sort((a, b) => {
-    let dateDiff = parseDateToTimestamp(b.date) - parseDateToTimestamp(a.date);
+    let dateDiff = parseDateToTimestamp(b.start_date) - parseDateToTimestamp(a.start_date);
     if (dateDiff !== 0) return dateDiff;
 
     const getScore = (item) => {
@@ -58,7 +58,8 @@ export function buildTaskTable() {
 
   displayTaskData.forEach(item => {
     let id = item.rowNumber;
-    let dateStr = item.date || '-';
+    let startDateStr = item.start_date || '-';
+    let endDateStr = item.end_date || '-';
     let taskText = item.task || '';
     let isDone = item.status === true || item.status === "TRUE" || item.status === "v" || item.status === "checked";
     let isUrgent = item.urgent === true || item.urgent === "TRUE";
@@ -67,15 +68,26 @@ export function buildTaskTable() {
     // Filters
     if (statusVal === "Completed" && !isDone) return;
     if (statusVal === "Pending" && isDone) return;
-    if (keyword !== "" && !taskText.toLowerCase().includes(keyword) && !dateStr.toLowerCase().includes(keyword)) return;
+    if (keyword !== "" && 
+        !taskText.toLowerCase().includes(keyword) && 
+        !startDateStr.toLowerCase().includes(keyword) && 
+        !endDateStr.toLowerCase().includes(keyword)) return;
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="task-row-${id}" class="hover:bg-slate-900/5 transition">
-        <!-- Column 1: Date -->
+        <!-- Column 1: Start Date -->
         <td class="p-4 pl-6 font-semibold text-xs text-slate-500">
-          <span class="task-view-${id}">${escapeHTML(dateStr)}</span>
+          <span class="task-view-${id}">${escapeHTML(startDateStr)}</span>
           <div class="hidden task-edit-${id}">
-            <input type="date" id="task-edit-date-${id}" class="edit-input w-full" value="${formatDateInput(dateStr)}">
+            <input type="datetime-local" id="task-edit-start-date-${id}" class="edit-input w-full" value="${formatDateTimeInput(startDateStr)}">
+          </div>
+        </td>
+
+        <!-- Column 1b: End Date -->
+        <td class="p-4 font-semibold text-xs text-slate-500">
+          <span class="task-view-${id}">${escapeHTML(endDateStr)}</span>
+          <div class="hidden task-edit-${id}">
+            <input type="datetime-local" id="task-edit-end-date-${id}" class="edit-input w-full" value="${formatDateTimeInput(endDateStr)}">
           </div>
         </td>
 
@@ -176,21 +188,24 @@ window.app.tasks.toggleTaskStatusDirectly = function (rowNumber, checkboxEl) {
 };
 
 window.app.tasks.addTaskRow = function () {
-  let dateVal = document.getElementById('ins-task-date').value;
-  let date = formatDateDb(dateVal);
+  let startVal = document.getElementById('ins-task-start-date').value;
+  let endVal = document.getElementById('ins-task-end-date').value;
+  let startDate = formatDateTimeDb(startVal);
+  let endDate = formatDateTimeDb(endVal);
   let desc = document.getElementById('ins-task-desc').value.trim();
   let urgentVal = false;
   let importantVal = false;
 
-  if (!date || !desc) {
-    console.warn("Please enter both date and task description!");
+  if (!startDate || !desc) {
+    console.warn("Please enter both start date and task description!");
     return;
   }
 
   let newRowNumber = Math.max(...allTaskData.map(t => t.rowNumber), 1) + 1;
   let newObj = {
     rowNumber: newRowNumber,
-    date: date,
+    start_date: startDate,
+    end_date: endDate,
     task: desc,
     urgent: urgentVal,
     important: importantVal,
@@ -201,8 +216,10 @@ window.app.tasks.addTaskRow = function () {
   buildTaskTable();
 
   document.getElementById('ins-task-desc').value = "";
+  document.getElementById('ins-task-start-date').value = getTodayDateTimeString();
+  document.getElementById('ins-task-end-date').value = "";
 
-  callServer("insertTaskRow", [date, desc, urgentVal, importantVal, false])
+  callServer("insertTaskRow", [startDate, endDate, desc, urgentVal, importantVal, false])
     .then(res => {
       if (res !== "Thành công") {
         rollback(res);
@@ -216,19 +233,23 @@ window.app.tasks.addTaskRow = function () {
     allTaskData = allTaskData.filter(t => t.rowNumber !== newRowNumber);
     buildTaskTable();
     document.getElementById('ins-task-desc').value = desc;
+    document.getElementById('ins-task-start-date').value = startVal;
+    document.getElementById('ins-task-end-date').value = endVal;
     console.error("Sync error: " + errorMessage);
   }
 };
 
 window.app.tasks.saveTask = function (id) {
-  let dateVal = document.getElementById(`task-edit-date-${id}`).value;
-  let date = formatDateDb(dateVal);
+  let startVal = document.getElementById(`task-edit-start-date-${id}`).value;
+  let endVal = document.getElementById(`task-edit-end-date-${id}`).value;
+  let startDate = formatDateTimeDb(startVal);
+  let endDate = formatDateTimeDb(endVal);
   let desc = document.getElementById(`task-edit-desc-${id}`).value.trim();
   let chk = document.getElementById(`task-chk-${id}`);
   let statusVal = chk ? chk.checked : false;
 
-  if (!date || !desc) {
-    console.warn("Please enter both date and task description!");
+  if (!startDate || !desc) {
+    console.warn("Please enter both start date and task description!");
     return;
   }
 
@@ -239,7 +260,8 @@ window.app.tasks.saveTask = function (id) {
   let urgentVal = oldObj.urgent;
   let importantVal = oldObj.important;
 
-  allTaskData[idx].date = date;
+  allTaskData[idx].start_date = startDate;
+  allTaskData[idx].end_date = endDate;
   allTaskData[idx].task = desc;
   allTaskData[idx].urgent = urgentVal;
   allTaskData[idx].important = importantVal;
@@ -249,7 +271,7 @@ window.app.tasks.saveTask = function (id) {
   buildTaskTable();
   console.log("Task updated successfully!");
 
-  callServer("updateTaskRow", [id, date, desc, urgentVal, importantVal, statusVal])
+  callServer("updateTaskRow", [id, startDate, endDate, desc, urgentVal, importantVal, statusVal])
     .then(res => {
       if (res !== "Thành công") {
         rollback(res);
@@ -333,12 +355,13 @@ export function buildTaskMatrix() {
 
   let displayTaskData = [...allTaskData];
   displayTaskData.sort((a, b) => {
-    return parseDateToTimestamp(b.date) - parseDateToTimestamp(a.date);
+    return parseDateToTimestamp(b.start_date) - parseDateToTimestamp(a.start_date);
   });
 
   displayTaskData.forEach(item => {
     let id = item.rowNumber;
-    let dateStr = item.date || '-';
+    let startDateStr = item.start_date || '-';
+    let endDateStr = item.end_date || '-';
     let taskText = item.task || '';
     let isDone = item.status === true || item.status === "TRUE" || item.status === "v" || item.status === "checked";
     let isUrgent = item.urgent === true || item.urgent === "TRUE";
@@ -347,7 +370,10 @@ export function buildTaskMatrix() {
     // Filters
     if (statusVal === "Completed" && !isDone) return;
     if (statusVal === "Pending" && isDone) return;
-    if (keyword !== "" && !taskText.toLowerCase().includes(keyword) && !dateStr.toLowerCase().includes(keyword)) return;
+    if (keyword !== "" && 
+        !taskText.toLowerCase().includes(keyword) && 
+        !startDateStr.toLowerCase().includes(keyword) && 
+        !endDateStr.toLowerCase().includes(keyword)) return;
 
     const listItemHtml = `
       <li class="flex items-center justify-between p-2.5 rounded-xl border border-slate-100 bg-white shadow-2xs hover:bg-slate-50/50 transition group/item">
@@ -355,7 +381,7 @@ export function buildTaskMatrix() {
           <input type="checkbox" class="habit-checkbox mt-0.5 shrink-0 cursor-pointer" ${isDone ? 'checked' : ''} onchange="app.tasks.toggleTaskStatusDirectly(${id}, this)">
           <span class="text-xs font-semibold text-slate-650 leading-snug ${isDone ? 'line-through text-slate-400 font-medium' : ''}">
             ${escapeHTML(taskText)}
-            <span class="text-[9px] font-bold text-slate-400 ml-1 block sm:inline">${formatDateInput(dateStr)}</span>
+            <span class="text-[9px] font-bold text-slate-400 ml-1 block sm:inline">${startDateStr}${endDateStr && endDateStr !== '-' ? ' -> ' + endDateStr : ''}</span>
           </span>
         </label>
         <div class="flex items-center gap-1.5 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 shrink-0 select-none">

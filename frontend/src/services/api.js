@@ -517,7 +517,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['link'] || 'links'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
       { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
       { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
-      { range: `${mappings['task'] || 'tasks'}!A1:E1`, values: [['Date', 'Task', 'Urgent', 'Important', 'Status']] },
+      { range: `${mappings['task'] || 'tasks'}!A1:F1`, values: [['start_date', 'end_date', 'task', 'urgent', 'important', 'status']] },
       { range: `${mappings['google_map'] || 'google_maps'}!A1:D1`, values: [['place', 'city', 'category', 'status']] },
       { range: `${mappings['collections'] || 'collections'}!A1:C1`, values: [['item', 'brand', 'category']] },
       { range: `${mappings['grammar_diary'] || 'grammar_diaries'}!A1:F1`, values: [['date', 'scenario', 'user_sentence', 'corrected_sentence', 'explanation', 'status']] },
@@ -592,7 +592,7 @@ export function callServer(methodName, args) {
             `${linkTab}!A2:C`,
             `${promptTab}!A2:C`,
             `${goalTab}!A2:E`,
-            `${taskTab}!A2:E`,
+            `${taskTab}!A2:F`,
             `${mappings['google_map']}!A2:D`,
             `${mappings['collections'] || 'collections'}!A2:C`,
             `${grammarTab || 'grammar_diaries'}!A2:F`,
@@ -680,11 +680,12 @@ export function callServer(methodName, args) {
 
           task: getRows(valueRanges[8]).map((row, idx) => ({
             rowNumber: idx + 2,
-            date: cleanDateValue(row[0]),
-            task: row[1] || "",
-            urgent: row[2] === "TRUE" || row[2] === true || row[2] === "true" || row[2] === "v" || row[2] === "checked",
-            important: row[3] === "TRUE" || row[3] === true || row[3] === "true" || row[3] === "v" || row[3] === "checked",
-            status: row[4] === "TRUE" || row[4] === true || row[4] === "true" || row[4] === "v" || row[4] === "checked"
+            start_date: row[0] !== undefined && row[0] !== null ? String(row[0]).trim() : "",
+            end_date: row[1] !== undefined && row[1] !== null ? String(row[1]).trim() : "",
+            task: row[2] || "",
+            urgent: row[3] === "TRUE" || row[3] === true || row[3] === "true" || row[3] === "v" || row[3] === "checked",
+            important: row[4] === "TRUE" || row[4] === true || row[4] === "true" || row[4] === "v" || row[4] === "checked",
+            status: row[5] === "TRUE" || row[5] === true || row[5] === "true" || row[5] === "v" || row[5] === "checked"
           })).filter(item => item.task),
 
           google_map: getRows(valueRanges[9]).map((row, idx) => ({
@@ -1252,15 +1253,16 @@ export function callServer(methodName, args) {
 
       // Tasks CRUD
       if (methodName === "insertTaskRow") {
-        const [date, taskDesc, urgent, important, status] = args;
+        const [startDate, endDate, taskDesc, urgent, important, status] = args;
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${taskTab}!A:E`,
+          range: `${taskTab}!A:F`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
           resource: {
             values: [[
-              date,
+              startDate,
+              endDate || "",
               taskDesc,
               urgent === true || urgent === "TRUE" ? "TRUE" : "FALSE",
               important === true || important === "TRUE" ? "TRUE" : "FALSE",
@@ -1272,14 +1274,15 @@ export function callServer(methodName, args) {
         return;
       }
       if (methodName === "updateTaskRow") {
-        const [rowNumber, date, taskDesc, urgent, important, status] = args;
+        const [rowNumber, startDate, endDate, taskDesc, urgent, important, status] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${taskTab}!A${rowNumber}:E${rowNumber}`,
+          range: `${taskTab}!A${rowNumber}:F${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: {
             values: [[
-              date,
+              startDate,
+              endDate || "",
               taskDesc,
               urgent === true || urgent === "TRUE" ? "TRUE" : "FALSE",
               important === true || important === "TRUE" ? "TRUE" : "FALSE",
@@ -1315,7 +1318,7 @@ export function callServer(methodName, args) {
         const [rowNumber, isChecked] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${taskTab}!E${rowNumber}`,
+          range: `${taskTab}!F${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
         });
@@ -1326,7 +1329,7 @@ export function callServer(methodName, args) {
         const [rowNumber, isUrgent] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${taskTab}!C${rowNumber}`,
+          range: `${taskTab}!D${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[isUrgent ? "TRUE" : "FALSE"]] }
         });
@@ -1337,7 +1340,7 @@ export function callServer(methodName, args) {
         const [rowNumber, isImportant] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${taskTab}!D${rowNumber}`,
+          range: `${taskTab}!E${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[isImportant ? "TRUE" : "FALSE"]] }
         });
@@ -1529,7 +1532,36 @@ export function formatDateDb(dateStr) {
 // 5. Chuyển đổi định dạng ngày thành Timestamp phục vụ việc sắp xếp danh sách
 export function parseDateToTimestamp(dateStr) {
   if (!dateStr) return 0;
-  let cleanStr = cleanDateValue(dateStr);
+  let str = dateStr.toString().trim();
+  
+  if (str.includes('T')) {
+    let ts = Date.parse(str);
+    if (!isNaN(ts)) return ts;
+  }
+  
+  const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{1,2}))?$/;
+  const match = str.match(regex);
+  if (match) {
+    const day = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1;
+    const year = parseInt(match[3], 10);
+    const hour = match[4] ? parseInt(match[4], 10) : 0;
+    const minute = match[5] ? parseInt(match[5], 10) : 0;
+    return new Date(year, month, day, hour, minute).getTime();
+  }
+  
+  const regex2 = /^(\d{4})-(\d{1,2})-(\d{1,2})(?:\s+(\d{1,2}):(\d{1,2}))?$/;
+  const match2 = str.match(regex2);
+  if (match2) {
+    const year = parseInt(match2[1], 10);
+    const month = parseInt(match2[2], 10) - 1;
+    const day = parseInt(match2[3], 10);
+    const hour = match2[4] ? parseInt(match2[4], 10) : 0;
+    const minute = match2[5] ? parseInt(match2[5], 10) : 0;
+    return new Date(year, month, day, hour, minute).getTime();
+  }
+  
+  let cleanStr = cleanDateValue(str);
   if (cleanStr.includes('-')) {
     let parts = cleanStr.split('-');
     if (parts.length === 3) {
@@ -1541,6 +1573,84 @@ export function parseDateToTimestamp(dateStr) {
   }
   let ts = Date.parse(cleanStr);
   return isNaN(ts) ? 0 : ts;
+}
+
+// 5a. Convert "dd/MM/yyyy HH:mm" to "yyyy-MM-ddTHH:mm" for <input type="datetime-local">
+export function formatDateTimeInput(val) {
+  if (!val) return "";
+  let str = val.toString().trim();
+  if (str.includes('T')) return str;
+  
+  const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{1,2})$/;
+  const match = str.match(regex);
+  if (match) {
+    const day = match[1].padStart(2, '0');
+    const month = match[2].padStart(2, '0');
+    const year = match[3];
+    const hour = match[4].padStart(2, '0');
+    const minute = match[5].padStart(2, '0');
+    return `${year}-${month}-${day}T${hour}:${minute}`;
+  }
+  
+  const regex2 = /^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})$/;
+  const match2 = str.match(regex2);
+  if (match2) {
+    const year = match2[1];
+    const month = match2[2].padStart(2, '0');
+    const day = match2[3].padStart(2, '0');
+    const hour = match2[4].padStart(2, '0');
+    const minute = match2[5].padStart(2, '0');
+    return `${year}-${month}-${day}T${hour}:${minute}`;
+  }
+  
+  const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+  const dateMatch = str.match(dateRegex);
+  if (dateMatch) {
+    const day = dateMatch[1].padStart(2, '0');
+    const month = dateMatch[2].padStart(2, '0');
+    const year = dateMatch[3];
+    return `${year}-${month}-${day}T00:00`;
+  }
+
+  const dateRegex2 = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+  const dateMatch2 = str.match(dateRegex2);
+  if (dateMatch2) {
+    const year = dateMatch2[1];
+    const month = dateMatch2[2].padStart(2, '0');
+    const day = dateMatch2[3].padStart(2, '0');
+    return `${year}-${month}-${day}T00:00`;
+  }
+  
+  return str;
+}
+
+// 5b. Convert "yyyy-MM-ddTHH:mm" to "dd/MM/yyyy HH:mm" for Google Sheets
+export function formatDateTimeDb(val) {
+  if (!val) return "";
+  let str = val.toString().trim();
+  if (str.includes('T')) {
+    const parts = str.split('T');
+    const dateParts = parts[0].split('-');
+    if (dateParts.length === 3) {
+      const year = dateParts[0];
+      const month = dateParts[1].padStart(2, '0');
+      const day = dateParts[2].padStart(2, '0');
+      const time = parts[1] || "00:00";
+      return `${day}/${month}/${year} ${time}`;
+    }
+  }
+  return str;
+}
+
+// 5c. Get today local datetime formatted as "yyyy-MM-ddTHH:mm"
+export function getTodayDateTimeString() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hour = String(d.getHours()).padStart(2, '0');
+  const minute = String(d.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hour}:${minute}`;
 }
 
 // 6. Hàm tiện ích dùng chung để chuẩn hóa văn bản tiếng Anh
