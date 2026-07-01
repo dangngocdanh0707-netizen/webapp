@@ -47,8 +47,8 @@
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <script type="module" crossorigin src="/webapp/assets/index-Bg8UcHne.js"></script>
-  <link rel="stylesheet" crossorigin href="/webapp/assets/index-WPSqWgtW.css">
+  <script type="module" crossorigin src="/webapp/assets/index-Be2Ta8bY.js"></script>
+  <link rel="stylesheet" crossorigin href="/webapp/assets/index-CZZjujKw.css">
 </head>
 
 
@@ -2243,27 +2243,7 @@
             class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
 
             <div class="flex items-center gap-3">
-
               <h3 class="font-bold text-slate-800 text-base">All</h3>
-
-              <div class="inline-flex rounded-xl p-0.5 bg-slate-100 border border-slate-200/50 shadow-2xs">
-
-                <button onclick="app.tasks.switchTaskView('list')" id="btn-task-view-list"
-                  class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition bg-white text-blue-600 shadow-2xs cursor-pointer flex items-center gap-1">
-
-                  <i class="fa-solid fa-list text-[9px]"></i> LIST
-
-                </button>
-
-                <button onclick="app.tasks.switchTaskView('matrix')" id="btn-task-view-matrix"
-                  class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide transition text-slate-500 hover:text-slate-700 cursor-pointer flex items-center gap-1">
-
-                  <i class="fa-solid fa-grip text-[9px]"></i> EISENHOWER
-
-                </button>
-
-              </div>
-
             </div>
 
             <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
@@ -2327,71 +2307,7 @@
 
           </div>
 
-          <!-- Eisenhower Matrix Container -->
-          <div id="task-matrix-view-container"
-            class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-50/30 border-t border-slate-100">
 
-            <!-- Q1: Urgent & Important -->
-            <div
-              class="glass-card p-5 border-l-4 border-slate-400 bg-white/80 shadow-2xs flex flex-col min-h-[220px] transition duration-200">
-              <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
-                <h4 class="font-extrabold text-slate-700 text-xs tracking-wider uppercase flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-slate-400 animate-pulse"></span>
-                  Q1. Do First
-                </h4>
-                <span
-                  class="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Urgent
-                  & Important</span>
-              </div>
-              <ul id="matrix-q1-list" class="flex flex-col gap-2 overflow-y-auto max-h-[250px] pr-1"></ul>
-            </div>
-
-            <!-- Q2: Not Urgent but Important -->
-            <div
-              class="glass-card p-5 border-l-4 border-slate-400 bg-white/80 shadow-2xs flex flex-col min-h-[220px] transition duration-200">
-              <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
-                <h4 class="font-extrabold text-slate-700 text-xs tracking-wider uppercase flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-                  Q2. Schedule
-                </h4>
-                <span
-                  class="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Important
-                  & Not Urgent</span>
-              </div>
-              <ul id="matrix-q2-list" class="flex flex-col gap-2 overflow-y-auto max-h-[250px] pr-1"></ul>
-            </div>
-
-            <!-- Q3: Urgent but Not Important -->
-            <div
-              class="glass-card p-5 border-l-4 border-slate-400 bg-white/80 shadow-2xs flex flex-col min-h-[220px] transition duration-200">
-              <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
-                <h4 class="font-extrabold text-slate-700 text-xs tracking-wider uppercase flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-                  Q3. Delegate
-                </h4>
-                <span
-                  class="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Urgent
-                  & Not Important</span>
-              </div>
-              <ul id="matrix-q3-list" class="flex flex-col gap-2 overflow-y-auto max-h-[250px] pr-1"></ul>
-            </div>
-
-            <!-- Q4: Not Urgent & Not Important -->
-            <div
-              class="glass-card p-5 border-l-4 border-slate-400 bg-white/80 shadow-2xs flex flex-col min-h-[220px] transition duration-200">
-              <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
-                <h4 class="font-extrabold text-slate-700 text-xs tracking-wider uppercase flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-                  Q4. Eliminate
-                </h4>
-                <span
-                  class="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Not
-                  Urgent & Not Important</span>
-              </div>
-              <ul id="matrix-q4-list" class="flex flex-col gap-2 overflow-y-auto max-h-[250px] pr-1"></ul>
-            </div>
-
-          </div>
 
         </div>
 
