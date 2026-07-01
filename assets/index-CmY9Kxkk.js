@@ -476,7 +476,7 @@ If the user is just saying hello, asking a general question, or the request is a
 
         <!-- Column 2: Task details -->
         <td class="p-4 font-semibold text-slate-650 text-sm">
-          <div class="task-view-${r} flex items-center gap-2 ${d?"text-slate-400 font-medium":""}">
+          <div class="task-view-${r} flex items-center gap-2">
             <span class="task-text-display">${w(u)}</span>
           </div>
           <div class="hidden task-edit-${r} flex flex-col sm:flex-row gap-3 items-start sm:items-center">
