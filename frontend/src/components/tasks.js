@@ -38,7 +38,7 @@ export function initTasksModule(data, onSync) {
         el.innerHTML = getCountdownHtml(item);
       }
     });
-  }, 30000);
+  }, 1000);
 }
 
 
@@ -121,7 +121,7 @@ export function buildTaskTable() {
         </td>
 
         <!-- Column 3: Status -->
-        <td class="p-4 pl-12 text-left">
+        <td class="p-4 pl-6 text-left">
           <label class="inline-flex items-center gap-3 cursor-pointer select-none">
             <input type="checkbox" id="task-chk-${id}" class="habit-checkbox shrink-0" ${isDone ? 'checked' : ''} onchange="app.tasks.toggleTaskStatusDirectly(${id}, this)">
             <span id="task-lbl-${id}" class="text-xs font-semibold tracking-wide ${isDone ? 'text-emerald-600' : 'text-slate-400'}">${isDone ? 'Completed' : 'Pending'}</span>
@@ -344,7 +344,7 @@ function formatTaskDateView(dateStr) {
 function getCountdownHtml(item) {
   let isDone = item.status === true || item.status === "TRUE" || item.status === "v" || item.status === "checked";
   if (isDone) {
-    return `<span class="text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 border border-emerald-100 rounded-md text-[10px] flex items-center gap-1 w-max"><i class="fa-solid fa-circle-check"></i> Done</span>`;
+    return `<span class="text-emerald-600 font-semibold flex items-center gap-1"><i class="fa-solid fa-circle-check text-xs"></i> Done</span>`;
   }
   
   let endDateStr = item.end_date;
@@ -360,49 +360,36 @@ function getCountdownHtml(item) {
   let now = Date.now();
   let diffMs = ts - now;
   
-  if (diffMs <= 0) {
-    let overdueMs = Math.abs(diffMs);
-    let oHours = Math.floor(overdueMs / (3600 * 1000));
-    let oDays = Math.floor(oHours / 24);
-    let text = "";
-    if (oDays > 0) {
-      text = `${oDays}d overdue`;
-    } else if (oHours > 0) {
-      text = `${oHours}h overdue`;
-    } else {
-      let oMins = Math.floor(overdueMs / 60000);
-      text = `${oMins}m overdue`;
-    }
-    return `<span class="text-rose-600 font-bold bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-md text-[10px] flex items-center gap-1 w-max"><i class="fa-solid fa-triangle-exclamation animate-pulse"></i> ${text}</span>`;
-  }
+  let isOverdue = diffMs < 0;
+  let absDiff = Math.abs(diffMs);
   
-  // Future deadline
-  let mins = Math.floor(diffMs / 60000);
-  let hours = Math.floor(mins / 60);
+  let seconds = Math.floor(absDiff / 1000);
+  let minutes = Math.floor(seconds / 60);
+  let hours = Math.floor(minutes / 60);
   let days = Math.floor(hours / 24);
   
-  let dHours = hours % 24;
-  let dMins = mins % 60;
+  let dHours = String(hours % 24).padStart(2, '0');
+  let dMinutes = String(minutes % 60).padStart(2, '0');
+  let dSeconds = String(seconds % 60).padStart(2, '0');
   
+  let timeStr = "";
   if (days > 0) {
-    let style = "text-slate-500 bg-slate-50 border border-slate-100";
-    if (days <= 1) {
-      style = "text-amber-650 bg-amber-50 border border-amber-100 font-semibold";
-    }
-    return `<span class="${style} px-2 py-0.5 rounded-md text-[10px] flex items-center gap-1 w-max"><i class="fa-solid fa-calendar-day"></i> ${days}d ${dHours}h</span>`;
+    timeStr = `${days}d ${dHours}:${dMinutes}:${dSeconds}`;
+  } else {
+    timeStr = `${dHours}:${dMinutes}:${dSeconds}`;
   }
   
-  if (hours > 0) {
-    let style = "text-amber-650 bg-amber-50 border border-amber-100 font-semibold";
-    if (hours < 3) {
-      style = "text-rose-500 bg-rose-50 border border-rose-100 font-bold";
+  if (isOverdue) {
+    return `<span class="text-rose-600 font-bold flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation text-xs text-rose-500 animate-pulse"></i> -${timeStr}</span>`;
+  } else {
+    let style = "text-slate-500 font-medium";
+    if (hours < 1) {
+      style = "text-rose-500 font-bold";
+    } else if (hours < 24) {
+      style = "text-amber-600 font-semibold";
     }
-    let icon = hours < 3 ? "fa-solid fa-clock animate-pulse" : "fa-solid fa-clock";
-    return `<span class="${style} px-2 py-0.5 rounded-md text-[10px] flex items-center gap-1 w-max"><i class="${icon}"></i> ${hours}h ${dMins}m</span>`;
+    return `<span class="${style} flex items-center gap-1"><i class="fa-solid fa-clock text-xs"></i> ${timeStr}</span>`;
   }
-  
-  // Under 1 hour
-  return `<span class="text-rose-600 bg-rose-50 border border-rose-100 font-bold px-2 py-0.5 rounded-md text-[10px] flex items-center gap-1 w-max"><i class="fa-solid fa-hourglass-half animate-spin"></i> ${dMins}m left</span>`;
 }
 
 
