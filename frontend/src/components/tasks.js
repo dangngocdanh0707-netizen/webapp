@@ -3,6 +3,8 @@ import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimes
 let allTaskData = [];
 let onSyncNeeded = null;
 let countdownInterval = null;
+let startInputModified = false;
+let endInputModified = false;
 
 export function initTasksModule(data, onSync) {
   allTaskData = (data || []).map(item => ({
@@ -18,10 +20,12 @@ export function initTasksModule(data, onSync) {
   const startInput = document.getElementById('ins-task-start-date');
   if (startInput) {
     startInput.value = getTodayDateTimeString();
+    startInput.addEventListener('input', () => { startInputModified = true; });
   }
   const endInput = document.getElementById('ins-task-end-date');
   if (endInput) {
     endInput.value = getTodayDateTimeString();
+    endInput.addEventListener('input', () => { endInputModified = true; });
   }
 
   buildTaskTable();
@@ -31,6 +35,7 @@ export function initTasksModule(data, onSync) {
     clearInterval(countdownInterval);
   }
   countdownInterval = setInterval(() => {
+    // 1. Update countdowns
     document.querySelectorAll('.task-countdown-container').forEach(el => {
       let rowNum = el.getAttribute('data-row-number');
       let item = allTaskData.find(t => t.rowNumber == rowNum);
@@ -38,6 +43,16 @@ export function initTasksModule(data, onSync) {
         el.innerHTML = getCountdownHtml(item);
       }
     });
+
+    // 2. Auto update date inputs to current time if not modified/focused
+    const startIn = document.getElementById('ins-task-start-date');
+    if (startIn && !startInputModified && document.activeElement !== startIn) {
+      startIn.value = getTodayDateTimeString();
+    }
+    const endIn = document.getElementById('ins-task-end-date');
+    if (endIn && !endInputModified && document.activeElement !== endIn) {
+      endIn.value = getTodayDateTimeString();
+    }
   }, 1000);
 }
 
@@ -222,6 +237,8 @@ window.app.tasks.addTaskRow = function () {
   document.getElementById('ins-task-desc').value = "";
   document.getElementById('ins-task-start-date').value = getTodayDateTimeString();
   document.getElementById('ins-task-end-date').value = getTodayDateTimeString();
+  startInputModified = false;
+  endInputModified = false;
 
   callServer("insertTaskRow", [startDate, endDate, desc, false])
     .then(res => {
