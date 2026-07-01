@@ -496,7 +496,7 @@ If the user is just saying hello, asking a general question, or the request is a
         <td class="p-4 text-center">
           <div class="task-view-${r} flex justify-center gap-2">
             <button onclick="app.tasks.toggleTaskEdit(${r}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="app.tasks.deleteTask(${r})" class="text-slate-450 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="app.tasks.deleteTask(${r})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden task-edit-${r} flex justify-center gap-1.5">
             <button onclick="app.tasks.saveTask(${r})" class="text-emerald-600 hover:text-emerald-800 font-bold px-2 py-1 text-xs border border-emerald-200 rounded-md bg-emerald-50 cursor-pointer transition">Save</button>
