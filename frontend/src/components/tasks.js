@@ -105,7 +105,7 @@ export function buildTaskTable() {
 
         <!-- Column 2: Task details -->
         <td class="p-4 font-semibold text-slate-650 text-sm">
-          <div class="task-view-${id} flex items-center gap-2 ${isDone ? 'text-slate-400 font-medium' : ''}">
+          <div class="task-view-${id} flex items-center gap-2">
             <span class="task-text-display">${escapeHTML(taskText)}</span>
           </div>
           <div class="hidden task-edit-${id} flex flex-col sm:flex-row gap-3 items-start sm:items-center">
