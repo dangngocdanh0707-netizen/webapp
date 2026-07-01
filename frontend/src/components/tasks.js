@@ -2,6 +2,7 @@ import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimes
 
 let allTaskData = [];
 let onSyncNeeded = null;
+let countdownInterval = null;
 
 export function initTasksModule(data, onSync) {
   allTaskData = (data || []).map(item => ({
@@ -24,6 +25,20 @@ export function initTasksModule(data, onSync) {
   }
 
   buildTaskTable();
+
+  // Set up background countdown update timer
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+  countdownInterval = setInterval(() => {
+    document.querySelectorAll('.task-countdown-container').forEach(el => {
+      let rowNum = el.getAttribute('data-row-number');
+      let item = allTaskData.find(t => t.rowNumber == rowNum);
+      if (item) {
+        el.innerHTML = getCountdownHtml(item);
+      }
+    });
+  }, 30000);
 }
 
 
@@ -95,6 +110,13 @@ export function buildTaskTable() {
           </div>
           <div class="hidden task-edit-${id} flex flex-col sm:flex-row gap-3 items-start sm:items-center">
             <input type="text" id="task-edit-desc-${id}" class="edit-input font-bold w-full" value="${escapeHTML(taskText)}">
+          </div>
+        </td>
+
+        <!-- Column 2b: Time Left (Countdown) -->
+        <td class="p-4 text-xs font-semibold">
+          <div class="task-countdown-container" data-row-number="${id}">
+            ${getCountdownHtml(item)}
           </div>
         </td>
 
@@ -317,6 +339,70 @@ function formatTaskDateView(dateStr) {
     return `${escapeHTML(parts[0])}<span class="text-slate-400 font-medium ml-2">${escapeHTML(parts[1])}</span>`;
   }
   return escapeHTML(dateStr);
+}
+
+function getCountdownHtml(item) {
+  let isDone = item.status === true || item.status === "TRUE" || item.status === "v" || item.status === "checked";
+  if (isDone) {
+    return `<span class="text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 border border-emerald-100 rounded-md text-[10px] flex items-center gap-1 w-max"><i class="fa-solid fa-circle-check"></i> Done</span>`;
+  }
+  
+  let endDateStr = item.end_date;
+  if (!endDateStr || endDateStr === '-') {
+    return `<span class="text-slate-400 font-normal">-</span>`;
+  }
+  
+  let ts = parseDateToTimestamp(endDateStr);
+  if (ts === 0) {
+    return `<span class="text-slate-400 font-normal">-</span>`;
+  }
+  
+  let now = Date.now();
+  let diffMs = ts - now;
+  
+  if (diffMs <= 0) {
+    let overdueMs = Math.abs(diffMs);
+    let oHours = Math.floor(overdueMs / (3600 * 1000));
+    let oDays = Math.floor(oHours / 24);
+    let text = "";
+    if (oDays > 0) {
+      text = `${oDays}d overdue`;
+    } else if (oHours > 0) {
+      text = `${oHours}h overdue`;
+    } else {
+      let oMins = Math.floor(overdueMs / 60000);
+      text = `${oMins}m overdue`;
+    }
+    return `<span class="text-rose-600 font-bold bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-md text-[10px] flex items-center gap-1 w-max"><i class="fa-solid fa-triangle-exclamation animate-pulse"></i> ${text}</span>`;
+  }
+  
+  // Future deadline
+  let mins = Math.floor(diffMs / 60000);
+  let hours = Math.floor(mins / 60);
+  let days = Math.floor(hours / 24);
+  
+  let dHours = hours % 24;
+  let dMins = mins % 60;
+  
+  if (days > 0) {
+    let style = "text-slate-500 bg-slate-50 border border-slate-100";
+    if (days <= 1) {
+      style = "text-amber-650 bg-amber-50 border border-amber-100 font-semibold";
+    }
+    return `<span class="${style} px-2 py-0.5 rounded-md text-[10px] flex items-center gap-1 w-max"><i class="fa-solid fa-calendar-day"></i> ${days}d ${dHours}h</span>`;
+  }
+  
+  if (hours > 0) {
+    let style = "text-amber-650 bg-amber-50 border border-amber-100 font-semibold";
+    if (hours < 3) {
+      style = "text-rose-500 bg-rose-50 border border-rose-100 font-bold";
+    }
+    let icon = hours < 3 ? "fa-solid fa-clock animate-pulse" : "fa-solid fa-clock";
+    return `<span class="${style} px-2 py-0.5 rounded-md text-[10px] flex items-center gap-1 w-max"><i class="${icon}"></i> ${hours}h ${dMins}m</span>`;
+  }
+  
+  // Under 1 hour
+  return `<span class="text-rose-600 bg-rose-50 border border-rose-100 font-bold px-2 py-0.5 rounded-md text-[10px] flex items-center gap-1 w-max"><i class="fa-solid fa-hourglass-half animate-spin"></i> ${dMins}m left</span>`;
 }
 
 
