@@ -12,12 +12,10 @@ export function initMapModule(data, onSync) {
   onSyncNeeded = onSync;
 
   // Populate Filter Dropdowns dynamically
-  let categories = new Set();
   let cities = new Set();
 
   allMapData.forEach(item => {
     if (!item) return;
-    if (item.category) categories.add(String(item.category).trim());
     if (item.city) cities.add(String(item.city).trim());
   });
 
@@ -35,21 +33,6 @@ export function initMapModule(data, onSync) {
       insCitySelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(city)}">${escapeHTML(city)}</option>`);
     });
   }
- 
-  const catSelect = document.getElementById('mapCategoryFilter');
-  const insCatSelect = document.getElementById('ins-map-cat');
-  if (catSelect) {
-    catSelect.innerHTML = '<option value="All">All Categories</option>';
-    categories.forEach(cat => {
-      catSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`);
-    });
-  }
-  if (insCatSelect) {
-    insCatSelect.innerHTML = '<option value=""></option>';
-    categories.forEach(cat => {
-      insCatSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`);
-    });
-  }
 
   // Set default status filter value to Pending
   const statusFilter = document.getElementById('mapStatusFilter');
@@ -64,14 +47,11 @@ export function initMapModule(data, onSync) {
 export function updateMapStats() {
   const totalPlacesEl = document.getElementById('total-map-places');
   const totalCompletedEl = document.getElementById('total-map-completed');
-  const totalCatsEl = document.getElementById('total-map-categories');
 
-  if (!totalPlacesEl && !totalCompletedEl && !totalCatsEl) return;
+  if (!totalPlacesEl && !totalCompletedEl) return;
 
-  let categories = new Set();
   const validPlaces = allMapData.filter(item => {
     if (!item || !item.place) return false;
-    if (item.category) categories.add(String(item.category).trim());
     return true;
   });
 
@@ -79,7 +59,6 @@ export function updateMapStats() {
 
   if (totalPlacesEl) totalPlacesEl.innerText = validPlaces.length;
   if (totalCompletedEl) totalCompletedEl.innerText = completedPlaces.length;
-  if (totalCatsEl) totalCatsEl.innerText = categories.size;
 }
 
 export function buildMapGrid() {
@@ -92,7 +71,6 @@ export function buildMapGrid() {
   // Read Active Filters
   const searchVal = document.getElementById('mapSearchInput') ? document.getElementById('mapSearchInput').value.toLowerCase().trim() : "";
   const cityVal = document.getElementById('mapCityFilter') ? document.getElementById('mapCityFilter').value : "All";
-  const catVal = document.getElementById('mapCategoryFilter') ? document.getElementById('mapCategoryFilter').value : "All";
   const statusFilter = document.getElementById('mapStatusFilter');
   const statusVal = statusFilter ? statusFilter.value : "All";
 
@@ -101,13 +79,11 @@ export function buildMapGrid() {
     if (!item || !item.place) return false;
 
     const city = String(item.city || "").trim();
-    const category = String(item.category || "").trim();
     const placeName = String(item.place || "").trim();
     const status = item.status === true || item.status === "TRUE";
 
     // Apply Filter constraints
     if (cityVal !== "All" && city !== cityVal) return false;
-    if (catVal !== "All" && category !== catVal) return false;
 
     // Apply Status Filter constraints
     if (statusVal === "Completed" && !status) return false;
@@ -115,7 +91,6 @@ export function buildMapGrid() {
 
     if (searchVal !== "") {
       const match = placeName.toLowerCase().includes(searchVal) ||
-        category.toLowerCase().includes(searchVal) ||
         city.toLowerCase().includes(searchVal);
       if (!match) return false;
     }
@@ -146,7 +121,6 @@ export function buildMapGrid() {
   });
 
   const uniqueCities = Array.from(new Set(allMapData.map(d => d.city).filter(Boolean).map(c => c.trim()))).sort((a, b) => a.localeCompare(b, 'vi'));
-  const uniqueCategories = Array.from(new Set(allMapData.map(d => d.category).filter(Boolean).map(c => c.trim()))).sort((a, b) => a.localeCompare(b, 'vi'));
 
   // Render Rows
   sortedData.forEach(item => {
@@ -154,7 +128,6 @@ export function buildMapGrid() {
       const id = item.rowNumber;
       const placeName = String(item.place || "").trim();
       const city = String(item.city || "").trim();
-      const category = String(item.category || "").trim();
       const status = item.status === true || item.status === "TRUE";
 
       // Direct Google Search URL generation (matching Explore in Collections page)
@@ -173,9 +146,6 @@ export function buildMapGrid() {
           <td class="p-4 map-view-${id}">
             ${city ? `<span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">${escapeHTML(city)}</span>` : '-'}
           </td>
-          <td class="p-4 map-view-${id}">
-            ${category ? `<span class="px-2 py-0.5 rounded-md text-xs border ${styleClass}">${escapeHTML(category)}</span>` : '-'}
-          </td>
           <td class="p-4 pl-12 text-left map-view-${id}">
             <label class="inline-flex items-center gap-3 cursor-pointer select-none">
               <input type="checkbox" id="map-chk-${id}" class="habit-checkbox shrink-0" ${status ? 'checked' : ''} onchange="app.maps.toggleMapStatusDirectly(${id}, this)">
@@ -190,14 +160,6 @@ export function buildMapGrid() {
               <option value=""></option>
               ${uniqueCities.map(c => 
                 `<option value="${c}" ${city === c ? 'selected' : ''}>${escapeHTML(c)}</option>`
-              ).join('')}
-            </select>
-          </td>
-          <td class="p-4 hidden map-edit-${id}">
-            <select id="map-edit-cat-${id}" class="edit-input w-full">
-              <option value=""></option>
-              ${uniqueCategories.map(c => 
-                `<option value="${c}" ${category === c ? 'selected' : ''}>${escapeHTML(c)}</option>`
               ).join('')}
             </select>
           </td>
@@ -227,7 +189,7 @@ export function buildMapGrid() {
       console.error("Table Row Render Error for item:", item, rowError);
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="bg-rose-50/10">
-          <td colspan="5" class="p-4 pl-6 text-xs text-rose-800 font-medium">
+          <td colspan="4" class="p-4 pl-6 text-xs text-rose-800 font-medium">
             ⚠️ Data error for row #${item.rowNumber || '?'}: ${escapeHTML(rowError.message)}
           </td>
         </tr>
@@ -245,13 +207,11 @@ window.app.maps.filterMapGrid = function () {
 window.app.maps.addMapRow = function() {
   const placeInput = document.getElementById('ins-map-place');
   const cityInput = document.getElementById('ins-map-city');
-  const catInput = document.getElementById('ins-map-cat');
  
   if (!placeInput) return;
  
   const place = placeInput.value.trim();
   const city = cityInput ? cityInput.value.trim() : "";
-  const category = catInput ? catInput.value.trim() : "";
   const status = false; // Mặc định là Pending, người dùng sẽ tự click chọn trực tiếp trong bảng sau.
  
   if (!place) {
@@ -265,7 +225,6 @@ window.app.maps.addMapRow = function() {
     rowNumber: newRowNumber,
     place: place,
     city: city,
-    category: category,
     status: status
   };
  
@@ -275,9 +234,8 @@ window.app.maps.addMapRow = function() {
   // Clear inputs
   placeInput.value = "";
   cityInput.value = "";
-  if (catInput) catInput.value = "";
  
-  callServer("insertMapRow", [place, city, category, status])
+  callServer("insertMapRow", [place, city, status])
     .then(res => {
       if (res !== "Thành công") {
         rollback(res);
@@ -292,7 +250,6 @@ window.app.maps.addMapRow = function() {
     buildMapGrid();
     if (placeInput) placeInput.value = place;
     if (cityInput) cityInput.value = city;
-    if (catInput) catInput.value = category;
     console.error("Sync error: " + errorMessage);
   }
 };
@@ -388,11 +345,9 @@ window.app.maps.toggleMapEdit = function (id, isEdit) {
 window.app.maps.saveMapPlace = function(id) {
   const placeInput = document.getElementById(`map-edit-place-${id}`);
   const cityInput = document.getElementById(`map-edit-city-${id}`);
-  const catInput = document.getElementById(`map-edit-cat-${id}`);
   
   const place = placeInput ? placeInput.value.trim() : "";
   const city = cityInput ? cityInput.value.trim() : "";
-  const category = catInput ? catInput.value.trim() : "";
   const statusEl = document.getElementById(`map-edit-status-${id}`);
   const status = statusEl ? statusEl.checked : false;
  
@@ -408,14 +363,13 @@ window.app.maps.saveMapPlace = function(id) {
   let oldObj = { ...allMapData[idx] };
   allMapData[idx].place = place;
   allMapData[idx].city = city;
-  allMapData[idx].category = category;
   allMapData[idx].status = status;
  
   window.app.maps.toggleMapEdit(id, false);
   buildMapGrid();
   console.log("Place updated!");
  
-  callServer("updateMapRow", [id, place, city, category, status])
+  callServer("updateMapRow", [id, place, city, status])
     .then(res => {
       if (res !== "Thành công") {
         rollback(res);

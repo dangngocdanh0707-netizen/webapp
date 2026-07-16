@@ -518,7 +518,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
       { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
       { range: `${mappings['task'] || 'tasks'}!A1:F1`, values: [['start_date', 'end_date', 'task', 'urgent', 'important', 'status']] },
-      { range: `${mappings['google_map'] || 'google_maps'}!A1:D1`, values: [['place', 'city', 'category', 'status']] },
+      { range: `${mappings['google_map'] || 'google_maps'}!A1:C1`, values: [['place', 'city', 'status']] },
       { range: `${mappings['collections'] || 'collections'}!A1:C1`, values: [['item', 'brand', 'category']] },
       { range: `${mappings['grammar_diary'] || 'grammar_diaries'}!A1:F1`, values: [['date', 'scenario', 'user_sentence', 'corrected_sentence', 'explanation', 'status']] },
       { range: `${mappings['chat_history'] || 'chat_histories'}!A1:D1`, values: [['date', 'scenario', 'role', 'content']] }
@@ -593,7 +593,7 @@ export function callServer(methodName, args) {
             `${promptTab}!A2:C`,
             `${goalTab}!A2:E`,
             `${taskTab}!A2:D`,
-            `${mappings['google_map']}!A2:D`,
+            `${mappings['google_map']}!A2:C`,
             `${mappings['collections'] || 'collections'}!A2:C`,
             `${grammarTab || 'grammar_diaries'}!A2:F`,
             `${chatTab || 'chat_histories'}!A2:D`
@@ -690,8 +690,7 @@ export function callServer(methodName, args) {
             rowNumber: idx + 2,
             place: row[0] || "",
             city: row[1] || "",
-            category: row[2] || "",
-            status: row[3] === "TRUE" || row[3] === true || row[3] === "true" || row[3] === "v" || row[3] === "checked"
+            status: row[2] === "TRUE" || row[2] === true || row[2] === "true" || row[2] === "v" || row[2] === "checked"
           })).filter(item => item.place),
 
           collections: getRows(valueRanges[10]).map((row, idx) => ({
@@ -965,33 +964,33 @@ export function callServer(methodName, args) {
 
       // Google Maps Explorer CRUD
       if (methodName === "updateMapRow") {
-        const [rowNumber, place, city, category, status] = args;
+        const [rowNumber, place, city, status] = args;
         const mapTab = mappings['google_map'];
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${mapTab}!A${rowNumber}:D${rowNumber}`,
+          range: `${mapTab}!A${rowNumber}:C${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[place, city, category, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
+          resource: { values: [[place, city, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
         });
         resolve("Thành công");
         return;
       }
       if (methodName === "insertMapRow") {
-        const [place, city, category, status] = args;
+        const [place, city, status] = args;
         const mapTab = mappings['google_map'];
         const appendRes = await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${mapTab}!A:D`,
+          range: `${mapTab}!A:C`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
-          resource: { values: [[place, city, category, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
+          resource: { values: [[place, city, status === true || status === "TRUE" ? "TRUE" : "FALSE"]] }
         });
 
         try {
           const updatedRange = appendRes.result.updates?.updatedRange;
           if (updatedRange) {
             const parts = updatedRange.split('!');
-            const rangePart = parts[parts.length - 1]; // e.g. "A8:D8"
+            const rangePart = parts[parts.length - 1]; // e.g. "A8:C8"
             const rowMatch = rangePart.match(/\d+/);
             if (rowMatch) {
               const rowNumber = parseInt(rowMatch[0], 10);
@@ -1005,8 +1004,8 @@ export function callServer(methodName, args) {
                         sheetId: sheetId,
                         startRowIndex: rowNumber - 1,
                         endRowIndex: rowNumber,
-                        startColumnIndex: 3, // Column D (index 3)
-                        endColumnIndex: 4
+                        startColumnIndex: 2, // Column C (index 2)
+                        endColumnIndex: 3
                       },
                       rule: {
                         condition: {
@@ -1032,7 +1031,7 @@ export function callServer(methodName, args) {
         const mapTab = mappings['google_map'];
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${mapTab}!D${rowNumber}`,
+          range: `${mapTab}!C${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
         });
