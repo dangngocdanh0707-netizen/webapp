@@ -512,7 +512,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['assets'] || 'assets'}!A1:E1`, values: [['assets', 'quantity', 'unit', 'price', 'total']] },
       { range: `${mappings['incomes'] || 'incomes'}!A1:D1`, values: [['Date', 'Category', 'Amount', 'Note']] },
       { range: `${mappings['cost'] || 'expenses'}!A1:E1`, values: [['Date', 'Category', 'Subcategory', 'Amount', 'Note']] },
-      { range: `${mappings['vocabulary'] || 'vocabulary'}!A1:J1`, values: [['Content', 'Transcription', 'Category', 'Topic', 'Level', 'Meaning', 'Status', 'Next Review', 'Ease Factor', 'Interval']] },
+      { range: `${mappings['vocabulary'] || 'vocabulary'}!A1:H1`, values: [['Content', 'Transcription', 'Topic', 'Meaning', 'Status', 'Next Review', 'Ease Factor', 'Interval']] },
       { range: `${mappings['habit_tracker'] || 'habits'}!A1:C1`, values: [['Date', 'Habit', 'Status']] },
       { range: `${mappings['link'] || 'links'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
       { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
@@ -587,7 +587,7 @@ export function callServer(methodName, args) {
             `${assetsTab}!A2:E`,
             `${incomesTab}!A2:D`,
             `${costTab}!A2:E`,
-            `${vocabTab}!A2:J`,
+            `${vocabTab}!A2:H`,
             `${habitTab}!A2:C`,
             `${linkTab}!A2:C`,
             `${promptTab}!A2:C`,
@@ -638,14 +638,12 @@ export function callServer(methodName, args) {
             rowNumber: idx + 2,
             content: row[0] || "",
             transcription: row[1] || "",
-            category: row[2] || "",
-            topic: row[3] || "",
-            level: row[4] || "",
-            meaning: row[5] || "",
-            status: row[6] || "New",
-            next_review: cleanDateValue(row[7]),
-            ease_factor: Number(row[8]) || 2.5,
-            interval: Number(row[9]) || 0
+            topic: row[2] || "",
+            meaning: row[3] || "",
+            status: row[4] || "New",
+            next_review: cleanDateValue(row[5]),
+            ease_factor: Number(row[6]) || 2.5,
+            interval: Number(row[7]) || 0
           })).filter(item => item.content),
 
           habit_tracker: getRows(valueRanges[4]).map((row, idx) => ({
@@ -863,19 +861,17 @@ export function callServer(methodName, args) {
 
       // Vocabulary & Anki SRS CRUD
       if (methodName === "insertVocabRow") {
-        const [content, transcription, category, topic, level, meaning] = args;
+        const [content, transcription, topic, meaning] = args;
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: `${vocabTab}!A:J`,
+          range: `${vocabTab}!A:H`,
           valueInputOption: 'USER_ENTERED',
           insertDataOption: 'OVERWRITE',
           resource: {
             values: [[
               content,
               transcription || "",
-              category || "",
               topic || "",
-              level || "",
               meaning || "",
               "New",
               "",
@@ -888,12 +884,12 @@ export function callServer(methodName, args) {
         return;
       }
       if (methodName === "updateVocabRow") {
-        const [rowNumber, content, transcription, category, topic, level, meaning] = args;
+        const [rowNumber, content, transcription, topic, meaning] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${vocabTab}!A${rowNumber}:F${rowNumber}`,
+          range: `${vocabTab}!A${rowNumber}:D${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
-          resource: { values: [[content, transcription, category, topic, level, meaning]] }
+          resource: { values: [[content, transcription, topic, meaning]] }
         });
         resolve("Thành công");
         return;
@@ -923,7 +919,7 @@ export function callServer(methodName, args) {
         const [rowNumber, finalStatus, nextReviewStr, easeFactor, interval] = args;
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${vocabTab}!G${rowNumber}:J${rowNumber}`,
+          range: `${vocabTab}!E${rowNumber}:H${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[finalStatus, formatDateDb(nextReviewStr), Number(easeFactor), Number(interval)]] }
         });

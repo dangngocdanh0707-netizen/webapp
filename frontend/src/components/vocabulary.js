@@ -13,57 +13,31 @@ export function initVocabModule(data, onSync) {
   const totalTopicsEl = document.getElementById('total-topics');
   if (totalWordsEl) totalWordsEl.innerText = allVocabData.length;
   
-  // Parse Topics, Categories and Levels for filter dropdowns
+  // Parse Topics for filter dropdowns
   let vocabTopicCounts = {};
-  let vocabCategories = new Set();
-  let vocabLevels = new Set();
   
   allVocabData.forEach(v => {
     if (v.topic) {
       let topicName = v.topic.toString().trim();
       vocabTopicCounts[topicName] = (vocabTopicCounts[topicName] || 0) + 1;
     }
-    if (v.category) {
-      let catName = v.category.toString().trim();
-      if (catName !== "") vocabCategories.add(catName);
-    }
-    if (v.level) {
-      let levelName = v.level.toString().trim();
-      if (levelName !== "") vocabLevels.add(levelName);
-    }
   });
   if (totalTopicsEl) totalTopicsEl.innerText = Object.keys(vocabTopicCounts).length;
   
   // Populate filter selects
-  populateVocabFilters(vocabCategories, vocabTopicCounts, vocabLevels);
+  populateVocabFilters(vocabTopicCounts);
   
   // Render table
   buildVocabTable();
 }
 
-function populateVocabFilters(categories, topicCounts, levels) {
-  const catSelect = document.getElementById('vocabCategoryFilter');
-  if (catSelect) {
-    catSelect.innerHTML = '<option value="All">All Categories</option>';
-    categories.forEach(cat => {
-      catSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`);
-    });
-  }
-  
+function populateVocabFilters(topicCounts) {
   const topicSelect = document.getElementById('vocabTopicFilter');
   if (topicSelect) {
     let sortedTopics = Object.entries(topicCounts).sort((a, b) => b[1] - a[1]);
     topicSelect.innerHTML = '<option value="All">All Topics</option>';
     sortedTopics.forEach(item => {
       topicSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(item[0])}">${escapeHTML(item[0])}</option>`);
-    });
-  }
-
-  const levelSelect = document.getElementById('vocabLevelFilter');
-  if (levelSelect) {
-    levelSelect.innerHTML = '<option value="All">All Levels</option>';
-    levels.forEach(lvl => {
-      levelSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHTML(lvl)}">${escapeHTML(lvl)}</option>`);
     });
   }
 }
@@ -73,34 +47,24 @@ export function buildVocabTable() {
   if (!tbody) return;
   tbody.innerHTML = "";
   
-  const catSelect = document.getElementById('vocabCategoryFilter');
   const topicSelect = document.getElementById('vocabTopicFilter');
-  const levelSelect = document.getElementById('vocabLevelFilter');
   const searchInput = document.getElementById('vocabSearchInput');
   
-  let selectedCat = catSelect ? catSelect.value : "All";
   let selectedTopic = topicSelect ? topicSelect.value : "All";
-  let selectedLevel = levelSelect ? levelSelect.value : "All";
   let keyword = searchInput ? searchInput.value.toLowerCase().trim() : "";
 
   allVocabData.forEach(item => {
     let content = item.content ? item.content.toString() : "";
     let meaning = item.meaning ? item.meaning.toString() : "";
-    let cat = item.category ? item.category.toString().trim() : "-";
     let topic = item.topic ? item.topic.toString().trim() : "-";
-    let level = item.level ? item.level.toString().trim() : "-";
     let statusStr = item.status ? item.status.toString().trim() : "New";
     let nextReviewView = item.next_review ? escapeHTML(item.next_review) : "-";
 
-    if (selectedCat !== "All" && cat !== selectedCat) return;
     if (selectedTopic !== "All" && topic !== selectedTopic) return;
-    if (selectedLevel !== "All" && level !== selectedLevel) return;
     if (keyword !== "" && 
         !content.toLowerCase().includes(keyword) && 
         !meaning.toLowerCase().includes(keyword) && 
-        !topic.toLowerCase().includes(keyword) && 
-        !cat.toLowerCase().includes(keyword) &&
-        !level.toLowerCase().includes(keyword)) return;
+        !topic.toLowerCase().includes(keyword)) return;
     
     let id = item.rowNumber;
     let defaultBadgeStyle = "bg-slate-50 text-slate-650 border-slate-200 font-semibold";
@@ -118,14 +82,8 @@ export function buildVocabTable() {
           </div>
         </td>
         <td class="p-4 font-mono text-slate-500 italic text-sm v-view-${id}">${escapeHTML(item.transcription) || '-'}</td>
-        <td class="p-4 hidden v-view-${id}">
-          ${(cat && cat !== "-") ? `<span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(cat)}</span>` : '-'}
-        </td>
         <td class="p-4 v-view-${id}">
           ${(topic && topic !== "-") ? `<span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(topic)}</span>` : '-'}
-        </td>
-        <td class="p-4 v-view-${id}">
-          ${(item.level && item.level !== "-") ? `<span class="px-2 py-0.5 rounded-md text-xs border ${defaultBadgeStyle}">${escapeHTML(item.level)}</span>` : '-'}
         </td>
         <td class="p-4 text-xs text-slate-650 v-view-${id}">${escapeHTML(item.meaning) || ''}</td>
         <td class="p-4 v-view-${id}">
@@ -135,9 +93,7 @@ export function buildVocabTable() {
         
         <td class="p-4 pl-6 hidden v-edit-${id}"><input type="text" id="v-edit-content-${id}" class="edit-input font-bold w-full" value="${escapeHTML(item.content)}"></td>
         <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-transcription-${id}" class="edit-input font-mono italic w-full" value="${escapeHTML(item.transcription || '')}" placeholder="/.../"></td>
-        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-cat-${id}" class="edit-input w-full" value="${escapeHTML(cat)}"></td>
         <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-topic-${id}" class="edit-input w-full" value="${escapeHTML(topic)}"></td>
-        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-level-${id}" class="edit-input font-mono w-full" value="${escapeHTML(item.level)}"></td>
         <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-mean-${id}" class="edit-input w-full" value="${escapeHTML(item.meaning)}"></td>
         <td class="p-4 hidden v-edit-${id}" colspan="2"><span class="text-xs italic text-slate-400">Status locked inside reviewer engine</span></td>
         
@@ -181,9 +137,7 @@ window.app.vocab.addVocabRow = function() {
     rowNumber: newRowNumber,
     content: content,
     transcription: "",
-    category: "",
     topic: "",
-    level: "",
     meaning: "",
     status: "New",
     next_review: "",
@@ -197,7 +151,7 @@ window.app.vocab.addVocabRow = function() {
   // Clear inputs
   document.getElementById('ins-v-content').value = "";
 
-  callServer("insertVocabRow", [content, ""])
+  callServer("insertVocabRow", [content, "", "", ""])
     .then(res => {
       if (res !== "Thành công") {
         rollback(res);
@@ -218,9 +172,7 @@ window.app.vocab.addVocabRow = function() {
 window.app.vocab.saveVocab = function(id) {
   let content = document.getElementById(`v-edit-content-${id}`).value.trim(); 
   let transcription = document.getElementById(`v-edit-transcription-${id}`) ? document.getElementById(`v-edit-transcription-${id}`).value.trim() : "";
-  let cat = document.getElementById(`v-edit-cat-${id}`).value.trim();
   let topic = document.getElementById(`v-edit-topic-${id}`).value.trim(); 
-  let level = document.getElementById(`v-edit-level-${id}`).value.trim(); 
   let meaning = document.getElementById(`v-edit-mean-${id}`).value.trim();
   
   if (!content) {
@@ -234,15 +186,13 @@ window.app.vocab.saveVocab = function(id) {
   let oldObj = { ...allVocabData[idx] };
   allVocabData[idx].content = content;
   allVocabData[idx].transcription = transcription;
-  allVocabData[idx].category = cat;
   allVocabData[idx].topic = topic;
-  allVocabData[idx].level = level;
   allVocabData[idx].meaning = meaning;
 
   window.app.vocab.toggleVocabEdit(id, false);
   buildVocabTable();
 
-  callServer("updateVocabRow", [id, content, transcription, cat, topic, level, meaning])
+  callServer("updateVocabRow", [id, content, transcription, topic, meaning])
     .then(res => {
       if (res !== "Thành công") {
         rollback(res);

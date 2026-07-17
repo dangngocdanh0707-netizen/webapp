@@ -537,7 +537,7 @@ window.app.ai.saveQuickVocabWord = function () {
   contentInput.focus();
 
   // Gọi API lưu xuống Google Sheets
-  callServer("insertVocabRow", [content, "", "", "", "", ""])
+  callServer("insertVocabRow", [content, "", "", ""])
     .then(res => {
       if (res === "Thành công") {
         console.log(`Đã thêm từ "${content}" thành công!`);
