@@ -60,6 +60,9 @@ export function buildLinkTable() {
   if (!tbody) return;
   tbody.innerHTML = "";
   
+  const totalLinksEl = document.getElementById('total-links');
+  if (totalLinksEl) totalLinksEl.innerText = allLinkData.length;
+  
   const catSelect = document.getElementById('linkCategoryFilter');
   let selectedCat = catSelect ? catSelect.value : "All";
   let keyword = document.getElementById('linkSearchInput') ? document.getElementById('linkSearchInput').value.toLowerCase().trim() : "";

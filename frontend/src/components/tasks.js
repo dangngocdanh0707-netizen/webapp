@@ -62,6 +62,9 @@ export function buildTaskTable() {
   if (!tbody) return;
   tbody.innerHTML = "";
 
+  const totalTasksEl = document.getElementById('total-tasks');
+  if (totalTasksEl) totalTasksEl.innerText = allTaskData.length;
+
   const searchInput = document.getElementById('taskSearchInput');
   const statusFilter = document.getElementById('taskStatusFilter');
 

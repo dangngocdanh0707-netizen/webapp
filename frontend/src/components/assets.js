@@ -79,6 +79,19 @@ export function buildAssetTable() {
   if (!tbody) return;
   tbody.innerHTML = "";
 
+  // Update total stats
+  let assetsMap = {};
+  allAssetData.forEach(item => {
+    let total = parseFloat(item.total || 0);
+    let assetName = item.asset || "Unspecified";
+    assetsMap[assetName] = (assetsMap[assetName] || 0) + total;
+  });
+  let totalAssetsVal = Object.values(assetsMap).reduce((a, b) => a + b, 0);
+  const totalAssetsEl = document.getElementById('total-assets');
+  if (totalAssetsEl) totalAssetsEl.innerText = formatCompactCurrency(totalAssetsVal);
+  const totalAssetsCountEl = document.getElementById('total-assets-count');
+  if (totalAssetsCountEl) totalAssetsCountEl.innerText = Object.keys(assetsMap).length;
+
   const searchVal = document.getElementById('assetSearch') ? document.getElementById('assetSearch').value.toLowerCase().trim() : "";
 
   let displayAssetData = [...allAssetData];

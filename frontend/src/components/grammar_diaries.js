@@ -21,6 +21,9 @@ function renderGrammarCards() {
   const gridEl = document.getElementById('grammar-cards-grid');
   const emptyStateEl = document.getElementById('grammar-empty-state');
 
+  const totalCountEl = document.getElementById('grammar-total-count');
+  if (totalCountEl) totalCountEl.innerText = currentData.length;
+
   if (!gridEl) return;
 
   if (currentData.length === 0) {

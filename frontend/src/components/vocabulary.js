@@ -47,6 +47,9 @@ export function buildVocabTable() {
   if (!tbody) return;
   tbody.innerHTML = "";
   
+  const totalWordsEl = document.getElementById('total-words');
+  if (totalWordsEl) totalWordsEl.innerText = allVocabData.length;
+  
   const topicSelect = document.getElementById('vocabTopicFilter');
   const searchInput = document.getElementById('vocabSearchInput');
   

@@ -35,6 +35,9 @@ export function buildPromptTable() {
   if (!tbody) return;
   tbody.innerHTML = "";
   
+  const totalPromptsEl = document.getElementById('total-prompts');
+  if (totalPromptsEl) totalPromptsEl.innerText = allPromptData.length;
+  
   const catSelect = document.getElementById('promptCategoryFilter');
   let selectedCat = catSelect ? catSelect.value : "All";
   let keyword = document.getElementById('promptSearchInput') ? document.getElementById('promptSearchInput').value.toLowerCase().trim() : "";

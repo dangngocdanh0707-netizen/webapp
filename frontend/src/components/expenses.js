@@ -207,6 +207,8 @@ function populateCostSubcategories() {
 
 // Refactored buildTable to apply both category, month, and day filters and preserve <td> layout integrity
 export function buildTable() {
+  renderCostGraphics();
+
   const tbody = document.querySelector('#table-cost tbody');
   if (!tbody) return;
   tbody.innerHTML = "";

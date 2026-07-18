@@ -18,6 +18,9 @@ export function buildGoalTable() {
   if (!tbody) return;
   tbody.innerHTML = "";
   
+  const totalGoalsEl = document.getElementById('total-goals');
+  if (totalGoalsEl) totalGoalsEl.innerText = allGoalData.length;
+  
   allGoalData.forEach(item => {
     let id = item.rowNumber;
     let cur = parseFloat(item.current_value || 0);

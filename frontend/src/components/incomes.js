@@ -160,6 +160,8 @@ function populateIncomeCategories() {
 }
 
 export function buildIncomeTable() {
+  renderIncomeGraphics();
+
   const tbody = document.querySelector('#table-income tbody');
   if (!tbody) return;
   tbody.innerHTML = "";

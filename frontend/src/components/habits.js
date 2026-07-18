@@ -199,6 +199,10 @@ export function buildHabitTable(filterValue) {
   if (!tbody) return;
   tbody.innerHTML = "";
 
+  const uniqueHabits = [...new Set(allHabitData.map(h => h.habit).filter(h => h && h.trim() !== ''))];
+  const totalHabitsEl = document.getElementById('total-unique-habits');
+  if (totalHabitsEl) totalHabitsEl.innerText = uniqueHabits.length;
+
   if (allHabitData.length === 0) return;
 
   const statusFilter = document.getElementById('habitStatusFilter');
