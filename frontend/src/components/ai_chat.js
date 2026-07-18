@@ -160,7 +160,7 @@ function renderAiChatBubbles() {
       return `
         <div class="flex flex-col items-end animate-in fade-in slide-in-from-bottom-2 duration-200">
           <div class="flex items-start gap-1.5 max-w-[85%] flex-row-reverse">
-            <div class="bg-slate-900 text-white rounded-2xl px-4 py-2.5 text-xs font-semibold shadow-sm leading-relaxed">
+            <div class="bg-slate-900 text-white rounded-2xl px-4 py-3 text-[14px] font-medium shadow-sm leading-relaxed">
               ${escapeHTML(msg.text)}
               <div id="ai-chat-trans-${index}" class="hidden mt-2 pt-2 border-t border-slate-700">
                 <div class="ai-trans-spinner hidden flex items-center gap-1 text-slate-400 text-[10px] font-semibold">
@@ -178,7 +178,7 @@ function renderAiChatBubbles() {
               </button>
             </div>
           </div>
-          <span class="text-[8px] text-slate-400 font-bold uppercase mt-1 mr-1">You</span>
+          <span class="text-[10px] text-slate-400 font-bold uppercase mt-1 mr-1">You</span>
         </div>
       `;
     }
@@ -186,7 +186,7 @@ function renderAiChatBubbles() {
     return `
       <div class="flex flex-col items-start animate-in fade-in slide-in-from-bottom-2 duration-200">
         <div class="flex items-start gap-1.5 max-w-[85%]">
-          <div class="bg-white border border-slate-200 text-slate-800 rounded-2xl px-4 py-2.5 text-xs font-semibold shadow-2xs leading-relaxed">
+          <div class="bg-white border border-slate-200 text-slate-800 rounded-2xl px-4 py-3 text-[14px] font-medium shadow-2xs leading-relaxed">
             ${escapeHTML(msg.text)}
             <div id="ai-chat-trans-${index}" class="hidden mt-2 pt-2 border-t border-slate-100">
               <div class="ai-trans-spinner hidden flex items-center gap-1 text-slate-400 text-[10px] font-semibold">
@@ -204,7 +204,7 @@ function renderAiChatBubbles() {
             </button>
           </div>
         </div>
-        <span class="text-[8px] text-blue-500 font-bold uppercase mt-1 ml-1">AI Partner</span>
+        <span class="text-[10px] text-blue-500 font-bold uppercase mt-1 ml-1">AI Partner</span>
       </div>
     `;
   }).join("");
