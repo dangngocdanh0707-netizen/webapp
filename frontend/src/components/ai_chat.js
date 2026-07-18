@@ -115,33 +115,12 @@ window.app.ai.switchPracticeSubTab = function (subTabId) {
 };
 
 // ---------------- KHỞI TẠO VÀ CHUYỂN KỊCH BẢN (SCENARIOS) ----------------
-window.app.ai.setAiScenario = function (scenarioKey) {
-  if (!SCENARIOS[scenarioKey]) return;
-
-  activeScenario = scenarioKey;
-
-  // Cập nhật giao diện select kịch bản
-  const selectEl = document.getElementById('ai-chat-scenario-select');
-  if (selectEl) {
-    selectEl.value = scenarioKey;
-  }
-
-  // Khởi chạy kịch bản mới
-  initializeActiveScenario();
-};
-
 function initializeActiveScenario() {
   const scenario = SCENARIOS[activeScenario];
 
   // Cập nhật tiêu đề kịch bản
   const titleEl = document.getElementById('ai-chat-scenario-title');
   if (titleEl) titleEl.innerText = scenario.title;
-
-  // Sync select element
-  const selectEl = document.getElementById('ai-chat-scenario-select');
-  if (selectEl) {
-    selectEl.value = activeScenario;
-  }
 
   // Render các bong bóng chat
   renderAiChatBubbles();

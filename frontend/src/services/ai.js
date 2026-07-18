@@ -363,12 +363,12 @@ export async function callAiNavigatorApi(prompt, history, aiCreds, links = []) {
 
   let systemInstruction = `You are the AI Assistant named DANH for a Personal Life OS dashboard.
 Your job is to direct the user to the correct page/tab or help them find and open their saved links.
-Analyze the user's latest message (in English or Vietnamese) and determine their intent.
+Analyze the user's latest message (in English) and determine their intent.
 
 You MUST respond ONLY with a valid JSON object. Do not include markdown code block formatting (like \`\`\`json ... \`\`\`) in your raw response.
 The JSON structure must match this schema exactly:
 {
-  "reply": "Your friendly conversational response to the user in Vietnamese confirming the action.",
+  "reply": "Your friendly conversational response to the user in English confirming the action.",
   "intent": {
     "action": "switch_tab" | "open_link" | "none",
     "target": "target-value-here" // Tab ID (if action is "switch_tab"), the link Index number as a string (if action is "open_link"), or "" if "none".
@@ -397,12 +397,12 @@ ${links.map(l => `${l.index}: ${l.title} (${l.category})`).join('\n')}
 If the user is looking for, asking for, or trying to open a specific link from the saved links above:
 1. Identify the best matching link (case-insensitive, partial matching allowed).
 2. Set "action" to "open_link" and "target" to the matching link's INDEX number as a string (e.g., "0", "1", "2").
-3. In your "reply", write a friendly message in Vietnamese telling them you found the link and are opening it.`;
+3. In your "reply", write a friendly message in English telling them you found the link and are opening it.`;
   }
 
   systemInstruction += `
 
-If the user is just saying hello, asking a general question, or the request is ambiguous, set "action" to "none" and "target" to "". Keep your reply friendly, concise, and in Vietnamese.`;
+If the user is just saying hello, asking a general question, or the request is ambiguous, set "action" to "none" and "target" to "". Keep your reply friendly, concise, and in English.`;
 
   if (provider === "gemini") {
     if (!geminiKey) throw new Error("Thiếu Gemini API Key.");
@@ -502,7 +502,7 @@ function parseNavigatorJsonResponse(text) {
     }
     const parsed = JSON.parse(cleanedText);
     return {
-      reply: parsed.reply || "Đang thực hiện...",
+      reply: parsed.reply || "Processing...",
       intent: {
         action: parsed.intent?.action || "none",
         target: parsed.intent?.target || "",
@@ -543,12 +543,19 @@ export function speakEnglishText(text) {
       utterance.rate = 0.85;
     }
 
+    const voices = window.speechSynthesis.getVoices();
     const voiceSelect = document.getElementById('ai-chat-tts-voice');
     if (voiceSelect && voiceSelect.value !== "default") {
-      const voices = window.speechSynthesis.getVoices();
       const selectedVoice = voices.find(v => v.voiceURI === voiceSelect.value);
       if (selectedVoice) {
         utterance.voice = selectedVoice;
+      }
+    } else if (voices.length > 0) {
+      // Tự động tìm giọng nói Tiếng Anh để gán trực tiếp, tránh trình duyệt tự động dùng giọng mặc định của hệ điều hành (ví dụ Tiếng Việt)
+      const preferredVoice = voices.find(v => v.lang === "en-US" || v.lang === "en_US" || v.lang.includes("Google US English")) ||
+                            voices.find(v => v.lang.startsWith("en"));
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
       }
     }
 

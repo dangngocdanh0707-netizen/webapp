@@ -29,43 +29,24 @@ function clearInactivityTimer() {
 }
 
 const tabNamesMap = {
-  'home-tab': 'Trang chủ Launchpad',
-  'cost-tab': 'Quản lý Chi tiêu',
-  'vocab-tab': 'Sổ Từ vựng',
-  'practice-tab': 'Luyện tập Tiếng Anh (Anki / AI Chat)',
-  'habit-tab': 'Theo dõi Thói quen',
-  'task-tab': 'Quản lý Công việc',
-  'goal-tab': 'Theo dõi Mục tiêu',
-  'link-tab': 'Liên kết nhanh',
-  'prompt-tab': 'Mẫu Prompt AI',
-  'map-tab': 'Bản đồ Địa điểm',
-  'collections-tab': 'Bộ sưu tập Tài sản'
+  'home-tab': 'Home Launchpad',
+  'cost-tab': 'Expense Management',
+  'vocab-tab': 'Vocabulary Notebook',
+  'practice-tab': 'English Practice (Anki / AI Chat)',
+  'habit-tab': 'Habit Tracker',
+  'task-tab': 'Task Manager',
+  'goal-tab': 'Goal Tracker',
+  'link-tab': 'Quick Links',
+  'prompt-tab': 'AI Prompts',
+  'map-tab': 'Places Map',
+  'collections-tab': 'Assets Collection'
 };
 
-// Loại bỏ dấu tiếng Việt để so khớp chính xác hơn
-function removeVietnameseTones(str) {
-  str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
-  str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
-  str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
-  str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
-  str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
-  str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
-  str = str.replace(/đ/g, "d");
-  str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
-  str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
-  str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
-  str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
-  str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
-  str = str.replace(/Ý|Ỵ|Ỷ|Ỹ/g, "Y");
-  str = str.replace(/Đ/g, "D");
-  str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, "");
-  str = str.replace(/\u02C6|\u0306|\u031B/g, "");
-  return str;
-}
+
 
 // Bộ lọc từ khóa cục bộ để chuyển hướng tức thì (Không tốn token)
 function matchLocalTab(text) {
-  const normalized = removeVietnameseTones(text.toLowerCase().trim());
+  const normalized = text.toLowerCase().trim();
 
   if (/\b(expense|cost)\b/.test(normalized)) {
     return 'cost-tab';
@@ -111,7 +92,7 @@ function matchLocalTab(text) {
 function matchLocalLink(text, links) {
   if (!links || links.length === 0) return null;
 
-  const normalized = removeVietnameseTones(text.toLowerCase().trim());
+  const normalized = text.toLowerCase().trim();
 
   // Sắp xếp các link theo độ dài tiêu đề giảm dần để tránh khớp nhầm tiêu đề con ngắn nằm trong tiêu đề dài
   const sortedLinks = [...links].sort((a, b) => (b.title || "").length - (a.title || "").length);
@@ -120,7 +101,7 @@ function matchLocalLink(text, links) {
     const title = (link.title || "").trim();
     if (!title) continue;
 
-    const normalizedTitle = removeVietnameseTones(title.toLowerCase());
+    const normalizedTitle = title.toLowerCase();
 
     // Nếu tin nhắn người dùng chứa tiêu đề của liên kết (không phân biệt dấu và hoa thường)
     if (normalized.includes(normalizedTitle)) {
@@ -188,7 +169,7 @@ function renderInitialGreeting() {
   historyContainer.innerHTML = `
     <div class="flex flex-col items-start gap-1">
       <div class="bg-white border border-slate-200 text-slate-800 rounded-2xl px-3 py-2 text-xs font-semibold shadow-2xs leading-relaxed max-w-[85%]">
-        Xin chào
+        Hello!
       </div>
       <span class="text-[8px] text-blue-500 font-bold uppercase ml-1">AI</span>
     </div>
@@ -216,7 +197,7 @@ async function sendAssistantMessage() {
       window.app.switchTab(matchedTab);
     }
     const tabName = tabNamesMap[matchedTab];
-    const localReply = `Đã chuyển hướng bạn tới trang "${tabName}" thành công!`;
+    const localReply = `Successfully redirected you to "${tabName}"!`;
 
     setTimeout(() => {
       const localReplyId = appendMessage('ai', localReply);
@@ -232,7 +213,7 @@ async function sendAssistantMessage() {
     const url = (matchedLink.content || "").trim();
     if (url.startsWith('http')) {
       window.open(url, '_blank', 'noopener,noreferrer');
-      const localReply = `Đã tìm thấy và mở liên kết "${matchedLink.title}" cho bạn!`;
+      const localReply = `Found and opened the link "${matchedLink.title}" for you!`;
 
       setTimeout(() => {
         const localReplyId = appendMessage('ai', localReply);
@@ -246,7 +227,7 @@ async function sendAssistantMessage() {
   const hasCreds = aiCreds.provider === "gemini" ? aiCreds.geminiKey : aiCreds.openaiKey;
 
   if (!hasCreds) {
-    appendMessage('ai', "Bạn vui lòng cấu hình API Key trong mục thiết lập (Settings) ở Sidebar trước nhé!");
+    appendMessage('ai', "Please configure your API Key in the Settings sidebar first!");
     return;
   }
 
@@ -289,7 +270,7 @@ async function sendAssistantMessage() {
   } catch (error) {
     console.error("Lỗi AI Navigator:", error);
     removeLoadingIndicator(loadingId);
-    appendMessage('ai', "Có lỗi kết nối với AI. Vui lòng kiểm tra lại cấu hình API hoặc kết nối internet.");
+    appendMessage('ai', "AI Connection error. Please check your API configuration or internet connection.");
   }
 }
 
@@ -304,7 +285,7 @@ function appendMessage(role, text) {
       <div class="bg-slate-900 text-white rounded-2xl px-3 py-2 text-xs font-semibold shadow-sm leading-relaxed max-w-[85%]">
         ${escapeHTML(text)}
       </div>
-      <span class="text-[8px] text-slate-400 font-bold uppercase mr-1">Bạn</span>
+      <span class="text-[8px] text-slate-400 font-bold uppercase mr-1">You</span>
     </div>
   ` : `
     <div id="${msgId}" class="flex flex-col items-start gap-1 animate-in fade-in slide-in-from-bottom-2 duration-200">
