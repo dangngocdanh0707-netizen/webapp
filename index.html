@@ -47,7 +47,7 @@
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <script type="module" crossorigin src="/webapp/assets/index-DHL6QhWx.js"></script>
+  <script type="module" crossorigin src="/webapp/assets/index-BLeUNbYW.js"></script>
   <link rel="stylesheet" crossorigin href="/webapp/assets/index-C1Dbsh17.css">
 </head>
 
@@ -1440,12 +1440,8 @@
                       class="bg-white border border-slate-200 text-slate-700 text-[10px] font-semibold rounded-lg px-2.5 py-1 focus:outline-none focus:border-blue-500 w-60 sm:w-72"
                       placeholder="" onkeydown="if(event.key === 'Enter') app.ai.saveQuickVocabWord()">
 
-                    <select id="ai-chat-scenario-select" onchange="app.ai.setAiScenario(this.value)"
-                      class="bg-slate-50 border border-slate-200 text-slate-650 font-bold text-[10px] uppercase tracking-wider rounded-lg px-2.5 py-1 focus:outline-none focus:border-blue-500 cursor-pointer">
+                    <select id="ai-chat-scenario-select" onchange="app.ai.setAiScenario(this.value)" class="hidden">
                       <option value="casual">Casual Conversation</option>
-                      <option value="interview">Job Interview Practice</option>
-                      <option value="restaurant">At a Restaurant</option>
-                      <option value="travel">Travel & Booking</option>
                     </select>
                     <button onclick="app.ai.clearAiChatHistory()"
                       class="text-slate-400 hover:text-rose-500 transition cursor-pointer text-xs font-bold flex items-center gap-1">
