@@ -67,40 +67,40 @@ function removeVietnameseTones(str) {
 function matchLocalTab(text) {
   const normalized = removeVietnameseTones(text.toLowerCase().trim());
 
-  if (/\b(chi tieu|tien|expense|vi|chi phi|cost|ngan sach)\b/.test(normalized)) {
+  if (/\b(expense|cost)\b/.test(normalized)) {
     return 'cost-tab';
   }
-  if (/\b(tu vung|vocab|tu moi|dictionary|tu dien|book)\b/.test(normalized)) {
+  if (/\b(vocab|dictionary|book)\b/.test(normalized)) {
     return 'vocab-tab';
   }
-  if (/\b(on tap|anki|srs|luyen tap|practice|speak|ai chat|tieng anh|english|grammar|nhat ky loi)\b/.test(normalized)) {
+  if (/\b(anki|srs|practice|speak|ai chat|english|grammar)\b/.test(normalized)) {
     return 'practice-tab';
   }
-  if (/\b(thoi quen|habit|check|streak)\b/.test(normalized)) {
+  if (/\b(habit|check|streak)\b/.test(normalized)) {
     return 'habit-tab';
   }
-  if (/\b(cong viec|task|job|eisenhower|matrix|quadrant)\b/.test(normalized)) {
+  if (/\b(task|job|eisenhower|matrix|quadrant)\b/.test(normalized)) {
     return 'task-tab';
   }
-  if (/\b(muc tieu|goal|bullseye|target)\b/.test(normalized)) {
+  if (/\b(goal|bullseye|target)\b/.test(normalized)) {
     return 'goal-tab';
   }
-  if (/\b(lien ket|link|website)\b/.test(normalized)) {
-    const isSimpleTabSwitch = /^(go to|open|mo|di toi|toi|xem|trang|page)?\s*(lien ket|link|website)s?$/i.test(normalized);
+  if (/\b(link|website)\b/.test(normalized)) {
+    const isSimpleTabSwitch = /^(go to|open|page)?\s*(link|website)s?$/i.test(normalized);
     if (isSimpleTabSwitch) {
       return 'link-tab';
     }
   }
-  if (/\b(prompt|terminal|lenh mau)\b/.test(normalized)) {
+  if (/\b(prompt|terminal)\b/.test(normalized)) {
     return 'prompt-tab';
   }
-  if (/\b(ban do|dia diem|map|google map|du lich|diem den)\b/.test(normalized)) {
+  if (/\b(map|google map)\b/.test(normalized)) {
     return 'map-tab';
   }
-  if (/\b(bo suu tap|collection|tai san|do dung|gem|item)\b/.test(normalized)) {
+  if (/\b(collection|gem|item)\b/.test(normalized)) {
     return 'collections-tab';
   }
-  if (/\b(trang chu|home|launchpad|launcher|quay lai|back)\b/.test(normalized)) {
+  if (/\b(home|launchpad|launcher|back)\b/.test(normalized)) {
     return 'home-tab';
   }
 
