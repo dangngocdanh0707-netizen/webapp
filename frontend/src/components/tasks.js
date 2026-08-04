@@ -6,6 +6,19 @@ let countdownInterval = null;
 let startInputModified = false;
 let endInputModified = false;
 
+function getEndDateTimeFromStart(startVal) {
+  if (!startVal) return getTodayDateTimeString(30);
+  const d = new Date(startVal);
+  if (isNaN(d.getTime())) return getTodayDateTimeString(30);
+  d.setMinutes(d.getMinutes() + 30);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hour = String(d.getHours()).padStart(2, '0');
+  const minute = String(d.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hour}:${minute}`;
+}
+
 export function initTasksModule(data, onSync) {
   allTaskData = (data || []).map(item => ({
     ...item,
@@ -16,15 +29,20 @@ export function initTasksModule(data, onSync) {
   const totalTasksEl = document.getElementById('total-tasks');
   if (totalTasksEl) totalTasksEl.innerText = allTaskData.length;
 
-  // Set default date input to today's date
+  // Set default date input: start = now, end = start + 30 mins
   const startInput = document.getElementById('ins-task-start-date');
+  const endInput = document.getElementById('ins-task-end-date');
   if (startInput) {
     startInput.value = getTodayDateTimeString();
-    startInput.addEventListener('input', () => { startInputModified = true; });
+    startInput.addEventListener('input', () => {
+      startInputModified = true;
+      if (!endInputModified && endInput) {
+        endInput.value = getEndDateTimeFromStart(startInput.value);
+      }
+    });
   }
-  const endInput = document.getElementById('ins-task-end-date');
   if (endInput) {
-    endInput.value = getTodayDateTimeString();
+    endInput.value = getTodayDateTimeString(30);
     endInput.addEventListener('input', () => { endInputModified = true; });
   }
 
@@ -44,14 +62,14 @@ export function initTasksModule(data, onSync) {
       }
     });
 
-    // 2. Auto update date inputs to current time if not modified/focused
+    // 2. Auto update date inputs if not modified/focused
     const startIn = document.getElementById('ins-task-start-date');
     if (startIn && !startInputModified && document.activeElement !== startIn) {
       startIn.value = getTodayDateTimeString();
     }
     const endIn = document.getElementById('ins-task-end-date');
     if (endIn && !endInputModified && document.activeElement !== endIn) {
-      endIn.value = getTodayDateTimeString();
+      endIn.value = getEndDateTimeFromStart(startIn ? startIn.value : null);
     }
   }, 1000);
 }
@@ -238,8 +256,9 @@ window.app.tasks.addTaskRow = function () {
   buildTaskTable();
 
   document.getElementById('ins-task-desc').value = "";
-  document.getElementById('ins-task-start-date').value = getTodayDateTimeString();
-  document.getElementById('ins-task-end-date').value = getTodayDateTimeString();
+  const newStart = getTodayDateTimeString();
+  document.getElementById('ins-task-start-date').value = newStart;
+  document.getElementById('ins-task-end-date').value = getEndDateTimeFromStart(newStart);
   startInputModified = false;
   endInputModified = false;
 

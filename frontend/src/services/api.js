@@ -1640,9 +1640,12 @@ export function formatDateTimeDb(val) {
   return str;
 }
 
-// 5c. Get today local datetime formatted as "yyyy-MM-ddTHH:mm"
-export function getTodayDateTimeString() {
+// 5c. Get today local datetime formatted as "yyyy-MM-ddTHH:mm" (with optional offset in minutes)
+export function getTodayDateTimeString(offsetMinutes = 0) {
   const d = new Date();
+  if (offsetMinutes !== 0) {
+    d.setMinutes(d.getMinutes() + offsetMinutes);
+  }
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
