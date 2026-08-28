@@ -1,4 +1,4 @@
-import { callServer, escapeHTML } from '../services/api.js';
+﻿import { callServer, escapeHTML } from '../services/api.js';
 import { speakEnglishText } from '../services/ai.js';
 
 let allVocabData = [];
@@ -79,7 +79,7 @@ export function buildVocabTable() {
         <td class="p-4 pl-6 font-semibold text-slate-650 text-sm v-view-${id}">
           <div class="flex items-center gap-2">
             <span>${escapeHTML(item.content) || ''}</span>
-            <button onclick="app.vocab.speakVocabById(${id})" class="text-slate-400 hover:text-blue-500 p-1 cursor-pointer transition">
+            <button onclick="app.vocab.speakVocabById(${id})" class="text-slate-400 hover:text-zinc-900 p-1 cursor-pointer transition">
               <i class="fa-solid fa-volume-high text-xs"></i>
             </button>
           </div>
@@ -102,7 +102,7 @@ export function buildVocabTable() {
         
         <td class="p-4 text-center">
           <div class="v-view-${id} flex justify-center gap-2">
-            <button onclick="app.vocab.toggleVocabEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.vocab.toggleVocabEdit(${id}, true)" class="text-slate-400 hover:text-zinc-900 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="app.vocab.deleteVocab(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden v-edit-${id} flex justify-center gap-1.5">

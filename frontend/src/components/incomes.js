@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString, formatCompactCurrency, formatNumberString } from '../services/api.js';
+﻿import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString, formatCompactCurrency, formatNumberString } from '../services/api.js';
 
 let allIncomeData = [];
 let onSyncNeeded = null;
@@ -216,7 +216,7 @@ export function buildIncomeTable() {
         
         <td class="p-4 text-center">
           <div class="view-inc-mode-${id} flex justify-center gap-2">
-            <button onclick="app.incomes.enterEditMode(${id})" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.incomes.enterEditMode(${id})" class="text-slate-400 hover:text-zinc-900 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="app.incomes.deleteRow(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="edit-inc-mode-${id} hidden flex justify-center gap-2">

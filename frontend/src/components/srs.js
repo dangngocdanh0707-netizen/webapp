@@ -1,4 +1,4 @@
-import { callServer, parseDateToTimestamp, escapeHTML, normalizeEnglishText, getTodayDateString } from '../services/api.js';
+﻿import { callServer, parseDateToTimestamp, escapeHTML, normalizeEnglishText, getTodayDateString } from '../services/api.js';
 import { speakEnglishText } from '../services/ai.js';
 
 let reviewQueue = [];
@@ -435,7 +435,7 @@ function updateScrambleUI() {
           ondrop="app.srs.onScrambleDrop(event, '${tile.id}')"
           ondragend="app.srs.onScrambleDragEnd(event)"
           onclick="app.srs.deselectScrambleTile('${tile.id}')"
-          class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-sm shadow-2xs hover:border-blue-400 transition-all duration-200 transform hover:scale-105 active:scale-95 cursor-grab">
+          class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold text-sm shadow-2xs hover:border-stone-400 transition-all duration-200 transform hover:scale-105 active:scale-95 cursor-grab">
           ${escapeHTML(tile.word)}
         </button>
       `;
@@ -453,7 +453,7 @@ function updateScrambleUI() {
     } else {
       return `
         <button onclick="app.srs.selectScrambleTile('${tile.id}')"
-          class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-blue-400 text-slate-700 font-semibold text-sm shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer flex items-center justify-center transform hover:scale-105 active:scale-95">
+          class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-stone-400 text-slate-700 font-semibold text-sm shadow-2xs hover:shadow-xs transition duration-200 cursor-pointer flex items-center justify-center transform hover:scale-105 active:scale-95">
           ${escapeHTML(tile.word)}
         </button>
       `;

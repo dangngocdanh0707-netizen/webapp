@@ -2,37 +2,41 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+/* --- THEME 2: WARM STONE & MONOCHROME (NOTION / APPLE STYLE) --- */
 :root {
-  --bg-primary: #f4f6fa;
+  --bg-primary: #fafaf9;
   --bg-secondary: #ffffff;
-  --card-bg: rgba(255, 255, 255, 0.75);
-  --card-border: rgba(230, 235, 245, 0.85);
-  --card-border-hover: rgba(37, 99, 235, 0.25);
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --accent-blue: #2563eb;
-  --accent-indigo: #2563eb;
-  --accent-purple: #9333ea;
+  --card-bg: rgba(255, 255, 255, 0.9);
+  --card-border: rgba(231, 229, 228, 0.85);
+  --card-border-hover: rgba(24, 24, 27, 0.2);
+  --text-primary: #18181b;
+  --text-secondary: #57534e;
+  --text-muted: #a8a29e;
+  --accent-primary: #18181b;
+  --accent-primary-hover: #27272a;
+  --accent-light: #f5f5f4;
+  --accent-blue: #18181b;
+  --accent-indigo: #18181b;
+  --accent-purple: #57534e;
 }
 
 body {
   background-color: var(--bg-primary);
-  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   margin: 0;
   color: var(--text-primary);
   overflow-x: hidden;
   min-height: 100vh;
 }
 
-/* Ambient glows - extremely soft on light background */
+/* Ambient glows - soft warm stone */
 .ambient-glow-1 {
   position: fixed;
   top: -10%;
   right: -5%;
   width: 50vw;
   height: 50vw;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(120, 113, 108, 0.05) 0%, transparent 70%);
   pointer-events: none;
   z-index: 1;
   filter: blur(80px);
@@ -44,7 +48,7 @@ body {
   left: -5%;
   width: 50vw;
   height: 50vw;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(168, 162, 158, 0.05) 0%, transparent 70%);
   pointer-events: none;
   z-index: 1;
   filter: blur(80px);
@@ -52,8 +56,8 @@ body {
 
 /* Custom thin scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -69,19 +73,19 @@ body {
   background: rgba(0, 0, 0, 0.22);
 }
 
-/* Premium glass card styles */
+/* Premium porcelain glass card styles */
 .glass-card {
   background: var(--card-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--card-border);
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.01);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
-  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 /* Custom scrollbar for sidebar navigation list */
@@ -89,7 +93,7 @@ body {
   width: 4px;
 }
 
-/* Giao diện Sidebar cao cấp mới - Hỗ trợ resize width linh hoạt */
+/* Giao diện Sidebar cao cấp mới - Warm Stone */
 .sidebar {
   width: 260px;
   min-width: 78px;
@@ -98,10 +102,10 @@ body {
   position: fixed;
   left: 0;
   top: 0;
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  border-right: 1px solid rgba(231, 229, 228, 0.85);
   color: var(--text-primary);
   z-index: 50;
   transition: background 0.3s;
@@ -121,8 +125,8 @@ body {
 
 .resizer:hover,
 .resizer.resizing {
-  background: rgba(99, 102, 241, 0.2);
-  box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+  background: rgba(24, 24, 27, 0.15);
+  box-shadow: 0 0 8px rgba(24, 24, 27, 0.1);
 }
 
 .main-content {
@@ -138,13 +142,13 @@ body {
 .nav-link {
   display: flex;
   align-items: center;
-  padding: 14px 20px;
-  color: #64748b;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 13px 18px;
+  color: #78716c;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: grab;
   font-weight: 500;
   position: relative;
-  margin: 4px 16px;
+  margin: 4px 14px;
   border-radius: 14px;
   gap: 14px;
   user-select: none;
@@ -156,34 +160,32 @@ body {
 }
 
 .nav-link i {
-  transition: all 0.3s ease;
-  color: #94a3b8;
-  font-size: 16px;
+  transition: all 0.25s ease;
+  color: #a8a29e;
+  font-size: 15px;
 }
 
 .nav-link:hover {
-  color: var(--text-primary);
-  background: rgba(0, 0, 0, 0.02);
-  border-color: rgba(0, 0, 0, 0.01);
+  color: #18181b;
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .nav-link:hover i {
-  color: var(--accent-indigo);
-  transform: scale(1.1);
+  color: #18181b;
+  transform: scale(1.08);
 }
 
 /* Trạng thái Active */
 .nav-link.active {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
-  color: var(--accent-indigo);
-  font-weight: 600;
-  border-color: rgba(37, 99, 235, 0.18);
-  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  background: #f5f5f4;
+  color: #18181b;
+  font-weight: 700;
+  border-color: #e7e5e4;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .nav-link.active i {
-  color: var(--accent-indigo);
-  filter: drop-shadow(0 0 3px rgba(37, 99, 235, 0.4));
+  color: #18181b;
 }
 
 .nav-link.active::before {
@@ -192,10 +194,9 @@ body {
   left: 0;
   top: 25%;
   height: 50%;
-  width: 4px;
-  background: var(--accent-indigo);
+  width: 3.5px;
+  background: #18181b;
   border-radius: 0 4px 4px 0;
-  box-shadow: 0 0 8px var(--accent-indigo);
 }
 
 .sortable-ghost {
@@ -210,7 +211,7 @@ body {
 
 .tab-content {
   display: none;
-  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .tab-content.active {
@@ -220,7 +221,7 @@ body {
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(12px);
   }
 
   to {
@@ -280,18 +281,18 @@ body {
   }
 }
 
-/* Inputs styled premium for Light Mode */
+/* Inputs styled premium for Warm Stone Mode */
 .edit-input,
 .form-input {
   width: 100%;
   padding: 10px 14px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   font-size: 13px;
   color: var(--text-primary);
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.95);
   outline: none;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.01);
 }
 
@@ -307,8 +308,8 @@ select.form-input {
 
 .edit-input:focus,
 .form-input:focus {
-  border-color: var(--accent-indigo);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+  border-color: #18181b;
+  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.08);
   background-color: #ffffff;
 }
 
@@ -330,7 +331,7 @@ select.form-input {
   -webkit-appearance: none;
   outline: none;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -339,22 +340,22 @@ select.form-input {
 }
 
 .habit-checkbox:hover {
-  border-color: rgba(16, 185, 129, 0.6);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+  border-color: rgba(24, 24, 27, 0.6);
+  box-shadow: 0 0 8px rgba(24, 24, 27, 0.1);
 }
 
 .habit-checkbox:checked {
-  background: rgba(16, 185, 129, 0.08);
-  border-color: #10b981;
-  transform: scale(1.08);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+  background: #18181b;
+  border-color: #18181b;
+  transform: scale(1.06);
+  box-shadow: 0 2px 8px rgba(24, 24, 27, 0.18);
 }
 
 .habit-checkbox:checked::after {
   content: "\f00c";
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
-  color: #10b981;
+  color: #ffffff;
   font-size: 11px;
   position: absolute;
 }
@@ -371,11 +372,11 @@ table th {
   color: var(--text-secondary);
 }
 
-/* Custom Anki card details (Light Mode Hologram) */
+/* Custom Anki card details */
 .practice-deck-card {
-  background: radial-gradient(100% 100% at 50% 0%, rgba(37, 99, 235, 0.02) 0%, rgba(37, 99, 235, 0) 100%), #ffffff;
-  border: 1px solid rgba(37, 99, 235, 0.1);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  background: radial-gradient(100% 100% at 50% 0%, rgba(24, 24, 27, 0.02) 0%, rgba(24, 24, 27, 0) 100%), #ffffff;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   border-radius: 28px;
   min-height: 400px !important;
 }
@@ -392,14 +393,14 @@ table th {
   min-height: 70px;
   padding: 16px;
   border-radius: 16px;
-  border: 2px solid rgba(226, 232, 240, 0.8); /* slate-200 */
+  border: 2px solid var(--card-border);
   background-color: #ffffff;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
   align-items: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.01);
   outline: none;
 }
@@ -407,21 +408,21 @@ table th {
 .practice-typing-input {
   text-align: center;
   font-weight: 600;
-  font-size: 1.125rem; /* text-lg */
+  font-size: 1.125rem;
   padding: 12px 16px;
   width: 100%;
   border-radius: 16px;
-  border: 2px solid rgba(226, 232, 240, 0.8); /* slate-200 */
+  border: 2px solid var(--card-border);
   background-color: #ffffff;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.01);
 }
 
 .practice-interactive-box:focus-within,
 .practice-typing-input:focus {
-  border-color: rgba(59, 130, 246, 0.4); /* Soft blue border */
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+  border-color: #18181b;
+  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.08);
 }
 
 /* Correct state: Soft pastel emerald green */
@@ -431,11 +432,11 @@ table th {
   box-shadow: 0 4px 15px rgba(16, 185, 129, 0.06), inset 0 1px 2px rgba(0, 0, 0, 0.01) !important;
 }
 
-/* Revealed state: Soft pastel blue */
+/* Revealed state: Soft pastel stone */
 .practice-state-revealed {
-  border-color: rgba(59, 130, 246, 0.4) !important;
-  background-color: rgba(239, 246, 255, 0.6) !important;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.06), inset 0 1px 2px rgba(0, 0, 0, 0.01) !important;
+  border-color: rgba(24, 24, 27, 0.4) !important;
+  background-color: rgba(244, 244, 245, 0.8) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04), inset 0 1px 2px rgba(0, 0, 0, 0.01) !important;
 }
 
 /* Incorrect state: Soft pastel rose/red */
@@ -455,81 +456,6 @@ table th {
 /* Ẩn phần cấu hình API khi Sidebar thu gọn */
 .sidebar.collapsed .sidebar-collapsed-hide {
   display: none;
-}
-/* --- 3D FLIP CARD EXPLORER STYLES --- */
-.explorer-card-container {
-  perspective: 1000px;
-  width: 100%;
-  height: 400px;
-}
-
-.explorer-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  transform-style: preserve-3d;
-}
-
-.explorer-card-container.flipped .explorer-card-inner {
-  transform: rotateY(180deg);
-}
-
-.explorer-card-front,
-.explorer-card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  border-radius: 24px;
-  border: 1px solid var(--card-border);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.01);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.explorer-card-front {
-  background: var(--bg-secondary);
-}
-
-.explorer-card-back {
-  background: #ffffff;
-  transform: rotateY(180deg);
-}
-
-/* Stamp Effect when checked/explored */
-.explored-stamp {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  border: 3px dashed #10b981;
-  color: #10b981;
-  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-  font-size: 11px;
-  font-weight: 900;
-  text-transform: uppercase;
-  padding: 4px 8px;
-  border-radius: 6px;
-  transform: rotate(12deg);
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
-  pointer-events: none;
-  animation: stampIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes stampIn {
-  from {
-    opacity: 0;
-    transform: scale(1.5) rotate(45deg);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) rotate(12deg);
-  }
 }
 
 /* Custom Scrollbar for scrollable panels */
@@ -551,19 +477,18 @@ table th {
   background: rgba(0, 0, 0, 0.16);
 }
 
-
 /* --- TRỢ LÝ BONG BÓNG NỔI TOÀN CỤC (GLOBAL FLOATING ASSISTANT) --- */
 .floating-bubble {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  width: 54px;
-  height: 54px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  background: #18181b;
   z-index: 999;
   cursor: pointer;
-  box-shadow: 0 8px 30px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 8px 25px rgba(24, 24, 27, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
@@ -573,7 +498,8 @@ table th {
 
 .floating-bubble:hover {
   transform: scale(1.08) translateY(-2px);
-  box-shadow: 0 12px 35px rgba(37, 99, 235, 0.45);
+  box-shadow: 0 12px 30px rgba(24, 24, 27, 0.35);
+  background: #27272a;
 }
 
 /* Hiệu ứng sóng lan tỏa */
@@ -582,7 +508,7 @@ table th {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: rgba(37, 99, 235, 0.3);
+  background: rgba(24, 24, 27, 0.18);
   z-index: -1;
   animation: bubble-pulsing 2.5s infinite;
 }
@@ -641,6 +567,3 @@ table th {
   background: rgba(0, 0, 0, 0.08);
   border-radius: 10px;
 }
-
-
-

@@ -1,4 +1,4 @@
-import Sortable from 'sortablejs';
+﻿import Sortable from 'sortablejs';
 
 export function initSortableSidebar() {
   try {

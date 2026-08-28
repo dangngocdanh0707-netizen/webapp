@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatCompactCurrency, formatNumberString } from '../services/api.js';
+﻿import { callServer, escapeHTML, formatCompactCurrency, formatNumberString } from '../services/api.js';
 
 let allAssetData = [];
 let onSyncNeeded = null;
@@ -132,7 +132,7 @@ export function buildAssetTable() {
         
         <td class="p-4 text-center">
           <div class="view-ast-mode-${id} flex justify-center gap-2">
-            <button onclick="app.assets.enterEditMode(${id})" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.assets.enterEditMode(${id})" class="text-slate-400 hover:text-zinc-900 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="app.assets.deleteRow(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="edit-ast-mode-${id} hidden flex justify-center gap-2">

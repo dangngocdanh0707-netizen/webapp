@@ -1,4 +1,4 @@
-import { callServer, escapeHTML } from '../services/api.js';
+﻿import { callServer, escapeHTML } from '../services/api.js';
 
 let allMapData = [];
 let onSyncNeeded = null;
@@ -139,7 +139,7 @@ export function buildMapGrid() {
       tableBody.insertAdjacentHTML('beforeend', `
         <tr class="hover:bg-slate-900/5 transition group">
           <td class="p-4 pl-6 font-semibold text-slate-650 text-sm map-view-${id}">
-            <a href="${searchUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline transition cursor-pointer">
+            <a href="${searchUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-zinc-900 hover:underline transition cursor-pointer">
               ${escapeHTML(placeName)}
             </a>
           </td>
@@ -165,13 +165,13 @@ export function buildMapGrid() {
           </td>
           <td class="p-4 hidden map-edit-${id}">
             <label class="inline-flex items-center gap-2 cursor-pointer select-none">
-              <input type="checkbox" id="map-edit-status-${id}" class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer" ${status ? 'checked' : ''}>
+              <input type="checkbox" id="map-edit-status-${id}" class="w-4 h-4 text-zinc-900 border-slate-300 rounded cursor-pointer" ${status ? 'checked' : ''}>
             </label>
           </td>
 
           <td class="p-4 pr-6 text-center">
             <div class="map-view-${id} flex items-center justify-center gap-2">
-              <button onclick="app.maps.toggleMapEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition">
+              <button onclick="app.maps.toggleMapEdit(${id}, true)" class="text-slate-400 hover:text-zinc-900 p-1 cursor-pointer transition">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
               <button onclick="app.maps.deleteMapPlace(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition">

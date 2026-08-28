@@ -1,4 +1,4 @@
-import { callServer, escapeHTML } from '../services/api.js';
+﻿import { callServer, escapeHTML } from '../services/api.js';
 
 let allPromptData = [];
 let onSyncNeeded = null;
@@ -66,7 +66,7 @@ export function buildPromptTable() {
         <td class="p-4 text-center">
           <div class="prompt-view-${id} flex justify-center gap-3">
             <button onclick="app.prompts.copyPromptText(${id})" class="text-slate-400 hover:text-emerald-600 p-1 cursor-pointer transition"><i id="prompt-copy-icon-${id}" class="fa-solid fa-copy"></i></button>
-            <button onclick="app.prompts.togglePromptEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.prompts.togglePromptEdit(${id}, true)" class="text-slate-400 hover:text-zinc-900 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="app.prompts.deletePrompt(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden prompt-edit-${id} flex justify-center gap-1.5">

@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatDateInput, formatDateDb } from '../services/api.js';
+﻿import { callServer, escapeHTML, formatDateInput, formatDateDb } from '../services/api.js';
 
 let allGoalData = [];
 let onSyncNeeded = null;
@@ -37,7 +37,7 @@ export function buildGoalTable() {
         <td class="p-4 goal-view-${id}">
           <div class="flex items-center gap-3.5">
             <div class="w-full bg-slate-100/80 h-2 rounded-full overflow-hidden border border-slate-200/40">
-              <div class="bg-gradient-to-r from-blue-600 to-sky-500 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+              <div class="bg-gradient-to-r from-zinc-900 to-stone-700 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
             </div>
             <span class="text-sm font-bold text-slate-650 font-sans tracking-wide shrink-0">
               ${pct}%
@@ -49,12 +49,12 @@ export function buildGoalTable() {
         <td class="p-4 hidden goal-edit-${id}"><input type="date" id="goal-edit-start-${id}" class="edit-input" value="${formatDateInput(item.start_date)}"></td>
         <td class="p-4 hidden goal-edit-${id}"><input type="date" id="goal-edit-end-${id}" class="edit-input" value="${formatDateInput(item.end_date)}"></td>
         <td class="p-4 hidden goal-edit-${id}"><input type="number" id="goal-edit-current-${id}" class="edit-input font-bold" value="${cur}"></td>
-        <td class="p-4 hidden goal-edit-${id}"><input type="number" id="goal-edit-target-${id}" class="edit-input font-bold text-blue-600" value="${tar}"></td>
+        <td class="p-4 hidden goal-edit-${id}"><input type="number" id="goal-edit-target-${id}" class="edit-input font-bold text-zinc-900" value="${tar}"></td>
         <td class="p-4 hidden goal-edit-${id}"><span class="text-xs italic text-slate-400">Locked</span></td>
         
         <td class="p-4 text-center">
           <div class="goal-view-${id} flex justify-center gap-2">
-            <button onclick="app.goals.toggleGoalEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.goals.toggleGoalEdit(${id}, true)" class="text-slate-400 hover:text-zinc-900 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="app.goals.deleteGoal(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden goal-edit-${id} flex justify-center gap-1.5">

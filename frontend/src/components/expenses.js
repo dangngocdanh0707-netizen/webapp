@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString, formatCompactCurrency, formatNumberString } from '../services/api.js';
+﻿import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString, formatCompactCurrency, formatNumberString } from '../services/api.js';
 
 
 let allCostData = [];
@@ -272,7 +272,7 @@ export function buildTable() {
         
         <td class="p-4 text-center">
           <div class="view-mode-${id} flex justify-center gap-2">
-            <button onclick="app.expenses.enterEditMode(${id})" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.expenses.enterEditMode(${id})" class="text-slate-400 hover:text-zinc-900 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="app.expenses.deleteRow(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="edit-mode-${id} hidden flex justify-center gap-2">

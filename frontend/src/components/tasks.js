@@ -1,4 +1,4 @@
-import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString, formatDateTimeInput, formatDateTimeDb, getTodayDateTimeString } from '../services/api.js';
+﻿import { callServer, escapeHTML, formatDateInput, formatDateDb, parseDateToTimestamp, getTodayDateString, formatDateTimeInput, formatDateTimeDb, getTodayDateTimeString } from '../services/api.js';
 
 let allTaskData = [];
 let onSyncNeeded = null;
@@ -167,7 +167,7 @@ export function buildTaskTable() {
         <!-- Column 4: Action -->
         <td class="p-4 text-center">
           <div class="task-view-${id} flex justify-center gap-2">
-            <button onclick="app.tasks.toggleTaskEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.tasks.toggleTaskEdit(${id}, true)" class="text-slate-400 hover:text-zinc-900 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="app.tasks.deleteTask(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden task-edit-${id} flex justify-center gap-1.5">

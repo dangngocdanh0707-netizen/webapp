@@ -1,4 +1,4 @@
-import { callServer, escapeHTML } from '../services/api.js';
+﻿import { callServer, escapeHTML } from '../services/api.js';
 
 let allLinkData = [];
 let onSyncNeeded = null;
@@ -78,7 +78,7 @@ export function buildLinkTable() {
 
     let id = item.rowNumber;
     let isLink = contentText.startsWith('http');
-    let contentDisplay = isLink ? `<a href="${escapeHTML(item.content)}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold flex items-center gap-1.5 transition"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> Access Link</a>` : escapeHTML(contentText);
+    let contentDisplay = isLink ? `<a href="${escapeHTML(item.content)}" target="_blank" rel="noopener noreferrer" class="text-zinc-900 hover:underline font-semibold flex items-center gap-1.5 transition"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> Access Link</a>` : escapeHTML(contentText);
 
     tbody.insertAdjacentHTML('beforeend', `
       <tr id="link-row-${id}" class="hover:bg-slate-900/5 transition">
@@ -99,7 +99,7 @@ export function buildLinkTable() {
         
         <td class="p-4 text-center">
           <div class="link-view-${id} flex justify-center gap-3">
-            <button onclick="app.links.toggleLinkEdit(${id}, true)" class="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="app.links.toggleLinkEdit(${id}, true)" class="text-slate-400 hover:text-zinc-900 p-1 cursor-pointer transition"><i class="fa-solid fa-pen-to-square"></i></button>
             <button onclick="app.links.deleteLink(${id})" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer transition"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="hidden link-edit-${id} flex justify-center gap-1.5">
