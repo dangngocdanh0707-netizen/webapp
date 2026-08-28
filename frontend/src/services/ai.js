@@ -385,7 +385,7 @@ Valid tab IDs for "switch_tab" are:
 - 'goal-tab' (Mục tiêu/Goals)
 - 'link-tab' (Liên kết/Links)
 - 'prompt-tab' (Mẫu prompt/Prompts)
-- 'map-tab' (Bản đồ/Google Maps)`;
+- 'map-tab' (Travels)`;
 
   if (links && links.length > 0) {
     systemInstruction += `

@@ -39,9 +39,9 @@ const tabNamesMap = {
   'goal-tab': 'Goal Tracker',
   'link-tab': 'Quick Links',
   'prompt-tab': 'AI Prompts',
-  'map-tab': 'Places Map',
-  'collections-tab': 'Assets Collection'
+  'map-tab': 'Travels'
 };
+
 
 
 
