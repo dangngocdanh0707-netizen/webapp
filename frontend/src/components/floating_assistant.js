@@ -55,7 +55,7 @@ function matchLocalTab(text) {
   if (/\b(vocab|dictionary|book)\b/.test(normalized)) {
     return 'vocab-tab';
   }
-  if (/\b(anki|srs|practice|speak|ai chat|english|grammar)\b/.test(normalized)) {
+  if (/\b(anki|srs|practice|english|typing|flashcard)\b/.test(normalized)) {
     return 'practice-tab';
   }
   if (/\b(habit|check|streak)\b/.test(normalized)) {
@@ -76,11 +76,8 @@ function matchLocalTab(text) {
   if (/\b(prompt|terminal)\b/.test(normalized)) {
     return 'prompt-tab';
   }
-  if (/\b(map|google map)\b/.test(normalized)) {
+  if (/\b(travel|travels|place|places|map|google map)\b/.test(normalized)) {
     return 'map-tab';
-  }
-  if (/\b(collection|gem|item)\b/.test(normalized)) {
-    return 'collections-tab';
   }
   if (/\b(home|launchpad|launcher|back)\b/.test(normalized)) {
     return 'home-tab';

@@ -38,9 +38,9 @@ window.onerror = function (message, source, lineno, colno, error) {
         <div class="bg-rose-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
           <i class="fa-solid fa-bug text-rose-600 text-lg"></i>
         </div>
-        <h3 class="font-bold text-slate-800 text-base mb-1">Lỗi Giao Diện (Javascript Error)</h3>
+        <h3 class="font-bold text-slate-800 text-base mb-1">Interface Error</h3>
         <p class="text-xs text-rose-750 font-medium mb-4 max-h-32 overflow-y-auto bg-white/70 p-2.5 rounded-lg border border-rose-100/50 text-left font-mono">${message}<br>Line: ${lineno}:${colno}<br>File: ${source}</p>
-        <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl cursor-pointer transition">Thử tải lại trang (Retry)</button>
+        <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl cursor-pointer transition">Reload Page</button>
       </div>
     `;
   }
@@ -293,9 +293,7 @@ function loadDataFromServer(silent = false) {
           prompt: [],
           goal: [],
           task: [],
-          google_map: [],
-          grammar_diary: [],
-          chat_history: []
+          google_map: []
         });
       }
     }, 4000); // 4 giây cho trải nghiệm tải mượt mà hơn
@@ -330,9 +328,7 @@ function handleScriptError(err) {
     prompt: [],
     goal: [],
     task: [],
-    google_map: [],
-    grammar_diary: [],
-    chat_history: []
+    google_map: []
   });
 }
 
@@ -403,13 +399,13 @@ window.app.updateSettingsModelOptions = function (provider, currentModel = '') {
 
   const models = {
     gemini: [
-      { value: 'gemini-2.0-flash', label: 'gemini-2.0-flash (Khuyên dùng)' },
+      { value: 'gemini-2.0-flash', label: 'gemini-2.0-flash (Recommended)' },
       { value: 'gemini-2.0-pro-exp-02-05', label: 'gemini-2.0-pro (Experimental)' },
       { value: 'gemini-1.5-flash', label: 'gemini-1.5-flash' },
       { value: 'gemini-1.5-pro', label: 'gemini-1.5-pro' }
     ],
     openai: [
-      { value: 'gpt-4o-mini', label: 'gpt-4o-mini (Khuyên dùng)' },
+      { value: 'gpt-4o-mini', label: 'gpt-4o-mini (Recommended)' },
       { value: 'gpt-4o', label: 'gpt-4o' },
       { value: 'gpt-3.5-turbo', label: 'gpt-3.5-turbo' }
     ]
@@ -426,7 +422,7 @@ window.app.updateSettingsModelOptions = function (provider, currentModel = '') {
   if (currentModel && !providerModels.some(m => m.value === currentModel)) {
     const opt = document.createElement('option');
     opt.value = currentModel;
-    opt.textContent = `${currentModel} (Tùy chỉnh)`;
+    opt.textContent = `${currentModel} (Custom)`;
     modelSelect.appendChild(opt);
   }
 

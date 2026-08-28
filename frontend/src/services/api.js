@@ -451,6 +451,7 @@ async function resolveAllTabs(spreadsheetId) {
       prompt: 'prompt',
       goal: 'goal',
       task: 'task',
+      google_map: 'travels'
     };
   }
 }

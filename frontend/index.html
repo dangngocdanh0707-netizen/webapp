@@ -564,7 +564,7 @@
 
             <div>
 
-              <h3 class="font-bold text-slate-800 text-base">All Assets</h3>
+              <h3 class="font-bold text-slate-800 text-base">All</h3>
 
             </div>
 
@@ -1188,18 +1188,6 @@
 
 
 
-        <!-- Sub-Tabs Switcher -->
-
-        <div class="flex border-b border-slate-200/60 mb-6 gap-2">
-
-          <button id="btn-subtab-srs" onclick="app.ai.switchPracticeSubTab('srs')"
-            class="pb-3 px-4 font-bold text-sm border-b-2 border-blue-600 text-blue-600 transition cursor-pointer flex items-center gap-2">
-
-            <i class="fa-solid fa-keyboard text-xs"></i> <span>Typing Review</span>
-
-          </button>
-
-        </div>
 
 
 
@@ -1414,13 +1402,13 @@
           <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
             <i class="fa-solid fa-circle-plus text-blue-500"></i> Add New
           </h4>
-          <div class="flex flex-col sm:flex-row gap-3 items-end">
-            <div class="w-full">
+          <div class="flex flex-col md:flex-row items-end gap-4">
+            <div class="flex-1 w-full">
               <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Habit Name</label>
               <input type="text" id="ins-habit-name" class="form-input font-semibold">
             </div>
             <button onclick="app.habits.addHabitDirectly()"
-              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 whitespace-nowrap h-[42px] shrink-0">
+              class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition cursor-pointer flex items-center gap-2 shrink-0 h-[42px]">
               <i class="fa-solid fa-floppy-disk mr-1"></i> Save
             </button>
           </div>
@@ -2249,7 +2237,7 @@
 
         <div>
 
-          <h3 class="font-bold text-slate-800 text-base">Cấu hình kết nối Google Cloud</h3>
+          <h3 class="font-bold text-slate-800 text-base">Google Cloud Credentials</h3>
 
           <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Google Sheets & OAuth API Setup</p>
 
@@ -2296,7 +2284,7 @@
 
           <h4 class="font-bold text-slate-700 text-xs mb-3 flex items-center gap-1.5">
 
-            <i class="fa-solid fa-robot text-blue-500"></i> Cấu hình AI Partner
+            <i class="fa-solid fa-robot text-blue-500"></i> AI Assistant Configuration
 
           </h4>
 
@@ -2363,10 +2351,10 @@
 
           <div>
 
-            <p class="font-bold text-slate-800 mb-0.5">Bảo mật tuyệt đối:</p>
+            <p class="font-bold text-slate-800 mb-0.5">Privacy & Security:</p>
 
-            <p>Toàn bộ thông tin định danh trên được lưu trữ <b>chỉ trong trình duyệt cá nhân của bạn</b> (localStorage)
-              và được gửi trực tiếp đến API Google. Không có bất kỳ máy chủ bên thứ ba nào lưu trữ các thông tin này.
+            <p>All credentials are stored <b>only in your local browser</b> (localStorage)
+              and sent directly to Google APIs. No third-party servers store this data.
             </p>
 
           </div>
@@ -2385,7 +2373,7 @@
         <button onclick="app.saveSettingsCredentials()"
           class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl cursor-pointer transition flex items-center gap-1.5 shadow-md">
 
-          <i class="fa-solid fa-floppy-disk"></i> Save Settings
+          <i class="fa-solid fa-floppy-disk mr-1"></i> Save
 
         </button>
 
