@@ -17,15 +17,12 @@ import { initIncomesModule } from './components/incomes.js';
 import { initAssetsModule } from './components/assets.js';
 import { initVocabModule } from './components/vocabulary.js';
 import { initSrsModule } from './components/srs.js';
-import { initAiChatModule } from './components/ai_chat.js';
-import { initGrammarDiaryModule } from './components/grammar_diaries.js';
 import { initLinksModule } from './components/links.js';
 import { initPromptsModule } from './components/prompts.js';
 import { initGoalsModule } from './components/goals.js';
 import { initTasksModule } from './components/tasks.js';
 import { initHabitsModule } from './components/habits.js';
 import { initMapModule } from './components/google_maps.js';
-import { initCollectionsModule } from './components/collections.js';
 import { initFloatingAssistant } from './components/floating_assistant.js';
 
 let serverSyncTimeout = null;
@@ -157,9 +154,6 @@ async function initApp() {
         } else if (id.startsWith('ins-map-') && window.app && window.app.maps && typeof window.app.maps.addMapRow === 'function') {
           e.preventDefault();
           window.app.maps.addMapRow();
-        } else if (id.startsWith('ins-col-') && window.app && window.app.collections && typeof window.app.collections.saveNewCollection === 'function') {
-          e.preventDefault();
-          window.app.collections.saveNewCollection();
         }
       }
       // 2. Dành cho các ô CHỈNH SỬA dòng (Mã chứa '-edit-' hoặc 'edit-')
@@ -194,9 +188,6 @@ async function initApp() {
         } else if (id.startsWith('map-edit-') && window.app && window.app.maps && typeof window.app.maps.saveMapPlace === 'function') {
           e.preventDefault();
           window.app.maps.saveMapPlace(rowId);
-        } else if (id.startsWith('col-edit-') && window.app && window.app.collections && typeof window.app.collections.saveCollectionItem === 'function') {
-          e.preventDefault();
-          window.app.collections.saveCollectionItem(rowId);
         }
       }
     }
@@ -303,7 +294,6 @@ function loadDataFromServer(silent = false) {
           goal: [],
           task: [],
           google_map: [],
-          collections: [],
           grammar_diary: [],
           chat_history: []
         });
@@ -341,7 +331,6 @@ function handleScriptError(err) {
     goal: [],
     task: [],
     google_map: [],
-    collections: [],
     grammar_diary: [],
     chat_history: []
   });
@@ -360,15 +349,12 @@ function renderDashboard(data) {
     initCostModule(data.cost, loadDataFromServer);
     initVocabModule(data.vocabulary, loadDataFromServer);
     initSrsModule(data.vocabulary, loadDataFromServer);
-    initAiChatModule(data.vocabulary, data.chat_history, loadDataFromServer);
-    initGrammarDiaryModule(data.grammar_diary, loadDataFromServer);
     initLinksModule(data.link, loadDataFromServer);
     initPromptsModule(data.prompt, loadDataFromServer);
     initGoalsModule(data.goal, loadDataFromServer);
     initTasksModule(data.task, loadDataFromServer);
     initHabitsModule(data.habit_tracker, loadDataFromServer);
     initMapModule(data.google_map, loadDataFromServer);
-    initCollectionsModule(data.collections, loadDataFromServer);
 
   } catch (err) {
     console.error("Critical rendering failure:", err);
@@ -399,11 +385,6 @@ window.app.switchTab = function (tabId, btn) {
     if (link) link.classList.add('active');
   }
 
-  if (tabId === 'collections-tab') {
-    if (window.app && window.app.collections && typeof window.app.collections.filterCollectionGrid === 'function') {
-      window.app.collections.filterCollectionGrid();
-    }
-  }
 };
 
 window.app.launchApp = function (tabId) {

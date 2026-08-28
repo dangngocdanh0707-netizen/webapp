@@ -275,7 +275,7 @@ async function resolveAllTabs(spreadsheetId) {
     const sheets = response.result.sheets || [];
     const existingTitles = sheets.map(s => s.properties.title);
 
-    const targetTabs = ['assets', 'incomes', 'cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections', 'grammar_diary', 'chat_history'];
+    const targetTabs = ['assets', 'incomes', 'cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map'];
     const mappings = {};
 
     // Phase 1: Direct matching with standard fallback alternatives
@@ -289,10 +289,7 @@ async function resolveAllTabs(spreadsheetId) {
       prompt: ['prompts', 'prompt', 'gợi ý'],
       goal: ['goals', 'goal', 'mục tiêu'],
       task: ['tasks', 'task', 'công việc'],
-      google_map: ['google_maps', 'google_map', 'bản đồ'],
-      collections: ['collections', 'collection', 'sưu tập', 'bộ sưu tập'],
-      grammar_diary: ['grammar_diaries', 'grammar_diary', 'nhật ký ngữ pháp', 'grammar_logs'],
-      chat_history: ['chat_histories']
+      google_map: ['travels', 'travel', 'google_maps', 'google_map', 'bản đồ'],
     };
 
     targetTabs.forEach(target => {
@@ -410,27 +407,7 @@ async function resolveAllTabs(spreadsheetId) {
               bestMatch = title;
               break;
             }
-          } else if (target === 'collections') {
-            const hasItem = headers.includes('item') || headers.includes('mặt hàng') || headers.some(h => h.includes('item'));
-            if (hasItem) {
-              bestMatch = title;
-              break;
-            }
-          } else if (target === 'grammar_diary') {
-            const hasUserSentence = headers.includes('user_sentence') || headers.includes('user sentence') || headers.some(h => h.includes('user_sentence') || h.includes('user sentence'));
-            const hasCorrected = headers.includes('corrected_sentence') || headers.includes('corrected sentence') || headers.some(h => h.includes('corrected_sentence') || h.includes('corrected sentence'));
-            if (hasUserSentence || hasCorrected) {
-              bestMatch = title;
-              break;
-            }
-          } else if (target === 'chat_history') {
-            const hasScenario = headers.includes('scenario') || headers.includes('kịch bản') || headers.some(h => h.includes('scenario'));
-            const hasRole = headers.includes('role') || headers.includes('vai trò') || headers.some(h => h.includes('role'));
-            if (hasScenario && hasRole) {
-              bestMatch = title;
-              break;
-            }
-          }
+        }
         }
 
         if (bestMatch) {
@@ -454,10 +431,7 @@ async function resolveAllTabs(spreadsheetId) {
         else if (target === 'prompt') mappings[target] = 'prompts';
         else if (target === 'goal') mappings[target] = 'goals';
         else if (target === 'task') mappings[target] = 'tasks';
-        else if (target === 'google_map') mappings[target] = 'google_maps';
-        else if (target === 'collections') mappings[target] = 'collections';
-        else if (target === 'grammar_diary') mappings[target] = 'grammar_diaries';
-        else if (target === 'chat_history') mappings[target] = 'chat_histories';
+        else if (target === 'google_map') mappings[target] = 'travels';
         else mappings[target] = target;
       }
     });
@@ -477,8 +451,6 @@ async function resolveAllTabs(spreadsheetId) {
       prompt: 'prompt',
       goal: 'goal',
       task: 'task',
-      grammar_diary: 'grammar_diary',
-      chat_history: 'chat_history'
     };
   }
 }
@@ -488,7 +460,9 @@ async function ensureSheetTabsExist(spreadsheetId) {
   const mappings = await resolveAllTabs(spreadsheetId);
   const response = await gapi.client.sheets.spreadsheets.get({ spreadsheetId });
   const existingTitles = response.result.sheets.map(s => s.properties.title);
-  const targetTabs = ['assets', 'incomes', 'cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map', 'collections', 'grammar_diary', 'chat_history'];
+  const targetTabs = ['assets', 'incomes', 'cost', 'vocabulary', 'habit_tracker', 'link', 'prompt', 'goal', 'task', 'google_map'];
+
+
 
   const missingTabs = targetTabs.filter(target => {
     const mappedName = mappings[target];
@@ -518,10 +492,7 @@ async function ensureSheetTabsExist(spreadsheetId) {
       { range: `${mappings['prompt'] || 'prompts'}!A1:C1`, values: [['Title', 'Category', 'Content']] },
       { range: `${mappings['goal'] || 'goals'}!A1:E1`, values: [['Goal Name', 'Start Date', 'End Date', 'Current Value', 'Target Value']] },
       { range: `${mappings['task'] || 'tasks'}!A1:F1`, values: [['start_date', 'end_date', 'task', 'urgent', 'important', 'status']] },
-      { range: `${mappings['google_map'] || 'google_maps'}!A1:C1`, values: [['place', 'city', 'status']] },
-      { range: `${mappings['collections'] || 'collections'}!A1:C1`, values: [['item', 'brand', 'category']] },
-      { range: `${mappings['grammar_diary'] || 'grammar_diaries'}!A1:F1`, values: [['date', 'scenario', 'user_sentence', 'corrected_sentence', 'explanation', 'status']] },
-      { range: `${mappings['chat_history'] || 'chat_histories'}!A1:D1`, values: [['date', 'scenario', 'role', 'content']] }
+      { range: `${mappings['google_map'] || 'travels'}!A1:C1`, values: [['place', 'city', 'status']] },
     ].filter(h => {
       const rangeSheetName = h.range.split('!')[0];
       return missingTabs.some(target => (mappings[target] || target) === rangeSheetName);
@@ -568,8 +539,6 @@ export function callServer(methodName, args) {
       const promptTab = mappings['prompt'];
       const goalTab = mappings['goal'];
       const taskTab = mappings['task'];
-      const grammarTab = mappings['grammar_diary'];
-      const chatTab = mappings['chat_history'];
 
       // Convert formatted currency value to number
       const parseAmount = (val) => {
@@ -594,9 +563,6 @@ export function callServer(methodName, args) {
             `${goalTab}!A2:E`,
             `${taskTab}!A2:D`,
             `${mappings['google_map']}!A2:C`,
-            `${mappings['collections'] || 'collections'}!A2:C`,
-            `${grammarTab || 'grammar_diaries'}!A2:F`,
-            `${chatTab || 'chat_histories'}!A2:D`
           ],
           valueRenderOption: 'UNFORMATTED_VALUE'
         });
@@ -691,30 +657,6 @@ export function callServer(methodName, args) {
             status: row[2] === "TRUE" || row[2] === true || row[2] === "true" || row[2] === "v" || row[2] === "checked"
           })).filter(item => item.place),
 
-          collections: getRows(valueRanges[10]).map((row, idx) => ({
-            rowNumber: idx + 2,
-            item: row[0] || "",
-            brand: row[1] || "",
-            category: row[2] || ""
-          })).filter(item => item.item),
-
-          grammar_diary: getRows(valueRanges[11]).map((row, idx) => ({
-            rowNumber: idx + 2,
-            date: cleanDateValue(row[0]),
-            scenario: row[1] || "",
-            user_sentence: row[2] || "",
-            corrected_sentence: row[3] || "",
-            explanation: row[4] || "",
-            status: row[5] === "TRUE" || row[5] === true || row[5] === "true"
-          })).filter(item => (item.user_sentence || item.corrected_sentence) && !item.status),
-
-          chat_history: getRows(valueRanges[12]).map((row, idx) => ({
-            rowNumber: idx + 2,
-            date: cleanDateValue(row[0]),
-            scenario: row[1] || "",
-            role: row[2] || "",
-            text: row[3] || ""
-          })).filter(item => item.scenario && item.role && item.text)
         });
         return;
       }
@@ -1057,55 +999,6 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // Collections CRUD
-      if (methodName === "insertCollectionRow") {
-        const [item, brand, category] = args;
-        const colTab = mappings['collections'] || 'collections';
-        await gapi.client.sheets.spreadsheets.values.append({
-          spreadsheetId,
-          range: `${colTab}!A:C`,
-          valueInputOption: 'USER_ENTERED',
-          insertDataOption: 'OVERWRITE',
-          resource: { values: [[item, brand, category]] }
-        });
-        resolve("Thành công");
-        return;
-      }
-      if (methodName === "updateCollectionRow") {
-        const [rowNumber, item, brand, category] = args;
-        const colTab = mappings['collections'] || 'collections';
-        await gapi.client.sheets.spreadsheets.values.update({
-          spreadsheetId,
-          range: `${colTab}!A${rowNumber}:C${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
-          resource: { values: [[item, brand, category]] }
-        });
-        resolve("Thành công");
-        return;
-      }
-      if (methodName === "deleteCollectionRow") {
-        const [rowNumber] = args;
-        const colTab = mappings['collections'] || 'collections';
-        const sheetId = await getSheetId(colTab, spreadsheetId);
-        await gapi.client.sheets.spreadsheets.batchUpdate({
-          spreadsheetId,
-          resource: {
-            requests: [{
-              deleteDimension: {
-                range: {
-                  sheetId,
-                  dimension: 'ROWS',
-                  startIndex: rowNumber - 1,
-                  endIndex: rowNumber
-                }
-              }
-            }]
-          }
-        });
-        resolve("Thành công");
-        return;
-      }
-
       // Links CRUD
       if (methodName === "insertLinkRow") {
         const [title, category, content] = args;
@@ -1310,66 +1203,6 @@ export function callServer(methodName, args) {
           range: `${taskTab}!D${rowNumber}`,
           valueInputOption: 'USER_ENTERED',
           resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
-        });
-        resolve("Thành công");
-        return;
-      }
-      if (methodName === "insertGrammarDiaryRow") {
-        const [date, scenario, user_sentence, corrected_sentence, explanation] = args;
-        const grammarTab = mappings['grammar_diary'] || 'grammar_diaries';
-        await gapi.client.sheets.spreadsheets.values.append({
-          spreadsheetId,
-          range: `${grammarTab}!A:F`,
-          valueInputOption: 'USER_ENTERED',
-          insertDataOption: 'OVERWRITE',
-          resource: { values: [[date, scenario, user_sentence, corrected_sentence, explanation, "FALSE"]] }
-        });
-        resolve("Thành công");
-        return;
-      }
-      if (methodName === "updateGrammarDiaryStatusRow") {
-        const [rowNumber, isChecked] = args;
-        const grammarTab = mappings['grammar_diary'] || 'grammar_diaries';
-        await gapi.client.sheets.spreadsheets.values.update({
-          spreadsheetId,
-          range: `${grammarTab}!F${rowNumber}`,
-          valueInputOption: 'USER_ENTERED',
-          resource: { values: [[isChecked ? "TRUE" : "FALSE"]] }
-        });
-        resolve("Thành công");
-        return;
-      }
-      if (methodName === "deleteGrammarDiaryRow") {
-        const [rowNumber] = args;
-        const grammarTab = mappings['grammar_diary'] || 'grammar_diaries';
-        const sheetId = await getSheetId(grammarTab, spreadsheetId);
-        await gapi.client.sheets.spreadsheets.batchUpdate({
-          spreadsheetId,
-          resource: {
-            requests: [{
-              deleteDimension: {
-                range: {
-                  sheetId,
-                  dimension: 'ROWS',
-                  startIndex: rowNumber - 1,
-                  endIndex: rowNumber
-                }
-              }
-            }]
-          }
-        });
-        resolve("Thành công");
-        return;
-      }
-      if (methodName === "insertChatHistoryRow") {
-        const [date, scenario, role, content] = args;
-        const chatTab = mappings['chat_history'] || 'chat_histories';
-        await gapi.client.sheets.spreadsheets.values.append({
-          spreadsheetId,
-          range: `${chatTab}!A:D`,
-          valueInputOption: 'USER_ENTERED',
-          insertDataOption: 'OVERWRITE',
-          resource: { values: [[date, scenario, role, content]] }
         });
         resolve("Thành công");
         return;

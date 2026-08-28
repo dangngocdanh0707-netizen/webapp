@@ -32,7 +32,8 @@ const tabNamesMap = {
   'home-tab': 'Home Launchpad',
   'cost-tab': 'Expense Management',
   'vocab-tab': 'Vocabulary Notebook',
-  'practice-tab': 'English Practice (Anki / AI Chat)',
+  'practice-tab': 'English Practice (Anki / SRS)',
+
   'habit-tab': 'Habit Tracker',
   'task-tab': 'Task Manager',
   'goal-tab': 'Goal Tracker',
