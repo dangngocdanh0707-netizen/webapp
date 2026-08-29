@@ -901,7 +901,7 @@ export function callServer(methodName, args) {
         return;
       }
 
-      // Google Maps Explorer CRUD
+      // Travels Explorer CRUD
       if (methodName === "updateMapRow") {
         const [rowNumber, place, city, status] = args;
         const mapTab = mappings['google_map'];
@@ -959,7 +959,7 @@ export function callServer(methodName, args) {
             }
           }
         } catch (validationErr) {
-          console.warn("Failed to auto-configure Google Maps checkbox validation:", validationErr);
+          console.warn("Failed to auto-configure Travels checkbox validation:", validationErr);
         }
 
         resolve("Thành công");
