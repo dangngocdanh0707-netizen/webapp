@@ -22,7 +22,7 @@ import { initPromptsModule } from './components/prompts.js';
 import { initGoalsModule } from './components/goals.js';
 import { initTasksModule } from './components/tasks.js';
 import { initHabitsModule } from './components/habits.js';
-import { initMapModule } from './components/google_maps.js'; // Travels module
+import { initMapModule } from './components/travels.js';
 import { initFloatingAssistant } from './components/floating_assistant.js';
 
 let serverSyncTimeout = null;
