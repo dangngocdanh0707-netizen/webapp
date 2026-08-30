@@ -1,4 +1,4 @@
-﻿import { callServer, escapeHTML } from '../services/api.js';
+import { callServer, escapeHTML } from '../services/api.js';
 import { speakEnglishText } from '../services/ai.js';
 
 let allVocabData = [];
@@ -95,7 +95,7 @@ export function buildVocabTable() {
         <td class="p-4 font-semibold text-xs text-slate-500 v-view-${id}">${nextReviewView}</td>
         
         <td class="p-4 pl-6 hidden v-edit-${id}"><input type="text" id="v-edit-content-${id}" class="edit-input font-bold w-full" value="${escapeHTML(item.content)}"></td>
-        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-transcription-${id}" class="edit-input font-mono italic w-full" value="${escapeHTML(item.transcription || '')}" placeholder="/.../"></td>
+        <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-transcription-${id}" class="edit-input font-mono italic w-full" value="${escapeHTML(item.transcription || '')}"></td>
         <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-topic-${id}" class="edit-input w-full" value="${escapeHTML(topic)}"></td>
         <td class="p-4 hidden v-edit-${id}"><input type="text" id="v-edit-mean-${id}" class="edit-input w-full" value="${escapeHTML(item.meaning)}"></td>
         <td class="p-4 hidden v-edit-${id}" colspan="2"><span class="text-xs italic text-slate-400">Status locked inside reviewer engine</span></td>

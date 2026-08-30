@@ -40,7 +40,7 @@ window.onerror = function (message, source, lineno, colno, error) {
         </div>
         <h3 class="font-bold text-slate-800 text-base mb-1">Interface Error</h3>
         <p class="text-xs text-rose-750 font-medium mb-4 max-h-32 overflow-y-auto bg-white/70 p-2.5 rounded-lg border border-rose-100/50 text-left font-mono">${message}<br>Line: ${lineno}:${colno}<br>File: ${source}</p>
-        <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-3 rounded-xl cursor-pointer transition">Reload Page</button>
+        <button onclick="location.reload()" class="bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs px-5 py-3 rounded-xl cursor-pointer transition">Reload Page</button>
       </div>
     `;
   }
