@@ -19,8 +19,8 @@ function scheduleTokenSilentRefresh(expiresIn) {
     clearTimeout(tokenRefreshTimeout);
   }
 
-  // Gia hạn trước khi hết hạn 5 phút (ví dụ 55 phút nếu hết hạn sau 60 phút)
-  const delayMs = (expiresIn - 300) * 1000;
+  // Refresh 20 minutes before expiry to guarantee silent refresh while token is still valid
+  const delayMs = (expiresIn - 1200) * 1000;
   if (delayMs <= 0) return;
 
   tokenRefreshTimeout = setTimeout(() => {
@@ -162,7 +162,7 @@ export function initGoogleAuth() {
                 resolve(false);
               } else {
                 const elapsed = Date.now() - cachedToken.timestamp;
-                const expiresMs = (cachedToken.expires_in - 300) * 1000; // refresh 5 min early
+                const expiresMs = (cachedToken.expires_in - 1200) * 1000; // refresh 20 min early
                 const isExpired = elapsed > expiresMs;
 
                 if (isExpired) {
@@ -195,7 +195,7 @@ export function initGoogleAuth() {
                 } else {
                   gapi.client.setToken(cachedToken);
 
-                  // Schedule next silent refresh before expiry
+                  // Schedule next silent refresh 20 min before expiry
                   const timeLeftSec = cachedToken.expires_in - Math.floor(elapsed / 1000);
                   if (timeLeftSec > 0) {
                     scheduleTokenSilentRefresh(timeLeftSec);
