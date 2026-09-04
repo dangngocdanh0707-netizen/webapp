@@ -151,50 +151,59 @@ export function initGoogleAuth() {
             // Restore token from localStorage if valid
             const cachedTokenStr = localStorage.getItem("GOOGLE_ACCESS_TOKEN");
             if (cachedTokenStr) {
-              const cachedToken = JSON.parse(cachedTokenStr);
-              // Kiểm tra xem token đã hết hạn chưa (3600 giây - trừ 5 phút dự phòng)
-              const isExpired = cachedToken.timestamp && (Date.now() - cachedToken.timestamp > (cachedToken.expires_in - 300) * 1000);
+              let cachedToken;
+              try { cachedToken = JSON.parse(cachedTokenStr); } catch { cachedToken = null; }
 
-              if (isExpired) {
-                console.log("[api.js] Token expired, requesting silent refresh...");
-                try {
-                  // Đặt cơ chế tự hủy timeout phòng trường hợp API bị treo
-                  setTimeout(() => {
-                    if (!authResolved) {
-                      console.warn("[api.js] Token refresh timeout.");
-                      localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
-                      if (gapi && gapi.client) {
-                        gapi.client.setToken(null);
-                      }
-                      authResolved = true;
-                      resolve(false);
-                    }
-                  }, 5000);
-
-                  tokenClient.requestAccessToken({ prompt: 'none' });
-                } catch (e) {
-                  console.warn("Silent token refresh failed:", e);
-                  localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
-                  if (gapi && gapi.client) {
-                    gapi.client.setToken(null);
-                  }
-                  if (!authResolved) {
-                    authResolved = true;
-                    resolve(false);
-                  }
-                }
-              } else {
-                gapi.client.setToken(cachedToken);
-
-                // Tính toán thời gian còn lại của token và lên lịch tự động làm mới ngầm
-                const elapsedSeconds = Math.floor((Date.now() - cachedToken.timestamp) / 1000);
-                const timeLeft = cachedToken.expires_in - elapsedSeconds;
-                if (timeLeft > 0) {
-                  scheduleTokenSilentRefresh(timeLeft);
-                }
-
+              if (!cachedToken || !cachedToken.timestamp || !cachedToken.expires_in) {
+                // Corrupt / malformed token — clear and treat as logged out
+                console.warn("[api.js] Malformed cached token, clearing.");
+                localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
                 authResolved = true;
-                resolve(true);
+                resolve(false);
+              } else {
+                const elapsed = Date.now() - cachedToken.timestamp;
+                const expiresMs = (cachedToken.expires_in - 300) * 1000; // refresh 5 min early
+                const isExpired = elapsed > expiresMs;
+
+                if (isExpired) {
+                  console.log("[api.js] Token expired, requesting silent refresh...");
+
+                  // Keep old token active so app works while refreshing
+                  gapi.client.setToken(cachedToken);
+
+                  // Fallback timeout — 15s to handle slow network
+                  const refreshFallback = setTimeout(() => {
+                    if (!authResolved) {
+                      console.warn("[api.js] Silent refresh timeout — keeping existing token.");
+                      // Do NOT remove the token; let the user stay logged in
+                      authResolved = true;
+                      resolve(true);
+                    }
+                  }, 15000);
+
+                  try {
+                    tokenClient.requestAccessToken({ prompt: 'none' });
+                  } catch (e) {
+                    clearTimeout(refreshFallback);
+                    console.warn("[api.js] Silent refresh call failed:", e);
+                    // Keep old token — user stays connected
+                    if (!authResolved) {
+                      authResolved = true;
+                      resolve(true);
+                    }
+                  }
+                } else {
+                  gapi.client.setToken(cachedToken);
+
+                  // Schedule next silent refresh before expiry
+                  const timeLeftSec = cachedToken.expires_in - Math.floor(elapsed / 1000);
+                  if (timeLeftSec > 0) {
+                    scheduleTokenSilentRefresh(timeLeftSec);
+                  }
+
+                  authResolved = true;
+                  resolve(true);
+                }
               }
             } else {
               // Không có token cached
@@ -1213,12 +1222,41 @@ export function callServer(methodName, args) {
     } catch (err) {
       console.error(`[Google Sheets API Error] Failed at ${methodName}:`, err);
       const status = err.status || err.result?.error?.code;
-      if (status === 401 || status === 403 || err.message?.includes('401') || err.message?.includes('403')) {
-        localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
-        if (gapi && gapi.client) {
-          gapi.client.setToken(null);
+      const isAuthError = status === 401 || status === 403 || err.message?.includes('401') || err.message?.includes('403');
+
+      if (isAuthError && tokenClient && !args.__retried) {
+        console.log("[api.js] Auth error detected, attempting silent token refresh and retry...");
+        try {
+          await new Promise((res, rej) => {
+            const timeout = setTimeout(() => rej(new Error("Token refresh timeout")), 10000);
+            const originalCallback = tokenClient.callback;
+            tokenClient.callback = (tokenResponse) => {
+              clearTimeout(timeout);
+              tokenClient.callback = originalCallback;
+              if (tokenResponse.error) {
+                rej(new Error(tokenResponse.error));
+              } else {
+                tokenResponse.timestamp = Date.now();
+                localStorage.setItem("GOOGLE_ACCESS_TOKEN", JSON.stringify(tokenResponse));
+                gapi.client.setToken(tokenResponse);
+                res();
+              }
+            };
+            tokenClient.requestAccessToken({ prompt: 'none' });
+          });
+          const retryArgs = Array.isArray(args) ? args : [];
+          retryArgs.__retried = true;
+          const retryResult = await callServer(methodName, retryArgs);
+          resolve(retryResult);
+        } catch (retryErr) {
+          localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
+          if (gapi && gapi.client) gapi.client.setToken(null);
+          reject(new Error("Google authentication expired. Please reconnect in the Sidebar."));
         }
-        reject(new Error("Google authentication token expired or invalid. Please reconnect in the Sidebar."));
+      } else if (isAuthError) {
+        localStorage.removeItem("GOOGLE_ACCESS_TOKEN");
+        if (gapi && gapi.client) gapi.client.setToken(null);
+        reject(new Error("Google authentication expired. Please reconnect in the Sidebar."));
       } else {
         reject(err);
       }
